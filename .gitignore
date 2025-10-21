@@ -1,0 +1,49 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+/.turbo/
+
+# production
+/build
+
+# debug / logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+logs/
+
+# env files
+.env*
+*.local
+*.secret
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# system
+.DS_Store
+Thumbs.db
+
+# editors
+.vscode/
+.idea/
+*.swp
+
+# testing & coverage
+coverage/
+
+# optional media
+/public/raw/
+*.psd
+*.ai
+*.zip
+*.rar
