@@ -31,16 +31,20 @@ export default function LetterScrollTrigger({
   const isCompact = variant === "compact"
 
   const buttonClassName = isCompact
-    ? "group relative w-full max-w-md bg-transparent px-6 py-4 outline-none"
-    : "group relative w-full max-w-3xl bg-transparent px-8 py-8 outline-none"
+    ? "group relative w-full max-w-md bg-transparent py-4 outline-none"
+    : "group relative w-full max-w-3xl bg-transparent py-8 outline-none"
+
+  const frameClassName = isCompact
+    ? "relative flex w-full items-center gap-0"
+    : "relative flex w-full items-center gap-0"
 
   const rollerClassName = isCompact
-    ? "pointer-events-none absolute top-1/2 h-16 w-8 -translate-y-1/2 rounded-full border border-amber-100/15 transition-all duration-500 group-hover:h-22 group-focus-visible:h-22"
-    : "pointer-events-none absolute top-1/2 h-20 w-10 -translate-y-1/2 rounded-full border border-amber-100/15 transition-all duration-500 group-hover:h-28 group-focus-visible:h-28"
+    ? "pointer-events-none relative z-20 -mx-1.5 h-16 w-8 shrink-0 rounded-full border border-amber-100/15 transition-all duration-500 group-hover:h-20 group-focus-visible:h-20"
+    : "pointer-events-none relative z-20 -mx-2 h-20 w-10 shrink-0 rounded-full border border-amber-100/15 transition-all duration-500 group-hover:h-28 group-focus-visible:h-28"
 
   const surfaceClassName = isCompact
-    ? "relative z-10 mx-5 block overflow-hidden rounded-[1.5rem] border border-amber-900/25 px-5 py-3 text-center transition-all duration-500 group-hover:-translate-y-1 group-hover:py-5 group-focus-visible:-translate-y-1 group-focus-visible:py-5"
-    : "relative z-10 mx-7 block overflow-hidden rounded-[1.75rem] border border-amber-900/25 px-6 py-4 text-center transition-all duration-500 group-hover:-translate-y-1 group-hover:py-7 group-focus-visible:-translate-y-1 group-focus-visible:py-7"
+    ? "relative z-10 block min-w-0 flex-1 overflow-hidden rounded-[1.5rem] border border-amber-900/25 px-5 py-3 text-center transition-all duration-500 group-hover:-translate-y-1 group-hover:py-5 group-focus-visible:-translate-y-1 group-focus-visible:py-5"
+    : "relative z-10 block min-w-0 flex-1 overflow-hidden rounded-[1.75rem] border border-amber-900/25 px-6 py-4 text-center transition-all duration-500 group-hover:-translate-y-1 group-hover:py-7 group-focus-visible:-translate-y-1 group-focus-visible:py-7"
 
   const titleClassName = isCompact ? "font-cinzel text-xl font-bold md:text-2xl" : "font-cinzel text-2xl font-bold md:text-3xl"
   const helperClassName = isCompact
@@ -60,33 +64,27 @@ export default function LetterScrollTrigger({
         aria-label="Open the letter composer"
         className={buttonClassName}
       >
-        <span
-          className={`${rollerClassName} left-0`}
-          style={rollerStyle}
-        >
-          <span className="absolute inset-[6px] rounded-full border border-amber-100/15 bg-black/10" />
-        </span>
-
-        <span
-          className={`${rollerClassName} right-0`}
-          style={rollerStyle}
-        >
-          <span className="absolute inset-[6px] rounded-full border border-amber-100/15 bg-black/10" />
-        </span>
-
-        <span className={surfaceClassName} style={scrollSurfaceStyle}>
-          <span className="pointer-events-none absolute inset-x-8 top-0 h-8 bg-gradient-to-b from-white/35 to-transparent" />
-
-          <span className="relative flex items-center justify-center gap-3 text-amber-950">
-            <Feather className="h-5 w-5 -rotate-6 transition-transform duration-500 group-hover:-translate-y-1 group-hover:-rotate-12 group-focus-visible:-translate-y-1 group-focus-visible:-rotate-12" />
-            <span className={titleClassName}>{label}</span>
-            <Mail className="h-6 w-6 transition-transform duration-500 group-hover:translate-y-[-2px] group-hover:scale-110 group-focus-visible:translate-y-[-2px] group-focus-visible:scale-110" />
+        <span className={frameClassName}>
+          <span className={rollerClassName} style={rollerStyle}>
+            <span className="absolute inset-[6px] rounded-full border border-amber-100/15 bg-black/10" />
           </span>
 
-          <span className={dividerClassName} />
+          <span className={surfaceClassName} style={scrollSurfaceStyle}>
+            <span className="pointer-events-none absolute inset-x-8 top-0 h-8 bg-gradient-to-b from-white/35 to-transparent" />
 
-          <span className={helperClassName}>
-            {helperText}
+            <span className="relative flex items-center justify-center gap-3 text-amber-950">
+              <Feather className="h-5 w-5 -rotate-6 transition-transform duration-500 group-hover:-translate-y-1 group-hover:-rotate-12 group-focus-visible:-translate-y-1 group-focus-visible:-rotate-12" />
+              <span className={titleClassName}>{label}</span>
+              <Mail className="h-6 w-6 transition-transform duration-500 group-hover:translate-y-[-2px] group-hover:scale-110 group-focus-visible:translate-y-[-2px] group-focus-visible:scale-110" />
+            </span>
+
+            <span className={dividerClassName} />
+
+            <span className={helperClassName}>{helperText}</span>
+          </span>
+
+          <span className={rollerClassName} style={rollerStyle}>
+            <span className="absolute inset-[6px] rounded-full border border-amber-100/15 bg-black/10" />
           </span>
         </span>
       </button>
