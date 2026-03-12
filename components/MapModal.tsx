@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, Compass, X } from "lucide-react"
-import { travelYears } from "@/utils/travel"
+import { getTravelYearKey, travelYears } from "@/utils/travel"
 
 interface MapModalProps {
   isOpen: boolean
@@ -182,7 +182,7 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
         <div className="absolute left-1/2 top-8 z-20 flex -translate-x-1/2 gap-3">
           {travelYears.map((journey, index) => (
             <button
-              key={journey.year}
+              key={getTravelYearKey(journey)}
               type="button"
               onClick={() => navigateToYear(index)}
               className={`h-3 w-3 rounded-full transition-all duration-500 ${
@@ -209,7 +209,7 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
             style={{ transform: `translateX(-${currentMapYear * 100}%)` }}
           >
             {travelYears.map((journey, index) => (
-              <div key={journey.year} className="flex h-full min-w-full items-center justify-center px-8">
+              <div key={getTravelYearKey(journey)} className="flex h-full min-w-full items-center justify-center px-8">
                 <div className="grid w-full max-w-6xl items-center gap-12 md:grid-cols-2">
                   <div className="relative">
                     <div className="world-map relative h-96 rounded-2xl bg-gradient-to-b from-amber-50 to-amber-100 p-8">

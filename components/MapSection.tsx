@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useCallback } from "react"
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
-import { travelYears, type TravelYear } from "@/utils/travel"
+import { getTravelYearKey, travelYears, type TravelYear } from "@/utils/travel"
 
 const MAP_COOLDOWN_MS = 700
 
@@ -58,7 +58,7 @@ export default function MapSection() {
               <div className="flex gap-2">
                 {travelYears.map((journey, index) => (
                   <button
-                    key={journey.year}
+                    key={getTravelYearKey(journey)}
                     type="button"
                     onClick={() => goToYear(index)}
                     className={`h-3 w-3 rounded-full transition-all duration-500 ${
@@ -90,7 +90,7 @@ export default function MapSection() {
               >
                 {travelYears.map((journey, index) => (
                   <div
-                    key={journey.year}
+                    key={getTravelYearKey(journey)}
                     ref={(element) => {
                       panelRefs.current[index] = element
                     }}

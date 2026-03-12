@@ -15,6 +15,8 @@ interface LocationDetails {
   description: string
 }
 
+export const getTravelYearKey = (journey: TravelYear) => `${journey.year}-${journey.location}-${journey.title}`
+
 export const travelYears: TravelYear[] = [
   {
     year: "2021",
