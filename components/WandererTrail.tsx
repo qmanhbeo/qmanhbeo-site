@@ -15,7 +15,7 @@ const trailSections = [
   { icon: Map, label: "Travels", description: "Paths across distant lands" },
   { icon: Hammer, label: "Forge", description: "Crafted spell scrolls" },
   { icon: ScrollText, label: "Archive", description: "Scholarly manuscripts" },
-  { icon: BookOpen, label: "Tales", description: "Stories by the fire" },
+  { icon: BookOpen, label: "Notes", description: "Fragments from the workbench" },
   { icon: Mail, label: "Letters", description: "Words take flight" },
   { icon: Users, label: "Fellowship", description: "Join the community" },
 ]

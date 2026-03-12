@@ -26,10 +26,10 @@ export default function AboutSection() {
             <div className="parchment p-6 rounded-lg scrollable-content max-h-[60vh] overflow-y-auto">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-amber-900 font-cinzel">The Lore of Manh</h2>
               <p className="text-base text-amber-800 mb-6 font-garamond leading-relaxed italic">
-                In the quiet hours of night, by firelight and thought, Manh weaves stories from both silicon and soul. A
-                Vietnamese wanderer, builder, and researcher, he blends AI, sustainability, philosophy, and poetry into
-                a life lived across realms, digital and real. Some know him as an economist; others, a storyteller; but
-                to himself, he&apos;s simply someone searching for warmth, clarity, and meaning.
+                I am a Vietnamese researcher and builder whose path began in economics and slowly wandered into AI,
+                simulations, data systems, and sustainability. What ties it all together is a simple question: how do we
+                build tools that stay honest about the world they are meant to serve, especially when resources are
+                scarce, trade-offs are real, and people must live with the outcomes?
               </p>
 
               <div className="space-y-3">
@@ -48,22 +48,21 @@ export default function AboutSection() {
               <div className="mt-6 space-y-4">
                 <h3 className="text-xl font-semibold text-amber-900 font-cinzel">The Path Forward</h3>
                 <p className="text-base text-amber-800 font-garamond leading-relaxed italic">
-                  As the digital realm continues to evolve, so too does the journey of discovery. Each line of code
-                  written, each algorithm crafted, and each story told adds another chapter to this ongoing tale of
-                  exploration and growth.
+                  These days, that work takes the shape of reinforcement learning environments, agent-based simulations,
+                  public data pipelines, and research on sustainability, energy, and equitable resource allocation.
                 </p>
                 <p className="text-base text-amber-800 font-garamond leading-relaxed italic">
-                  The intersection of technology and humanity remains a fascinating frontier, where ancient wisdom meets
-                  modern innovation, and where the warmth of human connection illuminates even the most complex digital
-                  landscapes.
+                  I am less interested in systems that look clever in a vacuum than in ones that can survive contact
+                  with institutions, human behaviour, imperfect data, and the friction of ordinary life.
                 </p>
                 <p className="text-base text-amber-800 font-garamond leading-relaxed italic">
-                  Through years of wandering both physical and digital realms, the stories collected along the way form
-                  a tapestry of experiences that continue to shape and inspire new adventures.
+                  That is the thread running through the scrolls on this site. AI, economics, and data are not here as
+                  trophies. They are here because they might help us see trade-offs more clearly, allocate resources more
+                  wisely, and leave a little more room for fairness than we found.
                 </p>
                 <div className="text-center mt-6 pt-4 border-t border-amber-300">
                   <p className="text-amber-600 font-garamond italic text-sm">
-                    &quot;In every algorithm lies a story, in every story lies a truth.&quot;
+                    &quot;The systems worth building are the ones that remember people must live inside their consequences.&quot;
                   </p>
                 </div>
               </div>

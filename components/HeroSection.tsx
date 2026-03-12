@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 export default function HeroSection() {
   return (
     <section
@@ -13,19 +15,19 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <h1 className="text-6xl md:text-8xl font-bold mb-6 text-orange-100 font-cinzel">Hi, I&apos;m Manh</h1>
+        <h1 className="text-6xl md:text-8xl font-bold mb-6 text-orange-100 font-cinzel">Nguyen Quang Manh</h1>
         <p className="text-xl md:text-2xl mb-8 text-orange-200 max-w-2xl mx-auto leading-relaxed font-garamond italic">
-          Welcome to my cozy little corner of the web, where stories unfold and digital dreams take shape by the warmth
-          of code.
+          By this fire I keep notes on reinforcement learning, agent-based worlds, sustainability, and the quiet craft
+          of building systems that help people make fairer decisions under real constraints.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="medieval-button text-orange-100 font-semibold px-8 py-3 rounded-lg font-garamond">
-            Explore My Tales
-          </button>
-          <button className="medieval-button text-orange-100 font-semibold px-8 py-3 rounded-lg font-garamond">
-            Join the Hearth
-          </button>
+          <Link href="/library" className="medieval-button text-orange-100 font-semibold px-8 py-3 rounded-lg font-garamond">
+            Enter the Archive
+          </Link>
+          <Link href="/letter" className="medieval-button text-orange-100 font-semibold px-8 py-3 rounded-lg font-garamond">
+            Send a Letter
+          </Link>
         </div>
       </div>
     </section>

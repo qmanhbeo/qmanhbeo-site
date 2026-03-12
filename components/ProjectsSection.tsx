@@ -58,6 +58,7 @@ export default function ProjectsSection() {
                 renderItem={(project) => {
                   const hasGithubLink = Boolean(project.github && project.github !== "#")
                   const hasDemoLink = Boolean(project.demo && project.demo !== "#")
+                  const hasAnyProjectLink = hasGithubLink || hasDemoLink
 
                   return (
                     <SpellScroll
@@ -66,45 +67,33 @@ export default function ProjectsSection() {
                       runes={project.tech}
                       className="h-full w-full"
                     >
-                      <div className="mt-4 flex gap-3">
-                        {hasGithubLink ? (
-                          <a
-                            href={project.github}
-                            className="flex items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 medieval-button"
-                          >
-                            <ScrollText className="h-4 w-4" />
-                            Grimoire
-                          </a>
-                        ) : (
-                          <button
-                            type="button"
-                            className="flex cursor-not-allowed items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 opacity-50 medieval-button"
-                            disabled
-                          >
-                            <ScrollText className="h-4 w-4" />
-                            Grimoire
-                          </button>
-                        )}
+                      {hasAnyProjectLink ? (
+                        <div className="mt-4 flex gap-3">
+                          {hasGithubLink && (
+                            <a
+                              href={project.github}
+                              className="flex items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 medieval-button"
+                            >
+                              <ScrollText className="h-4 w-4" />
+                              Grimoire
+                            </a>
+                          )}
 
-                        {hasDemoLink ? (
-                          <a
-                            href={project.demo}
-                            className="flex items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 medieval-button"
-                          >
-                            <Sparkles className="h-4 w-4" />
-                            Cast Spell
-                          </a>
-                        ) : (
-                          <button
-                            type="button"
-                            className="flex cursor-not-allowed items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 opacity-50 medieval-button"
-                            disabled
-                          >
-                            <Sparkles className="h-4 w-4" />
-                            Cast Spell
-                          </button>
-                        )}
-                      </div>
+                          {hasDemoLink && (
+                            <a
+                              href={project.demo}
+                              className="flex items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 medieval-button"
+                            >
+                              <Sparkles className="h-4 w-4" />
+                              Cast Spell
+                            </a>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="mt-4 font-garamond text-sm italic text-amber-700">
+                          Repository and public demo links are not published yet.
+                        </p>
+                      )}
                     </SpellScroll>
                   )
                 }}

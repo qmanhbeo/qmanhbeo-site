@@ -78,9 +78,9 @@ export default function BlogSection() {
 
       <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-8">
         <div className="flex-shrink-0 py-6 text-center">
-          <h2 className="font-cinzel text-4xl font-bold text-orange-100 md:text-5xl">Tavern Tales</h2>
+          <h2 className="font-cinzel text-4xl font-bold text-orange-100 md:text-5xl">Campfire Notes</h2>
           <p className="mx-auto max-w-2xl font-garamond text-lg italic text-orange-200">
-            Stories shared by the hearth, passed from wanderer to wanderer through the ages
+            Fragments from the workbench, the archive, and the road
           </p>
         </div>
 
