@@ -1,29 +1,19 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
-import { Search, ArrowLeft, Filter } from "lucide-react"
-import { publications } from "@/utils/content"
+import { ArrowLeft, Filter, ScrollText, Search } from "lucide-react"
 import ScholarScroll from "@/components/ui/ScholarScroll"
 import ScrollModal from "@/components/ui/ScrollModal"
-import Link from "next/link"
-
-interface Publication {
-  title: string
-  journal: string
-  year: string
-  abstract?: string
-  link?: string
-}
+import { publications, type Publication } from "@/utils/content"
 
 export default function LibraryPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedScroll, setSelectedScroll] = useState<Publication | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [filterYear, setFilterYear] = useState<string>("all")
+  const [filterYear, setFilterYear] = useState("all")
 
-  const years = Array.from(new Set(publications.map((pub) => pub.year)))
-    .sort()
-    .reverse()
+  const years = Array.from(new Set(publications.map((pub) => pub.year))).sort().reverse()
 
   const filteredPublications = publications.filter((pub) => {
     const matchesSearch =
@@ -44,12 +34,9 @@ export default function LibraryPage() {
 
   return (
     <div className="h-screen forest-campfire overflow-hidden">
-      {/* Candlelit Background Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
 
-      {/* Main container that fits exactly in viewport */}
       <div className="relative z-10 h-full flex flex-col">
-        {/* Fixed Header */}
         <div className="flex-shrink-0 px-8 py-6">
           <div className="text-center">
             <Link
@@ -69,12 +56,10 @@ export default function LibraryPage() {
           </div>
         </div>
 
-        {/* Fixed Search and Filter Bar */}
         <div className="flex-shrink-0 px-8 mb-4">
           <div className="max-w-4xl mx-auto">
             <div className="library-search-bar p-4 rounded-lg shadow-lg">
               <div className="flex flex-col md:flex-row gap-4">
-                {/* Search Input */}
                 <div className="flex-1 relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-amber-600" />
                   <input
@@ -86,7 +71,6 @@ export default function LibraryPage() {
                   />
                 </div>
 
-                {/* Year Filter */}
                 <div className="relative">
                   <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-amber-600" />
                   <select
@@ -107,14 +91,12 @@ export default function LibraryPage() {
           </div>
         </div>
 
-        {/* Fixed Results Count */}
         <div className="flex-shrink-0 text-center mb-4">
           <p className="text-amber-300 font-garamond italic">
             {filteredPublications.length} scroll{filteredPublications.length !== 1 ? "s" : ""} found in the archive
           </p>
         </div>
 
-        {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto scrollable-content px-8 min-h-0">
           <div className="max-w-7xl mx-auto pb-8">
             {filteredPublications.length > 0 ? (
@@ -129,7 +111,7 @@ export default function LibraryPage() {
                       title={pub.title}
                       journal={pub.journal}
                       year={pub.year}
-                      abstract={pub.abstract ? pub.abstract.substring(0, 120) + "..." : undefined}
+                      abstract={pub.abstract ? `${pub.abstract.substring(0, 120)}...` : undefined}
                       className="h-full hover:scholar-hover-glow"
                     >
                       <div className="mt-4 flex justify-between items-center">
@@ -145,9 +127,8 @@ export default function LibraryPage() {
                 ))}
               </div>
             ) : (
-              /* Empty State */
               <div className="text-center py-16">
-                <div className="text-6xl mb-4">📜</div>
+                <ScrollText className="mx-auto mb-4 h-16 w-16 text-amber-300" />
                 <h3 className="text-2xl font-bold text-amber-300 mb-4 font-cinzel">No Scrolls Found</h3>
                 <p className="text-amber-400 font-garamond italic">
                   The archive contains no scrolls matching your search. Try different keywords or clear your filters.
@@ -157,15 +138,13 @@ export default function LibraryPage() {
           </div>
         </div>
 
-        {/* Fixed Footer Quote */}
         <div className="flex-shrink-0 text-center py-6 border-t border-amber-600/30">
           <p className="text-amber-300 font-garamond italic">
-            "In the quiet halls of learning, wisdom whispers through ancient pages..."
+            &quot;In the quiet halls of learning, wisdom whispers through ancient pages...&quot;
           </p>
         </div>
       </div>
 
-      {/* Scroll Modal */}
       <ScrollModal publication={selectedScroll} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )

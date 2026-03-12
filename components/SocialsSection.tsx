@@ -1,4 +1,4 @@
-import { Github, Linkedin, Instagram, Mail } from "lucide-react"
+import { Github, Linkedin, Mail, ScrollText } from "lucide-react"
 import WoodenMedallion from "./ui/WoodenMedallion"
 import QuoteScroll from "./ui/QuoteScroll"
 
@@ -16,14 +16,18 @@ export default function SocialsSection() {
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto mb-12">
-          <WoodenMedallion icon={<Github className="w-8 h-8" />} label="GitHub" href="#" />
-          <WoodenMedallion icon={<Linkedin className="w-8 h-8" />} label="LinkedIn" href="#" />
-          <WoodenMedallion icon={<Instagram className="w-8 h-8" />} label="Instagram" href="#" />
-          <WoodenMedallion icon={<Mail className="w-8 h-8" />} label="Email" href="#" />
+          <WoodenMedallion icon={<Github className="w-8 h-8" />} label="GitHub" href="https://github.com/qmanhbeo" />
+          <WoodenMedallion
+            icon={<Linkedin className="w-8 h-8" />}
+            label="LinkedIn"
+            href="https://www.linkedin.com/in/qmanhbeo/"
+          />
+          <WoodenMedallion icon={<ScrollText className="w-8 h-8" />} label="Archive" href="/library" />
+          <WoodenMedallion icon={<Mail className="w-8 h-8" />} label="Letter" href="/letter" />
         </div>
 
         <QuoteScroll
-          quote="The fire may dim, but the stories we share keep the warmth alive. Until we meet again by the digital hearth..."
+          quote="Somewhere between the campfire and the model, I am still looking for ways to make difficult choices a little wiser and a little fairer."
           author="Manh"
         />
       </div>

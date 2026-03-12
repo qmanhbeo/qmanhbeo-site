@@ -1,15 +1,16 @@
-// File: components/ui/InfiniteCarousel.tsx
 "use client"
 
-import React, { useEffect, useLayoutEffect, useRef } from "react"
+import type { ReactNode } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react"
 
 type InfiniteCarouselProps<T> = {
   items: T[]
-  renderItem: (item: T, index: number) => React.ReactNode
+  renderItem: (item: T, index: number) => ReactNode
   itemWidth: number
   gap?: number
   className?: string
   snap?: "left" | "center"
+  itemAlign?: "stretch" | "start" | "center"
 }
 
 export default function InfiniteCarousel<T>({
@@ -19,72 +20,81 @@ export default function InfiniteCarousel<T>({
   gap = 20,
   className = "",
   snap = "left",
+  itemAlign = "stretch",
 }: InfiniteCarouselProps<T>) {
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
 
   const xRef = useRef(0)
-  const vRef = useRef(0)
-  const draggingRef = useRef(false)
+  const velocityRef = useRef(0)
+  const isDraggingRef = useRef(false)
   const pointerStartXRef = useRef(0)
   const startXRef = useRef(0)
-  const wheelIdleTimer = useRef<number | null>(null)
+  const wheelIdleTimerRef = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
+  const centerXRef = useRef(0)
 
-  const n = items.length
+  const itemCount = items.length
   const span = itemWidth + gap
-  const totalSpan = n * span
-  const centerX = useRef(0)
+  const totalSpan = itemCount * span
 
-  const setTransform = (x: number) => {
+  const setTransform = useCallback((x: number) => {
     const track = trackRef.current
-    if (track) track.style.transform = `translate3d(${x}px,0,0)`
-  }
+    if (track) {
+      track.style.transform = `translate3d(${x}px, 0, 0)`
+    }
+  }, [])
 
-  const wrapIfNeeded = () => {
-    const center = centerX.current
-    const x = xRef.current
-    const diff = x - center
-    if (diff < -totalSpan) {
-      xRef.current = x + totalSpan
+  const wrapIfNeeded = useCallback(() => {
+    const currentX = xRef.current
+    const distanceFromCenter = currentX - centerXRef.current
+
+    if (distanceFromCenter < -totalSpan) {
+      xRef.current = currentX + totalSpan
       setTransform(xRef.current)
-    } else if (diff > totalSpan) {
-      xRef.current = x - totalSpan
+    } else if (distanceFromCenter > totalSpan) {
+      xRef.current = currentX - totalSpan
       setTransform(xRef.current)
     }
-  }
+  }, [setTransform, totalSpan])
 
-  const snapTargetLeft = (x: number) => {
-    const center = centerX.current
-    const diff = x - center
-    const k = Math.round(diff / span)
-    return center + k * span
-  }
+  const getSnapTarget = useCallback(
+    (x: number) => {
+      if (snap === "center") {
+        const viewportCenter = (viewportRef.current?.clientWidth ?? 0) / 2
+        const centeredOffset = viewportCenter - itemWidth / 2
+        const base = Math.round((x - centeredOffset) / span) * span + centeredOffset
+        const k = Math.round((base - centerXRef.current) / span)
+        return centerXRef.current + k * span
+      }
 
-  const snapTargetCenter = (x: number) => {
-    const vp = viewportRef.current
-    const center = centerX.current
-    const vpCenter = (vp?.clientWidth || 0) / 2
-    const targetWithoutK = vpCenter - itemWidth / 2
-    const base = Math.round((x - targetWithoutK) / span) * span + targetWithoutK
-    const k = Math.round((base - center) / span)
-    return center + k * span
-  }
+      const k = Math.round((x - centerXRef.current) / span)
+      return centerXRef.current + k * span
+    },
+    [itemWidth, snap, span],
+  )
 
-  const getSnapTarget = (x: number) => (snap === "center" ? snapTargetCenter(x) : snapTargetLeft(x))
+  const stopRaf = useCallback(() => {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+  }, [])
 
-  const startRaf = () => {
-    if (rafRef.current != null) return
+  const startRaf = useCallback(() => {
+    if (rafRef.current !== null) return
+
     const friction = 0.94
-    const minV = 0.08
+    const minVelocity = 0.08
 
     const tick = () => {
       rafRef.current = null
-      if (draggingRef.current) return
 
-      if (Math.abs(vRef.current) > minV) {
-        xRef.current += vRef.current
-        vRef.current *= friction
+      if (isDraggingRef.current) return
+
+      if (Math.abs(velocityRef.current) > minVelocity) {
+        xRef.current += velocityRef.current
+        velocityRef.current *= friction
         wrapIfNeeded()
         setTransform(xRef.current)
         rafRef.current = requestAnimationFrame(tick)
@@ -93,6 +103,7 @@ export default function InfiniteCarousel<T>({
 
       const target = getSnapTarget(xRef.current)
       const delta = target - xRef.current
+
       if (Math.abs(delta) > 0.5) {
         xRef.current += delta * 0.12
         wrapIfNeeded()
@@ -102,137 +113,151 @@ export default function InfiniteCarousel<T>({
     }
 
     rafRef.current = requestAnimationFrame(tick)
-  }
+  }, [getSnapTarget, setTransform, wrapIfNeeded])
 
-  const stopRaf = () => {
-    if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
-    rafRef.current = null
-  }
+  const animateTo = useCallback(
+    (target: number) => {
+      stopRaf()
 
-  useEffect(() => {
-    const vp = viewportRef.current
-    if (!vp) return
+      const step = () => {
+        const delta = target - xRef.current
 
-    const onPointerDown = (e: PointerEvent) => {
-      draggingRef.current = true
-      vp.classList.add("is-dragging")
-      pointerStartXRef.current = e.clientX
-      startXRef.current = xRef.current
-      vRef.current = 0
-      vp.setPointerCapture(e.pointerId)
-      e.preventDefault()
-    }
-    const onPointerMove = (e: PointerEvent) => {
-      if (!draggingRef.current) return
-      const dx = e.clientX - pointerStartXRef.current
-      const newX = startXRef.current + dx
-      vRef.current = newX - xRef.current
-      xRef.current = newX
-      wrapIfNeeded()
-      setTransform(xRef.current)
-      e.preventDefault()
-    }
-    const onPointerUp = (e: PointerEvent) => {
-      if (!draggingRef.current) return
-      draggingRef.current = false
-      vp.classList.remove("is-dragging")
-      vp.releasePointerCapture(e.pointerId)
-      startRaf()
-      e.preventDefault()
-    }
+        if (Math.abs(delta) < 0.5) {
+          xRef.current = target
+          setTransform(xRef.current)
+          startRaf()
+          return
+        }
 
-    vp.addEventListener("pointerdown", onPointerDown)
-    window.addEventListener("pointermove", onPointerMove, { passive: false })
-    window.addEventListener("pointerup", onPointerUp, { passive: false })
-    return () => {
-      vp.removeEventListener("pointerdown", onPointerDown)
-      window.removeEventListener("pointermove", onPointerMove as any)
-      window.removeEventListener("pointerup", onPointerUp as any)
-    }
-  }, [])
-
-  useEffect(() => {
-    const vp = viewportRef.current
-    if (!vp) return
-
-    const onWheel = (e: WheelEvent) => {
-      const absX = Math.abs(e.deltaX)
-      const absY = Math.abs(e.deltaY)
-      const primary = absX > absY ? e.deltaX : e.deltaY
-      const applied = -primary // down/right reveals next → move track left
-
-      e.preventDefault()
-      e.stopPropagation()
-
-      xRef.current += applied
-      vRef.current = applied
-      wrapIfNeeded()
-      setTransform(xRef.current)
-
-      if (wheelIdleTimer.current) window.clearTimeout(wheelIdleTimer.current)
-      wheelIdleTimer.current = window.setTimeout(() => startRaf(), 60)
-    }
-
-    vp.addEventListener("wheel", onWheel, { passive: false })
-    return () => vp.removeEventListener("wheel", onWheel as any)
-  }, [])
-
-  useEffect(() => {
-    const vp = viewportRef.current
-    if (!vp) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return
-      e.preventDefault()
-      const dir = e.key === "ArrowRight" ? -1 : 1
-      animateTo(xRef.current + dir * span)
-    }
-    vp.addEventListener("keydown", onKey)
-    return () => vp.removeEventListener("keydown", onKey)
-  }, [])
-
-  const animateTo = (target: number) => {
-    stopRaf()
-    const ease = 0.18
-    const step = () => {
-      const d = target - xRef.current
-      if (Math.abs(d) < 0.5) {
-        xRef.current = target
+        xRef.current += delta * 0.18
+        wrapIfNeeded()
         setTransform(xRef.current)
-        startRaf()
-        return
+        rafRef.current = requestAnimationFrame(step)
       }
-      xRef.current += d * ease
+
+      rafRef.current = requestAnimationFrame(step)
+    },
+    [setTransform, startRaf, stopRaf, wrapIfNeeded],
+  )
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport) return
+
+    const handlePointerDown = (event: PointerEvent) => {
+      isDraggingRef.current = true
+      viewport.classList.add("is-dragging")
+      pointerStartXRef.current = event.clientX
+      startXRef.current = xRef.current
+      velocityRef.current = 0
+      viewport.setPointerCapture(event.pointerId)
+      event.preventDefault()
+    }
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isDraggingRef.current) return
+
+      const dx = event.clientX - pointerStartXRef.current
+      const nextX = startXRef.current + dx
+      velocityRef.current = nextX - xRef.current
+      xRef.current = nextX
       wrapIfNeeded()
       setTransform(xRef.current)
-      rafRef.current = requestAnimationFrame(step)
+      event.preventDefault()
     }
-    rafRef.current = requestAnimationFrame(step)
-  }
+
+    const handlePointerUp = (event: PointerEvent) => {
+      if (!isDraggingRef.current) return
+
+      isDraggingRef.current = false
+      viewport.classList.remove("is-dragging")
+      viewport.releasePointerCapture(event.pointerId)
+      startRaf()
+      event.preventDefault()
+    }
+
+    viewport.addEventListener("pointerdown", handlePointerDown)
+    window.addEventListener("pointermove", handlePointerMove, { passive: false })
+    window.addEventListener("pointerup", handlePointerUp, { passive: false })
+
+    return () => {
+      viewport.removeEventListener("pointerdown", handlePointerDown)
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerup", handlePointerUp)
+    }
+  }, [setTransform, startRaf, wrapIfNeeded])
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport) return
+
+    const handleWheel = (event: WheelEvent) => {
+      const primaryDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
+      const appliedDelta = -primaryDelta
+
+      event.preventDefault()
+      event.stopPropagation()
+
+      xRef.current += appliedDelta
+      velocityRef.current = appliedDelta
+      wrapIfNeeded()
+      setTransform(xRef.current)
+
+      if (wheelIdleTimerRef.current !== null) {
+        window.clearTimeout(wheelIdleTimerRef.current)
+      }
+
+      wheelIdleTimerRef.current = window.setTimeout(() => {
+        startRaf()
+      }, 60)
+    }
+
+    viewport.addEventListener("wheel", handleWheel, { passive: false })
+    return () => {
+      viewport.removeEventListener("wheel", handleWheel)
+    }
+  }, [setTransform, startRaf, wrapIfNeeded])
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return
+
+      event.preventDefault()
+      const direction = event.key === "ArrowRight" ? -1 : 1
+      animateTo(xRef.current + direction * span)
+    }
+
+    viewport.addEventListener("keydown", handleKeyDown)
+    return () => {
+      viewport.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [animateTo, span])
 
   useLayoutEffect(() => {
     const track = trackRef.current
-    const vp = viewportRef.current
-    if (!track || !vp) return
-    centerX.current = -n * span
-    xRef.current = centerX.current
+    if (!track || itemCount === 0) return
+
+    centerXRef.current = -itemCount * span
+    xRef.current = centerXRef.current
     track.style.gap = `${gap}px`
     setTransform(xRef.current)
-  }, [n, span, gap])
+  }, [gap, itemCount, setTransform, span])
 
-  useEffect(() => () => stopRaf(), [])
+  useEffect(() => {
+    return () => {
+      if (wheelIdleTimerRef.current !== null) {
+        window.clearTimeout(wheelIdleTimerRef.current)
+      }
 
-  const renderDeck = () => {
-    const deck = [...items, ...items, ...items]
-    return deck.map((item, i) => (
-      <div
-        key={`${i}-${(i % n + n) % n}`}
-        className="carousel-item"
-        style={{ width: `${itemWidth}px` }}
-      >
-        {renderItem(item, i % n)}
-      </div>
-    ))
-  }
+      stopRaf()
+    }
+  }, [stopRaf])
+
+  const trackAlignItems =
+    itemAlign === "start" ? "flex-start" : itemAlign === "center" ? "center" : "stretch"
 
   return (
     <div
@@ -242,8 +267,14 @@ export default function InfiniteCarousel<T>({
       aria-label="Infinite carousel"
       role="region"
     >
-      <div ref={trackRef} className="carousel-track">
-        {renderDeck()}
+      <div ref={trackRef} className="carousel-track" style={{ alignItems: trackAlignItems }}>
+        {itemCount === 0
+          ? null
+          : [...items, ...items, ...items].map((item, index) => (
+              <div key={`${index}-${index % itemCount}`} className="carousel-item" style={{ width: `${itemWidth}px` }}>
+                {renderItem(item, index % itemCount)}
+              </div>
+            ))}
       </div>
     </div>
   )

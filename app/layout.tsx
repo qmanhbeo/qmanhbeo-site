@@ -18,7 +18,6 @@ const cinzel = Cinzel({
 export const metadata: Metadata = {
   title: "Manh's Cozy Corner",
   description: "A medieval-inspired personal website",
-    generator: 'v0.app'
 }
 
 export default function RootLayout({

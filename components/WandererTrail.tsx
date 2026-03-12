@@ -11,11 +11,11 @@ interface WandererTrailProps {
 
 const trailSections = [
   { icon: Home, label: "Hearth", description: "Welcome to the journey" },
-  { icon: User, label: "Wanderer", description: "The tale of Manh" },
-  { icon: Map, label: "Travels", description: "Paths across distant lands" },
+  { icon: User, label: "Lore", description: "The tale of Manh" },
+  { icon: Map, label: "Map", description: "Paths across distant lands" },
   { icon: Hammer, label: "Forge", description: "Crafted spell scrolls" },
-  { icon: ScrollText, label: "Archive", description: "Scholarly manuscripts" },
-  { icon: BookOpen, label: "Tales", description: "Stories by the fire" },
+  { icon: ScrollText, label: "Manuscripts", description: "Scholarly manuscripts" },
+  { icon: BookOpen, label: "Notes", description: "Fragments from the workbench" },
   { icon: Mail, label: "Letters", description: "Words take flight" },
   { icon: Users, label: "Fellowship", description: "Join the community" },
 ]

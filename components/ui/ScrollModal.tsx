@@ -1,14 +1,7 @@
 "use client"
 
-import { X, ExternalLink } from "lucide-react"
-
-interface Publication {
-  title: string
-  journal: string
-  year: string
-  abstract?: string
-  link?: string
-}
+import { ExternalLink, X } from "lucide-react"
+import { type Publication } from "@/utils/content"
 
 interface ScrollModalProps {
   publication: Publication | null
@@ -21,82 +14,75 @@ export default function ScrollModal({ publication, isOpen, onClose }: ScrollModa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal */}
-      <div className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="scroll-modal-parchment p-8 rounded-lg shadow-2xl">
-          {/* Close Button */}
+      <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto">
+        <div className="scroll-modal-parchment rounded-lg p-8 shadow-2xl">
           <button
+            type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 medieval-button rounded-full p-2 text-orange-100"
+            className="absolute right-4 top-4 z-10 rounded-full p-2 text-orange-100 medieval-button"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
 
-          {/* Decorative Header */}
-          <div className="text-center mb-8">
-            <div className="inline-block px-6 py-2 bg-amber-200 rounded-full mb-4">
-              <span className="text-amber-800 font-cinzel font-bold text-sm">Scholarly Manuscript</span>
+          <div className="mb-8 text-center">
+            <div className="mb-4 inline-block rounded-full bg-amber-200 px-6 py-2">
+              <span className="font-cinzel text-sm font-bold text-amber-800">Scholarly Manuscript</span>
             </div>
-            <div className="w-24 h-1 bg-amber-600 mx-auto rounded-full opacity-60" />
+            <div className="mx-auto h-1 w-24 rounded-full bg-amber-600 opacity-60" />
           </div>
 
-          {/* Content */}
           <div className="space-y-6">
-            {/* Illuminated Title */}
             <div>
-              <div className="float-left mr-4 mb-2">
-                <span className="illuminated-letter text-6xl font-cinzel text-amber-700 leading-none">
+              <div className="float-left mb-2 mr-4">
+                <span className="illuminated-letter font-cinzel text-6xl leading-none text-amber-700">
                   {publication.title.charAt(0)}
                 </span>
               </div>
-              <h2 className="text-3xl font-bold text-amber-900 font-cinzel leading-tight mb-4">
+              <h2 className="mb-4 font-cinzel text-3xl font-bold leading-tight text-amber-900">
                 {publication.title.substring(1)}
               </h2>
             </div>
 
-            {/* Metadata */}
-            <div className="flex flex-col gap-3 p-4 bg-amber-50 rounded-lg border-l-4 border-amber-600">
+            <div className="flex flex-col gap-3 rounded-lg border-l-4 border-amber-600 bg-amber-50 p-4">
               <div className="flex items-center gap-2">
-                <span className="text-amber-700 font-garamond font-semibold">Journal:</span>
-                <span className="text-amber-800 font-garamond italic">{publication.journal}</span>
+                <span className="font-garamond font-semibold text-amber-700">Journal:</span>
+                <span className="font-garamond italic text-amber-800">{publication.journal}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-amber-700 font-garamond font-semibold">Year:</span>
-                <span className="text-amber-800 font-garamond">Anno Domini {publication.year}</span>
+                <span className="font-garamond font-semibold text-amber-700">Year:</span>
+                <span className="font-garamond text-amber-800">Anno Domini {publication.year}</span>
               </div>
             </div>
 
-            {/* Abstract */}
             {publication.abstract && (
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-amber-900 font-cinzel">Abstract</h3>
-                <div className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg border border-amber-200">
-                  <p className="text-amber-800 font-garamond leading-relaxed text-lg italic">{publication.abstract}</p>
+                <h3 className="font-cinzel text-xl font-bold text-amber-900">Abstract</h3>
+                <div className="rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6">
+                  <p className="font-garamond text-lg italic leading-relaxed text-amber-800">{publication.abstract}</p>
                 </div>
               </div>
             )}
 
-            {/* Action Button */}
-            {publication.link && (
-              <div className="text-center pt-6">
+            {publication.link && publication.link !== "#" && (
+              <div className="pt-6 text-center">
                 <a
                   href={publication.link}
-                  className="medieval-button text-orange-100 px-8 py-3 rounded-lg font-garamond inline-flex items-center gap-3 text-lg"
+                  className="inline-flex items-center gap-3 rounded-lg px-8 py-3 font-garamond text-lg text-orange-100 medieval-button"
                 >
-                  <ExternalLink className="w-5 h-5" />
+                  <ExternalLink className="h-5 w-5" />
                   Read Full Manuscript
                 </a>
               </div>
             )}
           </div>
 
-          {/* Decorative Footer */}
-          <div className="text-center mt-8 pt-6 border-t border-amber-300">
-            <div className="w-16 h-1 bg-amber-600 mx-auto rounded-full opacity-60 mb-4" />
-            <p className="text-amber-600 font-garamond italic text-sm">"Knowledge shared is wisdom multiplied"</p>
+          <div className="mt-8 border-t border-amber-300 pt-6 text-center">
+            <div className="mx-auto mb-4 h-1 w-16 rounded-full bg-amber-600 opacity-60" />
+            <p className="font-garamond text-sm italic text-amber-600">
+              &quot;Knowledge shared is wisdom multiplied&quot;
+            </p>
           </div>
         </div>
       </div>
