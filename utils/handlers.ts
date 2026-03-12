@@ -86,15 +86,6 @@ const isElementScrollable = (element: Element): boolean => {
   return hasScrollableContent && (overflowY === "scroll" || overflowY === "auto")
 }
 
-// Helper function to check if element can scroll in the given direction
-const canElementScroll = (element: Element, direction: "up" | "down"): boolean => {
-  if (direction === "up") {
-    return element.scrollTop > 0
-  } else {
-    return element.scrollTop < element.scrollHeight - element.clientHeight
-  }
-}
-
 export const createWheelHandler = (
   isMapExpanded: boolean,
   isScrolling: boolean,
@@ -105,31 +96,17 @@ export const createWheelHandler = (
   return (e: WheelEvent) => {
     if ((isMapExpanded && isMapScrolling) || (!isMapExpanded && isScrolling)) return
 
-    // Check if the mouse is over a scrollable element
+    // If the cursor is inside a scrollable panel, keep wheel behavior local to that panel.
     const target = e.target as Element
     let currentElement = target
 
-    // Walk up the DOM tree to find a scrollable element
     while (currentElement && currentElement !== document.body) {
       if (currentElement.classList?.contains("scrollable-content") || isElementScrollable(currentElement)) {
-        const isScrollingDown = e.deltaY > 0
-        const isScrollingUp = e.deltaY < 0
-
-        // Check if the element can scroll in the intended direction
-        if (
-          (isScrollingDown && canElementScroll(currentElement, "down")) ||
-          (isScrollingUp && canElementScroll(currentElement, "up"))
-        ) {
-          // Allow normal scrolling within the element
-          return
-        }
-        // If we can't scroll in that direction, break and allow page navigation
-        break
+        return
       }
       currentElement = currentElement.parentElement as Element
     }
 
-    // If we're not over a scrollable element, or it can't scroll further, handle page navigation
     e.preventDefault()
     e.stopPropagation()
 

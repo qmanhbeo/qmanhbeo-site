@@ -1,12 +1,13 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
 import { travelYears, type TravelYear } from "@/utils/travel"
 
 const YEAR_FLIP_THRESHOLD = 90
 const MAP_COOLDOWN_MS = 700
+const WHEEL_GESTURE_IDLE_MS = 160
 
 export default function MapSection() {
   const [currentMapYear, setCurrentMapYear] = useState(0)
@@ -15,13 +16,30 @@ export default function MapSection() {
   const currentMapYearRef = useRef(0)
   const isMapScrollingRef = useRef(false)
   const timeoutRef = useRef<number | null>(null)
+  const panelRefs = useRef<Array<HTMLDivElement | null>>([])
   const wheelStateRef = useRef({
     accum: 0,
     inhibitUntil: 0,
+    lastWheelAt: 0,
+    gestureId: 0,
+    boundaryArmed: false,
+    boundaryDirection: 0 as 1 | -1 | 0,
+    boundaryGestureId: null as number | null,
   })
 
   useEffect(() => {
     currentMapYearRef.current = currentMapYear
+  }, [currentMapYear])
+
+  useLayoutEffect(() => {
+    const activePanel = panelRefs.current[currentMapYear]
+    if (!activePanel) return
+
+    // Re-entering a year should always start from the top of that panel.
+    activePanel.scrollTo({
+      top: 0,
+      behavior: "auto",
+    })
   }, [currentMapYear])
 
   const clearTimeoutRef = useCallback(() => {
@@ -76,12 +94,20 @@ export default function MapSection() {
       const contentArea = target.closest(".journey-content-area")
       if (!(contentArea instanceof HTMLElement)) return
 
+      const wheelState = wheelStateRef.current
+
       const absX = Math.abs(event.deltaX)
       const absY = Math.abs(event.deltaY)
       const verticalIntent = absY >= absX
       const now = performance.now()
 
-      if (verticalIntent && now < wheelStateRef.current.inhibitUntil) {
+      if (now - wheelState.lastWheelAt > WHEEL_GESTURE_IDLE_MS) {
+        wheelState.gestureId += 1
+        wheelState.accum = 0
+      }
+      wheelState.lastWheelAt = now
+
+      if (verticalIntent && now < wheelState.inhibitUntil) {
         event.preventDefault()
         event.stopPropagation()
         return
@@ -95,20 +121,41 @@ export default function MapSection() {
       const goingUp = event.deltaY < 0
 
       if ((goingDown && atBottom) || (goingUp && atTop)) {
-        wheelStateRef.current.accum += event.deltaY
         event.preventDefault()
         event.stopPropagation()
 
-        if (Math.abs(wheelStateRef.current.accum) >= YEAR_FLIP_THRESHOLD) {
-          const step: 1 | -1 = wheelStateRef.current.accum > 0 ? 1 : -1
-          wheelStateRef.current.accum = 0
-          flipYear(step, now)
+        const direction: 1 | -1 = goingDown ? 1 : -1
+
+        if (!wheelState.boundaryArmed || wheelState.boundaryDirection !== direction) {
+          // First boundary hit arms the panel. A fresh follow-up gesture is required to turn the page.
+          wheelState.boundaryArmed = true
+          wheelState.boundaryDirection = direction
+          wheelState.boundaryGestureId = wheelState.gestureId
+          wheelState.accum = 0
+          return
+        }
+
+        if (wheelState.boundaryGestureId === wheelState.gestureId) {
+          return
+        }
+
+        wheelState.accum += event.deltaY
+
+        if (Math.abs(wheelState.accum) >= YEAR_FLIP_THRESHOLD) {
+          wheelState.accum = 0
+          wheelState.boundaryArmed = false
+          wheelState.boundaryDirection = 0
+          wheelState.boundaryGestureId = null
+          flipYear(direction, now)
         }
 
         return
       }
 
-      wheelStateRef.current.accum = 0
+      wheelState.accum = 0
+      wheelState.boundaryArmed = false
+      wheelState.boundaryDirection = 0
+      wheelState.boundaryGestureId = null
     }
 
     document.addEventListener("wheel", onWheel, { passive: false, capture: true })
@@ -188,9 +235,12 @@ export default function MapSection() {
                 className="flex h-full transition-transform duration-800 ease-in-out"
                 style={{ transform: `translateX(-${currentMapYear * 100}%)` }}
               >
-                {travelYears.map((journey) => (
+                {travelYears.map((journey, index) => (
                   <div
                     key={journey.year}
+                    ref={(element) => {
+                      panelRefs.current[index] = element
+                    }}
                     className="journey-content-area scrollable-content h-full min-w-full overflow-y-auto p-8"
                   >
                     <div className="mx-auto flex min-h-full max-w-4xl flex-col justify-center">
