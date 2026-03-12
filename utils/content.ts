@@ -1,4 +1,27 @@
-export const publications = [
+export interface Publication {
+  title: string
+  journal: string
+  year: string
+  abstract?: string
+  link?: string
+}
+
+export interface Project {
+  title: string
+  description: string
+  tech: string[]
+  github?: string
+  demo?: string
+}
+
+export interface BlogPost {
+  title: string
+  excerpt: string
+  date: string
+  readTime: string
+}
+
+export const publications: Publication[] = [
   {
     title: "Sustainable AI: Bridging Technology and Environmental Consciousness",
     journal: "Journal of Sustainable Computing",
@@ -33,7 +56,7 @@ export const publications = [
   },
 ]
 
-export const projects = [
+export const projects: Project[] = [
   {
     title: "Enchanted Portfolio",
     description: "A magical showcase of creative works, built with mystical technologies and ancient wisdom.",
@@ -78,7 +101,7 @@ export const projects = [
   },
 ]
 
-export const blogPosts = [
+export const blogPosts: BlogPost[] = [
   {
     title: "Tales from the Code Forge",
     excerpt:

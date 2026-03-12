@@ -13,10 +13,11 @@ interface WoodenMedallionProps {
 
 export default function WoodenMedallion({ icon, label, href, onClick, className = "" }: WoodenMedallionProps) {
   const [isGlowing, setIsGlowing] = useState(false)
+  const isInteractive = Boolean(href || onClick)
 
   const content = (
     <div
-      className={`wooden-medallion group cursor-pointer transition-all duration-300 ${className}`}
+      className={`wooden-medallion group transition-all duration-300 ${isInteractive ? "cursor-pointer" : ""} ${className}`}
       onMouseEnter={() => setIsGlowing(true)}
       onMouseLeave={() => setIsGlowing(false)}
       onClick={onClick}

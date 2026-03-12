@@ -2,9 +2,9 @@
 
 import type React from "react"
 
-import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Send, Feather } from "lucide-react"
+import { useState } from "react"
+import { ArrowLeft, Feather, MailCheck, Send } from "lucide-react"
 
 export default function LetterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -27,13 +27,11 @@ export default function LetterPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     setIsSubmitting(false)
     setLetterSent(true)
 
-    // Reset form after showing confirmation
     setTimeout(() => {
       setLetterSent(false)
       setFormData({ name: "", email: "", message: "" })
@@ -42,11 +40,9 @@ export default function LetterPage() {
 
   return (
     <div className="min-h-screen forest-campfire">
-      {/* Warm candlelit overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/30" />
 
       <div className="relative z-10 container mx-auto px-4 py-8">
-        {/* Header */}
         <div className="text-center mb-8">
           <Link
             href="/"
@@ -62,12 +58,9 @@ export default function LetterPage() {
           </p>
         </div>
 
-        {/* Writing Desk */}
         <div className="max-w-4xl mx-auto">
           <div className="writing-desk">
-            {/* Desk Surface */}
             <div className="desk-surface">
-              {/* Decorative Elements */}
               <div className="desk-decorations">
                 <div className="inkwell" />
                 <div className="quill-holder">
@@ -78,16 +71,13 @@ export default function LetterPage() {
                 </div>
               </div>
 
-              {/* Letter Parchment */}
               <div className="letter-parchment-large">
                 {!letterSent ? (
                   <form className="letter-form" onSubmit={handleLetterSubmit}>
-                    {/* Greeting */}
                     <div className="letter-greeting">
                       <p className="text-amber-800 font-garamond italic text-lg mb-6">Dear Fellow Wanderer,</p>
                     </div>
 
-                    {/* Form Fields */}
                     <div className="form-fields space-y-6">
                       <div className="form-group">
                         <label className="form-label font-cinzel font-semibold text-amber-900">
@@ -135,20 +125,20 @@ export default function LetterPage() {
                       </div>
                     </div>
 
-                    {/* Closing */}
                     <div className="letter-closing mt-8">
                       <p className="text-amber-800 font-garamond italic mb-6">
                         With warm regards and anticipation of your words,
                       </p>
                     </div>
 
-                    {/* Send Button */}
                     <div className="text-center">
                       <button type="submit" disabled={isSubmitting} className="send-letter-button group">
                         <div className="button-content">
                           {isSubmitting ? (
                             <>
-                              <div className="loading-quill">🪶</div>
+                              <div className="loading-quill">
+                                <Feather className="h-5 w-5 animate-pulse" />
+                              </div>
                               <span>Sealing with wax...</span>
                             </>
                           ) : (
@@ -162,10 +152,11 @@ export default function LetterPage() {
                     </div>
                   </form>
                 ) : (
-                  /* Success Message */
                   <div className="letter-sent-message">
                     <div className="success-seal">
-                      <div className="seal-animation">✉</div>
+                      <div className="seal-animation">
+                        <MailCheck className="mx-auto h-8 w-8" />
+                      </div>
                     </div>
                     <h3 className="text-2xl font-bold text-amber-900 mb-4 font-cinzel text-center">
                       Letter Dispatched!
@@ -176,7 +167,7 @@ export default function LetterPage() {
                     </p>
                     <div className="text-center mt-6">
                       <div className="inline-block px-4 py-2 bg-amber-200 rounded-full">
-                        <span className="text-amber-800 font-garamond text-sm">I'll reply within a few days ✨</span>
+                        <span className="text-amber-800 font-garamond text-sm">I&apos;ll reply within a few days.</span>
                       </div>
                     </div>
                   </div>

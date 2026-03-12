@@ -13,7 +13,7 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <h1 className="text-6xl md:text-8xl font-bold mb-6 text-orange-100 font-cinzel">Hi, I'm Manh</h1>
+        <h1 className="text-6xl md:text-8xl font-bold mb-6 text-orange-100 font-cinzel">Hi, I&apos;m Manh</h1>
         <p className="text-xl md:text-2xl mb-8 text-orange-200 max-w-2xl mx-auto leading-relaxed font-garamond italic">
           Welcome to my cozy little corner of the web, where stories unfold and digital dreams take shape by the warmth
           of code.
@@ -27,8 +27,6 @@ export default function HeroSection() {
             Join the Hearth
           </button>
         </div>
-
-        
       </div>
     </section>
   )
