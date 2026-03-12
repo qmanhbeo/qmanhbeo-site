@@ -15,9 +15,9 @@ export default function LetterSection() {
       <div className="firelight absolute inset-0 opacity-35" />
       <div className="relative z-10 px-8 max-w-4xl w-full content-container">
         <div className="text-center mb-16">
-          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-orange-100 font-cinzel">Write Me a Letter</h2>
+          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-orange-100 font-cinzel">Write Him a Letter</h2>
           <p className="text-xl text-orange-200 max-w-2xl mx-auto font-garamond italic">
-            If something in these pages speaks to your own work, send word across the night and I will write back
+            If something in these pages speaks to your own work, send word across the night and He shall write back
           </p>
         </div>
 

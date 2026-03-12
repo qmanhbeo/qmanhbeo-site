@@ -2,10 +2,12 @@
 
 import { useState } from "react"
 import ArchiveCodexButton from "./ui/ArchiveCodexButton"
+import ArchiveCodexOverlay from "./ui/ArchiveCodexOverlay"
 import LetterOverlay from "./ui/LetterOverlay"
 import LetterScrollTrigger from "./ui/LetterScrollTrigger"
 
 export default function HeroSection() {
+  const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
   const [isLetterOverlayOpen, setIsLetterOverlayOpen] = useState(false)
 
   return (
@@ -22,15 +24,19 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <h1 className="text-6xl md:text-8xl font-bold mb-6 text-orange-100 font-cinzel">Nguyen Quang Manh</h1>
+        <h1 className="text-6xl md:text-8xl font-bold mb-6 text-orange-100 font-cinzel">Leonardo Manh Nguyen</h1>
         <p className="text-xl md:text-2xl mb-8 text-orange-200 max-w-2xl mx-auto leading-relaxed font-garamond italic">
-          By this fire I keep notes on reinforcement learning, agent-based worlds, sustainability, and the quiet craft
+          By this fire are notes on reinforcement learning, agent-based worlds, sustainability, and the quiet craft
           of building systems that help people make fairer decisions under real constraints.
         </p>
 
         <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row sm:items-end sm:gap-6">
           <div className="w-full max-w-[27rem] shrink-0">
-            <ArchiveCodexButton href="/library" className="max-w-none" />
+            <ArchiveCodexButton
+              isOpen={isArchiveOverlayOpen}
+              onOpen={() => setIsArchiveOverlayOpen(true)}
+              className="max-w-none"
+            />
           </div>
 
           <div className="w-full max-w-md shrink-0">
@@ -45,6 +51,9 @@ export default function HeroSection() {
         </div>
       </div>
 
+      {isArchiveOverlayOpen ? (
+        <ArchiveCodexOverlay isOpen={isArchiveOverlayOpen} onClose={() => setIsArchiveOverlayOpen(false)} />
+      ) : null}
       <LetterOverlay isOpen={isLetterOverlayOpen} onClose={() => setIsLetterOverlayOpen(false)} />
     </section>
   )

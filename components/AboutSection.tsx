@@ -25,9 +25,9 @@ export default function AboutSection() {
 
           <div className="flex flex-col justify-center">
             <div className="parchment p-6 rounded-lg scrollable-content max-h-[60vh] overflow-y-auto">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-amber-900 font-cinzel">The Lore of Manh</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-amber-900 font-cinzel">The Lore of Leo</h2>
               <p className="text-base text-amber-800 mb-6 font-garamond leading-relaxed italic">
-                I am a Vietnamese researcher and builder whose path began in economics and slowly wandered into AI,
+                He is a Vietnamese researcher and builder whose path began in economics and slowly wandered into AI,
                 simulations, data systems, and sustainability. What ties it all together is a simple question: how do we
                 build tools that stay honest about the world they are meant to serve, especially when resources are
                 scarce, trade-offs are real, and people must live with the outcomes?
@@ -53,7 +53,7 @@ export default function AboutSection() {
                   public data pipelines, and research on sustainability, energy, and equitable resource allocation.
                 </p>
                 <p className="text-base text-amber-800 font-garamond leading-relaxed italic">
-                  I am less interested in systems that look clever in a vacuum than in ones that can survive contact
+                  He is less interested in systems that look clever in a vacuum than in ones that can survive contact
                   with institutions, human behaviour, imperfect data, and the friction of ordinary life.
                 </p>
                 <p className="text-base text-amber-800 font-garamond leading-relaxed italic">

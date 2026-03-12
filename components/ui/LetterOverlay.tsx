@@ -69,7 +69,7 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
 
         <div className="mb-4 px-4 text-center">
           <h3 id="letter-overlay-title" className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">
-            Write Me a Letter
+            Write Him a Letter
           </h3>
           <p className="map-sky-ink mx-auto mt-3 max-w-2xl font-garamond text-lg italic">
             Unfurl the scroll and send word across the night.

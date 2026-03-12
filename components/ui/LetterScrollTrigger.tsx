@@ -24,7 +24,7 @@ const rollerStyle = {
 export default function LetterScrollTrigger({
   isOpen = false,
   onOpen,
-  label = "Write Me a Letter",
+  label = "Write Him a Letter",
   helperText = "Unfurl the scroll and send a note by firelight.",
   variant = "full",
 }: LetterScrollTriggerProps) {
