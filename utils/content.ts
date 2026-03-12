@@ -1,152 +1,145 @@
-export const publications = [
+export interface Publication {
+  title: string
+  journal: string
+  year: string
+  abstract?: string
+  link?: string
+}
+
+export interface Project {
+  title: string
+  description: string
+  tech: string[]
+  github?: string
+  demo?: string
+}
+
+export interface BlogPost {
+  title: string
+  excerpt: string
+  date: string
+  readTime: string
+}
+
+export const publications: Publication[] = [
   {
-    title: "Sustainable AI: Bridging Technology and Environmental Consciousness",
-    journal: "Journal of Sustainable Computing",
+    title: "Socioeconomic Effects of Delays in Renewable Energy Projects: Evidence from Vietnam",
+    journal: "ELG 2025",
+    year: "2025",
+    abstract:
+      "A paper on what happens when renewable energy arrives late: not just to grids and plans, but to households, local economies, and the wider promises attached to transition.",
+  },
+  {
+    title: "Longitudinal Urban-Rural Energy Burden Disparities: A Decomposition Analysis of Vietnam",
+    journal: "Working Paper",
+    year: "2025",
+    abstract:
+      "A working paper tracing how the weight of energy costs falls unevenly across urban and rural households in Vietnam, and what those differences reveal about inequality over time.",
+  },
+  {
+    title:
+      "Verbal Violence within the Family as a Contributing Factor to the Emerging 'Snowflake Generation': A Case of Ho Chi Minh City's Youth",
+    journal: "UEH Young Researcher Award 2024",
     year: "2024",
     abstract:
-      "An exploration of how artificial intelligence can be developed and deployed with environmental sustainability as a core principle, examining both the carbon footprint of AI systems and their potential for environmental solutions.",
-    link: "#",
-  },
-  {
-    title: "Economic Models in the Age of Digital Transformation",
-    journal: "International Economic Review",
-    year: "2023",
-    abstract:
-      "A comprehensive analysis of how traditional economic frameworks adapt to digital economies, with particular focus on platform economics and decentralized systems.",
-    link: "#",
-  },
-  {
-    title: "Philosophy of Code: Ethics in Algorithm Design",
-    journal: "AI & Society",
-    year: "2023",
-    abstract:
-      "Examining the philosophical implications of algorithmic decision-making and the ethical responsibilities of developers in shaping digital experiences that affect human lives.",
-    link: "#",
-  },
-  {
-    title: "Poetry in Data: Finding Human Stories in Digital Patterns",
-    journal: "Digital Humanities Quarterly",
-    year: "2022",
-    abstract:
-      "An interdisciplinary approach to data analysis that incorporates literary and poetic sensibilities to uncover deeper human narratives within quantitative research.",
-    link: "#",
+      "An award-winning undergraduate paper on how violence inside the home leaves traces in the social and psychological lives of young people.",
   },
 ]
 
-export const projects = [
+export const projects: Project[] = [
   {
-    title: "Enchanted Portfolio",
-    description: "A magical showcase of creative works, built with mystical technologies and ancient wisdom.",
-    tech: ["Next.js", "TypeScript", "Tailwind", "Framer Motion"],
-    github: "#",
-    demo: "#",
+    title: "Vietnam Stock Reinforcement Learning Sandbox",
+    description:
+      "A trading sandbox built to feel less like a toy and more like a market, where reinforcement learning agents must live with costs, timing, settlement rules, and imperfect decisions.",
+    tech: ["Reinforcement Learning", "PPO / RecurrentPPO", "LSTM / CNN", "Trading Simulation"],
   },
   {
-    title: "Tavern Management System",
-    description: "A comprehensive system for managing medieval taverns, complete with inventory and guest tracking.",
-    tech: ["React", "Node.js", "MongoDB", "Express"],
-    github: "#",
-    demo: "#",
+    title: "GAIA: Agent-based Economic Simulation for Reinforcement Learning Decision Making",
+    description:
+      "An agent-based world of households, labour, food, water, and environmental limits, built as a place where resource-allocation policies can be tested against something closer to life.",
+    tech: ["Agent-Based Modelling", "Simulation", "Reinforcement Learning", "Interactive Visualisation"],
   },
   {
-    title: "Scroll of Knowledge",
-    description: "An ancient library digitized, featuring search through countless tomes and manuscripts.",
-    tech: ["Vue.js", "Python", "FastAPI", "PostgreSQL"],
-    github: "#",
-    demo: "#",
+    title: "Vietnamese Real Estate Data Pipeline",
+    description:
+      "A long haul through messy housing listings, where scraping, cleaning, imputation, and bilingual outputs turned scattered records into something usable.",
+    tech: ["Web Scraping", "Data Cleaning", "Regex Parsing", "Exploratory Analysis"],
   },
   {
-    title: "Crystal Ball Analytics",
-    description: "Mystical data visualization platform that reveals hidden patterns in the digital realm.",
-    tech: ["D3.js", "React", "Python", "TensorFlow"],
-    github: "#",
-    demo: "#",
+    title: "UK Public Procurement Data Collection and Analysis Pipeline",
+    description:
+      "A procurement data pipeline built from years of UK records, gathering scattered public traces into a form that policy questions can actually lean on.",
+    tech: ["Public Data Collection", "Scraping", "Preprocessing", "Policy Analysis"],
   },
   {
-    title: "Alchemist's Workshop",
-    description: "A collaborative platform for transforming raw ideas into digital gold through iterative refinement.",
-    tech: ["Svelte", "Rust", "WebAssembly", "GraphQL"],
-    github: "#",
-    demo: "#",
+    title: "Paths Untold: AI-Generated Interactive Story Game",
+    description:
+      "A story game where scenes are generated on the fly, memory lingers, emotions shift, and the world remembers enough to make choices feel like they matter.",
+    tech: ["OpenAI API", "Narrative Systems", "State Tracking", "Save / Load"],
   },
   {
-    title: "Dragon's Hoard Tracker",
-    description: "Advanced asset management system with real-time monitoring and predictive analytics.",
-    tech: ["Angular", "Spring Boot", "Kafka", "Redis"],
-    github: "#",
-    demo: "#",
+    title: "Arduino Robot for Environment Sensing and Learning",
+    description:
+      "A small embodied experiment in sensing and learning, beginning with humble lights and motors and reaching toward something that can adapt to its surroundings.",
+    tech: ["Arduino", "Sensors", "Motor Control", "Embodied AI"],
   },
 ]
 
-export const blogPosts = [
+export const blogPosts: BlogPost[] = [
   {
-    title: "Tales from the Code Forge",
+    title: "Notes from a Vietnamese Market Sandbox",
     excerpt:
-      "In the depths of the digital forge, where algorithms are hammered into shape and bugs are banished by the light of debugging flames...",
-    date: "Winter Solstice, 2024",
-    readTime: "5 min read",
+      "Building a market world for reinforcement learning meant teaching agents to live with delay, friction, transaction costs, taxes, and the ordinary consequences of acting too early or too late.",
+    date: "Jan 2026 - Present",
+    readTime: "Project note",
   },
   {
-    title: "The Wisdom of Ancient Algorithms",
+    title: "Building GAIA from the Ground Up",
     excerpt:
-      "Long before modern frameworks, there existed algorithms of such elegance that they still guide our path through the labyrinth of computation...",
-    date: "Harvest Moon, 2024",
-    readTime: "8 min read",
+      "GAIA begins not with an algorithm, but with a world: households, labour, food, water, and constraints that push back when policy dreams get too simple.",
+    date: "Apr 2025 - Present",
+    readTime: "Research note",
   },
   {
-    title: "Building Bridges Between Worlds",
+    title: "What Procurement Records Whisper",
     excerpt:
-      "On connecting the digital realm with human experience, where empathy meets efficiency and stories bridge the gap between silicon and soul...",
-    date: "Autumn Equinox, 2024",
-    readTime: "6 min read",
+      "Public procurement data rarely arrives in the shape analysis wants. This was the slow work of following raw links, gathering fragments, and persuading them into something coherent.",
+    date: "Nov 2025",
+    readTime: "Project note",
   },
   {
-    title: "The Art of Digital Storytelling",
+    title: "What 201K Housing Listings Taught Me",
     excerpt:
-      "Every line of code tells a story, every function has a purpose, and every application carries the dreams of its creator into the world...",
-    date: "Summer's End, 2024",
-    readTime: "7 min read",
+      "A large dataset is never just a large dataset. It is error handling, missing values, checkpoints, strange formats, and the discipline to keep cleaning until the picture stops lying.",
+    date: "Mar 2025 - Sep 2025",
+    readTime: "Data note",
   },
   {
-    title: "Wandering Through Data Forests",
+    title: "On Stories that Remember You",
     excerpt:
-      "In the vast wilderness of information, patterns emerge like ancient paths through dense woods, leading to insights hidden in plain sight...",
-    date: "Midsummer Night, 2024",
-    readTime: "9 min read",
+      "Paths Untold was an experiment in making generated stories feel less disposable by giving them memory, emotional weather, and enough persistence for choices to leave a trace.",
+    date: "Mar 2025 - Jul 2025",
+    readTime: "Build note",
   },
   {
-    title: "The Philosophy of Clean Code",
+    title: "Energy Poverty and the Weight of Transition",
     excerpt:
-      "Like a well-tended garden, code flourishes when given proper care, attention, and the wisdom to know when to prune and when to let grow...",
-    date: "Spring Awakening, 2024",
-    readTime: "4 min read",
+      "EEPSEA sharpened a long-standing concern: transitions are never purely technical. They arrive unevenly, and someone always carries more of the burden than the policy memo admits.",
+    date: "Oct 2024 - Present",
+    readTime: "Research note",
   },
   {
-    title: "Conversations with AI",
+    title: "What Birmingham Changed",
     excerpt:
-      "In quiet moments between human and machine, profound dialogues emerge about consciousness, creativity, and the nature of intelligence itself...",
-    date: "First Snow, 2024",
-    readTime: "11 min read",
+      "The MSc in AI and Sustainable Development gave the work a clearer center of gravity: not AI for spectacle, but AI for allocation, trade-offs, and institutions that have to answer to the world.",
+    date: "Sep 2025 - Present",
+    readTime: "Study note",
   },
   {
-    title: "The Rhythm of Remote Work",
+    title: "Why Design Still Matters to Me",
     excerpt:
-      "Finding harmony in the dance between solitude and collaboration, where home becomes office and the world becomes your coworking space...",
-    date: "Golden Hour, 2024",
-    readTime: "6 min read",
-  },
-  {
-    title: "Debugging Life's Mysteries",
-    excerpt:
-      "Sometimes the most complex problems have the simplest solutions, and the art of debugging extends far beyond the realm of code...",
-    date: "Twilight Hour, 2024",
-    readTime: "5 min read",
-  },
-  {
-    title: "The Magic of Open Source",
-    excerpt:
-      "In the spirit of ancient guilds sharing knowledge, open source communities weave a tapestry of collaboration that spans the globe...",
-    date: "Dawn's Light, 2024",
-    readTime: "8 min read",
+      "Xi'an was a useful reminder that even the most technical systems live or die by whether people can feel their shape, understand their rhythm, and meet them without friction.",
+    date: "May 2025",
+    readTime: "Field note",
   },
 ]

@@ -1,14 +1,11 @@
 "use client"
 
-import SimpleRectangleButton from "./ui/SimpleRectangleButton"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
+import LetterOverlay from "./ui/LetterOverlay"
+import LetterScrollTrigger from "./ui/LetterScrollTrigger"
 
 export default function LetterSection() {
-  const router = useRouter()
-
-  const handleLetterClick = () => {
-    router.push("/letter")
-  }
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false)
 
   return (
     <section
@@ -20,14 +17,16 @@ export default function LetterSection() {
         <div className="text-center mb-16">
           <h2 className="text-5xl md:text-6xl font-bold mb-4 text-orange-100 font-cinzel">Write Me a Letter</h2>
           <p className="text-xl text-orange-200 max-w-2xl mx-auto font-garamond italic">
-            In this age of fleeting messages, let us return to the art of thoughtful correspondence
+            If something in these pages speaks to your own work, send word across the night and I will write back
           </p>
         </div>
 
-        <div className="w-full max-w-2xl mx-auto">
-          <SimpleRectangleButton onClick={handleLetterClick} hoverColor="magic" width="normal" />
+        <div className="w-full max-w-3xl mx-auto">
+          <LetterScrollTrigger isOpen={isOverlayOpen} onOpen={() => setIsOverlayOpen(true)} />
         </div>
       </div>
+
+      <LetterOverlay isOpen={isOverlayOpen} onClose={() => setIsOverlayOpen(false)} />
     </section>
   )
 }

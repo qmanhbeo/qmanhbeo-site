@@ -1,79 +1,91 @@
-export const travelYears = [
-  {
-    year: "2019",
-    location: "Hanoi, Vietnam",
-    title: "Where Rivers Meet Dreams",
-    memory:
-      "In the narrow streets where motorbikes dance like fireflies, I discovered that home is not a place but a feeling—warm pho steam rising like incense, carrying prayers of belonging.",
-    mood: "nostalgic",
-    coordinates: { top: "45%", left: "75%" },
-  },
-  {
-    year: "2020",
-    location: "San Francisco, USA",
-    title: "Silicon Valley Solitude",
-    memory:
-      "Among the fog-kissed hills and endless code, I learned that innovation blooms not from competition, but from the quiet moments when curiosity meets compassion.",
-    mood: "contemplative",
-    coordinates: { top: "35%", left: "15%" },
-  },
+export interface TravelYear {
+  year: string
+  location: string
+  title: string
+  memory: string
+  mood: string
+  coordinates: {
+    top: string
+    left: string
+  }
+}
+
+interface LocationDetails {
+  title: string
+  description: string
+}
+
+export const travelYears: TravelYear[] = [
   {
     year: "2021",
-    location: "Amsterdam, Netherlands",
-    title: "Canals of Reflection",
+    location: "Ho Chi Minh City, Vietnam",
+    title: "Economics, Questions, and First Principles",
     memory:
-      "Cycling through centuries-old canals, I understood that the most beautiful journeys are not linear—they wind, they pause, they reflect the sky above.",
-    mood: "serene",
-    coordinates: { top: "25%", left: "52%" },
-  },
-  {
-    year: "2022",
-    location: "Paris, France",
-    title: "City of Lights and Letters",
-    memory:
-      "In cafés where philosophers once dreamed, I wrote my first lines of code that felt like poetry—each function a verse, each algorithm a story waiting to unfold.",
-    mood: "inspired",
-    coordinates: { top: "28%", left: "50%" },
+      "At the University of Economics Ho Chi Minh City, economics became a way to ask sharper questions about how people, systems, and incentives shape the world we live in.",
+    mood: "curious",
+    coordinates: { top: "67%", left: "78%" },
   },
   {
     year: "2023",
-    location: "Kyoto, Japan",
-    title: "Temple of Digital Zen",
+    location: "Ho Chi Minh City, Vietnam",
+    title: "Forecasts, Research, and the Discipline of Data",
     memory:
-      "Walking through bamboo forests and ancient temples, I discovered that the most advanced technology is often the simplest—like the way morning light filters through leaves.",
-    mood: "enlightened",
-    coordinates: { top: "40%", left: "85%" },
+      "Research assistance and teaching support pulled me deeper into empirical work, especially energy forecasting and the craft of turning methods into something explainable.",
+    mood: "focused",
+    coordinates: { top: "67%", left: "78%" },
   },
   {
     year: "2024",
-    location: "Reykjavik, Iceland",
-    title: "Northern Lights and Code",
+    location: "Ho Chi Minh City, Vietnam",
+    title: "Energy, Policy, and Real-World Stakes",
     memory:
-      "Under aurora-painted skies, I realized that the most beautiful systems—whether in nature or in code—emerge from the dance between chaos and order.",
-    mood: "wonder",
-    coordinates: { top: "15%", left: "45%" },
+      "Work with EEPSEA made the stakes concrete: energy poverty, energy transition, and socioeconomic outcomes are not abstractions when policy meets everyday life.",
+    mood: "grounded",
+    coordinates: { top: "67%", left: "78%" },
+  },
+  {
+    year: "2025",
+    location: "Xi'an, China",
+    title: "Design Beyond the Spreadsheet",
+    memory:
+      "The summer exchange in interactive media design was a reminder that technical systems only matter if people can feel them, use them, and understand them.",
+    mood: "open-eyed",
+    coordinates: { top: "42%", left: "81%" },
+  },
+  {
+    year: "2025",
+    location: "Birmingham, United Kingdom",
+    title: "AI for Sustainable Development",
+    memory:
+      "At Birmingham, reinforcement learning and sustainability stopped being separate interests. They became one line of work: resource allocation, public systems, and fairer decision making.",
+    mood: "driven",
+    coordinates: { top: "31%", left: "47%" },
+  },
+  {
+    year: "2026",
+    location: "Birmingham, United Kingdom",
+    title: "Toward Systems that Matter",
+    memory:
+      "The current chapter is about building things with consequence: reinforcement learning sandboxes, agent-based economies, data pipelines, and AI that can stand up to real constraints.",
+    mood: "ambitious",
+    coordinates: { top: "31%", left: "47%" },
   },
 ]
 
-export const locationData = {
+export const locationData: Record<string, LocationDetails> = {
   vietnam: {
-    title: "Vietnam - The Beginning",
+    title: "Vietnam - Foundations",
     description:
-      "Where the river meets the sea, where stories begin with the scent of pho and the sound of motorbikes. Here, among ancient temples and modern dreams, a young wanderer first learned to see the world through curious eyes.",
+      "Vietnam is where economics, research, and lived policy questions first took shape. It remains the foundation for much of the work on energy, inequality, and public decision-making.",
   },
-  usa: {
-    title: "United States - Land of Code",
+  china: {
+    title: "China - Design and Perspective",
     description:
-      "Across the Pacific, in valleys of silicon and cities of steel, algorithms became poetry and data became art. Here, the wanderer learned that technology could be both tool and canvas for human expression.",
+      "The Xi'an exchange added a design lens to technical work, reinforcing that systems gain value when they become legible, interactive, and human-facing.",
   },
-  europe: {
-    title: "Europe - Ancient Wisdom",
+  uk: {
+    title: "United Kingdom - Research Direction",
     description:
-      "Through cobblestone streets and halls of learning, where philosophy was born and innovation continues. Each city a chapter, each conversation a lesson in the beautiful complexity of human thought.",
-  },
-  japan: {
-    title: "Japan - Harmony in Contrast",
-    description:
-      "In the land where cherry blossoms meet bullet trains, where tradition and innovation dance in perfect harmony. Here, the wanderer discovered that the future and the past can coexist in beautiful balance.",
+      "Birmingham sharpened the long-term direction: reinforcement learning, sustainability, resource allocation, and AI systems that can help make institutions work more fairly and effectively.",
   },
 }
