@@ -29,7 +29,7 @@ const pagesStyle = {
 
 export default function ArchiveCodexButton({
   href,
-  label = "Enter the Archive",
+  label = "Enter Archive",
   className = "",
 }: ArchiveCodexButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
@@ -90,7 +90,7 @@ export default function ArchiveCodexButton({
                 isHovered ? "mt-3 max-h-16 opacity-100" : "max-h-0 opacity-0"
               }`}
             >
-              Open the codex and browse the collected work.
+              Open the codex and browse collected work.
             </div>
           </div>
 
