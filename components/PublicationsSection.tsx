@@ -29,14 +29,14 @@ export default function PublicationsSection() {
 
       <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-8">
         <div className="flex-shrink-0 py-6 text-center">
-          <h2 className="font-cinzel text-4xl font-bold text-orange-100 md:text-5xl">Scholar Scrolls</h2>
-          <p className="mx-auto max-w-2xl font-garamond text-lg italic text-orange-200">
+          <h2 className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">Scholar Scrolls</h2>
+          <p className="map-sky-ink mx-auto max-w-2xl font-garamond text-lg italic">
             Manuscripts of scholarly wisdom, preserved in the digital scriptorium
           </p>
         </div>
 
         <div className="mb-4 min-h-0 flex-1">
-          <div className="scholar-parchment relative flex h-full flex-col overflow-hidden rounded-lg">
+          <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
             <div className="absolute right-6 top-6 z-20 flex items-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm">
               <button
                 type="button"
@@ -95,8 +95,8 @@ export default function PublicationsSection() {
                       <div className="mx-auto flex min-h-full max-w-4xl flex-col justify-center">
                         <div className="space-y-6 pb-8 text-center">
                           <div className="mb-8">
-                            <h3 className="mb-6 font-cinzel text-3xl font-bold leading-tight text-amber-900 md:text-4xl">
-                              <span className="illuminated-letter mr-2 font-cinzel text-6xl leading-none text-amber-700">
+                            <h3 className="map-sky-ink-strong mb-6 font-cinzel text-3xl font-bold leading-tight md:text-4xl">
+                              <span className="map-sky-ink-strong illuminated-letter mr-2 font-cinzel text-6xl leading-none">
                                 {publication.title.charAt(0)}
                               </span>
                               {publication.title.substring(1)}
@@ -105,15 +105,15 @@ export default function PublicationsSection() {
 
                           <div className="mb-8 flex flex-col items-center justify-center gap-6 md:flex-row">
                             <div className="flex items-center gap-2">
-                              <span className="font-garamond font-semibold text-amber-700">Journal:</span>
-                              <span className="font-garamond text-lg italic text-amber-800">
+                              <span className="map-sky-ink-strong font-garamond font-semibold">Journal:</span>
+                              <span className="map-sky-ink font-garamond text-lg italic">
                                 {publication.journal}
                               </span>
                             </div>
                             <div className="hidden h-2 w-2 rounded-full bg-amber-600 opacity-60 md:block" />
                             <div className="flex items-center gap-2">
-                              <span className="font-garamond font-semibold text-amber-700">Year:</span>
-                              <span className="font-garamond text-lg text-amber-800">
+                              <span className="map-sky-ink-strong font-garamond font-semibold">Year:</span>
+                              <span className="map-sky-ink font-garamond text-lg">
                                 Anno Domini {publication.year}
                               </span>
                             </div>
@@ -121,7 +121,7 @@ export default function PublicationsSection() {
 
                           {publication.abstract && (
                             <div className="mb-8">
-                              <h4 className="mb-4 font-cinzel text-xl font-bold text-amber-900">Abstract</h4>
+                              <h4 className="map-sky-ink-strong mb-4 font-cinzel text-xl font-bold">Abstract</h4>
                               <div className="mx-auto max-w-3xl rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6">
                                 <p className="font-garamond text-lg italic leading-relaxed text-amber-800">
                                   {publication.abstract}
@@ -131,7 +131,7 @@ export default function PublicationsSection() {
                           )}
 
                           <div className="mb-8">
-                            <h4 className="mb-4 font-cinzel text-xl font-bold text-amber-900">Research Context</h4>
+                            <h4 className="map-sky-ink-strong mb-4 font-cinzel text-xl font-bold">Research Context</h4>
                             <div className="mx-auto max-w-3xl rounded-lg border-l-4 border-amber-600 bg-amber-50 p-6">
                               <p className="mb-4 font-garamond leading-relaxed text-amber-800">
                                 This manuscript represents a significant contribution to the field, building upon
@@ -152,7 +152,7 @@ export default function PublicationsSection() {
                           </div>
 
                           <div className="mb-8">
-                            <h4 className="mb-4 font-cinzel text-xl font-bold text-amber-900">Key Contributions</h4>
+                            <h4 className="map-sky-ink-strong mb-4 font-cinzel text-xl font-bold">Key Contributions</h4>
                             <div className="mx-auto max-w-3xl space-y-4">
                               <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
                                 <p className="font-garamond leading-relaxed text-amber-800">
@@ -182,7 +182,9 @@ export default function PublicationsSection() {
                           </div>
 
                           <div className="mb-8">
-                            <h4 className="mb-4 font-cinzel text-xl font-bold text-amber-900">Research Methodology</h4>
+                            <h4 className="map-sky-ink-strong mb-4 font-cinzel text-xl font-bold">
+                              Research Methodology
+                            </h4>
                             <div className="mx-auto max-w-3xl rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6">
                               <p className="mb-4 font-garamond leading-relaxed text-amber-800">
                                 The research employs a mixed-methods approach, combining quantitative analysis with
@@ -225,7 +227,7 @@ export default function PublicationsSection() {
                         </div>
 
                         <div className="mt-8 border-t border-amber-300 pt-6 text-center">
-                          <p className="font-garamond italic text-amber-700">
+                          <p className="map-sky-ink font-garamond italic">
                             Manuscript {currentManuscript + 1} of {publications.length} &bull; {publication.year}
                           </p>
                         </div>

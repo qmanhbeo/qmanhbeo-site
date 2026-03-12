@@ -43,7 +43,7 @@ export default function MapSection() {
         </div>
 
         <div className="mb-4 min-h-0 flex-1">
-          <div className="parchment relative flex h-full flex-col overflow-hidden rounded-lg">
+          <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
             <div className="absolute right-6 top-6 z-20 flex items-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm">
               <button
                 type="button"
@@ -100,16 +100,16 @@ export default function MapSection() {
                       <div className="space-y-6 text-center">
                         <div>
                           <div className="mb-4 flex items-center justify-center gap-4">
-                            <span className="font-cinzel text-4xl font-bold text-amber-900">{journey.year}</span>
-                            <span className="rounded-full bg-amber-200 px-4 py-2 font-garamond text-sm italic text-amber-800">
+                            <span className="map-sky-ink-strong font-cinzel text-4xl font-bold">{journey.year}</span>
+                            <span className="map-mood-pill rounded-full px-4 py-2 font-garamond text-sm italic">
                               {journey.mood}
                             </span>
                           </div>
-                          <h4 className="mb-3 font-cinzel text-3xl font-bold text-amber-900">{journey.title}</h4>
-                          <p className="mb-6 font-garamond text-xl text-amber-700">{journey.location}</p>
+                          <h4 className="map-sky-ink-strong mb-3 font-cinzel text-3xl font-bold">{journey.title}</h4>
+                          <p className="map-sky-ink mb-6 font-garamond text-xl">{journey.location}</p>
                         </div>
 
-                        <p className="mb-8 font-garamond text-xl italic leading-relaxed text-amber-800">
+                        <p className="map-sky-ink mb-8 font-garamond text-xl italic leading-relaxed">
                           {journey.memory}
                         </p>
 
@@ -149,7 +149,7 @@ export default function MapSection() {
                       </div>
 
                       <div className="mt-8 border-t border-amber-300 pt-6 text-center">
-                        <p className="font-garamond italic text-amber-700">
+                        <p className="map-sky-ink font-garamond italic">
                           Chapter {currentMapYear + 1} of {travelYears.length} &bull; {journey.location}
                         </p>
                       </div>

@@ -1,73 +1,38 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
-import { BookOpen, Feather, Flame, ScrollText } from "lucide-react"
-import { blogPosts, type BlogPost } from "@/utils/content"
+import { useEffect, useRef, useState } from "react"
+import { blogPosts } from "@/utils/content"
 import TavernTale from "./ui/TavernTale"
+import InfiniteCarousel from "./ui/InfiniteCarousel"
 
 export default function BlogSection() {
-  const carouselRef = useRef<HTMLDivElement>(null)
-
-  const infiniteTales = [...blogPosts, ...blogPosts, ...blogPosts]
-  const itemWidth = 320
-  const sectionWidth = blogPosts.length * itemWidth
+  const shellRef = useRef<HTMLDivElement>(null)
+  const [itemWidth, setItemWidth] = useState(300)
+  const gap = 20
 
   useEffect(() => {
-    const handleTavernScrollWheel = (event: WheelEvent) => {
-      const target = event.target as HTMLElement
-      const tavernContent = target.closest(".tavern-tales-area")
-      if (!(tavernContent instanceof HTMLElement)) return
+    const element = shellRef.current
+    if (!element) return
 
-      const isAtTop = tavernContent.scrollTop === 0
-      const isAtBottom = tavernContent.scrollTop >= tavernContent.scrollHeight - tavernContent.clientHeight - 1
-
-      if ((isAtTop && event.deltaY < 0) || (isAtBottom && event.deltaY > 0)) {
-        event.preventDefault()
-        event.stopPropagation()
-        event.stopImmediatePropagation()
-
-        if (carouselRef.current) {
-          carouselRef.current.scrollLeft += event.deltaY
-        }
-      }
+    const computeWidth = () => {
+      const shellWidth = element.clientWidth
+      const cardsPerView = shellWidth >= 1280 ? 4 : shellWidth >= 1000 ? 3 : shellWidth >= 640 ? 2 : 1
+      const candidateWidth = (shellWidth - gap * (cardsPerView - 1)) / cardsPerView
+      setItemWidth(Math.max(240, Math.round(candidateWidth)))
     }
 
-    document.addEventListener("wheel", handleTavernScrollWheel, { passive: false, capture: true })
+    const resizeObserver = new ResizeObserver(computeWidth)
+    resizeObserver.observe(element)
+    computeWidth()
+
     return () => {
-      document.removeEventListener("wheel", handleTavernScrollWheel, true)
+      resizeObserver.disconnect()
     }
-  }, [])
+  }, [gap])
 
-  const handleCarouselScroll = useCallback(() => {
-    if (!carouselRef.current) return
-
-    const container = carouselRef.current
-    const { scrollLeft, clientWidth } = container
-
-    if (scrollLeft >= sectionWidth * 2 - clientWidth / 2) {
-      container.style.scrollBehavior = "auto"
-      container.scrollLeft = scrollLeft - sectionWidth
-      requestAnimationFrame(() => {
-        container.style.scrollBehavior = "smooth"
-      })
-    } else if (scrollLeft <= clientWidth / 2) {
-      container.style.scrollBehavior = "auto"
-      container.scrollLeft = scrollLeft + sectionWidth
-      requestAnimationFrame(() => {
-        container.style.scrollBehavior = "smooth"
-      })
-    }
-  }, [sectionWidth])
-
-  useEffect(() => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollLeft = sectionWidth
-    }
-  }, [sectionWidth])
-
-  const handleTaleClick = useCallback((tale: BlogPost) => {
-    console.log(`Navigate to full tale: ${tale.title}`)
-  }, [])
+  const handleTaleClick = (title: string) => {
+    console.log(`Navigate to full tale: ${title}`)
+  }
 
   return (
     <section
@@ -85,50 +50,28 @@ export default function BlogSection() {
         </div>
 
         <div className="min-h-0 flex-1">
-          <div className="tavern-parchment relative flex h-full flex-col overflow-hidden rounded-lg">
-            <div className="flex-1 overflow-hidden p-8">
-              <div className="tavern-tales-area scrollable-content h-full overflow-y-auto">
-                <div className="flex min-h-full items-center justify-center">
-                  <div className="relative w-full max-w-5xl">
-                    <div
-                      ref={carouselRef}
-                      className="scrollbar-hide flex gap-5 overflow-x-auto"
-                      style={{
-                        scrollBehavior: "smooth",
-                        scrollSnapType: "x mandatory",
-                        scrollbarWidth: "none",
-                        msOverflowStyle: "none",
-                      }}
-                      onScroll={handleCarouselScroll}
-                    >
-                      {infiniteTales.map((tale, index) => (
-                        <div
-                          key={`${index}-${tale.title}`}
-                          className="flex-shrink-0"
-                          style={{
-                            width: "300px",
-                            scrollSnapAlign: "start",
-                          }}
-                        >
-                          <TavernTale
-                            title={tale.title}
-                            excerpt={tale.excerpt}
-                            date={tale.date}
-                            readTime={tale.readTime}
-                            onClick={() => handleTaleClick(tale)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+          <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
+            <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden p-8">
+              <div ref={shellRef} className="mx-auto flex w-full max-w-5xl items-center justify-center overflow-visible">
+                <InfiniteCarousel
+                  items={blogPosts}
+                  itemWidth={itemWidth}
+                  gap={gap}
+                  snap="left"
+                  className="w-full"
+                  renderItem={(tale) => (
+                    <TavernTale
+                      title={tale.title}
+                      excerpt={tale.excerpt}
+                      date={tale.date}
+                      readTime={tale.readTime}
+                      className="w-full"
+                      onClick={() => handleTaleClick(tale.title)}
+                    />
+                  )}
+                />
               </div>
             </div>
-
-            <BookOpen className="absolute left-4 top-4 h-5 w-5 text-amber-600 opacity-40" />
-            <ScrollText className="absolute bottom-4 right-4 h-5 w-5 text-amber-600 opacity-40" />
-            <Flame className="absolute right-4 top-4 h-5 w-5 text-amber-600 opacity-40" />
-            <Feather className="absolute bottom-4 left-4 h-5 w-5 text-amber-600 opacity-40" />
           </div>
         </div>
       </div>

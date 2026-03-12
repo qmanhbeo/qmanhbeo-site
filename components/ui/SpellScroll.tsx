@@ -35,9 +35,9 @@ export default function SpellScroll({
   const isInteractive = Boolean(onClick)
 
   return (
-    <div className={`w-full h-full max-w-none box-border ${className}`}>
+    <div className={`w-full max-w-none box-border ${className}`}>
       <div
-        className={`spell-scroll group relative h-full w-full ${isInteractive ? "cursor-pointer" : ""}`}
+        className={`spell-scroll group relative w-full ${isInteractive ? "cursor-pointer" : ""}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={onClick}
@@ -47,7 +47,7 @@ export default function SpellScroll({
         }}
       >
         <div
-          className="relative h-full w-full"
+          className="relative w-full"
           style={{
             transform: isHovered ? "scale(1.05)" : "scale(1)",
             transition: "transform 500ms",
@@ -60,7 +60,7 @@ export default function SpellScroll({
           <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-amber-600 opacity-60" />
           <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-amber-600 opacity-60" />
 
-          <div className="relative z-10 p-6 h-full w-full flex flex-col">
+          <div className="relative z-10 flex w-full flex-col p-6">
             <h3 className="text-xl font-bold text-amber-900 mb-3 font-cinzel group-hover:text-orange-700 transition-colors">
               {title}
             </h3>
@@ -77,7 +77,7 @@ export default function SpellScroll({
               </div>
             )}
 
-            <div className="mt-auto">{children}</div>
+            {children ? <div className="mt-4">{children}</div> : null}
           </div>
 
           <div

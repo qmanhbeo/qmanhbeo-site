@@ -10,6 +10,7 @@ type InfiniteCarouselProps<T> = {
   gap?: number
   className?: string
   snap?: "left" | "center"
+  itemAlign?: "stretch" | "start" | "center"
 }
 
 export default function InfiniteCarousel<T>({
@@ -19,6 +20,7 @@ export default function InfiniteCarousel<T>({
   gap = 20,
   className = "",
   snap = "left",
+  itemAlign = "stretch",
 }: InfiniteCarouselProps<T>) {
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
@@ -254,6 +256,9 @@ export default function InfiniteCarousel<T>({
     }
   }, [stopRaf])
 
+  const trackAlignItems =
+    itemAlign === "start" ? "flex-start" : itemAlign === "center" ? "center" : "stretch"
+
   return (
     <div
       ref={viewportRef}
@@ -262,7 +267,7 @@ export default function InfiniteCarousel<T>({
       aria-label="Infinite carousel"
       role="region"
     >
-      <div ref={trackRef} className="carousel-track">
+      <div ref={trackRef} className="carousel-track" style={{ alignItems: trackAlignItems }}>
         {itemCount === 0
           ? null
           : [...items, ...items, ...items].map((item, index) => (

@@ -47,14 +47,14 @@ export default function ProjectsSection() {
         </div>
 
         <div className="flex min-h-0 flex-1 items-center justify-center">
-          <div className="spell-parchment relative flex w-full flex-col overflow-hidden rounded-lg p-8">
-            <div ref={shellRef} className="flex-1 overflow-visible">
+          <div className="map-ghost-panel relative flex w-full flex-col overflow-hidden rounded-lg p-8">
+            <div ref={shellRef} className="w-full overflow-visible">
               <InfiniteCarousel
                 items={projects}
                 itemWidth={itemWidth}
                 gap={gap}
                 snap="left"
-                className="h-full"
+                itemAlign="start"
                 renderItem={(project) => {
                   const hasGithubLink = Boolean(project.github && project.github !== "#")
                   const hasDemoLink = Boolean(project.demo && project.demo !== "#")
@@ -65,7 +65,7 @@ export default function ProjectsSection() {
                       title={project.title}
                       description={project.description}
                       runes={project.tech}
-                      className="h-full w-full"
+                      className="w-full"
                     >
                       {hasAnyProjectLink ? (
                         <div className="mt-4 flex gap-3">

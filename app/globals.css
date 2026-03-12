@@ -343,6 +343,38 @@
   box-shadow: 0 6px 12px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.2);
 }
 
+.map-ghost-panel {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 185, 104, 0.08) 0%, transparent 22%),
+    radial-gradient(circle at 50% 72%, rgba(255, 112, 34, 0.06) 0%, transparent 24%);
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+
+.map-sky-ink-strong {
+  color: rgba(255, 245, 228, 0.96);
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.82),
+    0 0 26px rgba(5, 12, 28, 0.58),
+    0 0 48px rgba(255, 134, 40, 0.08);
+}
+
+.map-sky-ink {
+  color: rgba(244, 227, 196, 0.94);
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.78),
+    0 0 20px rgba(5, 12, 28, 0.54),
+    0 0 36px rgba(255, 134, 40, 0.06);
+}
+
+.map-mood-pill {
+  background: rgba(244, 214, 109, 0.82);
+  color: #8e4919;
+  box-shadow:
+    0 0 18px rgba(255, 188, 81, 0.14),
+    inset 0 1px 1px rgba(255, 252, 241, 0.22);
+}
+
 /* =============================================================================
    WOODEN FRAME & MEDALLION STYLES
    ============================================================================= */
