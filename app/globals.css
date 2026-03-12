@@ -139,7 +139,9 @@
 }
 
 /* NEW: inner vertical zones trap their own overscroll; mobile vertical only */
-.journey-content-area {
+.paged-scroll-area,
+.journey-content-area,
+.manuscript-scrollable-area {
   overscroll-behavior: contain;  /* prevent browser fling into parent */
   touch-action: pan-y;           /* vertical gestures stay inside */
 }

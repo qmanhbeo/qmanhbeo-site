@@ -1,174 +1,27 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useCallback } from "react"
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
+import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
 import { travelYears, type TravelYear } from "@/utils/travel"
 
-const YEAR_FLIP_THRESHOLD = 90
 const MAP_COOLDOWN_MS = 700
-const WHEEL_GESTURE_IDLE_MS = 160
 
 export default function MapSection() {
-  const [currentMapYear, setCurrentMapYear] = useState(0)
-  const [isMapScrolling, setIsMapScrolling] = useState(false)
-
-  const currentMapYearRef = useRef(0)
-  const isMapScrollingRef = useRef(false)
-  const timeoutRef = useRef<number | null>(null)
-  const panelRefs = useRef<Array<HTMLDivElement | null>>([])
-  const wheelStateRef = useRef({
-    accum: 0,
-    inhibitUntil: 0,
-    lastWheelAt: 0,
-    gestureId: 0,
-    boundaryArmed: false,
-    boundaryDirection: 0 as 1 | -1 | 0,
-    boundaryGestureId: null as number | null,
+  const {
+    currentIndex: currentMapYear,
+    isTransitioning: isMapScrolling,
+    panelRefs,
+    goToIndex: goToYear,
+    goPrevious: goToPreviousYear,
+    goNext: goToNextYear,
+  } = useBoundaryPagedScroll({
+    itemCount: travelYears.length,
+    panelSelector: ".journey-content-area",
+    transitionMs: MAP_COOLDOWN_MS,
+    settleMs: 100,
   })
-
-  useEffect(() => {
-    currentMapYearRef.current = currentMapYear
-  }, [currentMapYear])
-
-  useLayoutEffect(() => {
-    const activePanel = panelRefs.current[currentMapYear]
-    if (!activePanel) return
-
-    // Re-entering a year should always start from the top of that panel.
-    activePanel.scrollTo({
-      top: 0,
-      behavior: "auto",
-    })
-  }, [currentMapYear])
-
-  const clearTimeoutRef = useCallback(() => {
-    if (timeoutRef.current !== null) {
-      window.clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
-  }, [])
-
-  const flipYear = useCallback(
-    (step: 1 | -1, now = performance.now()) => {
-      if (isMapScrollingRef.current) return
-
-      const nextYear = (currentMapYearRef.current + step + travelYears.length) % travelYears.length
-      isMapScrollingRef.current = true
-      setIsMapScrolling(true)
-      setCurrentMapYear(nextYear)
-      wheelStateRef.current.inhibitUntil = now + MAP_COOLDOWN_MS
-
-      clearTimeoutRef()
-      timeoutRef.current = window.setTimeout(() => {
-        isMapScrollingRef.current = false
-        setIsMapScrolling(false)
-        timeoutRef.current = null
-      }, MAP_COOLDOWN_MS + 100)
-    },
-    [clearTimeoutRef],
-  )
-
-  const goToYear = useCallback(
-    (index: number) => {
-      if (isMapScrollingRef.current) return
-
-      const normalizedIndex = (index + travelYears.length) % travelYears.length
-      isMapScrollingRef.current = true
-      setIsMapScrolling(true)
-      setCurrentMapYear(normalizedIndex)
-
-      clearTimeoutRef()
-      timeoutRef.current = window.setTimeout(() => {
-        isMapScrollingRef.current = false
-        setIsMapScrolling(false)
-        timeoutRef.current = null
-      }, MAP_COOLDOWN_MS + 100)
-    },
-    [clearTimeoutRef],
-  )
-
-  useEffect(() => {
-    const onWheel = (event: WheelEvent) => {
-      const target = event.target as HTMLElement
-      const contentArea = target.closest(".journey-content-area")
-      if (!(contentArea instanceof HTMLElement)) return
-
-      const wheelState = wheelStateRef.current
-
-      const absX = Math.abs(event.deltaX)
-      const absY = Math.abs(event.deltaY)
-      const verticalIntent = absY >= absX
-      const now = performance.now()
-
-      if (now - wheelState.lastWheelAt > WHEEL_GESTURE_IDLE_MS) {
-        wheelState.gestureId += 1
-        wheelState.accum = 0
-      }
-      wheelState.lastWheelAt = now
-
-      if (verticalIntent && now < wheelState.inhibitUntil) {
-        event.preventDefault()
-        event.stopPropagation()
-        return
-      }
-
-      if (!verticalIntent) return
-
-      const atTop = contentArea.scrollTop <= 0
-      const atBottom = contentArea.scrollTop + contentArea.clientHeight >= contentArea.scrollHeight - 1
-      const goingDown = event.deltaY > 0
-      const goingUp = event.deltaY < 0
-
-      if ((goingDown && atBottom) || (goingUp && atTop)) {
-        event.preventDefault()
-        event.stopPropagation()
-
-        const direction: 1 | -1 = goingDown ? 1 : -1
-
-        if (!wheelState.boundaryArmed || wheelState.boundaryDirection !== direction) {
-          // First boundary hit arms the panel. A fresh follow-up gesture is required to turn the page.
-          wheelState.boundaryArmed = true
-          wheelState.boundaryDirection = direction
-          wheelState.boundaryGestureId = wheelState.gestureId
-          wheelState.accum = 0
-          return
-        }
-
-        if (wheelState.boundaryGestureId === wheelState.gestureId) {
-          return
-        }
-
-        wheelState.accum += event.deltaY
-
-        if (Math.abs(wheelState.accum) >= YEAR_FLIP_THRESHOLD) {
-          wheelState.accum = 0
-          wheelState.boundaryArmed = false
-          wheelState.boundaryDirection = 0
-          wheelState.boundaryGestureId = null
-          flipYear(direction, now)
-        }
-
-        return
-      }
-
-      wheelState.accum = 0
-      wheelState.boundaryArmed = false
-      wheelState.boundaryDirection = 0
-      wheelState.boundaryGestureId = null
-    }
-
-    document.addEventListener("wheel", onWheel, { passive: false, capture: true })
-    return () => {
-      document.removeEventListener("wheel", onWheel, true)
-    }
-  }, [flipYear])
-
-  useEffect(() => {
-    return () => {
-      clearTimeoutRef()
-    }
-  }, [clearTimeoutRef])
 
   const handleJourneyClick = useCallback((journey: TravelYear) => {
     console.log(`Navigate to full story for ${journey.year} - ${journey.location}`)
@@ -194,7 +47,7 @@ export default function MapSection() {
             <div className="absolute right-6 top-6 z-20 flex items-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm">
               <button
                 type="button"
-                onClick={() => flipYear(-1)}
+                onClick={goToPreviousYear}
                 className="scale-75 rounded-full p-2 text-orange-100 transition-all duration-300 medieval-button hover:ember-glow disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Previous journey"
                 disabled={isMapScrolling}
@@ -221,7 +74,7 @@ export default function MapSection() {
 
               <button
                 type="button"
-                onClick={() => flipYear(1)}
+                onClick={goToNextYear}
                 className="scale-75 rounded-full p-2 text-orange-100 transition-all duration-300 medieval-button hover:ember-glow disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Next journey"
                 disabled={isMapScrolling}
@@ -241,7 +94,7 @@ export default function MapSection() {
                     ref={(element) => {
                       panelRefs.current[index] = element
                     }}
-                    className="journey-content-area scrollable-content h-full min-w-full overflow-y-auto p-8"
+                    className="journey-content-area paged-scroll-area scrollable-content h-full min-w-full overflow-y-auto p-8"
                   >
                     <div className="mx-auto flex min-h-full max-w-4xl flex-col justify-center">
                       <div className="space-y-6 text-center">
@@ -297,7 +150,7 @@ export default function MapSection() {
 
                       <div className="mt-8 border-t border-amber-300 pt-6 text-center">
                         <p className="font-garamond italic text-amber-700">
-                          Chapter {currentMapYear + 1} of {travelYears.length} • {journey.location}
+                          Chapter {currentMapYear + 1} of {travelYears.length} &bull; {journey.location}
                         </p>
                       </div>
                     </div>

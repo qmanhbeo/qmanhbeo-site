@@ -1,97 +1,24 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
+import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
 import { publications, type Publication } from "@/utils/content"
 
 const MANUSCRIPT_TRANSITION_MS = 800
 
 export default function PublicationsSection() {
-  const [currentManuscript, setCurrentManuscript] = useState(0)
-  const [isManuscriptScrolling, setIsManuscriptScrolling] = useState(false)
-
-  const currentManuscriptRef = useRef(0)
-  const isManuscriptScrollingRef = useRef(false)
-  const transitionTimeoutRef = useRef<number | null>(null)
-
-  useEffect(() => {
-    currentManuscriptRef.current = currentManuscript
-  }, [currentManuscript])
-
-  const clearTransitionTimeout = useCallback(() => {
-    if (transitionTimeoutRef.current !== null) {
-      window.clearTimeout(transitionTimeoutRef.current)
-      transitionTimeoutRef.current = null
-    }
-  }, [])
-
-  const navigateToManuscript = useCallback(
-    (manuscriptIndex: number) => {
-      if (isManuscriptScrollingRef.current) return
-
-      const normalizedIndex = (manuscriptIndex + publications.length) % publications.length
-      isManuscriptScrollingRef.current = true
-      setIsManuscriptScrolling(true)
-      setCurrentManuscript(normalizedIndex)
-
-      clearTransitionTimeout()
-      transitionTimeoutRef.current = window.setTimeout(() => {
-        isManuscriptScrollingRef.current = false
-        setIsManuscriptScrolling(false)
-        transitionTimeoutRef.current = null
-      }, MANUSCRIPT_TRANSITION_MS)
-    },
-    [clearTransitionTimeout],
-  )
-
-  const navigateToPreviousManuscript = useCallback(() => {
-    navigateToManuscript(currentManuscriptRef.current - 1)
-  }, [navigateToManuscript])
-
-  const navigateToNextManuscript = useCallback(() => {
-    navigateToManuscript(currentManuscriptRef.current + 1)
-  }, [navigateToManuscript])
-
-  useEffect(() => {
-    const handleManuscriptWheel = (event: WheelEvent) => {
-      const target = event.target as HTMLElement
-      const manuscriptContent = target.closest(".manuscript-scrollable-area")
-      if (!(manuscriptContent instanceof HTMLElement)) return
-
-      if (isManuscriptScrollingRef.current) {
-        event.preventDefault()
-        event.stopPropagation()
-        return
-      }
-
-      const isAtTop = manuscriptContent.scrollTop <= 0
-      const isAtBottom =
-        manuscriptContent.scrollTop >= manuscriptContent.scrollHeight - manuscriptContent.clientHeight - 1
-
-      if ((isAtTop && event.deltaY < 0) || (isAtBottom && event.deltaY > 0)) {
-        event.preventDefault()
-        event.stopPropagation()
-        event.stopImmediatePropagation()
-
-        if (event.deltaY > 0) {
-          navigateToNextManuscript()
-        } else {
-          navigateToPreviousManuscript()
-        }
-      }
-    }
-
-    document.addEventListener("wheel", handleManuscriptWheel, { passive: false, capture: true })
-    return () => {
-      document.removeEventListener("wheel", handleManuscriptWheel, true)
-    }
-  }, [navigateToNextManuscript, navigateToPreviousManuscript])
-
-  useEffect(() => {
-    return () => {
-      clearTransitionTimeout()
-    }
-  }, [clearTransitionTimeout])
+  const {
+    currentIndex: currentManuscript,
+    isTransitioning: isManuscriptScrolling,
+    panelRefs,
+    goToIndex: navigateToManuscript,
+    goPrevious: navigateToPreviousManuscript,
+    goNext: navigateToNextManuscript,
+  } = useBoundaryPagedScroll({
+    itemCount: publications.length,
+    panelSelector: ".manuscript-scrollable-area",
+    transitionMs: MANUSCRIPT_TRANSITION_MS,
+  })
 
   return (
     <section
@@ -108,7 +35,7 @@ export default function PublicationsSection() {
           </p>
         </div>
 
-        <div className="min-h-0 flex-1">
+        <div className="mb-4 min-h-0 flex-1">
           <div className="scholar-parchment relative flex h-full flex-col overflow-hidden rounded-lg">
             <div className="absolute right-6 top-6 z-20 flex items-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm">
               <button
@@ -154,12 +81,18 @@ export default function PublicationsSection() {
                 className="flex h-full transition-transform duration-800 ease-in-out"
                 style={{ transform: `translateX(-${currentManuscript * 100}%)` }}
               >
-                {publications.map((publication: Publication) => {
+                {publications.map((publication: Publication, index) => {
                   const hasReadableLink = Boolean(publication.link && publication.link !== "#")
 
                   return (
-                    <div key={publication.title} className="h-full min-w-full p-8">
-                      <div className="manuscript-scrollable-area scrollable-content mx-auto h-full max-w-4xl overflow-y-auto">
+                    <div
+                      key={publication.title}
+                      ref={(element) => {
+                        panelRefs.current[index] = element
+                      }}
+                      className="manuscript-scrollable-area paged-scroll-area scrollable-content h-full min-w-full overflow-y-auto p-8"
+                    >
+                      <div className="mx-auto flex min-h-full max-w-4xl flex-col justify-center">
                         <div className="space-y-6 pb-8 text-center">
                           <div className="mb-8">
                             <h3 className="mb-6 font-cinzel text-3xl font-bold leading-tight text-amber-900 md:text-4xl">
@@ -223,25 +156,25 @@ export default function PublicationsSection() {
                             <div className="mx-auto max-w-3xl space-y-4">
                               <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
                                 <p className="font-garamond leading-relaxed text-amber-800">
-                                  • Novel theoretical framework for understanding complex interdisciplinary relationships
-                                  and their implications for future research directions.
+                                  &bull; Novel theoretical framework for understanding complex interdisciplinary
+                                  relationships and their implications for future research directions.
                                 </p>
                               </div>
                               <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
                                 <p className="font-garamond leading-relaxed text-amber-800">
-                                  • Empirical validation through comprehensive data analysis and case studies spanning
-                                  multiple contexts and environments.
+                                  &bull; Empirical validation through comprehensive data analysis and case studies
+                                  spanning multiple contexts and environments.
                                 </p>
                               </div>
                               <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
                                 <p className="font-garamond leading-relaxed text-amber-800">
-                                  • Practical implications for policy development and implementation strategies in
+                                  &bull; Practical implications for policy development and implementation strategies in
                                   contemporary organizational settings.
                                 </p>
                               </div>
                               <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
                                 <p className="font-garamond leading-relaxed text-amber-800">
-                                  • Methodological innovations that can be applied to similar research questions in
+                                  &bull; Methodological innovations that can be applied to similar research questions in
                                   related fields of study.
                                 </p>
                               </div>
@@ -289,12 +222,12 @@ export default function PublicationsSection() {
                               </button>
                             )}
                           </div>
+                        </div>
 
-                          <div className="border-t border-amber-300 pt-6 text-center">
-                            <p className="font-garamond italic text-amber-700">
-                              Manuscript {currentManuscript + 1} of {publications.length} • {publication.year}
-                            </p>
-                          </div>
+                        <div className="mt-8 border-t border-amber-300 pt-6 text-center">
+                          <p className="font-garamond italic text-amber-700">
+                            Manuscript {currentManuscript + 1} of {publications.length} &bull; {publication.year}
+                          </p>
                         </div>
                       </div>
                     </div>
