@@ -17,7 +17,7 @@ This project is a unique personal portfolio website that breaks away from tradit
 
 ## 🏗️ Project Structure
 
-\`\`\`
+```bash
 ├── app/
 │   ├── globals.css              # Consolidated styles with medieval theming
 │   ├── layout.tsx               # Root layout with font configuration
@@ -52,7 +52,18 @@ This project is a unique personal portfolio website that breaks away from tradit
     ├── sections.ts             # Section definitions and timeline
     ├── travel.ts               # Travel journey data for map
     └── handlers.ts             # Navigation and event handling logic
-\`\`\`
+```
+## Quick start
+```bash
+git clone https://github.com/qmanhbeo/qmanhbeo-site
+cd qmanhbeo-site
+
+npm.cmd install
+# dont run "npm audit fix --force" yet
+npm.cmd run dev
+
+```
+
 
 ## 🎨 Design System
 
