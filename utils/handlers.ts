@@ -10,7 +10,7 @@ export interface NavigationHandlers {
 }
 
 export const createNavigationHandlers = (
-  containerRef: React.RefObject<HTMLDivElement>,
+  containerRef: React.RefObject<HTMLDivElement | null>,
   currentSection: number,
   setCurrentSection: (section: number) => void,
   isScrolling: boolean,
