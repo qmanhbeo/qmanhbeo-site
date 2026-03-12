@@ -1,6 +1,13 @@
+"use client"
+
 import Link from "next/link"
+import { useState } from "react"
+import LetterOverlay from "./ui/LetterOverlay"
+import LetterScrollTrigger from "./ui/LetterScrollTrigger"
 
 export default function HeroSection() {
+  const [isLetterOverlayOpen, setIsLetterOverlayOpen] = useState(false)
+
   return (
     <section
       className="min-w-full h-full flex items-center justify-center relative overflow-hidden section-safe-area"
@@ -21,15 +28,21 @@ export default function HeroSection() {
           of building systems that help people make fairer decisions under real constraints.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link href="/library" className="medieval-button text-orange-100 font-semibold px-8 py-3 rounded-lg font-garamond">
             Enter the Archive
           </Link>
-          <Link href="/letter" className="medieval-button text-orange-100 font-semibold px-8 py-3 rounded-lg font-garamond">
-            Send a Letter
-          </Link>
+          <LetterScrollTrigger
+            isOpen={isLetterOverlayOpen}
+            onOpen={() => setIsLetterOverlayOpen(true)}
+            label="Send a Letter"
+            helperText="Open the scroll and write by firelight."
+            variant="compact"
+          />
         </div>
       </div>
+
+      <LetterOverlay isOpen={isLetterOverlayOpen} onClose={() => setIsLetterOverlayOpen(false)} />
     </section>
   )
 }
