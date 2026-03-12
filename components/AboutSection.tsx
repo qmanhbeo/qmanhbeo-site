@@ -1,4 +1,5 @@
 import Image from "next/image"
+import avatarWizardy from "@/img/avt1-wizardy.png"
 import { timelineEvents } from "@/utils/sections"
 
 export default function AboutSection() {
@@ -11,9 +12,9 @@ export default function AboutSection() {
       <div className="relative z-10 px-8 max-w-6xl w-full h-full flex items-center">
         <div className="grid md:grid-cols-2 gap-8 items-center w-full">
           <div className="text-center flex flex-col justify-center">
-            <div className="wooden-frame rounded-full w-56 h-56 mx-auto overflow-hidden">
+            <div className="rounded-full w-56 h-56 mx-auto overflow-hidden border border-amber-200/20 shadow-[0_0_30px_rgba(255,140,0,0.12)]">
               <Image
-                src="/placeholder.svg"
+                src={avatarWizardy}
                 alt="Portrait of Manh"
                 width={224}
                 height={224}

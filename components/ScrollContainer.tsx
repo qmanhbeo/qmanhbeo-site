@@ -19,6 +19,26 @@ export default function ScrollContainer() {
   const [currentSection, setCurrentSection] = useState(0)
   const [isScrolling, setIsScrolling] = useState(false)
   const scrollTimeoutRef = useRef<number | null>(null)
+  const currentSectionRef = useRef(0)
+  const resizeFrameRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    currentSectionRef.current = currentSection
+  }, [currentSection])
+
+  const alignToCurrentSection = useCallback(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const nextLeft = currentSectionRef.current * container.clientWidth
+    const previousBehavior = container.style.scrollBehavior
+
+    // Resize/zoom changes the viewport width without updating scrollLeft,
+    // so pin the current section back to the new width immediately.
+    container.style.scrollBehavior = "auto"
+    container.scrollLeft = nextLeft
+    container.style.scrollBehavior = previousBehavior
+  }, [])
 
   const scrollToSection = useCallback(
     (index: number) => {
@@ -74,6 +94,41 @@ export default function ScrollContainer() {
       document.removeEventListener("keydown", keyHandler)
     }
   }, [isScrolling, navigateBackward, navigateForward])
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    let previousWidth = container.clientWidth
+
+    const handleResize = () => {
+      const nextWidth = container.clientWidth
+      if (nextWidth === previousWidth) return
+      previousWidth = nextWidth
+
+      if (resizeFrameRef.current !== null) {
+        cancelAnimationFrame(resizeFrameRef.current)
+      }
+
+      resizeFrameRef.current = requestAnimationFrame(() => {
+        alignToCurrentSection()
+        resizeFrameRef.current = null
+      })
+    }
+
+    const resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(container)
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener("resize", handleResize)
+      if (resizeFrameRef.current !== null) {
+        cancelAnimationFrame(resizeFrameRef.current)
+        resizeFrameRef.current = null
+      }
+    }
+  }, [alignToCurrentSection])
 
   useEffect(() => {
     return () => {
