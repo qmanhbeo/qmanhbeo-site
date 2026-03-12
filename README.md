@@ -64,6 +64,22 @@ npm.cmd run dev
 
 ```
 
+Deployed at https://qmanhbeo-site-ecru.vercel.app/
+
+Next todos:
+- Add icon for tab (like at the top of the browser, next to tab's name).
+- Maybe change tab name to something else if want to
+- Add all everything to archive
+- Make Letter actually work
+- Add photos,
+- And think about real stories to add to the reflections/descriptions
+- Add links to spell scrolls
+- Maybe even put those projects INSIDE this website, usable from the web
+- Add links to papers, maybe even paper's repos and manuscripts
+- Fix fellowship's buttons' hover lights
+- Add more social media links
+- Add real relfections to campfire notes
+
 
 ## 🎨 Design System
 
