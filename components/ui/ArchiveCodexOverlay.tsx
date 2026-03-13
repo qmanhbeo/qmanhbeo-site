@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { BookOpenText, ScrollText, Search, X } from "lucide-react"
+import { Search, X } from "lucide-react"
 import { archiveEntries, type ArchiveEntry } from "@/utils/content"
 
 interface ArchiveCodexOverlayProps {
@@ -121,7 +121,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
           <div className="absolute inset-x-8 top-4 h-12 rounded-full bg-amber-100/6 blur-2xl" />
           <div className="absolute inset-y-6 left-1/2 z-20 hidden w-8 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#1a0d08] via-[#704324]/75 to-[#1a0d08] shadow-[0_0_24px_rgba(0,0,0,0.35)] md:block" />
 
-          <div className="relative z-10 px-6 pb-4 pt-8 text-center md:px-10">
+          <div className="relative z-30 px-6 pb-4 pt-8 text-center md:px-10">
             <h3 id="archive-codex-title" className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">
               The Archive Codex
             </h3>
@@ -131,7 +131,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
             </p>
           </div>
 
-          <div className="relative z-10 px-6 pb-4 md:px-10">
+          <div className="relative z-30 px-6 pb-4 md:px-10">
             <div className="mx-auto max-w-3xl rounded-[1.6rem] border border-amber-100/15 bg-amber-50/70 p-4 shadow-[0_12px_28px_rgba(34,19,11,0.18)]">
               <label htmlFor="archive-codex-search" className="sr-only">
                 Search the archive codex
@@ -165,13 +165,9 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
 
                 <div className="relative z-10 flex h-full min-h-0 flex-col">
                   <div className="mb-6 text-center">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-amber-100/65 px-4 py-2 text-amber-900">
-                      <BookOpenText className="h-4 w-4" />
-                      <span className="font-cinzel text-sm font-semibold tracking-[0.14em] uppercase">Table of Contents</span>
+                    <div className="font-cinzel text-sm font-semibold uppercase tracking-[0.16em] text-amber-900">
+                      {filteredEntries.length} scroll{filteredEntries.length === 1 ? "" : "s"} found
                     </div>
-                    <p className="mt-3 font-garamond italic text-amber-800">
-                      Choose any scroll to preview inside the codex.
-                    </p>
                   </div>
 
                   <div className="scrollable-content min-h-0 flex-1 space-y-3 overflow-y-auto pb-2 pr-2">
@@ -218,16 +214,6 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                     )}
                   </div>
 
-                  <div className="mt-6 rounded-[1.5rem] border border-amber-800/15 bg-amber-50/65 px-5 py-4 text-center">
-                    <div className="font-cinzel text-sm font-semibold uppercase tracking-[0.16em] text-amber-900">
-                      {filteredEntries.length} scroll{filteredEntries.length === 1 ? "" : "s"} gathered
-                    </div>
-                    <p className="mt-2 font-garamond italic text-amber-800">
-                      {searchQuery.trim()
-                        ? "Search results from every shelf are gathered here together."
-                        : "Publications, spell scrolls, and campfire notes now share one table of contents."}
-                    </p>
-                  </div>
                 </div>
               </section>
 
@@ -246,12 +232,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                   {selectedEntry ? (
                     <div className="scrollable-content min-h-0 flex-1 overflow-y-auto pb-2 pr-1">
                       <div className="text-center">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-amber-100/65 px-4 py-2 text-amber-900">
-                          <ScrollText className="h-4 w-4" />
-                          <span className="font-cinzel text-sm font-semibold tracking-[0.14em] uppercase">Selected Scroll</span>
-                        </div>
-
-                        <h4 className="mt-5 font-cinzel text-3xl font-bold leading-tight text-amber-950">
+                        <h4 className="font-cinzel text-3xl font-bold leading-tight text-amber-950">
                           {selectedEntry.title}
                         </h4>
 
