@@ -1,5 +1,5 @@
 import Image from "next/image"
-import avatarWizardy from "@/img/avt1-wizardy.png"
+import avatarWizardy from "@/img/avt2-wizardy.png"
 import { timelineEvents } from "@/utils/sections"
 
 export default function AboutSection() {
