@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { EB_Garamond, Cinzel } from "next/font/google"
+import tabIcon from "@/img/tab-icon.png"
 import "./globals.css"
 
 const ebGaramond = EB_Garamond({
@@ -18,6 +19,10 @@ const cinzel = Cinzel({
 export const metadata: Metadata = {
   title: "Manh's Cozy Corner",
   description: "A medieval-inspired personal website",
+  icons: {
+    icon: tabIcon.src,
+    shortcut: tabIcon.src,
+  },
 }
 
 export default function RootLayout({

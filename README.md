@@ -160,6 +160,18 @@ friend near map → "travel buddy"
 friend near library → "study friend"
 
 That’s game design thinking.
+
+Simply:
+
+one map
+
+4–6 buildings
+
+simple walking
+
+simple NPCs
+
+content popups
 ```
 - No AI yet. But could add later
 - Something like: Simple OpenAI API call (hidden env key server side ofc) for character interactions. 
@@ -168,6 +180,8 @@ That’s game design thinking.
 - API call feeds inputs about NPC's context/background + whatever the user asks 
 - Output is parsed to game
 - Yeah, it's like an effort to build my own digital twin. Something simple as that will work.
+
+
 
 - Oh, add also weather/background/decoration change based on time of year (or even time of day, but for now leave as night only). Just some simple Lunar New Year/Christmas/... concepts that can be reused every year. Simple if-thens
 
