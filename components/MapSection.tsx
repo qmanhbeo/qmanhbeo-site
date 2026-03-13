@@ -8,7 +8,11 @@ import { getTravelYearKey, travelYears, type TravelYear } from "@/utils/travel"
 
 const MAP_COOLDOWN_MS = 700
 
-export default function MapSection() {
+interface MapSectionProps {
+  revealClassName?: string
+}
+
+export default function MapSection({ revealClassName = "" }: MapSectionProps) {
   const {
     currentIndex: currentMapYear,
     isTransitioning: isMapScrolling,
@@ -34,7 +38,7 @@ export default function MapSection() {
     >
       <div className="firelight absolute inset-0 opacity-50" />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-8">
+      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-8`}>
         <div className="flex-shrink-0 py-6 text-center">
           <h2 className="font-cinzel text-4xl font-bold text-orange-100 md:text-5xl">Wanderer&apos;s Map</h2>
           <p className="mx-auto max-w-2xl font-garamond text-lg italic text-orange-200">

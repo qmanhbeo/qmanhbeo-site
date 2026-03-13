@@ -17,6 +17,7 @@ import WandererTrail from "./WandererTrail"
 export default function ScrollContainer() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [currentSection, setCurrentSection] = useState(0)
+  const [revealedSections, setRevealedSections] = useState(() => sections.map((_, index) => index === 0))
   const [isScrolling, setIsScrolling] = useState(false)
   const scrollTimeoutRef = useRef<number | null>(null)
   const currentSectionRef = useRef(0)
@@ -50,6 +51,11 @@ export default function ScrollContainer() {
       }
 
       setIsScrolling(true)
+      setRevealedSections((previous) => {
+        if (previous[index]) return previous
+
+        return previous.map((isRevealed, sectionIndex) => (sectionIndex === index ? true : isRevealed))
+      })
 
       container.scrollTo({
         left: index * container.clientWidth,
@@ -149,14 +155,14 @@ export default function ScrollContainer() {
         className="horizontal-sections flex h-full overflow-x-hidden scroll-smooth"
         style={{ scrollSnapType: "x mandatory" }}
       >
-        <HeroSection />
-        <AboutSection />
-        <MapSection />
-        <ProjectsSection />
-        <PublicationsSection />
-        <BlogSection />
-        <LetterSection />
-        <SocialsSection />
+        <HeroSection revealClassName={revealedSections[0] ? "page-load-unblur" : ""} />
+        <AboutSection revealClassName={revealedSections[1] ? "page-load-unblur" : ""} />
+        <MapSection revealClassName={revealedSections[2] ? "page-load-unblur" : ""} />
+        <ProjectsSection revealClassName={revealedSections[3] ? "page-load-unblur" : ""} />
+        <PublicationsSection revealClassName={revealedSections[4] ? "page-load-unblur" : ""} />
+        <BlogSection revealClassName={revealedSections[5] ? "page-load-unblur" : ""} />
+        <LetterSection revealClassName={revealedSections[6] ? "page-load-unblur" : ""} />
+        <SocialsSection revealClassName={revealedSections[7] ? "page-load-unblur" : ""} />
       </div>
     </div>
   )

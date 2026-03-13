@@ -2,14 +2,18 @@ import Image from "next/image"
 import avatarWizardy from "@/img/avt2-wizardy.png"
 import { timelineEvents } from "@/utils/sections"
 
-export default function AboutSection() {
+interface AboutSectionProps {
+  revealClassName?: string
+}
+
+export default function AboutSection({ revealClassName = "" }: AboutSectionProps) {
   return (
     <section
       className="min-w-full h-full flex items-center justify-center relative overflow-hidden section-safe-area"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-70" />
-      <div className="relative z-10 px-8 max-w-6xl w-full h-full flex items-center">
+      <div className={`${revealClassName} relative z-10 px-8 max-w-6xl w-full h-full flex items-center`}>
         <div className="grid md:grid-cols-2 gap-8 items-center w-full">
           <div className="text-center flex flex-col justify-center">
             <div className="rounded-full w-56 h-56 mx-auto overflow-hidden border border-amber-200/20 shadow-[0_0_30px_rgba(255,140,0,0.12)]">

@@ -6,7 +6,11 @@ import { projects } from "@/utils/content"
 import SpellScroll from "./ui/SpellScroll"
 import InfiniteCarousel from "./ui/InfiniteCarousel"
 
-export default function ProjectsSection() {
+interface ProjectsSectionProps {
+  revealClassName?: string
+}
+
+export default function ProjectsSection({ revealClassName = "" }: ProjectsSectionProps) {
   const shellRef = useRef<HTMLDivElement>(null)
   const [itemWidth, setItemWidth] = useState(300)
   const gap = 20
@@ -38,7 +42,7 @@ export default function ProjectsSection() {
     >
       <div className="firelight absolute inset-0 opacity-60" />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-8">
+      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-8`}>
         <div className="flex-shrink-0 py-6 text-center">
           <h2 className="font-cinzel text-4xl font-bold text-orange-100 md:text-5xl">Spell Scrolls</h2>
           <p className="mx-auto max-w-2xl font-garamond text-lg italic text-orange-200">
