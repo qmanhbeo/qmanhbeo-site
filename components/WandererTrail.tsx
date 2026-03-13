@@ -26,7 +26,7 @@ export default function WandererTrail({ currentSection, isMapExpanded, onSection
   if (isMapExpanded) return null
 
   return (
-    <div className="wanderer-trail-container">
+    <div className="page-load-unblur-fixed wanderer-trail-container">
       {/* Transparent container with dotted trail path */}
       <div className="trail-transparent">
         {/* Trail path line */}

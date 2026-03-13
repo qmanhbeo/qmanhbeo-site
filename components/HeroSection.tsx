@@ -16,7 +16,7 @@ export default function HeroSection() {
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0" />
-      <div className="relative z-10 w-full max-w-6xl text-center px-8 content-container">
+      <div className="page-load-unblur relative z-10 w-full max-w-6xl text-center px-8 content-container">
         <div className="flickering mb-8">
           <div className="w-16 h-20 mx-auto bg-gradient-to-t from-orange-600 via-orange-400 to-yellow-300 rounded-t-full relative">
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-12 bg-gradient-to-t from-orange-500 to-yellow-200 rounded-t-full opacity-80"></div>
