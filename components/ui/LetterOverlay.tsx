@@ -76,7 +76,7 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
           </p>
         </div>
 
-        <div className="scrollable-content max-h-[calc(100vh-8rem)] overflow-y-auto">
+        <div className="scrollable-content scrollbar-fade max-h-[calc(100vh-8rem)] overflow-y-auto">
           <LetterComposer />
         </div>
       </div>

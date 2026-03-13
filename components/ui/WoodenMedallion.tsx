@@ -22,7 +22,7 @@ export default function WoodenMedallion({ icon, label, href, onClick, className 
       onMouseLeave={() => setIsGlowing(false)}
       onClick={onClick}
     >
-      <div className={`relative p-6 transition-all duration-300 ${isGlowing ? "ember-medallion-glow" : ""}`}>
+      <div className={`relative rounded-full p-6 transition-all duration-300 ${isGlowing ? "ember-medallion-glow" : ""}`}>
         {/* Wooden Background */}
         <div className="absolute inset-0 wood-medallion rounded-full shadow-lg" />
 

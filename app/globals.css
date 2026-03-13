@@ -133,6 +133,70 @@
   background: rgba(139, 69, 19, 0.8);
 }
 
+.scrollbar-fade {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+
+.scrollbar-fade::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.scrollbar-fade-indicator {
+  position: fixed;
+  border-radius: 999px;
+  background: rgba(245, 230, 211, 0.22);
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(7px);
+  transform: translateZ(0);
+  transition:
+    opacity 280ms ease,
+    filter 280ms ease,
+    background-color 280ms ease;
+  z-index: 120;
+}
+
+.scrollbar-fade-indicator[data-visible="false"] {
+  opacity: 0;
+}
+
+.scrollbar-fade-indicator.scrollbar-active {
+  opacity: 1;
+  filter: blur(0);
+  background: rgba(245, 230, 211, 0.3);
+}
+
+.scrollbar-fade-thumb {
+  width: 100%;
+  border-radius: 999px;
+  background: rgba(139, 69, 19, 0.64);
+  border: 1px solid rgba(160, 82, 45, 0.4);
+  box-shadow: 0 0 12px rgba(70, 34, 13, 0.12);
+  opacity: 0;
+  filter: blur(7px);
+  transition:
+    opacity 280ms ease,
+    filter 280ms ease,
+    background-color 280ms ease,
+    border-color 280ms ease;
+}
+
+.scrollbar-fade-indicator.scrollbar-active .scrollbar-fade-thumb {
+  opacity: 1;
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollbar-fade-indicator,
+  .scrollbar-fade-thumb {
+    transition: none;
+    filter: none;
+  }
+}
+
 /* Smooth scrolling within scrollable areas */
 .scrollable-content {
   scroll-behavior: smooth;

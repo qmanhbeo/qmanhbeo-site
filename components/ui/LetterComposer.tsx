@@ -148,7 +148,7 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
                 onChange={handleInputChange}
                 required
                 rows={8}
-                className={`${fieldClassName} min-h-[14rem] resize-y`}
+                className={`${fieldClassName} scrollbar-fade min-h-[14rem] resize-y`}
                 placeholder="Share your thoughts, your work, your questions, or simply say hello."
               />
             </label>

@@ -170,7 +170,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                     </div>
                   </div>
 
-                  <div className="scrollable-content min-h-0 flex-1 space-y-3 overflow-y-auto pb-2 pr-2">
+                  <div className="scrollable-content scrollbar-fade min-h-0 flex-1 space-y-3 overflow-y-auto pb-2 pr-2">
                     {filteredEntries.length > 0 ? (
                       filteredEntries.map((entry, index) => {
                         const isSelected = entry.id === selectedEntry?.id
@@ -230,7 +230,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
 
                 <div className="relative z-10 flex h-full min-h-0 flex-col">
                   {selectedEntry ? (
-                    <div className="scrollable-content min-h-0 flex-1 overflow-y-auto pb-2 pr-1">
+                    <div className="scrollable-content scrollbar-fade min-h-0 flex-1 overflow-y-auto pb-2 pr-1">
                       <div className="text-center">
                         <h4 className="font-cinzel text-3xl font-bold leading-tight text-amber-950">
                           {selectedEntry.title}

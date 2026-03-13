@@ -94,7 +94,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                       ref={(element) => {
                         panelRefs.current[index] = element
                       }}
-                      className="manuscript-scrollable-area paged-scroll-area scrollable-content h-full min-w-full overflow-y-auto p-8"
+                      className="manuscript-scrollable-area paged-scroll-area scrollable-content scrollbar-fade h-full min-w-full overflow-y-auto p-8"
                     >
                       <div className="mx-auto flex min-h-full max-w-4xl flex-col justify-center">
                         <div className="space-y-6 pb-8 text-center">

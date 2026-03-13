@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { EB_Garamond, Cinzel } from "next/font/google"
+import ScrollbarActivityManager from "@/components/ScrollbarActivityManager"
 import tabIcon from "@/img/tab-icon.png"
 import "./globals.css"
 
@@ -32,7 +33,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${ebGaramond.variable} ${cinzel.variable} antialiased`}>{children}</body>
+      <body className={`${ebGaramond.variable} ${cinzel.variable} antialiased`}>
+        <ScrollbarActivityManager />
+        {children}
+      </body>
     </html>
   )
 }

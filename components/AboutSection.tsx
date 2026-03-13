@@ -28,7 +28,7 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
           </div>
 
           <div className="flex flex-col justify-center">
-            <div className="parchment p-6 rounded-lg scrollable-content max-h-[60vh] overflow-y-auto">
+            <div className="parchment rounded-lg scrollable-content scrollbar-fade max-h-[60vh] overflow-y-auto p-6">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-amber-900 font-cinzel">The Lore of Leo</h2>
               <p className="text-base text-amber-800 mb-6 font-garamond leading-relaxed italic">
                 He is a Vietnamese researcher and builder whose path began in economics and slowly wandered into AI,
