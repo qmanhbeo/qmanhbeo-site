@@ -21,6 +21,20 @@ export interface BlogPost {
   readTime: string
 }
 
+export type ArchiveEntryKind = "publication" | "project" | "note"
+
+export interface ArchiveEntry {
+  id: string
+  kind: ArchiveEntryKind
+  kindLabel: string
+  collectionLabel: string
+  title: string
+  subtitle: string
+  periodLabel: string
+  preview: string
+  tags: string[]
+}
+
 export const publications: Publication[] = [
   {
     title: "Socioeconomic Effects of Delays in Renewable Energy Projects: Evidence from Vietnam",
@@ -142,4 +156,40 @@ export const blogPosts: BlogPost[] = [
     date: "May 2025",
     readTime: "Field note",
   },
+]
+
+export const archiveEntries: ArchiveEntry[] = [
+  ...publications.map((publication, index) => ({
+    id: `publication-${index}`,
+    kind: "publication" as const,
+    kindLabel: "Publication",
+    collectionLabel: "Publications",
+    title: publication.title,
+    subtitle: publication.journal,
+    periodLabel: `Anno Domini ${publication.year}`,
+    preview: publication.abstract ?? "No abstract has been written on this leaf yet.",
+    tags: [publication.journal, publication.year],
+  })),
+  ...projects.map((project, index) => ({
+    id: `project-${index}`,
+    kind: "project" as const,
+    kindLabel: "Spell Scroll",
+    collectionLabel: "Spell Scrolls",
+    title: project.title,
+    subtitle: project.tech.slice(0, 2).join(" • ") || "Crafted in the workshop",
+    periodLabel: `${project.tech.length} runes inscribed`,
+    preview: project.description,
+    tags: project.tech,
+  })),
+  ...blogPosts.map((post, index) => ({
+    id: `note-${index}`,
+    kind: "note" as const,
+    kindLabel: "Campfire Note",
+    collectionLabel: "Campfire Notes",
+    title: post.title,
+    subtitle: post.readTime,
+    periodLabel: post.date,
+    preview: post.excerpt,
+    tags: [post.readTime, post.date],
+  })),
 ]

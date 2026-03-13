@@ -1,9 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import { useEffect, useState } from "react"
-import { BookOpenText, LibraryBig, MoveRight, ScrollText, X } from "lucide-react"
-import { publications, type Publication } from "@/utils/content"
+import { BookOpenText, ScrollText, Search, X } from "lucide-react"
+import { archiveEntries, type ArchiveEntry } from "@/utils/content"
 
 interface ArchiveCodexOverlayProps {
   isOpen: boolean
@@ -16,9 +15,37 @@ const pageSurfaceStyle = {
   boxShadow: "inset 0 1px 0 rgba(255,248,232,0.65), inset 0 0 0 1px rgba(130,76,29,0.12)",
 }
 
+const previewHeadingByKind: Record<ArchiveEntry["kind"], string> = {
+  publication: "Abstract",
+  project: "Spell Summary",
+  note: "Note Preview",
+}
+
 export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOverlayProps) {
-  const [selectedPublication, setSelectedPublication] = useState<Publication>(publications[0])
+  const [selectedEntryId, setSelectedEntryId] = useState(archiveEntries[0]?.id ?? "")
+  const [searchQuery, setSearchQuery] = useState("")
   const [isAnimatingOpen, setIsAnimatingOpen] = useState(false)
+
+  const normalizedQuery = searchQuery.trim().toLowerCase()
+  const filteredEntries = archiveEntries.filter((entry) => {
+    if (normalizedQuery === "") return true
+
+    const searchableText = [
+      entry.title,
+      entry.subtitle,
+      entry.periodLabel,
+      entry.preview,
+      entry.kindLabel,
+      entry.collectionLabel,
+      entry.tags.join(" "),
+    ]
+      .join(" ")
+      .toLowerCase()
+
+    return searchableText.includes(normalizedQuery)
+  })
+
+  const selectedEntry = filteredEntries.find((entry) => entry.id === selectedEntryId) ?? filteredEntries[0] ?? null
 
   useEffect(() => {
     if (!isOpen) return
@@ -88,153 +115,191 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
         </button>
 
         <div
-          className="relative overflow-hidden rounded-[2.6rem] border border-amber-200/10 bg-gradient-to-br from-[#58290f]/95 via-[#30150b]/98 to-[#170c08]/98 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.55)] md:p-5"
+          className="relative flex h-[calc(100dvh-2rem)] max-h-[calc(100dvh-2rem)] flex-col overflow-x-hidden overflow-y-auto rounded-[2.6rem] border border-amber-200/10 bg-gradient-to-br from-[#58290f]/95 via-[#30150b]/98 to-[#170c08]/98 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.55)] md:h-[calc(100dvh-3rem)] md:max-h-[calc(100dvh-3rem)] md:overflow-hidden md:p-5"
           style={{ perspective: "2200px" }}
         >
           <div className="absolute inset-x-8 top-4 h-12 rounded-full bg-amber-100/6 blur-2xl" />
-          <div className="absolute inset-y-6 left-1/2 z-20 w-8 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#1a0d08] via-[#704324]/75 to-[#1a0d08] shadow-[0_0_24px_rgba(0,0,0,0.35)]" />
+          <div className="absolute inset-y-6 left-1/2 z-20 hidden w-8 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#1a0d08] via-[#704324]/75 to-[#1a0d08] shadow-[0_0_24px_rgba(0,0,0,0.35)] md:block" />
 
-          <div className="relative z-10 mb-4 px-6 text-center md:mb-5">
+          <div className="relative z-10 px-6 pb-4 pt-8 text-center md:px-10">
             <h3 id="archive-codex-title" className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">
               The Archive Codex
             </h3>
             <p className="map-sky-ink mx-auto mt-3 max-w-3xl font-garamond text-lg italic">
-              Open the gathered manuscripts at the hearth before stepping fully into the stacks.
+              Search the gathered shelves from the hearth. Publications, spell scrolls, and campfire notes now rest in
+              one codex.
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <section
-              className="relative min-h-[30rem] overflow-hidden rounded-[2rem] border border-amber-900/15 p-6 transition-all duration-500 md:p-8"
-              style={{
-                ...pageSurfaceStyle,
-                transformOrigin: "right center",
-                transform: isAnimatingOpen ? "rotateY(0deg) translateX(0)" : "rotateY(82deg) translateX(18%)",
-                opacity: isAnimatingOpen ? 1 : 0,
-              }}
-            >
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/10 to-transparent" />
-
-              <div className="relative z-10 flex h-full flex-col">
-                <div className="mb-6 text-center">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-amber-100/65 px-4 py-2 text-amber-900">
-                    <BookOpenText className="h-4 w-4" />
-                    <span className="font-cinzel text-sm font-semibold tracking-[0.14em] uppercase">Table of Contents</span>
-                  </div>
-                  <p className="mt-3 font-garamond italic text-amber-800">
-                    Choose a manuscript to preview inside the codex.
-                  </p>
-                </div>
-
-                <div className="scrollable-content flex-1 space-y-3 overflow-y-auto pr-2">
-                  {publications.map((publication, index) => {
-                    const isSelected = publication.title === selectedPublication.title
-
-                    return (
-                      <button
-                        key={publication.title}
-                        type="button"
-                        onClick={() => setSelectedPublication(publication)}
-                        className={`w-full rounded-[1.4rem] border px-4 py-4 text-left transition-all duration-300 ${
-                          isSelected
-                            ? "border-amber-700/45 bg-amber-100/75 shadow-[0_10px_24px_rgba(120,60,18,0.15)]"
-                            : "border-amber-800/15 bg-white/35 hover:border-amber-700/30 hover:bg-white/50"
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-200/80 text-sm font-cinzel font-bold text-amber-900">
-                            {index + 1}
-                          </div>
-                          <div className="min-w-0">
-                            <h4 className="font-cinzel text-lg font-bold leading-snug text-amber-950">{publication.title}</h4>
-                            <p className="mt-1 font-garamond text-sm italic text-amber-800">{publication.journal}</p>
-                            <p className="mt-2 font-garamond text-sm text-amber-700">Anno Domini {publication.year}</p>
-                          </div>
-                        </div>
-                      </button>
-                    )
-                  })}
-                </div>
-
-                <div className="mt-6 rounded-[1.5rem] border border-amber-800/15 bg-amber-50/65 px-5 py-4 text-center">
-                  <div className="font-cinzel text-sm font-semibold uppercase tracking-[0.16em] text-amber-900">
-                    {publications.length} manuscripts gathered
-                  </div>
-                  <p className="mt-2 font-garamond italic text-amber-800">
-                    The full archive keeps the search tools and all manuscript cards intact.
-                  </p>
-                </div>
+          <div className="relative z-10 px-6 pb-4 md:px-10">
+            <div className="mx-auto max-w-3xl rounded-[1.6rem] border border-amber-100/15 bg-amber-50/70 p-4 shadow-[0_12px_28px_rgba(34,19,11,0.18)]">
+              <label htmlFor="archive-codex-search" className="sr-only">
+                Search the archive codex
+              </label>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-amber-700" />
+                <input
+                  id="archive-codex-search"
+                  type="text"
+                  placeholder="Search all scrolls, from publications to notes..."
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  className="w-full rounded-[1.2rem] border border-amber-700/20 bg-white/50 py-3 pl-12 pr-4 font-garamond text-lg text-amber-950 outline-none transition-colors duration-200 placeholder:text-amber-700/70 focus:border-amber-700/45 focus:bg-white/70"
+                />
               </div>
-            </section>
+            </div>
+          </div>
 
-            <section
-              className="relative min-h-[30rem] overflow-hidden rounded-[2rem] border border-amber-900/15 p-6 transition-all duration-500 md:p-8"
-              style={{
-                ...pageSurfaceStyle,
-                transformOrigin: "left center",
-                transform: isAnimatingOpen ? "rotateY(0deg) translateX(0)" : "rotateY(-82deg) translateX(-18%)",
-                opacity: isAnimatingOpen ? 1 : 0,
-              }}
-            >
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black/10 to-transparent" />
+          <div className="relative z-10 min-h-0 flex-1 md:overflow-hidden">
+            <div className="flex flex-col gap-4 md:h-full md:min-h-0 md:flex-row">
+              <section
+                className="relative min-h-[22rem] overflow-hidden rounded-[2rem] border border-amber-900/15 p-6 transition-all duration-500 md:min-h-0 md:flex-1 md:basis-0 md:p-8"
+                style={{
+                  ...pageSurfaceStyle,
+                  transformOrigin: "right center",
+                  transform: isAnimatingOpen ? "rotateY(0deg) translateX(0)" : "rotateY(82deg) translateX(18%)",
+                  opacity: isAnimatingOpen ? 1 : 0,
+                }}
+              >
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black/10 to-transparent" />
 
-              <div className="relative z-10 flex h-full flex-col">
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-amber-100/65 px-4 py-2 text-amber-900">
-                    <ScrollText className="h-4 w-4" />
-                    <span className="font-cinzel text-sm font-semibold tracking-[0.14em] uppercase">Selected Manuscript</span>
+                <div className="relative z-10 flex h-full min-h-0 flex-col">
+                  <div className="mb-6 text-center">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-amber-100/65 px-4 py-2 text-amber-900">
+                      <BookOpenText className="h-4 w-4" />
+                      <span className="font-cinzel text-sm font-semibold tracking-[0.14em] uppercase">Table of Contents</span>
+                    </div>
+                    <p className="mt-3 font-garamond italic text-amber-800">
+                      Choose any scroll to preview inside the codex.
+                    </p>
                   </div>
 
-                  <h4 className="mt-5 font-cinzel text-3xl font-bold leading-tight text-amber-950">
-                    {selectedPublication.title}
-                  </h4>
+                  <div className="scrollable-content min-h-0 flex-1 space-y-3 overflow-y-auto pb-2 pr-2">
+                    {filteredEntries.length > 0 ? (
+                      filteredEntries.map((entry, index) => {
+                        const isSelected = entry.id === selectedEntry?.id
 
-                  <div className="mt-4 flex flex-wrap items-center justify-center gap-3 font-garamond text-base text-amber-800">
-                    <span className="rounded-full bg-amber-100/70 px-4 py-2 italic">{selectedPublication.journal}</span>
-                    <span className="rounded-full bg-amber-100/70 px-4 py-2">Anno Domini {selectedPublication.year}</span>
+                        return (
+                          <button
+                            key={entry.id}
+                            type="button"
+                            onClick={() => setSelectedEntryId(entry.id)}
+                            className={`w-full rounded-[1.4rem] border px-4 py-4 text-left transition-all duration-300 ${
+                              isSelected
+                                ? "border-amber-700/45 bg-amber-100/75 shadow-[0_10px_24px_rgba(120,60,18,0.15)]"
+                                : "border-amber-800/15 bg-white/35 hover:border-amber-700/30 hover:bg-white/50"
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-200/80 text-sm font-cinzel font-bold text-amber-900">
+                                {index + 1}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="mb-2 flex flex-wrap items-center gap-2">
+                                  <span className="rounded-full bg-amber-100/75 px-3 py-1 font-cinzel text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-amber-900">
+                                    {entry.collectionLabel}
+                                  </span>
+                                  <span className="font-garamond text-sm italic text-amber-700">{entry.periodLabel}</span>
+                                </div>
+                                <h4 className="font-cinzel text-lg font-bold leading-snug text-amber-950">{entry.title}</h4>
+                                <p className="mt-1 font-garamond text-sm italic text-amber-800">{entry.subtitle}</p>
+                              </div>
+                            </div>
+                          </button>
+                        )
+                      })
+                    ) : (
+                      <div className="rounded-[1.5rem] border border-amber-800/15 bg-white/35 px-5 py-8 text-center">
+                        <div className="font-cinzel text-lg font-semibold text-amber-900">No scrolls found</div>
+                        <p className="mt-2 font-garamond italic text-amber-800">
+                          Try another phrase and the codex will search the shelves again.
+                        </p>
+                      </div>
+                    )}
                   </div>
-                </div>
 
-                <div className="mt-8 rounded-[1.6rem] border border-amber-800/15 bg-white/40 p-6 shadow-[inset_0_1px_0_rgba(255,248,232,0.65)]">
-                  <div className="mb-3 font-cinzel text-lg font-semibold uppercase tracking-[0.12em] text-amber-900">
-                    Abstract
-                  </div>
-                  <p className="font-garamond text-lg italic leading-relaxed text-amber-800">
-                    {selectedPublication.abstract ?? "No abstract has been written on this leaf yet."}
-                  </p>
-                </div>
-
-                <div className="mt-auto pt-8">
-                  <div className="rounded-[1.6rem] border border-amber-800/15 bg-amber-50/60 p-5">
-                    <div className="font-cinzel text-sm font-semibold uppercase tracking-[0.14em] text-amber-900">
-                      Continue into the stacks
+                  <div className="mt-6 rounded-[1.5rem] border border-amber-800/15 bg-amber-50/65 px-5 py-4 text-center">
+                    <div className="font-cinzel text-sm font-semibold uppercase tracking-[0.16em] text-amber-900">
+                      {filteredEntries.length} scroll{filteredEntries.length === 1 ? "" : "s"} gathered
                     </div>
                     <p className="mt-2 font-garamond italic text-amber-800">
-                      Open the full archive page for search, filtering, and the manuscript detail view.
+                      {searchQuery.trim()
+                        ? "Search results from every shelf are gathered here together."
+                        : "Publications, spell scrolls, and campfire notes now share one table of contents."}
                     </p>
-
-                    <div className="mt-4 flex flex-wrap gap-3">
-                      <Link
-                        href="/library"
-                        className="medieval-button inline-flex items-center gap-3 rounded-full px-6 py-3 font-cinzel text-sm font-semibold uppercase tracking-[0.14em] text-orange-100 transition-all duration-300 hover:ember-glow"
-                      >
-                        <LibraryBig className="h-4 w-4" />
-                        Open Full Archive
-                        <MoveRight className="h-4 w-4" />
-                      </Link>
-
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        className="inline-flex items-center gap-2 rounded-full border border-amber-900/20 bg-white/35 px-5 py-3 font-cinzel text-sm font-semibold uppercase tracking-[0.14em] text-amber-900 transition-colors duration-300 hover:bg-white/55"
-                      >
-                        Keep Browsing Here
-                      </button>
-                    </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+
+              <section
+                className="relative min-h-[22rem] overflow-hidden rounded-[2rem] border border-amber-900/15 p-6 transition-all duration-500 md:min-h-0 md:flex-1 md:basis-0 md:p-8"
+                style={{
+                  ...pageSurfaceStyle,
+                  transformOrigin: "left center",
+                  transform: isAnimatingOpen ? "rotateY(0deg) translateX(0)" : "rotateY(-82deg) translateX(-18%)",
+                  opacity: isAnimatingOpen ? 1 : 0,
+                }}
+              >
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black/10 to-transparent" />
+
+                <div className="relative z-10 flex h-full min-h-0 flex-col">
+                  {selectedEntry ? (
+                    <div className="scrollable-content min-h-0 flex-1 overflow-y-auto pb-2 pr-1">
+                      <div className="text-center">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-amber-100/65 px-4 py-2 text-amber-900">
+                          <ScrollText className="h-4 w-4" />
+                          <span className="font-cinzel text-sm font-semibold tracking-[0.14em] uppercase">Selected Scroll</span>
+                        </div>
+
+                        <h4 className="mt-5 font-cinzel text-3xl font-bold leading-tight text-amber-950">
+                          {selectedEntry.title}
+                        </h4>
+
+                        <div className="mt-4 flex flex-wrap items-center justify-center gap-3 font-garamond text-base text-amber-800">
+                          <span className="rounded-full bg-amber-100/70 px-4 py-2 italic">{selectedEntry.kindLabel}</span>
+                          <span className="rounded-full bg-amber-100/70 px-4 py-2">{selectedEntry.collectionLabel}</span>
+                          <span className="rounded-full bg-amber-100/70 px-4 py-2">{selectedEntry.periodLabel}</span>
+                        </div>
+
+                        <p className="mt-4 font-garamond text-lg italic text-amber-800">{selectedEntry.subtitle}</p>
+                      </div>
+
+                      <div className="mt-8 rounded-[1.6rem] border border-amber-800/15 bg-white/40 p-6 shadow-[inset_0_1px_0_rgba(255,248,232,0.65)]">
+                        <div className="mb-3 font-cinzel text-lg font-semibold uppercase tracking-[0.12em] text-amber-900">
+                          {previewHeadingByKind[selectedEntry.kind]}
+                        </div>
+                        <p className="font-garamond text-lg italic leading-relaxed text-amber-800">{selectedEntry.preview}</p>
+                      </div>
+
+                      <div className="mt-6 rounded-[1.6rem] border border-amber-800/15 bg-amber-50/60 p-5">
+                        <div className="mb-3 font-cinzel text-sm font-semibold uppercase tracking-[0.14em] text-amber-900">
+                          Shelf Marks
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedEntry.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-full border border-amber-700/20 bg-white/45 px-3 py-1 font-garamond text-sm text-amber-800"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-1 items-center justify-center text-center">
+                      <div>
+                        <div className="font-cinzel text-2xl font-semibold text-amber-900">No preview available</div>
+                        <p className="mt-3 max-w-md font-garamond text-lg italic text-amber-800">
+                          The search returned no matching scrolls. Adjust the query to reopen the shelves.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
           </div>
         </div>
       </div>
