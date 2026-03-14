@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef } from "react"
+import { useRouter } from "next/navigation"
 import { blogPosts } from "@/utils/content"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
 import TavernTale from "./ui/TavernTale"
@@ -13,9 +14,10 @@ interface BlogSectionProps {
 export default function BlogSection({ revealClassName = "" }: BlogSectionProps) {
   const gap = 20
   const { shellRef, itemWidth } = useResponsiveCarouselWidth({ gap, minWidth: 240 })
+  const router = useRouter()
 
-  const handleTaleClick = (title: string) => {
-    console.log(`Navigate to full tale: ${title}`)
+  const handleTaleClick = (id: string) => {
+    router.push(`/item/${id}`)
   }
 
   return (
@@ -43,16 +45,21 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
                   gap={gap}
                   snap="left"
                   className="w-full"
-                  renderItem={(tale) => (
-                    <TavernTale
-                      title={tale.title}
-                      excerpt={tale.excerpt}
-                      date={tale.date}
-                      readTime={tale.readTime}
-                      className="w-full"
-                      onClick={() => handleTaleClick(tale.title)}
-                    />
-                  )}
+                  renderItem={(tale) => {
+                    const index = blogPosts.indexOf(tale)
+                    const archiveId = index >= 0 ? `note-${index}` : "note-unknown"
+
+                    return (
+                      <TavernTale
+                        title={tale.title}
+                        excerpt={tale.excerpt}
+                        date={tale.date}
+                        readTime={tale.readTime}
+                        className="w-full"
+                        onClick={() => handleTaleClick(archiveId)}
+                      />
+                    )
+                  }}
                 />
               </div>
             </div>

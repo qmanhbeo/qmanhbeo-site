@@ -140,52 +140,11 @@ export default function InfiniteCarousel<T>({
     [setTransform, startRaf, stopRaf, wrapIfNeeded],
   )
 
+  // Disable drag-to-scroll to ensure click events on items work reliably.
+  // Horizontal movement is still available via wheel and keyboard.
   useEffect(() => {
-    const viewport = viewportRef.current
-    if (!viewport) return
-
-    const handlePointerDown = (event: PointerEvent) => {
-      isDraggingRef.current = true
-      viewport.classList.add("is-dragging")
-      pointerStartXRef.current = event.clientX
-      startXRef.current = xRef.current
-      velocityRef.current = 0
-      viewport.setPointerCapture(event.pointerId)
-      event.preventDefault()
-    }
-
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!isDraggingRef.current) return
-
-      const dx = event.clientX - pointerStartXRef.current
-      const nextX = startXRef.current + dx
-      velocityRef.current = nextX - xRef.current
-      xRef.current = nextX
-      wrapIfNeeded()
-      setTransform(xRef.current)
-      event.preventDefault()
-    }
-
-    const handlePointerUp = (event: PointerEvent) => {
-      if (!isDraggingRef.current) return
-
-      isDraggingRef.current = false
-      viewport.classList.remove("is-dragging")
-      viewport.releasePointerCapture(event.pointerId)
-      startRaf()
-      event.preventDefault()
-    }
-
-    viewport.addEventListener("pointerdown", handlePointerDown)
-    window.addEventListener("pointermove", handlePointerMove, { passive: false })
-    window.addEventListener("pointerup", handlePointerUp, { passive: false })
-
-    return () => {
-      viewport.removeEventListener("pointerdown", handlePointerDown)
-      window.removeEventListener("pointermove", handlePointerMove)
-      window.removeEventListener("pointerup", handlePointerUp)
-    }
-  }, [setTransform, startRaf, wrapIfNeeded])
+    // Intentionally left blank – pointer dragging is disabled.
+  }, [])
 
   useEffect(() => {
     const viewport = viewportRef.current

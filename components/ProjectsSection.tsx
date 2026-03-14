@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef } from "react"
+import { useRouter } from "next/navigation"
 import { ScrollText, Sparkles } from "lucide-react"
 import { projects } from "@/utils/content"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
@@ -14,6 +15,7 @@ interface ProjectsSectionProps {
 export default function ProjectsSection({ revealClassName = "" }: ProjectsSectionProps) {
   const gap = 20
   const { shellRef, itemWidth } = useResponsiveCarouselWidth({ gap, minWidth: 240 })
+  const router = useRouter()
 
   return (
     <section
@@ -40,6 +42,8 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                 snap="left"
                 itemAlign="start"
                 renderItem={(project) => {
+                  const index = projects.indexOf(project)
+                  const archiveId = index >= 0 ? `project-${index}` : "project-unknown"
                   const hasGithubLink = Boolean(project.github && project.github !== "#")
                   const hasDemoLink = Boolean(project.demo && project.demo !== "#")
                   const hasAnyProjectLink = hasGithubLink || hasDemoLink
@@ -50,13 +54,15 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                       description={project.description}
                       runes={project.tech}
                       className="w-full"
+                      onClick={() => router.push(`/item/${archiveId}`)}
                     >
                       {hasAnyProjectLink ? (
-                        <div className="mt-4 flex gap-3">
+                        <div className="mt-4 flex flex-wrap gap-3">
                           {hasGithubLink && (
                             <a
                               href={project.github}
                               className="flex items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 medieval-button"
+                              onClick={(event) => event.stopPropagation()}
                             >
                               <ScrollText className="h-4 w-4" />
                               Grimoire
@@ -67,6 +73,7 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                             <a
                               href={project.demo}
                               className="flex items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 medieval-button"
+                              onClick={(event) => event.stopPropagation()}
                             >
                               <Sparkles className="h-4 w-4" />
                               Cast Spell

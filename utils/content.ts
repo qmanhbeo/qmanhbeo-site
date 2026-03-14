@@ -1,3 +1,5 @@
+import { travelYears } from "./travel"
+
 export interface Publication {
   title: string
   journal: string
@@ -21,7 +23,7 @@ export interface BlogPost {
   readTime: string
 }
 
-export type ArchiveEntryKind = "publication" | "project" | "note"
+export type ArchiveEntryKind = "publication" | "project" | "note" | "journey"
 
 export interface ArchiveEntry {
   id: string
@@ -191,5 +193,16 @@ export const archiveEntries: ArchiveEntry[] = [
     periodLabel: post.date,
     preview: post.excerpt,
     tags: [post.readTime, post.date],
+  })),
+  ...travelYears.map((journey, index) => ({
+    id: `journey-${index}`,
+    kind: "journey" as const,
+    kindLabel: "Journey",
+    collectionLabel: "Wanderer's Map",
+    title: journey.title,
+    subtitle: journey.location,
+    periodLabel: journey.year,
+    preview: journey.memory,
+    tags: [journey.location, journey.mood, journey.year],
   })),
 ]

@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Search, X } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { BookOpen, Search, X } from "lucide-react"
 import { archiveEntries, type ArchiveEntry } from "@/utils/content"
 
 interface ArchiveCodexOverlayProps {
@@ -19,9 +20,11 @@ const previewHeadingByKind: Record<ArchiveEntry["kind"], string> = {
   publication: "Abstract",
   project: "Spell Summary",
   note: "Note Preview",
+  journey: "Journey Notes",
 }
 
 export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOverlayProps) {
+  const router = useRouter()
   const [selectedEntryId, setSelectedEntryId] = useState(archiveEntries[0]?.id ?? "")
   const [searchQuery, setSearchQuery] = useState("")
   const [isAnimatingOpen, setIsAnimatingOpen] = useState(false)
@@ -230,7 +233,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
 
                 <div className="relative z-10 flex h-full min-h-0 flex-col">
                   {selectedEntry ? (
-                    <div className="scrollable-content scrollbar-fade min-h-0 flex-1 overflow-y-auto pb-2 pr-1">
+                    <div className="scrollable-content scrollbar-fade min-h-0 flex-1 overflow-y-auto pb-4 pr-1">
                       <div className="text-center">
                         <h4 className="font-cinzel text-3xl font-bold leading-tight text-amber-950">
                           {selectedEntry.title}
@@ -266,6 +269,20 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                             </span>
                           ))}
                         </div>
+                      </div>
+
+                      <div className="mt-6 text-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            router.push(`/item/${selectedEntry.id}`)
+                            onClose()
+                          }}
+                          className="inline-flex items-center gap-3 rounded-lg px-8 py-4 font-garamond text-lg text-orange-100 transition-all duration-300 medieval-button hover:ember-glow"
+                        >
+                          <BookOpen className="h-5 w-5" />
+                          See full scroll
+                        </button>
                       </div>
                     </div>
                   ) : (

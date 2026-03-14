@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
 import { publications, type Publication } from "@/utils/content"
@@ -11,6 +12,7 @@ interface PublicationsSectionProps {
 }
 
 export default function PublicationsSection({ revealClassName = "" }: PublicationsSectionProps) {
+  const router = useRouter()
   const {
     currentIndex: currentManuscript,
     isTransitioning: isManuscriptScrolling,
@@ -86,7 +88,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                 style={{ transform: `translateX(-${currentManuscript * 100}%)` }}
               >
                 {publications.map((publication: Publication, index) => {
-                  const hasReadableLink = Boolean(publication.link && publication.link !== "#")
+                  const archiveId = `publication-${index}`
 
                   return (
                     <div
@@ -209,24 +211,14 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                           </div>
 
                           <div className="mb-8 text-center">
-                            {hasReadableLink ? (
-                              <a
-                                href={publication.link}
-                                className="inline-flex items-center gap-3 rounded-lg px-8 py-4 font-garamond text-lg text-orange-100 transition-all duration-300 medieval-button hover:ember-glow"
-                              >
-                                <ExternalLink className="h-5 w-5" />
-                                Read Manuscript
-                              </a>
-                            ) : (
-                              <button
-                                type="button"
-                                className="inline-flex cursor-not-allowed items-center gap-3 rounded-lg px-8 py-4 font-garamond text-lg text-orange-100 opacity-50 medieval-button"
-                                disabled
-                              >
-                                <ExternalLink className="h-5 w-5" />
-                                Manuscript Unavailable
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => router.push(`/item/${archiveId}`)}
+                              className="inline-flex items-center gap-3 rounded-lg px-8 py-4 font-garamond text-lg text-orange-100 transition-all duration-300 medieval-button hover:ember-glow"
+                            >
+                              <ExternalLink className="h-5 w-5" />
+                              See full manuscript
+                            </button>
                           </div>
                         </div>
 

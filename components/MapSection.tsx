@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { useCallback } from "react"
+import { useRouter } from "next/navigation"
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
 import { getTravelYearKey, travelYears, type TravelYear } from "@/utils/travel"
@@ -13,6 +14,7 @@ interface MapSectionProps {
 }
 
 export default function MapSection({ revealClassName = "" }: MapSectionProps) {
+  const router = useRouter()
   const {
     currentIndex: currentMapYear,
     isTransitioning: isMapScrolling,
@@ -27,9 +29,13 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
     settleMs: 100,
   })
 
-  const handleJourneyClick = useCallback((journey: TravelYear) => {
-    console.log(`Navigate to full story for ${journey.year} - ${journey.location}`)
-  }, [])
+  const handleJourneyClick = useCallback(
+    (index: number) => {
+      const archiveId = `journey-${index}`
+      router.push(`/item/${archiveId}`)
+    },
+    [router],
+  )
 
   return (
     <section
@@ -143,7 +149,7 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                         <div className="text-center">
                           <button
                             type="button"
-                            onClick={() => handleJourneyClick(journey)}
+                            onClick={() => handleJourneyClick(index)}
                             className="inline-flex items-center gap-3 rounded-lg px-8 py-4 font-garamond text-lg text-orange-100 transition-all duration-300 medieval-button hover:ember-glow"
                           >
                             <BookOpen className="h-5 w-5" />
