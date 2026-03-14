@@ -3,15 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { createKeyHandler, createWheelHandler } from "@/utils/handlers"
 import { sections } from "@/utils/sections"
-import AboutSection from "./AboutSection"
-import BlogSection from "./BlogSection"
-import HeroSection from "./HeroSection"
-import LetterSection from "./LetterSection"
-import MapSection from "./MapSection"
-import ProjectsSection from "./ProjectsSection"
-import PublicationsSection from "./PublicationsSection"
 import ScrollArrows from "./ScrollArrows"
-import SocialsSection from "./SocialsSection"
 import WandererTrail from "./WandererTrail"
 
 export default function ScrollContainer() {
@@ -52,9 +44,17 @@ export default function ScrollContainer() {
 
       setIsScrolling(true)
       setRevealedSections((previous) => {
-        if (previous[index]) return previous
+        const from = currentSectionRef.current
+        const to = index
 
-        return previous.map((isRevealed, sectionIndex) => (sectionIndex === index ? true : isRevealed))
+        if (from === to) return previous
+
+        const start = Math.min(from, to)
+        const end = Math.max(from, to)
+
+        return previous.map((isRevealed, sectionIndex) =>
+          sectionIndex >= start && sectionIndex <= end ? true : isRevealed,
+        )
       })
 
       container.scrollTo({
@@ -155,14 +155,12 @@ export default function ScrollContainer() {
         className="horizontal-sections flex h-full overflow-x-hidden scroll-smooth"
         style={{ scrollSnapType: "x mandatory" }}
       >
-        <HeroSection revealClassName={revealedSections[0] ? "page-load-unblur" : ""} />
-        <AboutSection revealClassName={revealedSections[1] ? "page-load-unblur" : ""} />
-        <MapSection revealClassName={revealedSections[2] ? "page-load-unblur" : ""} />
-        <ProjectsSection revealClassName={revealedSections[3] ? "page-load-unblur" : ""} />
-        <PublicationsSection revealClassName={revealedSections[4] ? "page-load-unblur" : ""} />
-        <BlogSection revealClassName={revealedSections[5] ? "page-load-unblur" : ""} />
-        <LetterSection revealClassName={revealedSections[6] ? "page-load-unblur" : ""} />
-        <SocialsSection revealClassName={revealedSections[7] ? "page-load-unblur" : ""} />
+        {sections.map((section, index) => (
+          <section.Component
+            key={section.id}
+            revealClassName={revealedSections[index] ? "page-load-unblur" : ""}
+          />
+        ))}
       </div>
     </div>
   )
