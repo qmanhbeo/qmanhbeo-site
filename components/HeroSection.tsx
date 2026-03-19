@@ -55,9 +55,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
         </div>
       </div>
 
-      {isArchiveOverlayOpen ? (
-        <ArchiveCodexOverlay isOpen={isArchiveOverlayOpen} onClose={() => setIsArchiveOverlayOpen(false)} />
-      ) : null}
+      <ArchiveCodexOverlay isOpen={isArchiveOverlayOpen} onClose={() => setIsArchiveOverlayOpen(false)} />
       <LetterOverlay isOpen={isLetterOverlayOpen} onClose={() => setIsLetterOverlayOpen(false)} />
     </section>
   )

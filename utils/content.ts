@@ -14,6 +14,7 @@ export interface Project {
   tech: string[]
   github?: string
   demo?: string
+  related?: { label: string; url: string }[]
 }
 
 export interface BlogPost {
@@ -68,30 +69,37 @@ export const projects: Project[] = [
     description:
       "A trading sandbox built to feel less like a toy and more like a market, where reinforcement learning agents must live with costs, timing, settlement rules, and imperfect decisions.",
     tech: ["Reinforcement Learning", "PPO / RecurrentPPO", "LSTM / CNN", "Trading Simulation"],
+    related: [
+      { label: "Alpha-learning momentum model (public)", url: "https://github.com/qmanhbeo/VN-market-momentum-analysis" },
+    ],
   },
   {
     title: "GAIA: Agent-based Economic Simulation for Reinforcement Learning Decision Making",
     description:
       "An agent-based world of households, labour, food, water, and environmental limits, built as a place where resource-allocation policies can be tested against something closer to life.",
     tech: ["Agent-Based Modelling", "Simulation", "Reinforcement Learning", "Interactive Visualisation"],
+    github: "https://github.com/qmanhbeo/gaia-ecogrid",
   },
   {
     title: "Vietnamese Real Estate Data Pipeline",
     description:
       "A long haul through messy housing listings, where scraping, cleaning, imputation, and bilingual outputs turned scattered records into something usable.",
     tech: ["Web Scraping", "Data Cleaning", "Regex Parsing", "Exploratory Analysis"],
+    github: "https://github.com/qmanhbeo/VN-real-estate-scraper",
   },
   {
     title: "UK Public Procurement Data Collection and Analysis Pipeline",
     description:
       "A procurement data pipeline built from years of UK records, gathering scattered public traces into a form that policy questions can actually lean on.",
     tech: ["Public Data Collection", "Scraping", "Preprocessing", "Policy Analysis"],
+    github: "https://github.com/qmanhbeo/uk-procurement-data-pipeline",
   },
   {
     title: "Paths Untold: AI-Generated Interactive Story Game",
     description:
       "A story game where scenes are generated on the fly, memory lingers, emotions shift, and the world remembers enough to make choices feel like they matter.",
     tech: ["OpenAI API", "Narrative Systems", "State Tracking", "Save / Load"],
+    github: "https://github.com/qmanhbeo/paths-untold",
   },
   {
     title: "Arduino Robot for Environment Sensing and Learning",

@@ -24,6 +24,7 @@ const fieldClassName =
 export default function LetterComposer({ className = "" }: LetterComposerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [letterSent, setLetterSent] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const resetTimerRef = useRef<number | null>(null)
   const [formData, setFormData] = useState({
     name: "",
@@ -42,20 +43,32 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
   const handleLetterSubmit = async (event: FormEvent) => {
     event.preventDefault()
     setIsSubmitting(true)
+    setError(null)
 
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const res = await fetch('/api/send-letter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
 
-    setIsSubmitting(false)
-    setLetterSent(true)
+      if (!res.ok) throw new Error('Failed to send')
 
-    if (resetTimerRef.current !== null) {
-      window.clearTimeout(resetTimerRef.current)
+      setLetterSent(true)
+
+      if (resetTimerRef.current !== null) {
+        window.clearTimeout(resetTimerRef.current)
+      }
+
+      resetTimerRef.current = window.setTimeout(() => {
+        setLetterSent(false)
+        setFormData({ name: "", email: "", message: "" })
+      }, 5000)
+    } catch {
+      setError('The letter could not be sent. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
-
-    resetTimerRef.current = window.setTimeout(() => {
-      setLetterSent(false)
-      setFormData({ name: "", email: "", message: "" })
-    }, 5000)
   }
 
   useEffect(() => {
@@ -152,6 +165,12 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
                 placeholder="Share your thoughts, your work, your questions, or simply say hello."
               />
             </label>
+
+            {error && (
+              <p className="rounded-2xl border border-red-700/20 bg-red-50/80 px-4 py-3 font-garamond text-base text-red-800">
+                {error}
+              </p>
+            )}
 
             <div className="flex flex-col gap-4 border-t border-amber-900/15 pt-6 md:flex-row md:items-center md:justify-between">
               <p className="font-garamond text-lg italic text-amber-800">With warm regards from the hearth,</p>

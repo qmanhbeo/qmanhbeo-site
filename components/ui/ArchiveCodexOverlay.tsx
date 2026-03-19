@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, Search, X } from "lucide-react"
 import { archiveEntries, type ArchiveEntry } from "@/utils/content"
@@ -28,6 +28,9 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
   const [selectedEntryId, setSelectedEntryId] = useState(archiveEntries[0]?.id ?? "")
   const [searchQuery, setSearchQuery] = useState("")
   const [isAnimatingOpen, setIsAnimatingOpen] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
+  const closeTimerRef = useRef<number | null>(null)
 
   const normalizedQuery = searchQuery.trim().toLowerCase()
   const filteredEntries = archiveEntries.filter((entry) => {
@@ -51,26 +54,37 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
   const selectedEntry = filteredEntries.find((entry) => entry.id === selectedEntryId) ?? filteredEntries[0] ?? null
 
   useEffect(() => {
-    if (!isOpen) return
+    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current)
 
-    const animationFrame = window.requestAnimationFrame(() => {
-      setIsAnimatingOpen(true)
-    })
+    if (isOpen) {
+      setIsVisible(true)
+      setIsClosing(false)
+      const raf = window.requestAnimationFrame(() => setIsAnimatingOpen(true))
+      return () => window.cancelAnimationFrame(raf)
+    } else {
+      // Start close: reverse the book-page transforms, then unmount
+      setIsClosing(true)
+      setIsAnimatingOpen(false)
+      closeTimerRef.current = window.setTimeout(() => {
+        setIsVisible(false)
+        setIsClosing(false)
+      }, 600)
+    }
 
-    return () => window.cancelAnimationFrame(animationFrame)
+    return () => {
+      if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current)
+    }
   }, [isOpen])
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isVisible) return
 
     const originalOverflow = document.body.style.overflow
     const originalOverscrollBehavior = document.body.style.overscrollBehavior
     const originalOverlayLock = document.body.dataset.overlayLock
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose()
-      }
+      if (event.key === "Escape") onClose()
     }
 
     document.body.style.overflow = "hidden"
@@ -88,9 +102,9 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
       }
       document.removeEventListener("keydown", handleKeyDown)
     }
-  }, [isOpen, onClose])
+  }, [isVisible, onClose])
 
-  if (!isOpen) return null
+  if (!isVisible) return null
 
   return (
     <div
@@ -98,10 +112,16 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
       onClick={onClose}
       onWheelCapture={(event) => event.stopPropagation()}
     >
-      <div className="absolute inset-0 bg-slate-950/78 backdrop-blur-md" />
+      <div
+        className={`absolute inset-0 bg-slate-950/78 backdrop-blur-md ${
+          isClosing ? "animate-out fade-out duration-500 fill-mode-both" : "animate-in fade-in duration-300"
+        }`}
+      />
 
       <div
-        className="relative z-10 w-full max-w-6xl animate-in fade-in duration-300"
+        className={`relative z-10 w-full max-w-6xl ${
+          isClosing ? "animate-out fade-out duration-500 fill-mode-both" : "animate-in fade-in duration-300"
+        }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="archive-codex-title"

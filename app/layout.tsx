@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { EB_Garamond, Cinzel } from "next/font/google"
 import ScrollbarActivityManager from "@/components/ScrollbarActivityManager"
 import tabIcon from "@/img/tab-icon.png"
@@ -16,6 +16,12 @@ const cinzel = Cinzel({
   variable: "--font-cinzel",
   display: "swap",
 })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#1a0a00',
+}
 
 export const metadata: Metadata = {
   title: "Manh's Cozy Corner",

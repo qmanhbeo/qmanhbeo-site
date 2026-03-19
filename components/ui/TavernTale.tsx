@@ -46,7 +46,7 @@ export default function TavernTale({ title, excerpt, date, readTime, className =
         <div className="absolute top-3 right-8 w-2 h-2 ink-stain rounded-full opacity-30" />
         <div className="absolute bottom-4 left-3 w-1 h-1 ink-stain rounded-full opacity-40" />
 
-        <div className={`relative z-10 transition-all duration-500 ${isUnfurling ? "transform scale-105" : ""}`}>
+        <div className={`relative z-10 transition-transform duration-500 ${isUnfurling ? "scale-105" : ""}`}>
           <h3 className="text-xl font-bold text-amber-900 mb-3 font-cinzel group-hover:text-orange-700 transition-colors handwritten-title">
             {title}
           </h3>

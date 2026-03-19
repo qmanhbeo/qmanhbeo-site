@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { X } from "lucide-react"
 import LetterComposer from "./LetterComposer"
 
@@ -10,17 +10,38 @@ interface LetterOverlayProps {
 }
 
 export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
+  const [isVisible, setIsVisible] = useState(isOpen)
+  const [isExiting, setIsExiting] = useState(false)
+  const exitTimerRef = useRef<number | null>(null)
+
   useEffect(() => {
-    if (!isOpen) return
+    if (exitTimerRef.current !== null) window.clearTimeout(exitTimerRef.current)
+
+    if (isOpen) {
+      setIsVisible(true)
+      setIsExiting(false)
+    } else {
+      setIsExiting(true)
+      exitTimerRef.current = window.setTimeout(() => {
+        setIsVisible(false)
+        setIsExiting(false)
+      }, 320)
+    }
+
+    return () => {
+      if (exitTimerRef.current !== null) window.clearTimeout(exitTimerRef.current)
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isVisible) return
 
     const originalOverflow = document.body.style.overflow
     const originalOverscrollBehavior = document.body.style.overscrollBehavior
     const originalOverlayLock = document.body.dataset.overlayLock
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose()
-      }
+      if (event.key === "Escape") onClose()
     }
 
     document.body.style.overflow = "hidden"
@@ -38,9 +59,9 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
       }
       document.removeEventListener("keydown", handleKeyDown)
     }
-  }, [isOpen, onClose])
+  }, [isVisible, onClose])
 
-  if (!isOpen) return null
+  if (!isVisible) return null
 
   return (
     <div
@@ -48,10 +69,18 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
       onClick={onClose}
       onWheelCapture={(event) => event.stopPropagation()}
     >
-      <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-md" />
+      <div
+        className={`absolute inset-0 bg-slate-950/75 backdrop-blur-md ${
+          isExiting ? "animate-out fade-out duration-300 fill-mode-both" : "animate-in fade-in duration-300"
+        }`}
+      />
 
       <div
-        className="relative z-10 w-full max-w-5xl animate-in fade-in zoom-in-95 duration-300"
+        className={`relative z-10 flex w-full max-w-5xl flex-col overflow-hidden h-[calc(100dvh-2rem)] md:h-[calc(100dvh-3rem)] ${
+          isExiting
+            ? "animate-out fade-out zoom-out-95 duration-300 fill-mode-both"
+            : "animate-in fade-in zoom-in-95 duration-300"
+        }`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="letter-overlay-title"
@@ -67,7 +96,7 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
           <X className="h-5 w-5" />
         </button>
 
-        <div className="mb-4 px-4 text-center">
+        <div className="mb-4 flex-shrink-0 px-4 text-center">
           <h3 id="letter-overlay-title" className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">
             Write Him a Letter
           </h3>
@@ -76,7 +105,7 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
           </p>
         </div>
 
-        <div className="scrollable-content scrollbar-fade max-h-[calc(100vh-8rem)] overflow-y-auto">
+        <div className="scrollable-content scrollbar-fade min-h-0 flex-1 overflow-y-auto">
           <LetterComposer />
         </div>
       </div>

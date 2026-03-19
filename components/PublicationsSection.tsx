@@ -43,7 +43,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
 
         <div className="mb-4 min-h-0 flex-1">
           <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
-            <div className="absolute right-6 top-6 z-20 flex items-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm">
+            <div className="absolute right-6 top-6 z-20 flex items-center gap-4 rounded-full bg-amber-100 px-4 py-2 shadow-lg">
               <button
                 type="button"
                 onClick={navigateToPreviousManuscript}

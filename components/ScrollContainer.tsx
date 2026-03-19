@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { createKeyHandler, createWheelHandler } from "@/utils/handlers"
 import { sections } from "@/utils/sections"
 import ScrollArrows from "./ScrollArrows"
@@ -8,16 +8,44 @@ import WandererTrail from "./WandererTrail"
 
 export default function ScrollContainer() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [currentSection, setCurrentSection] = useState(0)
-  const [revealedSections, setRevealedSections] = useState(() => sections.map((_, index) => index === 0))
+
+  const [currentSection, setCurrentSection] = useState(() => {
+    if (typeof window === 'undefined') return 0
+    const saved = sessionStorage.getItem('returnSection')
+    if (!saved) return 0
+    const n = parseInt(saved, 10)
+    return isNaN(n) || n < 0 || n >= sections.length ? 0 : n
+  })
+
+  const [revealedSections, setRevealedSections] = useState(() => {
+    if (typeof window === 'undefined') return sections.map((_, i) => i === 0)
+    const saved = sessionStorage.getItem('returnSection')
+    const n = saved ? parseInt(saved, 10) : 0
+    const idx = isNaN(n) || n < 0 || n >= sections.length ? 0 : n
+    return sections.map((_, i) => i <= idx)
+  })
+
   const [isScrolling, setIsScrolling] = useState(false)
   const scrollTimeoutRef = useRef<number | null>(null)
-  const currentSectionRef = useRef(0)
+  const currentSectionRef = useRef(currentSection)
   const resizeFrameRef = useRef<number | null>(null)
 
   useEffect(() => {
     currentSectionRef.current = currentSection
   }, [currentSection])
+
+  useEffect(() => {
+    sessionStorage.setItem('returnSection', String(currentSection))
+  }, [currentSection])
+
+  useLayoutEffect(() => {
+    if (currentSection === 0) return
+    const container = containerRef.current
+    if (!container) return
+    container.style.scrollBehavior = 'auto'
+    container.scrollLeft = currentSection * container.clientWidth
+    container.style.scrollBehavior = ''
+  }, []) // intentionally empty — runs once on mount, currentSection is the restored value
 
   const alignToCurrentSection = useCallback(() => {
     const container = containerRef.current

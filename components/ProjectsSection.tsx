@@ -85,6 +85,21 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                           Repository and public demo links are not published yet.
                         </p>
                       )}
+
+                      {project.related && project.related.length > 0 && (
+                        <div className="mt-3 flex flex-col gap-1">
+                          {project.related.map((rel) => (
+                            <a
+                              key={rel.url}
+                              href={rel.url}
+                              className="font-garamond text-xs italic text-amber-700 underline-offset-2 hover:text-amber-900 hover:underline transition-colors"
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              ↳ {rel.label}
+                            </a>
+                          ))}
+                        </div>
+                      )}
                     </SpellScroll>
                   )
                 }}
