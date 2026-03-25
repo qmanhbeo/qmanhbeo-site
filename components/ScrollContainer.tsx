@@ -173,7 +173,7 @@ export default function ScrollContainer() {
   }, [])
 
   return (
-    <div className="relative h-screen overflow-hidden forest-campfire">
+    <div className="relative h-dvh overflow-hidden forest-campfire">
       <WandererTrail currentSection={currentSection} isMapExpanded={false} onSectionClick={scrollToSection} />
 
       <ScrollArrows onNavigateForward={navigateForward} onNavigateBackward={navigateBackward} />
