@@ -31,7 +31,7 @@ export default function LetterScrollTrigger({
   const isCompact = variant === "compact"
 
   const buttonClassName = isCompact
-    ? "group relative w-full max-w-md bg-transparent py-4 outline-none"
+    ? "group relative w-full max-w-md bg-transparent py-2 sm:py-4 outline-none"
     : "group relative w-full max-w-3xl bg-transparent py-8 outline-none"
 
   const frameClassName = isCompact
@@ -39,14 +39,14 @@ export default function LetterScrollTrigger({
     : "relative flex w-full items-center gap-0"
 
   const rollerClassName = isCompact
-    ? "pointer-events-none relative z-20 -mx-1.5 h-16 w-8 shrink-0 rounded-full border border-amber-100/15 transition-all duration-500 group-hover:h-20 group-focus-visible:h-20"
+    ? "pointer-events-none relative z-20 -mx-1.5 h-12 w-6 sm:h-16 sm:w-8 shrink-0 rounded-full border border-amber-100/15 transition-all duration-500 group-hover:h-14 sm:group-hover:h-20 group-focus-visible:h-14 sm:group-focus-visible:h-20"
     : "pointer-events-none relative z-20 -mx-2 h-20 w-10 shrink-0 rounded-full border border-amber-100/15 transition-all duration-500 group-hover:h-28 group-focus-visible:h-28"
 
   const surfaceClassName = isCompact
-    ? "relative z-10 block min-w-0 flex-1 overflow-hidden rounded-[1.5rem] border border-amber-900/25 px-5 py-3 text-center transition-all duration-500 group-hover:-translate-y-1 group-hover:py-5 group-focus-visible:-translate-y-1 group-focus-visible:py-5"
+    ? "relative z-10 block min-w-0 flex-1 overflow-hidden rounded-[1.5rem] border border-amber-900/25 px-3 py-2 sm:px-5 sm:py-3 text-center transition-all duration-500 group-hover:-translate-y-1 group-hover:py-3 sm:group-hover:py-5 group-focus-visible:-translate-y-1 group-focus-visible:py-3 sm:group-focus-visible:py-5"
     : "relative z-10 block min-w-0 flex-1 overflow-hidden rounded-[1.75rem] border border-amber-900/25 px-6 py-4 text-center transition-all duration-500 group-hover:-translate-y-1 group-hover:py-7 group-focus-visible:-translate-y-1 group-focus-visible:py-7"
 
-  const titleClassName = isCompact ? "font-cinzel text-xl font-bold md:text-2xl" : "font-cinzel text-2xl font-bold md:text-3xl"
+  const titleClassName = isCompact ? "font-cinzel text-base sm:text-xl font-bold md:text-2xl" : "font-cinzel text-2xl font-bold md:text-3xl"
   const helperClassName = isCompact
     ? "mx-auto block max-w-xl overflow-hidden font-garamond text-sm italic leading-relaxed text-amber-900 transition-all duration-500 max-h-0 opacity-0 group-hover:mt-3 group-hover:max-h-16 group-hover:opacity-100 group-focus-visible:mt-3 group-focus-visible:max-h-16 group-focus-visible:opacity-100"
     : "mx-auto block max-w-2xl overflow-hidden font-garamond text-base italic leading-relaxed text-amber-900 transition-all duration-500 max-h-0 opacity-0 group-hover:mt-4 group-hover:max-h-20 group-hover:opacity-100 group-focus-visible:mt-4 group-focus-visible:max-h-20 group-focus-visible:opacity-100"

@@ -43,8 +43,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
             />
           </div>
 
-          {/* Full scroll trigger on sm+ screens */}
-          <div className="hidden sm:block w-full max-w-md shrink-0">
+          <div className="w-full max-w-md shrink-0">
             <LetterScrollTrigger
               isOpen={isLetterOverlayOpen}
               onOpen={() => setIsLetterOverlayOpen(true)}
@@ -53,15 +52,6 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
               variant="compact"
             />
           </div>
-
-          {/* Quiet text link on mobile — dock already has the letter icon */}
-          <button
-            type="button"
-            onClick={() => setIsLetterOverlayOpen(true)}
-            className="sm:hidden font-garamond italic text-sm text-orange-300/70 hover:text-orange-200 transition-colors"
-          >
-            or send a letter
-          </button>
         </div>
       </div>
 
