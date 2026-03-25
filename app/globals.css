@@ -41,6 +41,7 @@
     --nav-trail-bottom-offset: 60px;
     --nav-trail-safe-margin: 40px;
     --nav-safe-area: calc(var(--nav-trail-height) + var(--nav-trail-bottom-offset) + var(--nav-trail-safe-margin));
+    --nav-marker-size: 40px;
   }
 
   .dark {
@@ -86,12 +87,12 @@
 
 .section-safe-area {
   padding-bottom: var(--nav-safe-area);
-  min-height: 100vh;
+  min-height: 100dvh;
   box-sizing: border-box;
 }
 
 .content-container {
-  max-height: calc(100vh - var(--nav-safe-area));
+  max-height: calc(100dvh - var(--nav-safe-area));
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -102,8 +103,18 @@
 
 .parchment-safe {
   margin-bottom: 2rem;
-  max-height: calc(100vh - var(--nav-safe-area) - 4rem);
+  max-height: calc(100dvh - var(--nav-safe-area) - 4rem);
   overflow-y: auto;
+}
+
+/* Mobile: tighten nav so it consumes less vertical space */
+@media (max-width: 767px) {
+  :root {
+    --nav-trail-height: 56px;
+    --nav-trail-bottom-offset: 16px;
+    --nav-trail-safe-margin: 16px;
+    --nav-marker-size: 32px;
+  }
 }
 
 /* =============================================================================
@@ -542,12 +553,12 @@
 .trail-transparent { position: relative; height: 100%; }
 .trail-path { position: absolute; top: 50%; left: 0; right: 0; height: 20px; transform: translateY(-50%); }
 .trail-svg { width: 100%; height: 100%; }
-.trail-markers { position: relative; height: 100%; padding: 0 40px; }
+.trail-markers { position: relative; height: 100%; padding: 0 clamp(8px, 3vw, 40px); }
 .trail-marker-container { position: absolute; top: 50%; transform: translateY(-50%); }
 
 .trail-marker {
   position: relative;
-  width: 40px; height: 40px;
+  width: var(--nav-marker-size); height: var(--nav-marker-size);
   background: radial-gradient(circle, rgba(139,69,19,0.8) 0%, rgba(101,67,33,0.9) 100%);
   border: 2px solid rgba(160,82,45,0.7);
   border-radius: 50%;
