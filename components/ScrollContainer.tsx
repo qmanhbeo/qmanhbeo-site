@@ -31,6 +31,7 @@ export default function ScrollContainer() {
   const resizeFrameRef = useRef<number | null>(null)
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
+  const touchTargetRef = useRef<Element | null>(null)
 
   useEffect(() => {
     currentSectionRef.current = currentSection
@@ -138,6 +139,7 @@ export default function ScrollContainer() {
     const handleTouchStart = (e: TouchEvent) => {
       touchStartXRef.current = e.touches[0].clientX
       touchStartYRef.current = e.touches[0].clientY
+      touchTargetRef.current = e.target as Element
     }
 
     const handleTouchEnd = (e: TouchEvent) => {
@@ -146,8 +148,13 @@ export default function ScrollContainer() {
       const deltaX = touchStartXRef.current - e.changedTouches[0].clientX
       const deltaY = touchStartYRef.current - e.changedTouches[0].clientY
 
+      const target = touchTargetRef.current
       touchStartXRef.current = null
       touchStartYRef.current = null
+      touchTargetRef.current = null
+
+      // Let inner swipe zones (e.g. Wanderer's Map chapters) own the gesture
+      if (target?.closest('[data-swipe-zone]')) return
 
       // Only navigate if swipe is clearly horizontal (not a vertical scroll attempt)
       if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < 48) return
@@ -162,6 +169,7 @@ export default function ScrollContainer() {
     const handleTouchCancel = () => {
       touchStartXRef.current = null
       touchStartYRef.current = null
+      touchTargetRef.current = null
     }
 
     container.addEventListener("touchstart", handleTouchStart, { passive: true })

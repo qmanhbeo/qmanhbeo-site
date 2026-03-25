@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback } from "react"
+import { useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
@@ -36,6 +36,30 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
     },
     [router],
   )
+
+  const swipeTouchStartXRef = useRef<number | null>(null)
+  const swipeTouchStartYRef = useRef<number | null>(null)
+
+  const handleSwipeTouchStart = useCallback((e: React.TouchEvent) => {
+    swipeTouchStartXRef.current = e.touches[0].clientX
+    swipeTouchStartYRef.current = e.touches[0].clientY
+  }, [])
+
+  const handleSwipeTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (swipeTouchStartXRef.current === null || swipeTouchStartYRef.current === null) return
+    const deltaX = swipeTouchStartXRef.current - e.changedTouches[0].clientX
+    const deltaY = swipeTouchStartYRef.current - e.changedTouches[0].clientY
+    swipeTouchStartXRef.current = null
+    swipeTouchStartYRef.current = null
+    if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < 48) return
+    if (deltaX > 0) goToNextYear()
+    else goToPreviousYear()
+  }, [goToNextYear, goToPreviousYear])
+
+  const handleSwipeTouchCancel = useCallback(() => {
+    swipeTouchStartXRef.current = null
+    swipeTouchStartYRef.current = null
+  }, [])
 
   const navPillContent = (
     <>
@@ -101,7 +125,13 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
 
         {/* Ghost panel */}
         <div className="mb-4 min-h-0 flex-1">
-          <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
+          <div
+            className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg"
+            data-swipe-zone
+            onTouchStart={handleSwipeTouchStart}
+            onTouchEnd={handleSwipeTouchEnd}
+            onTouchCancel={handleSwipeTouchCancel}
+          >
 
             {/* Desktop-only nav pill — absolute top-right inside panel */}
             <div className="hidden md:flex absolute right-6 top-6 z-20 items-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm">
