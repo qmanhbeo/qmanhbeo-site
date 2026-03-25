@@ -118,6 +118,14 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
           </p>
         </div>
 
+        {/* Swipe zone: nav pill + ghost panel (everything below the title) */}
+        <div
+          className="flex flex-col min-h-0 flex-1"
+          data-swipe-zone
+          onTouchStart={handleSwipeTouchStart}
+          onTouchEnd={handleSwipeTouchEnd}
+          onTouchCancel={handleSwipeTouchCancel}
+        >
         {/* Mobile-only nav pill — in-flow, centered above the panel */}
         <div className="md:hidden flex-shrink-0 flex items-center justify-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm mb-3 mx-auto">
           {navPillContent}
@@ -127,10 +135,6 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
         <div className="mb-4 min-h-0 flex-1">
           <div
             className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg"
-            data-swipe-zone
-            onTouchStart={handleSwipeTouchStart}
-            onTouchEnd={handleSwipeTouchEnd}
-            onTouchCancel={handleSwipeTouchCancel}
           >
 
             {/* Desktop-only nav pill — absolute top-right inside panel */}
@@ -217,6 +221,7 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
             </div>
           </div>
         </div>
+        </div> {/* end swipe zone */}
       </div>
     </section>
   )
