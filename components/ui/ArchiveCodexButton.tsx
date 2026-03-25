@@ -49,7 +49,7 @@ export default function ArchiveCodexButton({
       aria-haspopup="dialog"
       aria-expanded={isOpen}
     >
-      <div className="relative h-[7.5rem]" style={{ perspective: "1400px" }}>
+      <div className="relative h-[5rem] sm:h-[7.5rem]" style={{ perspective: "1400px" }}>
         <div
           className={`absolute inset-x-5 bottom-1 rounded-full blur-2xl transition-all duration-500 ${
             isExpanded ? "h-9 bg-amber-400/30" : "h-7 bg-amber-500/20"
@@ -65,7 +65,7 @@ export default function ArchiveCodexButton({
         </div>
 
         <div
-          className="absolute inset-y-4 right-3 w-3 rounded-r-md transition-all duration-500"
+          className="hidden sm:block absolute inset-y-4 right-3 w-3 rounded-r-md transition-all duration-500"
           style={{
             ...pagesStyle,
             opacity: isExpanded ? 1 : 0.92,
@@ -87,7 +87,7 @@ export default function ArchiveCodexButton({
           <div className="absolute inset-y-2 left-3 w-3 rounded-full bg-amber-950/12" />
           <div className="absolute inset-y-0 left-0 w-5 rounded-l-[1.35rem] bg-black/8" />
 
-          <div className="absolute left-[3.8rem] right-16 top-1/2 -translate-y-1/2 text-center text-amber-50">
+          <div className="absolute left-[3.8rem] right-4 sm:right-16 top-1/2 -translate-y-1/2 text-center text-amber-50">
             <div className="inline-flex items-center justify-center gap-3 whitespace-nowrap">
               <span className="font-cinzel text-lg font-bold tracking-wide md:text-xl">{label}</span>
               <Sparkles
@@ -112,7 +112,7 @@ export default function ArchiveCodexButton({
             </div>
           </div>
 
-          <div className="absolute bottom-4 right-8 flex items-center gap-2">
+          <div className="absolute bottom-4 right-8 hidden sm:flex items-center gap-2">
             {[0, 1].map((index) => (
               <div
                 key={index}
