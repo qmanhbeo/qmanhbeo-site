@@ -29,6 +29,8 @@ export default function ScrollContainer() {
   const scrollTimeoutRef = useRef<number | null>(null)
   const currentSectionRef = useRef(currentSection)
   const resizeFrameRef = useRef<number | null>(null)
+  const touchStartXRef = useRef<number | null>(null)
+  const touchStartYRef = useRef<number | null>(null)
 
   useEffect(() => {
     currentSectionRef.current = currentSection
@@ -128,6 +130,50 @@ export default function ScrollContainer() {
       document.removeEventListener("keydown", keyHandler)
     }
   }, [isScrolling, navigateBackward, navigateForward])
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartXRef.current = e.touches[0].clientX
+      touchStartYRef.current = e.touches[0].clientY
+    }
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (touchStartXRef.current === null || touchStartYRef.current === null) return
+
+      const deltaX = touchStartXRef.current - e.changedTouches[0].clientX
+      const deltaY = touchStartYRef.current - e.changedTouches[0].clientY
+
+      touchStartXRef.current = null
+      touchStartYRef.current = null
+
+      // Only navigate if swipe is clearly horizontal (not a vertical scroll attempt)
+      if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < 48) return
+
+      if (deltaX > 0) {
+        navigateForward()
+      } else {
+        navigateBackward()
+      }
+    }
+
+    const handleTouchCancel = () => {
+      touchStartXRef.current = null
+      touchStartYRef.current = null
+    }
+
+    container.addEventListener("touchstart", handleTouchStart, { passive: true })
+    container.addEventListener("touchend", handleTouchEnd, { passive: true })
+    container.addEventListener("touchcancel", handleTouchCancel, { passive: true })
+
+    return () => {
+      container.removeEventListener("touchstart", handleTouchStart)
+      container.removeEventListener("touchend", handleTouchEnd)
+      container.removeEventListener("touchcancel", handleTouchCancel)
+    }
+  }, [navigateForward, navigateBackward])
 
   useEffect(() => {
     const container = containerRef.current
