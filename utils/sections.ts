@@ -49,7 +49,7 @@ export const sections: SiteSection[] = [
   {
     id: "wanderer",
     title: "Wanderer's Map",
-    navLabel: "Paideia",
+    navLabel: "Journey",
     navDescription: "Paths across distant lands",
     icon: Map,
     Component: MapSection,

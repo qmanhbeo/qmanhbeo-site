@@ -9,21 +9,11 @@ import WandererTrail from "./WandererTrail"
 export default function ScrollContainer() {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const [currentSection, setCurrentSection] = useState(() => {
-    if (typeof window === 'undefined') return 0
-    const saved = sessionStorage.getItem('returnSection')
-    if (!saved) return 0
-    const n = parseInt(saved, 10)
-    return isNaN(n) || n < 0 || n >= sections.length ? 0 : n
-  })
+  const [currentSection, setCurrentSection] = useState(0)
 
-  const [revealedSections, setRevealedSections] = useState(() => {
-    if (typeof window === 'undefined') return sections.map((_, i) => i === 0)
-    const saved = sessionStorage.getItem('returnSection')
-    const n = saved ? parseInt(saved, 10) : 0
-    const idx = isNaN(n) || n < 0 || n >= sections.length ? 0 : n
-    return sections.map((_, i) => i <= idx)
-  })
+  const [revealedSections, setRevealedSections] = useState(() =>
+    sections.map((_, i) => i === 0)
+  )
 
   const [isScrolling, setIsScrolling] = useState(false)
   const scrollTimeoutRef = useRef<number | null>(null)
@@ -33,6 +23,23 @@ export default function ScrollContainer() {
   const touchStartYRef = useRef<number | null>(null)
   const touchTargetRef = useRef<Element | null>(null)
 
+  // Restore scroll position from sessionStorage after hydration
+  useEffect(() => {
+    const saved = sessionStorage.getItem('returnSection')
+    if (!saved) return
+    const n = parseInt(saved, 10)
+    const idx = isNaN(n) || n < 0 || n >= sections.length ? 0 : n
+    if (idx === 0) return
+    setCurrentSection(idx)
+    setRevealedSections(sections.map((_, i) => i <= idx))
+    const container = containerRef.current
+    if (container) {
+      container.style.scrollBehavior = 'auto'
+      container.scrollLeft = idx * container.clientWidth
+      container.style.scrollBehavior = ''
+    }
+  }, []) // intentionally empty — runs once after first render
+
   useEffect(() => {
     currentSectionRef.current = currentSection
   }, [currentSection])
@@ -40,15 +47,6 @@ export default function ScrollContainer() {
   useEffect(() => {
     sessionStorage.setItem('returnSection', String(currentSection))
   }, [currentSection])
-
-  useLayoutEffect(() => {
-    if (currentSection === 0) return
-    const container = containerRef.current
-    if (!container) return
-    container.style.scrollBehavior = 'auto'
-    container.scrollLeft = currentSection * container.clientWidth
-    container.style.scrollBehavior = ''
-  }, []) // intentionally empty — runs once on mount, currentSection is the restored value
 
   const alignToCurrentSection = useCallback(() => {
     const container = containerRef.current

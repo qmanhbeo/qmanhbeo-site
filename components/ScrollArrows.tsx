@@ -20,7 +20,7 @@ export default function ScrollArrows({ onNavigateForward, onNavigateBackward }: 
 
       <button
         onClick={onNavigateForward}
-        className="page-load-unblur-fixed hidden md:block fixed right-20 top-1/2 transform -translate-y-1/2 z-50 medieval-button rounded-full p-3 text-orange-100"
+        className="page-load-unblur-fixed hidden md:block fixed right-8 top-1/2 transform -translate-y-1/2 z-50 medieval-button rounded-full p-3 text-orange-100"
         aria-label="Next"
       >
         <ChevronRight className="w-6 h-6" />

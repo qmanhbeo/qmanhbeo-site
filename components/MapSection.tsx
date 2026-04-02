@@ -172,30 +172,21 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                           {journey.memory}
                         </p>
 
-                        {/* Images — hidden on mobile (placeholder only) */}
-                        <div className="mb-8 hidden md:grid grid-cols-3 gap-6">
-                          {[1, 2, 3].map((memoryIndex) => (
-                            <div key={memoryIndex} className="wooden-frame aspect-square overflow-hidden rounded-lg">
-                              <Image
-                                src="/placeholder.svg"
-                                alt={`Memory from ${journey.location} ${memoryIndex}`}
-                                width={160}
-                                height={160}
-                                className="h-full w-full object-cover"
-                              />
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Reflections card — hidden on mobile */}
-                        <div className="mb-8 hidden md:block rounded-lg border-l-4 border-amber-600 bg-amber-50 p-6">
-                          <h5 className="mb-3 font-cinzel text-lg font-bold text-amber-900">Journey Reflections</h5>
-                          <p className="font-garamond leading-relaxed text-amber-800">
-                            Each destination brought new perspectives and deeper understanding of the interconnected
-                            world we inhabit. The memories forged in {journey.location} continue to influence the path
-                            forward, weaving stories that connect past experiences with future adventures.
-                          </p>
-                        </div>
+                        {journey.photos && journey.photos.length > 0 && (
+                          <div className={`mb-6 hidden md:grid gap-4 ${journey.photos.length === 1 ? "grid-cols-1 max-w-xs mx-auto" : journey.photos.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
+                            {journey.photos.map((src, i) => (
+                              <div key={i} className="wooden-frame aspect-square overflow-hidden rounded-lg">
+                                <Image
+                                  src={src}
+                                  alt={`Memory from ${journey.location} ${i + 1}`}
+                                  width={240}
+                                  height={240}
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
                         <div className="text-center">
                           <button

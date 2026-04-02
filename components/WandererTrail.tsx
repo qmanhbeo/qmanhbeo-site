@@ -47,6 +47,8 @@ export default function WandererTrail({ currentSection, isMapExpanded, onSection
                   onClick={() => onSectionClick(index)}
                   onMouseEnter={() => setHoveredSection(index)}
                   onMouseLeave={() => setHoveredSection(null)}
+                  onFocus={() => setHoveredSection(index)}
+                  onBlur={() => setHoveredSection(null)}
                   aria-label={`Go to ${section.navLabel}`}
                 >
                   <div className="marker-icon">

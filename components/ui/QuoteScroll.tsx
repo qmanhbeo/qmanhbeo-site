@@ -58,15 +58,15 @@ export default function QuoteScroll({ quote, author, className = "" }: QuoteScro
         />
 
         <div className="relative z-10 text-center">
-          {/* <div className="mb-2 flex justify-start">
+          <div className="mb-2 flex justify-start">
             <span className="font-cinzel text-5xl leading-none text-amber-900/25 sm:text-6xl">&ldquo;</span>
-          </div> */}
+          </div>
 
           <blockquote className="mx-auto w-fit max-w-[42rem]">
             <p className="font-garamond text-lg italic leading-relaxed text-[#87401a] sm:text-xl">{quote}</p>
-            {/* <footer className="mt-6 text-right font-cinzel text-lg tracking-[0.16em] text-[#743313] sm:text-xl">
-              - {author}
-            </footer> */}
+            <footer className="mt-4 text-right font-cinzel text-sm tracking-[0.16em] text-[#743313] sm:text-base">
+              — {author}
+            </footer>
           </blockquote>
         </div>
       </div>

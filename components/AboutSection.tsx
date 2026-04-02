@@ -23,7 +23,7 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
       >
         {/* Portrait */}
         <div className="flex-shrink-0 flex justify-center pt-4 md:pt-0 md:flex-none md:text-center md:flex-col">
-          <div className="rounded-full w-24 h-24 sm:w-36 sm:h-36 md:w-56 md:h-56 overflow-hidden border border-amber-200/20 shadow-[0_0_30px_rgba(255,140,0,0.12)]">
+          <div className="rounded-full w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 overflow-hidden border border-amber-200/20 shadow-[0_0_30px_rgba(255,140,0,0.12)]">
             <Image
               src={avatarWizardy}
               alt="Portrait of Manh"
@@ -42,7 +42,7 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
               max-h-[calc(100dvh-var(--nav-safe-area)-9rem)]
               md:max-h-[60vh]"
           >
-            <h2 className="text-2xl md:text-4xl font-bold mb-2 md:mb-4 text-amber-900 font-cinzel">
+            <h2 className="text-3xl md:text-4xl font-bold mb-2 md:mb-4 text-amber-900 font-cinzel">
               The Lore of Leo
             </h2>
             <p className="text-sm md:text-base text-amber-800 mb-3 md:mb-6 font-garamond leading-relaxed italic">

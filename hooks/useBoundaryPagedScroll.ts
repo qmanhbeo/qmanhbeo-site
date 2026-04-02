@@ -33,7 +33,6 @@ export function useBoundaryPagedScroll({
     gestureId: 0,
     boundaryArmed: false,
     boundaryDirection: 0 as 1 | -1 | 0,
-    boundaryGestureId: null as number | null,
   })
 
   useEffect(() => {
@@ -54,7 +53,6 @@ export function useBoundaryPagedScroll({
     wheelStateRef.current.accum = 0
     wheelStateRef.current.boundaryArmed = false
     wheelStateRef.current.boundaryDirection = 0
-    wheelStateRef.current.boundaryGestureId = null
   }, [])
 
   const clearTransitionTimeout = useCallback(() => {
@@ -138,12 +136,7 @@ export function useBoundaryPagedScroll({
         if (!wheelState.boundaryArmed || wheelState.boundaryDirection !== direction) {
           wheelState.boundaryArmed = true
           wheelState.boundaryDirection = direction
-          wheelState.boundaryGestureId = wheelState.gestureId
           wheelState.accum = 0
-          return
-        }
-
-        if (wheelState.boundaryGestureId === wheelState.gestureId) {
           return
         }
 

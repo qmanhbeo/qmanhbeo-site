@@ -33,7 +33,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
     >
       <div className="firelight absolute inset-0 opacity-45" />
 
-      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-8`}>
+      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-4 sm:px-8`}>
         <div className="flex-shrink-0 py-6 text-center">
           <h2 className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">Scholar Scrolls</h2>
           <p className="map-sky-ink mx-auto max-w-2xl font-garamond text-lg italic">
@@ -43,7 +43,46 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
 
         <div className="mb-4 min-h-0 flex-1">
           <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
-            <div className="absolute right-6 top-6 z-20 flex items-center gap-4 rounded-full bg-amber-100 px-4 py-2 shadow-lg">
+            {/* Mobile nav pill — in-flow, above the panel */}
+            <div className="md:hidden flex-shrink-0 flex items-center justify-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm mb-3 mx-auto">
+              <button
+                type="button"
+                onClick={navigateToPreviousManuscript}
+                className="scale-75 rounded-full p-2 text-orange-100 transition-all duration-300 medieval-button hover:ember-glow disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Previous manuscript"
+                disabled={isManuscriptScrolling}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <div className="flex gap-2">
+                {publications.map((publication, index) => (
+                  <button
+                    key={publication.title}
+                    type="button"
+                    onClick={() => navigateToManuscript(index)}
+                    className={`h-3 w-3 rounded-full transition-all duration-500 ${
+                      currentManuscript === index
+                        ? "scale-125 bg-amber-600 scholar-hover-glow"
+                        : "bg-amber-300 hover:scale-110 hover:bg-amber-400"
+                    }`}
+                    aria-label={`Go to manuscript ${publication.title}`}
+                    disabled={isManuscriptScrolling && currentManuscript !== index}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={navigateToNextManuscript}
+                className="scale-75 rounded-full p-2 text-orange-100 transition-all duration-300 medieval-button hover:ember-glow disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Next manuscript"
+                disabled={isManuscriptScrolling}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Desktop nav pill — absolute top-right inside panel */}
+            <div className="hidden md:flex absolute right-6 top-6 z-20 items-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm">
               <button
                 type="button"
                 onClick={navigateToPreviousManuscript}
@@ -135,80 +174,6 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                               </div>
                             </div>
                           )}
-
-                          <div className="mb-8">
-                            <h4 className="map-sky-ink-strong mb-4 font-cinzel text-xl font-bold">Research Context</h4>
-                            <div className="mx-auto max-w-3xl rounded-lg border-l-4 border-amber-600 bg-amber-50 p-6">
-                              <p className="mb-4 font-garamond leading-relaxed text-amber-800">
-                                This manuscript represents a significant contribution to the field, building upon
-                                centuries of scholarly tradition while embracing modern methodologies. The research
-                                methodology employed combines rigorous analytical frameworks with innovative approaches to
-                                data interpretation.
-                              </p>
-                              <p className="mb-4 font-garamond leading-relaxed text-amber-800">
-                                The theoretical foundation draws from interdisciplinary perspectives, incorporating
-                                insights from multiple domains to create a comprehensive understanding of the subject
-                                matter. This holistic approach enables a more nuanced analysis of complex phenomena.
-                              </p>
-                              <p className="font-garamond leading-relaxed text-amber-800">
-                                Furthermore, the practical implications of this research extend beyond academic discourse,
-                                offering valuable insights for practitioners and policymakers working in related fields.
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="mb-8">
-                            <h4 className="map-sky-ink-strong mb-4 font-cinzel text-xl font-bold">Key Contributions</h4>
-                            <div className="mx-auto max-w-3xl space-y-4">
-                              <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
-                                <p className="font-garamond leading-relaxed text-amber-800">
-                                  &bull; Novel theoretical framework for understanding complex interdisciplinary
-                                  relationships and their implications for future research directions.
-                                </p>
-                              </div>
-                              <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
-                                <p className="font-garamond leading-relaxed text-amber-800">
-                                  &bull; Empirical validation through comprehensive data analysis and case studies
-                                  spanning multiple contexts and environments.
-                                </p>
-                              </div>
-                              <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
-                                <p className="font-garamond leading-relaxed text-amber-800">
-                                  &bull; Practical implications for policy development and implementation strategies in
-                                  contemporary organizational settings.
-                                </p>
-                              </div>
-                              <div className="rounded-lg border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4">
-                                <p className="font-garamond leading-relaxed text-amber-800">
-                                  &bull; Methodological innovations that can be applied to similar research questions in
-                                  related fields of study.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="mb-8">
-                            <h4 className="map-sky-ink-strong mb-4 font-cinzel text-xl font-bold">
-                              Research Methodology
-                            </h4>
-                            <div className="mx-auto max-w-3xl rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6">
-                              <p className="mb-4 font-garamond leading-relaxed text-amber-800">
-                                The research employs a mixed-methods approach, combining quantitative analysis with
-                                qualitative insights to provide a comprehensive understanding of the phenomena under
-                                investigation. Data collection involved multiple phases and diverse sources.
-                              </p>
-                              <p className="mb-4 font-garamond leading-relaxed text-amber-800">
-                                Statistical analysis was conducted using advanced computational methods, ensuring robust
-                                and reliable results. The qualitative component involved in-depth interviews and
-                                ethnographic observations to capture nuanced perspectives.
-                              </p>
-                              <p className="font-garamond leading-relaxed text-amber-800">
-                                Ethical considerations were paramount throughout the research process, with all
-                                procedures approved by relevant institutional review boards and conducted in accordance
-                                with established guidelines.
-                              </p>
-                            </div>
-                          </div>
 
                           <div className="mb-8 text-center">
                             <button
