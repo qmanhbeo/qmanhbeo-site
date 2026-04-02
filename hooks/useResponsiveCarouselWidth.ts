@@ -17,7 +17,7 @@ export function useResponsiveCarouselWidth({ gap, minWidth = 240 }: UseResponsiv
 
     const computeWidth = () => {
       const shellWidth = element.clientWidth
-      const cardsPerView = shellWidth >= 1280 ? 4 : shellWidth >= 1000 ? 3 : shellWidth >= 640 ? 2 : 1
+      const cardsPerView = shellWidth >= 1280 ? 4 : shellWidth >= 1000 ? 3 : shellWidth >= 600 ? 2 : 1
       const candidateWidth = (shellWidth - gap * (cardsPerView - 1)) / cardsPerView
       setItemWidth(Math.max(minWidth, Math.round(candidateWidth)))
     }
