@@ -48,6 +48,41 @@
   DONE — Persistent ember halo added via shadow-[0_0_14px_rgba(255,140,0,0.22)].
 
   ---
+  Playwright Audit — 2026-04-02
+
+  HIGH
+
+  - [ ] Carousel dot/pip buttons too small (Journey & Manuscripts sections)
+        Year dots: 12–15px wide — nearly impossible to click, fails touch targets
+        Manuscript selector dots: same issue
+        Prev/Next chevron buttons: 27×27px (below 28px threshold, far from WCAG 44px)
+
+  - [ ] Birmingham-20261.webp is 1.5MB — too large
+        Consistently fails to render within viewport on slow connections
+        Fix: compress/resize to ≤300KB, or add a low-res placeholder while loading
+
+  MEDIUM
+
+  - [ ] Mobile: Letter section title wraps awkwardly
+        "Write Him a Letter" breaks as "Write Him a" / "Letter" at 390px
+        Fix: text-nowrap or shorter mobile copy
+
+  - [ ] Mobile: Projects/Forge card text clips at top of scroll card
+
+  - [ ] Archive Codex: right panel doesn't auto-focus first search result
+        Searching filters the left list but detail panel keeps previously selected item
+
+  LOW
+
+  - [ ] "↳ Alpha-learning momentum model (public)" link is 27px tall (About & Publications)
+        Fix: add py-1 to the link element
+
+  - [ ] Chronicle scroll quote slightly clipped on right edge at 1440px
+
+  - [ ] Blog/Notes mobile: no affordance for more cards
+        Only 1 card visible, no swipe indicator or dot pagination shown
+
+  ---
   What's Working Well
 
   - The overall dark night-sky aesthetic is cohesive and atmospheric across all
