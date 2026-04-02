@@ -141,9 +141,10 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                         <div className="space-y-6 pb-8 text-center">
                           <div className="mb-8">
                             <h3 className="map-sky-ink-strong mb-6 font-cinzel text-3xl font-bold leading-tight md:text-4xl">
-                              <span className="map-sky-ink-strong illuminated-letter mr-2 font-cinzel text-6xl leading-none">
+                              <span className="hidden md:inline map-sky-ink-strong illuminated-letter mr-2 font-cinzel text-6xl leading-none">
                                 {publication.title.charAt(0)}
                               </span>
+                              <span className="md:hidden">{publication.title.charAt(0)}</span>
                               {publication.title.substring(1)}
                             </h3>
                           </div>

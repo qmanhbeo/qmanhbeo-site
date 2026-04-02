@@ -16,7 +16,7 @@ export default function LetterSection({ revealClassName = "" }: LetterSectionPro
       className="min-w-full h-full flex items-center justify-center relative overflow-hidden section-safe-area"
       style={{ scrollSnapAlign: "start" }}
     >
-      <div className="firelight absolute inset-0 opacity-35" />
+      <div className="firelight absolute inset-0 opacity-60" />
       <div className={`${revealClassName} relative z-10 px-4 sm:px-8 max-w-4xl w-full content-container`}>
         <div className="text-center mb-8 md:mb-16">
           <h2 className="text-5xl md:text-6xl font-bold mb-4 text-orange-100 font-cinzel">Write Him a Letter</h2>
@@ -27,6 +27,15 @@ export default function LetterSection({ revealClassName = "" }: LetterSectionPro
 
         <div className="w-full max-w-3xl mx-auto">
           <LetterScrollTrigger isOpen={isOverlayOpen} onOpen={() => setIsOverlayOpen(true)} />
+        </div>
+
+        <div className="mt-12 md:mt-16 text-center">
+          <p className="font-garamond text-lg md:text-xl italic leading-relaxed text-orange-300/70">
+            The fire is patient. The night is long.
+          </p>
+          <p className="font-garamond text-lg md:text-xl italic leading-relaxed text-orange-300/50">
+            Write whatever the pages stirred in you.
+          </p>
         </div>
       </div>
 
