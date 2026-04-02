@@ -19,9 +19,8 @@
   4. ✅ Letter Section — Desktop: Extremely sparse
   DONE — firelight bumped to opacity-60; ambient verse added below CTA.
 
-  5. About — Desktop: Timeline cuts off
-  desktop_section_01 — The Chronicle timeline entries appear clipped at the bottom. The
-   last entry is visually truncated with no scroll affordance shown.
+  5. ✅ About — Desktop: Timeline cuts off
+  DONE — max-h bumped to 78vh; bottom fade affordance added.
 
   6. ✅ Hero — Mobile: "Send a Letter" button missing
   DONE — h1 scaled from text-5xl to text-4xl on mobile; flame margin tightened.
