@@ -26,9 +26,8 @@
   DONE — h1 scaled from text-5xl to text-4xl on mobile; flame margin tightened.
   Both CTAs now visible above the fold on 390px.
 
-  7. About — Tablet: Layout breaks at 768px
-  tablet_section_01 — The portrait image and content panel don't reflow well. Content
-  is clipped and the right arrow overlaps the panel.
+  7. ✅ About — Tablet: Layout breaks at 768px
+  DONE — ScrollArrows changed to `hidden lg:block`; arrows no longer appear below 1024px.
 
   ---
   Minor Issues
@@ -37,19 +36,16 @@
   desktop_section_03 — Project cards have 3 columns of small, dense italic text on
   parchment. Low readability at a glance, especially for card subtitles/tags.
 
-  9. Blog — Desktop: First card partially cut
-  desktop_section_05 — The leftmost visible card is ~40% clipped on load, which looks
-  unpolished before the user scrolls.
+  9. ✅ Blog — Desktop: First card partially cut
+  DONE — Shell div changed from overflow-visible to overflow-hidden; peeking card clipped.
 
   10. Map year toggle pill — Desktop
   desktop_section_02 — The year pill 2021 appears against the section title but feels
   visually disconnected from the photo zone below. No visual cue linking the pill to
   the content it controls.
 
-  11. Hero — Nav arrow contrast
-  desktop_01_landing — Left < and right > arrows are barely visible against the dark
-  edges. They are the primary navigation affordance for non-scroll users, but they
-  blend into the background.
+  11. ✅ Hero — Nav arrow contrast
+  DONE — Persistent ember halo added via shadow-[0_0_14px_rgba(255,140,0,0.22)].
 
   ---
   What's Working Well

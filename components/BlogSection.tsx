@@ -38,7 +38,7 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
         <div className="min-h-0 flex-1">
           <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
             <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden p-8">
-              <div ref={shellRef} className="mx-auto flex w-full max-w-5xl items-center justify-center overflow-visible">
+              <div ref={shellRef} className="mx-auto flex w-full max-w-5xl items-center justify-center overflow-hidden">
                 <InfiniteCarousel
                   items={blogPosts}
                   itemWidth={itemWidth}

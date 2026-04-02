@@ -1,0 +1,703 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - img [ref=e6]
+    - generic [ref=e8]:
+      - button "Go to Hearth" [ref=e10] [cursor=pointer]:
+        - img [ref=e12]
+      - button "Go to Lore" [ref=e17] [cursor=pointer]:
+        - img [ref=e19]
+      - button "Go to Journey" [ref=e23] [cursor=pointer]:
+        - img [ref=e25]
+      - button "Go to Forge" [ref=e28] [cursor=pointer]:
+        - img [ref=e30]
+      - button "Go to Manuscripts" [ref=e35] [cursor=pointer]:
+        - img [ref=e37]
+      - button "Go to Notes" [ref=e41] [cursor=pointer]:
+        - img [ref=e43]
+      - button "Go to Letters" [ref=e46] [cursor=pointer]:
+        - img [ref=e48]
+      - button "Go to Fellowship" [ref=e52] [cursor=pointer]:
+        - img [ref=e54]
+  - button "Previous" [ref=e59] [cursor=pointer]:
+    - img [ref=e60]
+  - button "Next" [ref=e62] [cursor=pointer]:
+    - img [ref=e63]
+  - generic [ref=e65]:
+    - generic [ref=e68]:
+      - heading "Leonardo Manh Nguyen" [level=1] [ref=e73]
+      - paragraph [ref=e74]: By this fire are notes on reinforcement learning, agent-based worlds, sustainability, and the quiet craft of building systems that help people make fairer decisions under real constraints.
+      - generic [ref=e75]:
+        - button "Enter the Archive" [ref=e78] [cursor=pointer]:
+          - generic [ref=e80]:
+            - generic [ref=e81]: Enter the Archive
+            - img [ref=e82]
+        - button "Open the letter composer" [ref=e86] [cursor=pointer]:
+          - generic [ref=e88]:
+            - generic [ref=e89]:
+              - img [ref=e90]
+              - generic [ref=e94]: Send a Letter
+              - img [ref=e95]
+            - generic: Open the scroll and write by firelight.
+    - generic [ref=e101]:
+      - img "Portrait of Manh" [ref=e104]
+      - generic [ref=e106]:
+        - heading "The Lore of Leo" [level=2] [ref=e107]
+        - paragraph [ref=e108]: "He is a Vietnamese researcher and builder whose path began in economics and slowly wandered into AI, simulations, data systems, and sustainability. What ties it all together is a simple question: how do we build tools that stay honest about the world they are meant to serve, especially when resources are scarce, trade-offs are real, and people must live with the outcomes?"
+        - generic [ref=e109]:
+          - heading "Chronicle of Adventures" [level=3] [ref=e110]
+          - generic [ref=e111]:
+            - generic [ref=e112]: "2021"
+            - generic [ref=e113]: Set out from UEH in Applied Economics, following questions about systems, incentives, and how people live within them.
+          - generic [ref=e114]:
+            - generic [ref=e115]: "2023"
+            - generic [ref=e116]: Learned the patience of research through forecasting work and time-series econometrics.
+          - generic [ref=e117]:
+            - generic [ref=e118]: "2024"
+            - generic [ref=e119]: Entered energy and policy research at EEPSEA, and received the UEH Young Researcher Award.
+          - generic [ref=e120]:
+            - generic [ref=e121]: "2025"
+            - generic [ref=e122]: Crossed through Xi'an and then Birmingham, where design, AI, and sustainability began to converge.
+          - generic [ref=e123]:
+            - generic [ref=e124]: "2025"
+            - generic [ref=e125]: Worked with the SHAPE AI Challenge and brought research to ELG 2025.
+          - generic [ref=e126]:
+            - generic [ref=e127]: "2026"
+            - generic [ref=e128]: Now building reinforcement learning worlds, agent-based economies, and data systems shaped by real constraints.
+        - generic [ref=e129]:
+          - heading "The Path Forward" [level=3] [ref=e130]
+          - paragraph [ref=e131]: These days, that work takes the shape of reinforcement learning environments, agent-based simulations, public data pipelines, and research on sustainability, energy, and equitable resource allocation.
+          - paragraph [ref=e132]: He is less interested in systems that look clever in a vacuum than in ones that can survive contact with institutions, human behaviour, imperfect data, and the friction of ordinary life.
+          - paragraph [ref=e133]: That is the thread running through the scrolls on this site. AI, economics, and data are not here as trophies. They are here because they might help us see trade-offs more clearly, allocate resources more wisely, and leave a little more room for fairness than we found.
+          - paragraph [ref=e135]: "\"The systems worth building are the ones that remember people must live inside their consequences.\""
+    - generic [ref=e138]:
+      - generic [ref=e139]:
+        - heading "Wanderer's Map" [level=2] [ref=e140]
+        - paragraph [ref=e141]: Paths walked, stories gathered, memories kindled across distant lands
+      - generic [ref=e144]:
+        - generic [ref=e145]:
+          - button "Previous journey" [ref=e146] [cursor=pointer]:
+            - img [ref=e147]
+          - generic [ref=e149]:
+            - button "Go to year 2021–2023" [ref=e150] [cursor=pointer]
+            - button "Go to year 2024" [ref=e151] [cursor=pointer]
+            - button "Go to year 2025–2026" [ref=e152] [cursor=pointer]
+          - button "Next journey" [ref=e153] [cursor=pointer]:
+            - img [ref=e154]
+        - generic [ref=e157]:
+          - generic [ref=e159]:
+            - generic [ref=e160]:
+              - generic [ref=e161]:
+                - generic [ref=e162]:
+                  - generic [ref=e163]: 2021–2023
+                  - generic [ref=e164]: curious
+                - heading "Economics, Questions, and First Principles" [level=4] [ref=e165]
+                - paragraph [ref=e166]: Ho Chi Minh City, Vietnam
+              - paragraph [ref=e167]: At the University of Economics Ho Chi Minh City, economics became a way to ask sharper questions about how people, systems, and incentives shape the world we live in. Research assistance and teaching support deepened the empirical work — energy forecasting, turning methods into something explainable.
+              - generic [ref=e168]:
+                - img "Memory from Ho Chi Minh City, Vietnam 1" [ref=e170]
+                - img "Memory from Ho Chi Minh City, Vietnam 2" [ref=e172]
+              - button "Read Full Story" [ref=e174] [cursor=pointer]:
+                - img [ref=e175]
+                - text: Read Full Story
+            - paragraph [ref=e178]: Chapter 1 of 3 • Ho Chi Minh City, Vietnam
+          - generic [ref=e180]:
+            - generic [ref=e181]:
+              - generic [ref=e182]:
+                - generic [ref=e183]:
+                  - generic [ref=e184]: "2024"
+                  - generic [ref=e185]: grounded
+                - heading "Energy, Policy, and Real-World Stakes" [level=4] [ref=e186]
+                - paragraph [ref=e187]: Ho Chi Minh City, Vietnam
+              - paragraph [ref=e188]: "Work with EEPSEA made the stakes concrete: energy poverty, energy transition, and socioeconomic outcomes are not abstractions when policy meets everyday life."
+              - generic [ref=e189]:
+                - img "Memory from Ho Chi Minh City, Vietnam 1" [ref=e191]
+                - img "Memory from Ho Chi Minh City, Vietnam 2" [ref=e193]
+              - button "Read Full Story" [ref=e195] [cursor=pointer]:
+                - img [ref=e196]
+                - text: Read Full Story
+            - paragraph [ref=e199]: Chapter 1 of 3 • Ho Chi Minh City, Vietnam
+          - generic [ref=e201]:
+            - generic [ref=e202]:
+              - generic [ref=e203]:
+                - generic [ref=e204]:
+                  - generic [ref=e205]: 2025–2026
+                  - generic [ref=e206]: driven
+                - heading "AI for Sustainable Development" [level=4] [ref=e207]
+                - paragraph [ref=e208]: Birmingham, United Kingdom
+              - paragraph [ref=e209]: "At Birmingham, reinforcement learning and sustainability stopped being separate interests. They became one line of work: resource allocation, public systems, and fairer decision making under real constraints."
+              - generic [ref=e210]:
+                - img "Memory from Birmingham, United Kingdom 1" [ref=e212]
+                - img "Memory from Birmingham, United Kingdom 2" [ref=e214]
+                - img "Memory from Birmingham, United Kingdom 3" [ref=e216]
+              - button "Read Full Story" [ref=e218] [cursor=pointer]:
+                - img [ref=e219]
+                - text: Read Full Story
+            - paragraph [ref=e222]: Chapter 1 of 3 • Birmingham, United Kingdom
+    - generic [ref=e225]:
+      - generic [ref=e226]:
+        - heading "Spell Scrolls" [level=2] [ref=e227]
+        - paragraph [ref=e228]: Enchanted works forged in the fires of creativity. Take a scroll and wander.
+      - region "Infinite carousel" [ref=e232]:
+        - generic [ref=e233]:
+          - generic [ref=e243] [cursor=pointer]:
+            - heading "Vietnam Stock Reinforcement Learning Sandbox" [level=3] [ref=e244]
+            - paragraph [ref=e245]: A trading sandbox built to feel less like a toy and more like a market, where reinforcement learning agents must live with costs, timing, settlement rules, and imperfect decisions.
+            - generic [ref=e246]:
+              - generic [ref=e247]: Reinforcement Learning
+              - generic [ref=e248]: PPO / RecurrentPPO
+              - generic [ref=e249]: LSTM / CNN
+              - generic [ref=e250]: Trading Simulation
+            - generic [ref=e251]:
+              - paragraph [ref=e252]: Repository and public demo links are not published yet.
+              - link "↳ Alpha-learning momentum model (public)" [ref=e254]:
+                - /url: https://github.com/qmanhbeo/VN-market-momentum-analysis
+          - generic [ref=e265] [cursor=pointer]:
+            - 'heading "GAIA: Agent-based Economic Simulation for Reinforcement Learning Decision Making" [level=3] [ref=e266]'
+            - paragraph [ref=e267]: An agent-based world of households, labour, food, water, and environmental limits, built as a place where resource-allocation policies can be tested against something closer to life.
+            - generic [ref=e268]:
+              - generic [ref=e269]: Agent-Based Modelling
+              - generic [ref=e270]: Simulation
+              - generic [ref=e271]: Reinforcement Learning
+              - generic [ref=e272]: Interactive Visualisation
+            - link "Grimoire" [ref=e275]:
+              - /url: https://github.com/qmanhbeo/gaia-ecogrid
+              - img [ref=e276]
+              - text: Grimoire
+          - generic [ref=e291] [cursor=pointer]:
+            - heading "Vietnamese Real Estate Data Pipeline" [level=3] [ref=e292]
+            - paragraph [ref=e293]: A long haul through messy housing listings, where scraping, cleaning, imputation, and bilingual outputs turned scattered records into something usable.
+            - generic [ref=e294]:
+              - generic [ref=e295]: Web Scraping
+              - generic [ref=e296]: Data Cleaning
+              - generic [ref=e297]: Regex Parsing
+              - generic [ref=e298]: Exploratory Analysis
+            - link "Grimoire" [ref=e301]:
+              - /url: https://github.com/qmanhbeo/VN-real-estate-scraper
+              - img [ref=e302]
+              - text: Grimoire
+          - generic [ref=e317] [cursor=pointer]:
+            - heading "UK Public Procurement Data Collection and Analysis Pipeline" [level=3] [ref=e318]
+            - paragraph [ref=e319]: A procurement data pipeline built from years of UK records, gathering scattered public traces into a form that policy questions can actually lean on.
+            - generic [ref=e320]:
+              - generic [ref=e321]: Public Data Collection
+              - generic [ref=e322]: Scraping
+              - generic [ref=e323]: Preprocessing
+              - generic [ref=e324]: Policy Analysis
+            - link "Grimoire" [ref=e327]:
+              - /url: https://github.com/qmanhbeo/uk-procurement-data-pipeline
+              - img [ref=e328]
+              - text: Grimoire
+          - generic [ref=e343] [cursor=pointer]:
+            - 'heading "Paths Untold: AI-Generated Interactive Story Game" [level=3] [ref=e344]'
+            - paragraph [ref=e345]: A story game where scenes are generated on the fly, memory lingers, emotions shift, and the world remembers enough to make choices feel like they matter.
+            - generic [ref=e346]:
+              - generic [ref=e347]: OpenAI API
+              - generic [ref=e348]: Narrative Systems
+              - generic [ref=e349]: State Tracking
+              - generic [ref=e350]: Save / Load
+            - link "Grimoire" [ref=e353]:
+              - /url: https://github.com/qmanhbeo/paths-untold
+              - img [ref=e354]
+              - text: Grimoire
+          - generic [ref=e369] [cursor=pointer]:
+            - heading "Arduino Robot for Environment Sensing and Learning" [level=3] [ref=e370]
+            - paragraph [ref=e371]: A small embodied experiment in sensing and learning, beginning with humble lights and motors and reaching toward something that can adapt to its surroundings.
+            - generic [ref=e372]:
+              - generic [ref=e373]: Arduino
+              - generic [ref=e374]: Sensors
+              - generic [ref=e375]: Motor Control
+              - generic [ref=e376]: Embodied AI
+            - paragraph [ref=e378]: Repository and public demo links are not published yet.
+          - generic [ref=e389] [cursor=pointer]:
+            - heading "Vietnam Stock Reinforcement Learning Sandbox" [level=3] [ref=e390]
+            - paragraph [ref=e391]: A trading sandbox built to feel less like a toy and more like a market, where reinforcement learning agents must live with costs, timing, settlement rules, and imperfect decisions.
+            - generic [ref=e392]:
+              - generic [ref=e393]: Reinforcement Learning
+              - generic [ref=e394]: PPO / RecurrentPPO
+              - generic [ref=e395]: LSTM / CNN
+              - generic [ref=e396]: Trading Simulation
+            - generic [ref=e397]:
+              - paragraph [ref=e398]: Repository and public demo links are not published yet.
+              - link "↳ Alpha-learning momentum model (public)" [ref=e400]:
+                - /url: https://github.com/qmanhbeo/VN-market-momentum-analysis
+          - generic [ref=e411] [cursor=pointer]:
+            - 'heading "GAIA: Agent-based Economic Simulation for Reinforcement Learning Decision Making" [level=3] [ref=e412]'
+            - paragraph [ref=e413]: An agent-based world of households, labour, food, water, and environmental limits, built as a place where resource-allocation policies can be tested against something closer to life.
+            - generic [ref=e414]:
+              - generic [ref=e415]: Agent-Based Modelling
+              - generic [ref=e416]: Simulation
+              - generic [ref=e417]: Reinforcement Learning
+              - generic [ref=e418]: Interactive Visualisation
+            - link "Grimoire" [ref=e421]:
+              - /url: https://github.com/qmanhbeo/gaia-ecogrid
+              - img [ref=e422]
+              - text: Grimoire
+          - generic [ref=e437] [cursor=pointer]:
+            - heading "Vietnamese Real Estate Data Pipeline" [level=3] [ref=e438]
+            - paragraph [ref=e439]: A long haul through messy housing listings, where scraping, cleaning, imputation, and bilingual outputs turned scattered records into something usable.
+            - generic [ref=e440]:
+              - generic [ref=e441]: Web Scraping
+              - generic [ref=e442]: Data Cleaning
+              - generic [ref=e443]: Regex Parsing
+              - generic [ref=e444]: Exploratory Analysis
+            - link "Grimoire" [ref=e447]:
+              - /url: https://github.com/qmanhbeo/VN-real-estate-scraper
+              - img [ref=e448]
+              - text: Grimoire
+          - generic [ref=e463] [cursor=pointer]:
+            - heading "UK Public Procurement Data Collection and Analysis Pipeline" [level=3] [ref=e464]
+            - paragraph [ref=e465]: A procurement data pipeline built from years of UK records, gathering scattered public traces into a form that policy questions can actually lean on.
+            - generic [ref=e466]:
+              - generic [ref=e467]: Public Data Collection
+              - generic [ref=e468]: Scraping
+              - generic [ref=e469]: Preprocessing
+              - generic [ref=e470]: Policy Analysis
+            - link "Grimoire" [ref=e473]:
+              - /url: https://github.com/qmanhbeo/uk-procurement-data-pipeline
+              - img [ref=e474]
+              - text: Grimoire
+          - generic [ref=e489] [cursor=pointer]:
+            - 'heading "Paths Untold: AI-Generated Interactive Story Game" [level=3] [ref=e490]'
+            - paragraph [ref=e491]: A story game where scenes are generated on the fly, memory lingers, emotions shift, and the world remembers enough to make choices feel like they matter.
+            - generic [ref=e492]:
+              - generic [ref=e493]: OpenAI API
+              - generic [ref=e494]: Narrative Systems
+              - generic [ref=e495]: State Tracking
+              - generic [ref=e496]: Save / Load
+            - link "Grimoire" [ref=e499]:
+              - /url: https://github.com/qmanhbeo/paths-untold
+              - img [ref=e500]
+              - text: Grimoire
+          - generic [ref=e515] [cursor=pointer]:
+            - heading "Arduino Robot for Environment Sensing and Learning" [level=3] [ref=e516]
+            - paragraph [ref=e517]: A small embodied experiment in sensing and learning, beginning with humble lights and motors and reaching toward something that can adapt to its surroundings.
+            - generic [ref=e518]:
+              - generic [ref=e519]: Arduino
+              - generic [ref=e520]: Sensors
+              - generic [ref=e521]: Motor Control
+              - generic [ref=e522]: Embodied AI
+            - paragraph [ref=e524]: Repository and public demo links are not published yet.
+          - generic [ref=e535] [cursor=pointer]:
+            - heading "Vietnam Stock Reinforcement Learning Sandbox" [level=3] [ref=e536]
+            - paragraph [ref=e537]: A trading sandbox built to feel less like a toy and more like a market, where reinforcement learning agents must live with costs, timing, settlement rules, and imperfect decisions.
+            - generic [ref=e538]:
+              - generic [ref=e539]: Reinforcement Learning
+              - generic [ref=e540]: PPO / RecurrentPPO
+              - generic [ref=e541]: LSTM / CNN
+              - generic [ref=e542]: Trading Simulation
+            - generic [ref=e543]:
+              - paragraph [ref=e544]: Repository and public demo links are not published yet.
+              - link "↳ Alpha-learning momentum model (public)" [ref=e546]:
+                - /url: https://github.com/qmanhbeo/VN-market-momentum-analysis
+          - generic [ref=e557] [cursor=pointer]:
+            - 'heading "GAIA: Agent-based Economic Simulation for Reinforcement Learning Decision Making" [level=3] [ref=e558]'
+            - paragraph [ref=e559]: An agent-based world of households, labour, food, water, and environmental limits, built as a place where resource-allocation policies can be tested against something closer to life.
+            - generic [ref=e560]:
+              - generic [ref=e561]: Agent-Based Modelling
+              - generic [ref=e562]: Simulation
+              - generic [ref=e563]: Reinforcement Learning
+              - generic [ref=e564]: Interactive Visualisation
+            - link "Grimoire" [ref=e567]:
+              - /url: https://github.com/qmanhbeo/gaia-ecogrid
+              - img [ref=e568]
+              - text: Grimoire
+          - generic [ref=e583] [cursor=pointer]:
+            - heading "Vietnamese Real Estate Data Pipeline" [level=3] [ref=e584]
+            - paragraph [ref=e585]: A long haul through messy housing listings, where scraping, cleaning, imputation, and bilingual outputs turned scattered records into something usable.
+            - generic [ref=e586]:
+              - generic [ref=e587]: Web Scraping
+              - generic [ref=e588]: Data Cleaning
+              - generic [ref=e589]: Regex Parsing
+              - generic [ref=e590]: Exploratory Analysis
+            - link "Grimoire" [ref=e593]:
+              - /url: https://github.com/qmanhbeo/VN-real-estate-scraper
+              - img [ref=e594]
+              - text: Grimoire
+          - generic [ref=e609] [cursor=pointer]:
+            - heading "UK Public Procurement Data Collection and Analysis Pipeline" [level=3] [ref=e610]
+            - paragraph [ref=e611]: A procurement data pipeline built from years of UK records, gathering scattered public traces into a form that policy questions can actually lean on.
+            - generic [ref=e612]:
+              - generic [ref=e613]: Public Data Collection
+              - generic [ref=e614]: Scraping
+              - generic [ref=e615]: Preprocessing
+              - generic [ref=e616]: Policy Analysis
+            - link "Grimoire" [ref=e619]:
+              - /url: https://github.com/qmanhbeo/uk-procurement-data-pipeline
+              - img [ref=e620]
+              - text: Grimoire
+          - generic [ref=e635] [cursor=pointer]:
+            - 'heading "Paths Untold: AI-Generated Interactive Story Game" [level=3] [ref=e636]'
+            - paragraph [ref=e637]: A story game where scenes are generated on the fly, memory lingers, emotions shift, and the world remembers enough to make choices feel like they matter.
+            - generic [ref=e638]:
+              - generic [ref=e639]: OpenAI API
+              - generic [ref=e640]: Narrative Systems
+              - generic [ref=e641]: State Tracking
+              - generic [ref=e642]: Save / Load
+            - link "Grimoire" [ref=e645]:
+              - /url: https://github.com/qmanhbeo/paths-untold
+              - img [ref=e646]
+              - text: Grimoire
+          - generic [ref=e661] [cursor=pointer]:
+            - heading "Arduino Robot for Environment Sensing and Learning" [level=3] [ref=e662]
+            - paragraph [ref=e663]: A small embodied experiment in sensing and learning, beginning with humble lights and motors and reaching toward something that can adapt to its surroundings.
+            - generic [ref=e664]:
+              - generic [ref=e665]: Arduino
+              - generic [ref=e666]: Sensors
+              - generic [ref=e667]: Motor Control
+              - generic [ref=e668]: Embodied AI
+            - paragraph [ref=e670]: Repository and public demo links are not published yet.
+    - generic [ref=e674]:
+      - generic [ref=e675]:
+        - heading "Scholar Scrolls" [level=2] [ref=e676]
+        - paragraph [ref=e677]: Manuscripts of scholarly wisdom, preserved in the digital scriptorium
+      - generic [ref=e679]:
+        - generic [ref=e680]:
+          - button "Previous manuscript" [ref=e681] [cursor=pointer]:
+            - img [ref=e682]
+          - generic [ref=e684]:
+            - 'button "Go to manuscript Socioeconomic Effects of Delays in Renewable Energy Projects: Evidence from Vietnam" [ref=e685] [cursor=pointer]'
+            - 'button "Go to manuscript Longitudinal Urban-Rural Energy Burden Disparities: A Decomposition Analysis of Vietnam" [ref=e686] [cursor=pointer]'
+            - 'button "Go to manuscript Verbal Violence within the Family as a Contributing Factor to the Emerging ''Snowflake Generation'': A Case of Ho Chi Minh City''s Youth" [ref=e687] [cursor=pointer]'
+          - button "Next manuscript" [ref=e688] [cursor=pointer]:
+            - img [ref=e689]
+        - generic [ref=e692]:
+          - generic [ref=e694]:
+            - generic [ref=e695]:
+              - 'heading "S ocioeconomic Effects of Delays in Renewable Energy Projects: Evidence from Vietnam" [level=3] [ref=e697]'
+              - generic [ref=e698]:
+                - generic [ref=e699]:
+                  - generic [ref=e700]: "Journal:"
+                  - generic [ref=e701]: ELG 2025
+                - generic [ref=e703]:
+                  - generic [ref=e704]: "Year:"
+                  - generic [ref=e705]: Anno Domini 2025
+              - generic [ref=e706]:
+                - heading "Abstract" [level=4] [ref=e707]
+                - paragraph [ref=e709]: "A paper on what happens when renewable energy arrives late: not just to grids and plans, but to households, local economies, and the wider promises attached to transition."
+              - button "See full manuscript" [ref=e711] [cursor=pointer]:
+                - img [ref=e712]
+                - text: See full manuscript
+            - paragraph [ref=e717]: Manuscript 1 of 3 • 2025
+          - generic [ref=e719]:
+            - generic [ref=e720]:
+              - 'heading "L ongitudinal Urban-Rural Energy Burden Disparities: A Decomposition Analysis of Vietnam" [level=3] [ref=e722]'
+              - generic [ref=e723]:
+                - generic [ref=e724]:
+                  - generic [ref=e725]: "Journal:"
+                  - generic [ref=e726]: Working Paper
+                - generic [ref=e728]:
+                  - generic [ref=e729]: "Year:"
+                  - generic [ref=e730]: Anno Domini 2025
+              - generic [ref=e731]:
+                - heading "Abstract" [level=4] [ref=e732]
+                - paragraph [ref=e734]: A working paper tracing how the weight of energy costs falls unevenly across urban and rural households in Vietnam, and what those differences reveal about inequality over time.
+              - button "See full manuscript" [ref=e736] [cursor=pointer]:
+                - img [ref=e737]
+                - text: See full manuscript
+            - paragraph [ref=e742]: Manuscript 1 of 3 • 2025
+          - generic [ref=e744]:
+            - generic [ref=e745]:
+              - 'heading "V erbal Violence within the Family as a Contributing Factor to the Emerging ''Snowflake Generation'': A Case of Ho Chi Minh City''s Youth" [level=3] [ref=e747]'
+              - generic [ref=e748]:
+                - generic [ref=e749]:
+                  - generic [ref=e750]: "Journal:"
+                  - generic [ref=e751]: UEH Young Researcher Award 2024
+                - generic [ref=e753]:
+                  - generic [ref=e754]: "Year:"
+                  - generic [ref=e755]: Anno Domini 2024
+              - generic [ref=e756]:
+                - heading "Abstract" [level=4] [ref=e757]
+                - paragraph [ref=e759]: An award-winning undergraduate paper on how violence inside the home leaves traces in the social and psychological lives of young people.
+              - button "See full manuscript" [ref=e761] [cursor=pointer]:
+                - img [ref=e762]
+                - text: See full manuscript
+            - paragraph [ref=e767]: Manuscript 1 of 3 • 2024
+    - generic [ref=e770]:
+      - generic [ref=e771]:
+        - heading "Campfire Notes" [level=2] [ref=e772]
+        - paragraph [ref=e773]: Fragments from the workbench, the archive, and the road
+      - region "Infinite carousel" [ref=e778]:
+        - generic [ref=e779]:
+          - generic [ref=e788] [cursor=pointer]:
+            - heading "Notes from a Vietnamese Market Sandbox" [level=3] [ref=e789]
+            - paragraph [ref=e790]: Building a market world for reinforcement learning meant teaching agents to live with delay, friction, transaction costs, taxes, and the ordinary consequences of acting too early or too late.
+            - generic [ref=e791]:
+              - generic [ref=e792]:
+                - img [ref=e793]
+                - text: Jan 2026 - Present
+              - generic [ref=e798]:
+                - img [ref=e799]
+                - text: Project note
+          - generic [ref=e811] [cursor=pointer]:
+            - heading "Building GAIA from the Ground Up" [level=3] [ref=e812]
+            - paragraph [ref=e813]: "GAIA begins not with an algorithm, but with a world: households, labour, food, water, and constraints that push back when policy dreams get too simple."
+            - generic [ref=e814]:
+              - generic [ref=e815]:
+                - img [ref=e816]
+                - text: Apr 2025 - Present
+              - generic [ref=e821]:
+                - img [ref=e822]
+                - text: Research note
+          - generic [ref=e834] [cursor=pointer]:
+            - heading "What Procurement Records Whisper" [level=3] [ref=e835]
+            - paragraph [ref=e836]: Public procurement data rarely arrives in the shape analysis wants. This was the slow work of following raw links, gathering fragments, and persuading them into something coherent.
+            - generic [ref=e837]:
+              - generic [ref=e838]:
+                - img [ref=e839]
+                - text: Nov 2025
+              - generic [ref=e844]:
+                - img [ref=e845]
+                - text: Project note
+          - generic [ref=e857] [cursor=pointer]:
+            - heading "What 201K Housing Listings Taught Me" [level=3] [ref=e858]
+            - paragraph [ref=e859]: A large dataset is never just a large dataset. It is error handling, missing values, checkpoints, strange formats, and the discipline to keep cleaning until the picture stops lying.
+            - generic [ref=e860]:
+              - generic [ref=e861]:
+                - img [ref=e862]
+                - text: Mar 2025 - Sep 2025
+              - generic [ref=e867]:
+                - img [ref=e868]
+                - text: Data note
+          - generic [ref=e880] [cursor=pointer]:
+            - heading "On Stories that Remember You" [level=3] [ref=e881]
+            - paragraph [ref=e882]: Paths Untold was an experiment in making generated stories feel less disposable by giving them memory, emotional weather, and enough persistence for choices to leave a trace.
+            - generic [ref=e883]:
+              - generic [ref=e884]:
+                - img [ref=e885]
+                - text: Mar 2025 - Jul 2025
+              - generic [ref=e890]:
+                - img [ref=e891]
+                - text: Build note
+          - generic [ref=e903] [cursor=pointer]:
+            - heading "Energy Poverty and the Weight of Transition" [level=3] [ref=e904]
+            - paragraph [ref=e905]: "EEPSEA sharpened a long-standing concern: transitions are never purely technical. They arrive unevenly, and someone always carries more of the burden than the policy memo admits."
+            - generic [ref=e906]:
+              - generic [ref=e907]:
+                - img [ref=e908]
+                - text: Oct 2024 - Present
+              - generic [ref=e913]:
+                - img [ref=e914]
+                - text: Research note
+          - generic [ref=e926] [cursor=pointer]:
+            - heading "What Birmingham Changed" [level=3] [ref=e927]
+            - paragraph [ref=e928]: "The MSc in AI and Sustainable Development gave the work a clearer center of gravity: not AI for spectacle, but AI for allocation, trade-offs, and institutions that have to answer to the world."
+            - generic [ref=e929]:
+              - generic [ref=e930]:
+                - img [ref=e931]
+                - text: Sep 2025 - Present
+              - generic [ref=e936]:
+                - img [ref=e937]
+                - text: Study note
+          - generic [ref=e949] [cursor=pointer]:
+            - heading "Why Design Still Matters to Me" [level=3] [ref=e950]
+            - paragraph [ref=e951]: Xi'an was a useful reminder that even the most technical systems live or die by whether people can feel their shape, understand their rhythm, and meet them without friction.
+            - generic [ref=e952]:
+              - generic [ref=e953]:
+                - img [ref=e954]
+                - text: May 2025
+              - generic [ref=e959]:
+                - img [ref=e960]
+                - text: Field note
+          - generic [ref=e972] [cursor=pointer]:
+            - heading "Notes from a Vietnamese Market Sandbox" [level=3] [ref=e973]
+            - paragraph [ref=e974]: Building a market world for reinforcement learning meant teaching agents to live with delay, friction, transaction costs, taxes, and the ordinary consequences of acting too early or too late.
+            - generic [ref=e975]:
+              - generic [ref=e976]:
+                - img [ref=e977]
+                - text: Jan 2026 - Present
+              - generic [ref=e982]:
+                - img [ref=e983]
+                - text: Project note
+          - generic [ref=e995] [cursor=pointer]:
+            - heading "Building GAIA from the Ground Up" [level=3] [ref=e996]
+            - paragraph [ref=e997]: "GAIA begins not with an algorithm, but with a world: households, labour, food, water, and constraints that push back when policy dreams get too simple."
+            - generic [ref=e998]:
+              - generic [ref=e999]:
+                - img [ref=e1000]
+                - text: Apr 2025 - Present
+              - generic [ref=e1005]:
+                - img [ref=e1006]
+                - text: Research note
+          - generic [ref=e1018] [cursor=pointer]:
+            - heading "What Procurement Records Whisper" [level=3] [ref=e1019]
+            - paragraph [ref=e1020]: Public procurement data rarely arrives in the shape analysis wants. This was the slow work of following raw links, gathering fragments, and persuading them into something coherent.
+            - generic [ref=e1021]:
+              - generic [ref=e1022]:
+                - img [ref=e1023]
+                - text: Nov 2025
+              - generic [ref=e1028]:
+                - img [ref=e1029]
+                - text: Project note
+          - generic [ref=e1041] [cursor=pointer]:
+            - heading "What 201K Housing Listings Taught Me" [level=3] [ref=e1042]
+            - paragraph [ref=e1043]: A large dataset is never just a large dataset. It is error handling, missing values, checkpoints, strange formats, and the discipline to keep cleaning until the picture stops lying.
+            - generic [ref=e1044]:
+              - generic [ref=e1045]:
+                - img [ref=e1046]
+                - text: Mar 2025 - Sep 2025
+              - generic [ref=e1051]:
+                - img [ref=e1052]
+                - text: Data note
+          - generic [ref=e1064] [cursor=pointer]:
+            - heading "On Stories that Remember You" [level=3] [ref=e1065]
+            - paragraph [ref=e1066]: Paths Untold was an experiment in making generated stories feel less disposable by giving them memory, emotional weather, and enough persistence for choices to leave a trace.
+            - generic [ref=e1067]:
+              - generic [ref=e1068]:
+                - img [ref=e1069]
+                - text: Mar 2025 - Jul 2025
+              - generic [ref=e1074]:
+                - img [ref=e1075]
+                - text: Build note
+          - generic [ref=e1087] [cursor=pointer]:
+            - heading "Energy Poverty and the Weight of Transition" [level=3] [ref=e1088]
+            - paragraph [ref=e1089]: "EEPSEA sharpened a long-standing concern: transitions are never purely technical. They arrive unevenly, and someone always carries more of the burden than the policy memo admits."
+            - generic [ref=e1090]:
+              - generic [ref=e1091]:
+                - img [ref=e1092]
+                - text: Oct 2024 - Present
+              - generic [ref=e1097]:
+                - img [ref=e1098]
+                - text: Research note
+          - generic [ref=e1110] [cursor=pointer]:
+            - heading "What Birmingham Changed" [level=3] [ref=e1111]
+            - paragraph [ref=e1112]: "The MSc in AI and Sustainable Development gave the work a clearer center of gravity: not AI for spectacle, but AI for allocation, trade-offs, and institutions that have to answer to the world."
+            - generic [ref=e1113]:
+              - generic [ref=e1114]:
+                - img [ref=e1115]
+                - text: Sep 2025 - Present
+              - generic [ref=e1120]:
+                - img [ref=e1121]
+                - text: Study note
+          - generic [ref=e1133] [cursor=pointer]:
+            - heading "Why Design Still Matters to Me" [level=3] [ref=e1134]
+            - paragraph [ref=e1135]: Xi'an was a useful reminder that even the most technical systems live or die by whether people can feel their shape, understand their rhythm, and meet them without friction.
+            - generic [ref=e1136]:
+              - generic [ref=e1137]:
+                - img [ref=e1138]
+                - text: May 2025
+              - generic [ref=e1143]:
+                - img [ref=e1144]
+                - text: Field note
+          - generic [ref=e1156] [cursor=pointer]:
+            - heading "Notes from a Vietnamese Market Sandbox" [level=3] [ref=e1157]
+            - paragraph [ref=e1158]: Building a market world for reinforcement learning meant teaching agents to live with delay, friction, transaction costs, taxes, and the ordinary consequences of acting too early or too late.
+            - generic [ref=e1159]:
+              - generic [ref=e1160]:
+                - img [ref=e1161]
+                - text: Jan 2026 - Present
+              - generic [ref=e1166]:
+                - img [ref=e1167]
+                - text: Project note
+          - generic [ref=e1179] [cursor=pointer]:
+            - heading "Building GAIA from the Ground Up" [level=3] [ref=e1180]
+            - paragraph [ref=e1181]: "GAIA begins not with an algorithm, but with a world: households, labour, food, water, and constraints that push back when policy dreams get too simple."
+            - generic [ref=e1182]:
+              - generic [ref=e1183]:
+                - img [ref=e1184]
+                - text: Apr 2025 - Present
+              - generic [ref=e1189]:
+                - img [ref=e1190]
+                - text: Research note
+          - generic [ref=e1202] [cursor=pointer]:
+            - heading "What Procurement Records Whisper" [level=3] [ref=e1203]
+            - paragraph [ref=e1204]: Public procurement data rarely arrives in the shape analysis wants. This was the slow work of following raw links, gathering fragments, and persuading them into something coherent.
+            - generic [ref=e1205]:
+              - generic [ref=e1206]:
+                - img [ref=e1207]
+                - text: Nov 2025
+              - generic [ref=e1212]:
+                - img [ref=e1213]
+                - text: Project note
+          - generic [ref=e1225] [cursor=pointer]:
+            - heading "What 201K Housing Listings Taught Me" [level=3] [ref=e1226]
+            - paragraph [ref=e1227]: A large dataset is never just a large dataset. It is error handling, missing values, checkpoints, strange formats, and the discipline to keep cleaning until the picture stops lying.
+            - generic [ref=e1228]:
+              - generic [ref=e1229]:
+                - img [ref=e1230]
+                - text: Mar 2025 - Sep 2025
+              - generic [ref=e1235]:
+                - img [ref=e1236]
+                - text: Data note
+          - generic [ref=e1248] [cursor=pointer]:
+            - heading "On Stories that Remember You" [level=3] [ref=e1249]
+            - paragraph [ref=e1250]: Paths Untold was an experiment in making generated stories feel less disposable by giving them memory, emotional weather, and enough persistence for choices to leave a trace.
+            - generic [ref=e1251]:
+              - generic [ref=e1252]:
+                - img [ref=e1253]
+                - text: Mar 2025 - Jul 2025
+              - generic [ref=e1258]:
+                - img [ref=e1259]
+                - text: Build note
+          - generic [ref=e1271] [cursor=pointer]:
+            - heading "Energy Poverty and the Weight of Transition" [level=3] [ref=e1272]
+            - paragraph [ref=e1273]: "EEPSEA sharpened a long-standing concern: transitions are never purely technical. They arrive unevenly, and someone always carries more of the burden than the policy memo admits."
+            - generic [ref=e1274]:
+              - generic [ref=e1275]:
+                - img [ref=e1276]
+                - text: Oct 2024 - Present
+              - generic [ref=e1281]:
+                - img [ref=e1282]
+                - text: Research note
+          - generic [ref=e1294] [cursor=pointer]:
+            - heading "What Birmingham Changed" [level=3] [ref=e1295]
+            - paragraph [ref=e1296]: "The MSc in AI and Sustainable Development gave the work a clearer center of gravity: not AI for spectacle, but AI for allocation, trade-offs, and institutions that have to answer to the world."
+            - generic [ref=e1297]:
+              - generic [ref=e1298]:
+                - img [ref=e1299]
+                - text: Sep 2025 - Present
+              - generic [ref=e1304]:
+                - img [ref=e1305]
+                - text: Study note
+          - generic [ref=e1317] [cursor=pointer]:
+            - heading "Why Design Still Matters to Me" [level=3] [ref=e1318]
+            - paragraph [ref=e1319]: Xi'an was a useful reminder that even the most technical systems live or die by whether people can feel their shape, understand their rhythm, and meet them without friction.
+            - generic [ref=e1320]:
+              - generic [ref=e1321]:
+                - img [ref=e1322]
+                - text: May 2025
+              - generic [ref=e1327]:
+                - img [ref=e1328]
+                - text: Field note
+    - generic [ref=e1334]:
+      - generic [ref=e1335]:
+        - heading "Write Him a Letter" [level=2] [ref=e1336]
+        - paragraph [ref=e1337]: If something in these pages speaks to your own work, send word across the night and He shall write back
+      - button "Open the letter composer" [ref=e1340] [cursor=pointer]:
+        - generic [ref=e1342]:
+          - generic [ref=e1343]:
+            - img [ref=e1344]
+            - generic [ref=e1348]: Write Him a Letter
+            - img [ref=e1349]
+          - generic: Unfurl the scroll and send a note by firelight.
+      - generic [ref=e1353]:
+        - paragraph [ref=e1354]: The fire is patient. The night is long.
+        - paragraph [ref=e1355]: Write whatever the pages stirred in you.
+    - generic [ref=e1358]:
+      - heading "Join the Fellowship" [level=2] [ref=e1359]
+      - paragraph [ref=e1360]: Connect with Him across the digital realms, where stories continue and friendships are forged
+      - generic [ref=e1361]:
+        - link "GitHub" [ref=e1362] [cursor=pointer]:
+          - /url: https://github.com/qmanhbeo
+          - generic [ref=e1369]:
+            - img [ref=e1371]
+            - generic [ref=e1374]: GitHub
+        - link "LinkedIn" [ref=e1376] [cursor=pointer]:
+          - /url: https://www.linkedin.com/in/qmanhbeo/
+          - generic [ref=e1383]:
+            - img [ref=e1385]
+            - generic [ref=e1389]: LinkedIn
+        - link "Archive" [ref=e1391] [cursor=pointer]:
+          - /url: /library
+          - generic [ref=e1398]:
+            - img [ref=e1400]
+            - generic [ref=e1403]: Archive
+        - link "Letter" [ref=e1405] [cursor=pointer]:
+          - /url: /letter
+          - generic [ref=e1412]:
+            - img [ref=e1414]
+            - generic [ref=e1417]: Letter
+      - generic [ref=e1427]:
+        - generic [ref=e1429]: “
+        - blockquote [ref=e1430]:
+          - paragraph [ref=e1431]: Somewhere between the campfire and the model, I am still looking for ways to make difficult choices a little wiser and a little fairer.
+          - generic [ref=e1432]: — Manh
