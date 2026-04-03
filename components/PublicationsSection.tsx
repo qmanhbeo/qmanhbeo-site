@@ -162,7 +162,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
 
   return (
     <section
-      className="section-safe-area relative flex h-full min-w-full flex-col justify-start overflow-hidden md:justify-center"
+      className="section-safe-area relative flex h-full min-w-full flex-col justify-center overflow-hidden"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-45" />

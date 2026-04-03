@@ -9,7 +9,7 @@ interface SocialsSectionProps {
 export default function SocialsSection({ revealClassName = "" }: SocialsSectionProps) {
   return (
     <section
-      className="section-safe-area relative flex h-full min-w-full items-start justify-center overflow-hidden md:items-center"
+      className="section-safe-area relative flex h-full min-w-full items-center justify-center overflow-hidden"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-40" />

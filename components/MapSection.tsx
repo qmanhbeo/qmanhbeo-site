@@ -221,7 +221,7 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
 
   return (
     <section
-      className="map-section section-safe-area relative flex h-full min-w-full flex-col justify-start overflow-hidden md:justify-center"
+      className="map-section section-safe-area relative flex h-full min-w-full flex-col justify-center overflow-hidden"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-50" />
