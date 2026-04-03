@@ -7,6 +7,9 @@ const SCROLLABLE_SELECTOR = ".scrollbar-fade"
 const SCROLLBAR_IDLE_DELAY_MS = 700
 const INDICATOR_CLASS_NAME = "scrollbar-fade-indicator"
 const INDICATOR_THUMB_CLASS_NAME = "scrollbar-fade-thumb"
+const MASK_TOP_ONLY_CLASS_NAME = "mask-top-only"
+const MASK_BOTTOM_ONLY_CLASS_NAME = "mask-bottom-only"
+const MASK_BOTH_CLASS_NAME = "mask-both"
 const INDICATOR_WIDTH_PX = 8
 const INDICATOR_TOP_INSET_PX = 12
 const INDICATOR_BOTTOM_INSET_PX = 12
@@ -51,6 +54,23 @@ export default function ScrollbarActivityManager() {
         const updateIndicator = () => {
           const hasOverflow = element.scrollHeight > element.clientHeight + 1
           const rect = element.getBoundingClientRect()
+
+          if (element.classList.contains("scroll-fade-vertical")) {
+            element.classList.remove(MASK_TOP_ONLY_CLASS_NAME, MASK_BOTTOM_ONLY_CLASS_NAME, MASK_BOTH_CLASS_NAME)
+
+            if (hasOverflow) {
+              const atTop = element.scrollTop <= 1
+              const atBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1
+
+              if (!atTop && !atBottom) {
+                element.classList.add(MASK_BOTH_CLASS_NAME)
+              } else if (atTop && !atBottom) {
+                element.classList.add(MASK_BOTTOM_ONLY_CLASS_NAME)
+              } else if (!atTop && atBottom) {
+                element.classList.add(MASK_TOP_ONLY_CLASS_NAME)
+              }
+            }
+          }
 
           if (!hasOverflow || rect.height <= 0 || rect.width <= 0) {
             indicator.classList.remove(ACTIVE_CLASS_NAME)
