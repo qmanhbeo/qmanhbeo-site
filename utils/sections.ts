@@ -98,6 +98,11 @@ export const sections: SiteSection[] = [
 
 export const timelineEvents = [
   {
+    year: "2018–2021",
+    event:
+      "At Gia Định High School for the Gifted, the world first revealed its underlying language. Mathematics gave it structure. Physics, chemistry, and biology gave it rules. History gave it memory. And English, quietly, became the key that opened everything beyond it.",
+  },
+  {
     year: "2021",
     event:
       "Set out from UEH in Applied Economics, following questions about systems, incentives, and how people live within them.",
