@@ -80,34 +80,29 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
               <h3 className="text-lg md:text-xl font-semibold text-amber-900 font-cinzel">The Path Forward</h3>
               <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
                 These days, the work takes the form of reinforcement learning environments, agent-based worlds, and data systems shaped by real constraints.
-                
+              </p>
+              <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
                 Not to replace the world as it is, but to understand whether it can be made to hold people better.
-                
+              </p>
+              <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
                 There is no illusion that markets can simply be discarded, nor that optimization alone will solve everything.
-
-                But perhaps systems can be designed differently—
-                not just to function, but to catch.
-
+              </p>
+              <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
+                But perhaps systems can be designed differently—not just to function, but to catch.              
+                </p>
+              <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
                 To ensure that food, shelter, and the basics of living are not left to chance.
-
+              </p>
+              <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
                 To leave more room for people to do what humans have always done best:
-                create, connect, and build meaning beyond survival.
-
-                Underneath it all is a simple belief:
+                create, connect, and build meaning beyond survival.              
               </p>
               <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
-                He is less interested in systems that look clever in a vacuum than in ones that can survive contact with
-                institutions, human behaviour, imperfect data, and the friction of ordinary life.
-              </p>
-              <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
-                That is the thread running through the scrolls on this site. AI, economics, and data are not here as
-                trophies. They are here because they might help us see trade-offs more clearly, allocate resources more
-                wisely, and leave a little more room for fairness than we found.
+                Underneath it all is a simple belief:            
               </p>
               <div className="text-center mt-3 md:mt-4 pt-3 border-t border-amber-300">
                 <p className="text-amber-600 font-garamond italic text-xs md:text-sm">
-                  &quot;The systems worth building are the ones that remember people must live inside their
-                  consequences.&quot;
+                  &quot;the systems worth building are the ones that remember people must live inside their consequences.&quot;
                 </p>
               </div>
             </div>
