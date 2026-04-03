@@ -6,6 +6,12 @@ export interface Publication {
   year: string
   abstract?: string
   link?: string
+  researchQuestion?: string
+  methodology?: string
+  keyFindings?: string
+  implications?: string
+  keywords?: string[]
+  status?: string
 }
 
 export interface Project {
@@ -43,23 +49,53 @@ export const publications: Publication[] = [
     title: "Socioeconomic Effects of Delays in Renewable Energy Projects: Evidence from Vietnam",
     journal: "ELG 2025",
     year: "2025",
+    status: "Published",
     abstract:
       "A paper on what happens when renewable energy arrives late: not just to grids and plans, but to households, local economies, and the wider promises attached to transition.",
+    researchQuestion:
+      "What are the downstream socioeconomic consequences when renewable energy projects arrive late to communities and households in Vietnam?",
+    methodology:
+      "Empirical analysis of project-level delay data alongside household income, employment, and energy access records from Vietnamese provincial datasets.",
+    keyFindings:
+      "Delayed projects correlate with prolonged energy poverty, foregone local employment, and eroded public trust in the transition — costs that aggregate modelling rarely captures.",
+    implications:
+      "Transition timelines are not neutral. Scheduling failures function as an invisible tax on the communities meant to benefit most from the shift to renewables.",
+    keywords: ["Energy Transition", "Renewable Delay", "Vietnam", "Socioeconomics", "Policy"],
   },
   {
     title: "Longitudinal Urban-Rural Energy Burden Disparities: A Decomposition Analysis of Vietnam",
     journal: "Working Paper",
     year: "2025",
+    status: "Working Paper",
     abstract:
       "A working paper tracing how the weight of energy costs falls unevenly across urban and rural households in Vietnam, and what those differences reveal about inequality over time.",
+    researchQuestion:
+      "How has the relative weight of energy costs shifted between urban and rural households in Vietnam, and what structural factors drive the divergence?",
+    methodology:
+      "Decomposition analysis applied to multi-year household expenditure surveys, separating price effects, consumption patterns, and income gradients across regions.",
+    keyFindings:
+      "Rural households consistently devote a higher share of income to energy, and the gap has widened as urban infrastructure improvements outpace rural electrification quality.",
+    implications:
+      "Energy affordability policy that ignores geography will systematically undercount who carries the burden of the low-carbon transition.",
+    keywords: ["Energy Burden", "Urban-Rural Inequality", "Vietnam", "Decomposition", "Longitudinal"],
   },
   {
     title:
       "Verbal Violence within the Family as a Contributing Factor to the Emerging 'Snowflake Generation': A Case of Ho Chi Minh City's Youth",
     journal: "UEH Young Researcher Award 2024",
     year: "2024",
+    status: "Award — First Prize",
     abstract:
       "An award-winning undergraduate paper on how violence inside the home leaves traces in the social and psychological lives of young people.",
+    researchQuestion:
+      "To what extent does verbal violence in the domestic environment contribute to the psychological fragility observed in Ho Chi Minh City's younger generation?",
+    methodology:
+      "Primary survey research with youth respondents in Ho Chi Minh City, combined with validated psychological scale instruments and regression modelling.",
+    keyFindings:
+      "Verbal hostility at home is a statistically significant predictor of reduced resilience, heightened social anxiety, and conflict avoidance in youth — effects that compound over time.",
+    implications:
+      "Interventions targeting youth wellbeing cannot stop at the school gate. The household is a formative institution for psychological capital that policy rarely reaches.",
+    keywords: ["Youth Psychology", "Domestic Violence", "Resilience", "Vietnam", "Sociology"],
   },
 ]
 
