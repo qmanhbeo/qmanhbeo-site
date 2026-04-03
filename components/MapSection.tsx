@@ -14,7 +14,7 @@ interface MapSectionProps {
 
 function ArcDetailCard({ label, items }: { label: string; items: string[] }) {
   return (
-    <div className="rounded-md border border-amber-300/70 bg-amber-50/88 p-3 md:p-4">
+    <div className="rounded-md border border-amber-300 bg-amber-50/90 p-3 md:p-4">
       <h5 className="mb-2 font-cinzel text-xs font-bold uppercase tracking-widest text-amber-600">
         {label}
       </h5>
