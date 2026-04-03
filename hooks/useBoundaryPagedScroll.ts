@@ -9,6 +9,8 @@ type UseBoundaryPagedScrollOptions = {
   settleMs?: number
   flipThreshold?: number
   gestureIdleMs?: number
+  initialIndex?: number
+  initialPanelScrollTop?: number
 }
 
 export function useBoundaryPagedScroll({
@@ -18,14 +20,20 @@ export function useBoundaryPagedScroll({
   settleMs = 0,
   flipThreshold = 90,
   gestureIdleMs = 160,
+  initialIndex = 0,
+  initialPanelScrollTop = 0,
 }: UseBoundaryPagedScrollOptions) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const normalizedInitialIndex = itemCount > 0 ? ((initialIndex % itemCount) + itemCount) % itemCount : 0
+
+  const [currentIndex, setCurrentIndex] = useState(normalizedInitialIndex)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
-  const currentIndexRef = useRef(0)
+  const currentIndexRef = useRef(normalizedInitialIndex)
   const isTransitioningRef = useRef(false)
   const transitionTimeoutRef = useRef<number | null>(null)
   const panelRefs = useRef<Array<HTMLDivElement | null>>([])
+  const hasRestoredInitialPanelScrollRef = useRef(false)
+  const initialPanelScrollTopRef = useRef(initialPanelScrollTop)
   const wheelStateRef = useRef({
     accum: 0,
     inhibitUntil: 0,
@@ -43,10 +51,14 @@ export function useBoundaryPagedScroll({
     const activePanel = panelRefs.current[currentIndex]
     if (!activePanel) return
 
+    const nextTop = hasRestoredInitialPanelScrollRef.current ? 0 : initialPanelScrollTopRef.current
+
     activePanel.scrollTo({
-      top: 0,
+      top: nextTop,
       behavior: "auto",
     })
+
+    hasRestoredInitialPanelScrollRef.current = true
   }, [currentIndex])
 
   const resetBoundaryState = useCallback(() => {

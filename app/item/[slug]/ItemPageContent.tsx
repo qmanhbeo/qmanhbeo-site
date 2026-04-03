@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { type MouseEvent, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ExternalLink, X } from "lucide-react"
 import {
@@ -15,6 +15,13 @@ import {
   type ContentEntry,
   type EntryLink,
 } from "@/content/entries"
+import {
+  clearEntryOriginState,
+  readEntryOriginState,
+  readItemScrollState,
+  saveItemScrollState,
+  savePendingReturnState,
+} from "@/utils/entryNavigation"
 
 interface MetaItem {
   label: string
@@ -233,38 +240,99 @@ function EntryBody({ entry }: { entry: ContentEntry }) {
 export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
   const router = useRouter()
   const [isLeaving, setIsLeaving] = useState(false)
+  const isLeavingRef = useRef(false)
   const timerRef = useRef<number | null>(null)
+  const scrollSaveFrameRef = useRef<number | null>(null)
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const originStateRef = useRef(readEntryOriginState(entry.slug))
+  const restoredItemScrollRef = useRef(readItemScrollState(entry.slug))
+
+  const saveCurrentItemScrollState = useCallback(() => {
+    saveItemScrollState({
+      itemSlug: entry.slug,
+      itemInternalScroll: scrollContainerRef.current?.scrollTop ?? 0,
+      origin: originStateRef.current ?? undefined,
+    })
+  }, [entry.slug])
+
+  const scheduleItemScrollSave = useCallback(() => {
+    if (scrollSaveFrameRef.current !== null) return
+
+    scrollSaveFrameRef.current = window.requestAnimationFrame(() => {
+      scrollSaveFrameRef.current = null
+      saveCurrentItemScrollState()
+    })
+  }, [saveCurrentItemScrollState])
+
+  const handleClose = useCallback(() => {
+    if (isLeavingRef.current) return
+
+    isLeavingRef.current = true
+    saveCurrentItemScrollState()
+    setIsLeaving(true)
+
+    timerRef.current = window.setTimeout(() => {
+      const originState = originStateRef.current
+
+      if (originState) {
+        savePendingReturnState(originState)
+
+        if (window.history.length > 1) {
+          router.back()
+          return
+        }
+
+        router.replace(originState.sourceRoute)
+        return
+      }
+
+      router.replace("/library")
+    }, 220)
+  }, [router, saveCurrentItemScrollState])
+
+  useLayoutEffect(() => {
+    const savedScrollState = restoredItemScrollRef.current
+    const scrollContainer = scrollContainerRef.current
+    if (!savedScrollState || !scrollContainer) return
+
+    scrollContainer.scrollTop = savedScrollState.itemInternalScroll
+  }, [])
 
   useEffect(() => {
     const originalOverflow = document.body.style.overflow
     const originalOverscrollBehavior = document.body.style.overscrollBehavior
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return
+      event.preventDefault()
+      handleClose()
+    }
+    const handlePageHide = () => {
+      saveCurrentItemScrollState()
+    }
 
     document.body.style.overflow = "hidden"
     document.body.style.overscrollBehavior = "contain"
+    document.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("pagehide", handlePageHide)
 
     return () => {
       document.body.style.overflow = originalOverflow
       document.body.style.overscrollBehavior = originalOverscrollBehavior
+      document.removeEventListener("keydown", handleKeyDown)
+      window.removeEventListener("pagehide", handlePageHide)
 
       if (timerRef.current !== null) {
         window.clearTimeout(timerRef.current)
       }
-    }
-  }, [])
 
-  const handleClose = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    if (isLeaving) return
-
-    setIsLeaving(true)
-    timerRef.current = window.setTimeout(() => {
-      if (window.history.length > 1) {
-        router.back()
-      } else {
-        router.push("/")
+      if (scrollSaveFrameRef.current !== null) {
+        window.cancelAnimationFrame(scrollSaveFrameRef.current)
       }
-    }, 220)
-  }
+
+      saveCurrentItemScrollState()
+      clearEntryOriginState(entry.slug)
+    }
+  }, [entry.slug, handleClose, saveCurrentItemScrollState])
 
   const metaItems = getEntryMetaItems(entry)
 
@@ -272,13 +340,14 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
     <div className="relative h-dvh overflow-hidden forest-campfire">
       <div className="absolute inset-0 bg-gradient-to-b from-black/52 via-black/28 to-black/56" />
 
-      <div className="relative z-10 flex h-full items-center justify-center p-4 md:p-6">
+      <div className="relative z-10 flex h-full items-center justify-center p-4 md:p-6" onClick={handleClose}>
         <article
           className={`item-manuscript-surface relative flex h-[calc(100dvh-2rem)] max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2.4rem] border border-amber-200/25 md:h-[calc(100dvh-3rem)] md:max-h-[calc(100dvh-3rem)] ${
             isLeaving
               ? "animate-out fade-out zoom-out-95 duration-200 fill-mode-both"
               : "animate-in fade-in zoom-in-95 duration-500"
           }`}
+          onClick={(event) => event.stopPropagation()}
         >
           <div className="item-manuscript-overlay pointer-events-none absolute inset-0 scholar-parchment" />
 
@@ -291,7 +360,11 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
             <X className="h-5 w-5" />
           </button>
 
-          <div className="item-manuscript-scroll relative z-10 min-h-0 flex-1 overflow-y-auto px-6 py-10 md:px-10 md:py-14">
+          <div
+            ref={scrollContainerRef}
+            className="item-manuscript-scroll relative z-10 min-h-0 flex-1 overflow-y-auto px-6 py-10 md:px-10 md:py-14"
+            onScroll={scheduleItemScrollSave}
+          >
             <div className="mx-auto max-w-[46rem]">
               <header className="item-manuscript-rule border-b pb-10 pr-12 md:pr-16">
                 <p className="item-manuscript-ink-soft font-cinzel text-[0.72rem] font-semibold uppercase tracking-[0.26em]">

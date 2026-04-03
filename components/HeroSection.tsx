@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { readPendingReturnState } from "@/utils/entryNavigation"
 import ArchiveCodexButton from "./ui/ArchiveCodexButton"
 import ArchiveCodexOverlay from "./ui/ArchiveCodexOverlay"
 import LetterOverlay from "./ui/LetterOverlay"
@@ -11,7 +12,10 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ revealClassName = "" }: HeroSectionProps) {
-  const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
+  const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(() => {
+    const pendingReturnState = readPendingReturnState("/")
+    return pendingReturnState?.sourceSection === "archive" && pendingReturnState.codexWasOpen === true
+  })
   const [isLetterOverlayOpen, setIsLetterOverlayOpen] = useState(false)
 
   return (

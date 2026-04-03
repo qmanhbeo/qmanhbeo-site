@@ -1,8 +1,10 @@
 "use client"
 
+import { useCallback, useState } from "react"
 import { useRouter } from "next/navigation"
 import { noteEntries } from "@/content/entries"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
+import { getHomeSectionIndexForOrigin, readPendingReturnState, saveEntryOriginState } from "@/utils/entryNavigation"
 import TavernTale from "./ui/TavernTale"
 import InfiniteCarousel from "./ui/InfiniteCarousel"
 
@@ -14,10 +16,26 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
   const gap = 20
   const { shellRef, itemWidth } = useResponsiveCarouselWidth({ gap, minWidth: 240 })
   const router = useRouter()
+  const [initialNoteIndex] = useState(() => {
+    const pendingReturnState = readPendingReturnState("/")
+    return pendingReturnState?.sourceSection === "notes" ? pendingReturnState.sourceCarouselIndex ?? 0 : 0
+  })
 
-  const handleTaleClick = (slug: string) => {
-    router.push(`/item/${slug}`)
-  }
+  const handleTaleClick = useCallback(
+    (slug: string, index: number) => {
+      saveEntryOriginState({
+        sourceRoute: "/",
+        sourceSection: "notes",
+        homeSectionIndex: getHomeSectionIndexForOrigin("notes"),
+        sourceScrollY: typeof window === "undefined" ? 0 : window.scrollY,
+        sourceCarouselIndex: index,
+        itemSlug: slug,
+      })
+
+      router.push(`/item/${slug}`)
+    },
+    [router],
+  )
 
   return (
     <section
@@ -44,8 +62,9 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
                   gap={gap}
                   snap="left"
                   itemAlign="center"
+                  initialIndex={initialNoteIndex}
                   className="w-full scroll-fade-horizontal py-1 md:py-2"
-                  renderItem={(note) => {
+                  renderItem={(note, index) => {
                     return (
                       <TavernTale
                         title={note.title}
@@ -53,7 +72,7 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
                         date={note.dateLabel ?? ""}
                         readTime={note.noteLabel}
                         className="w-full"
-                        onClick={() => handleTaleClick(note.slug)}
+                        onClick={() => handleTaleClick(note.slug, index)}
                       />
                     )
                   }}

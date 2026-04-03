@@ -1,9 +1,11 @@
 "use client"
 
+import { useCallback, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { publicationEntries, type PublicationEntry } from "@/content/entries"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
+import { getHomeSectionIndexForOrigin, readPendingReturnState, saveEntryOriginState } from "@/utils/entryNavigation"
 
 const MANUSCRIPT_TRANSITION_MS = 800
 
@@ -79,6 +81,18 @@ function NavPill({
 
 export default function PublicationsSection({ revealClassName = "" }: PublicationsSectionProps) {
   const router = useRouter()
+  const [initialPublicationRestoreState] = useState(() => {
+    const pendingReturnState = readPendingReturnState("/")
+    return pendingReturnState?.sourceSection === "publications"
+      ? {
+          initialIndex: pendingReturnState.sourceChapterIndex ?? 0,
+          initialScrollTop: pendingReturnState.sourceInternalScroll ?? 0,
+        }
+      : {
+          initialIndex: 0,
+          initialScrollTop: 0,
+        }
+  })
   const {
     currentIndex: currentManuscript,
     isTransitioning: isManuscriptScrolling,
@@ -90,7 +104,28 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
     itemCount: publicationEntries.length,
     panelSelector: ".manuscript-scrollable-area",
     transitionMs: MANUSCRIPT_TRANSITION_MS,
+    initialIndex: initialPublicationRestoreState.initialIndex,
+    initialPanelScrollTop: initialPublicationRestoreState.initialScrollTop,
   })
+
+  const handlePublicationClick = useCallback(
+    (slug: string) => {
+      const activePanel = panelRefs.current[currentManuscript]
+
+      saveEntryOriginState({
+        sourceRoute: "/",
+        sourceSection: "publications",
+        homeSectionIndex: getHomeSectionIndexForOrigin("publications"),
+        sourceScrollY: typeof window === "undefined" ? 0 : window.scrollY,
+        sourceInternalScroll: activePanel?.scrollTop ?? 0,
+        sourceChapterIndex: currentManuscript,
+        itemSlug: slug,
+      })
+
+      router.push(`/item/${slug}`)
+    },
+    [currentManuscript, panelRefs, router],
+  )
 
   return (
     <section
@@ -231,7 +266,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                         <div className="flex flex-col items-center gap-3 border-t border-amber-300/50 pt-4">
                           <button
                             type="button"
-                            onClick={() => router.push(`/item/${publication.slug}`)}
+                            onClick={() => handlePublicationClick(publication.slug)}
                             className="inline-flex items-center gap-3 rounded-lg px-7 py-3 font-garamond text-base text-orange-100 transition-all duration-300 medieval-button hover:ember-glow"
                           >
                             <ExternalLink className="h-4 w-4" />

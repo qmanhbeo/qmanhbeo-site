@@ -1,9 +1,11 @@
 "use client"
 
+import { useCallback, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ScrollText, Sparkles } from "lucide-react"
 import { projectEntries } from "@/content/entries"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
+import { getHomeSectionIndexForOrigin, readPendingReturnState, saveEntryOriginState } from "@/utils/entryNavigation"
 import SpellScroll from "./ui/SpellScroll"
 import InfiniteCarousel from "./ui/InfiniteCarousel"
 
@@ -15,6 +17,26 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
   const gap = 20
   const { shellRef, itemWidth } = useResponsiveCarouselWidth({ gap, minWidth: 240 })
   const router = useRouter()
+  const [initialProjectIndex] = useState(() => {
+    const pendingReturnState = readPendingReturnState("/")
+    return pendingReturnState?.sourceSection === "projects" ? pendingReturnState.sourceCarouselIndex ?? 0 : 0
+  })
+
+  const handleProjectClick = useCallback(
+    (slug: string, index: number) => {
+      saveEntryOriginState({
+        sourceRoute: "/",
+        sourceSection: "projects",
+        homeSectionIndex: getHomeSectionIndexForOrigin("projects"),
+        sourceScrollY: typeof window === "undefined" ? 0 : window.scrollY,
+        sourceCarouselIndex: index,
+        itemSlug: slug,
+      })
+
+      router.push(`/item/${slug}`)
+    },
+    [router],
+  )
 
   return (
     <section
@@ -40,8 +62,9 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                 gap={gap}
                 snap="left"
                 itemAlign="center"
+                initialIndex={initialProjectIndex}
                 className="w-full scroll-fade-horizontal py-1 md:py-2"
-                renderItem={(project) => {
+                renderItem={(project, index) => {
                   const cardLinks = project.links.filter((link) => link.showOnCard)
 
                   return (
@@ -50,7 +73,7 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                       description={project.summary}
                       runes={project.tags}
                       className="w-full"
-                      onClick={() => router.push(`/item/${project.slug}`)}
+                      onClick={() => handleProjectClick(project.slug, index)}
                     >
                       {cardLinks.length > 0 ? (
                         <div className="flex flex-wrap gap-2">

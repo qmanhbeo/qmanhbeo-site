@@ -1,11 +1,12 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useRef } from "react"
+import { useCallback, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
 import { arcEntries, type ArcEntry } from "@/content/entries"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
+import { getHomeSectionIndexForOrigin, readPendingReturnState, saveEntryOriginState } from "@/utils/entryNavigation"
 
 const MAP_COOLDOWN_MS = 700
 
@@ -144,6 +145,18 @@ function NavPill({
 
 export default function MapSection({ revealClassName = "" }: MapSectionProps) {
   const router = useRouter()
+  const [initialMapRestoreState] = useState(() => {
+    const pendingReturnState = readPendingReturnState("/")
+    return pendingReturnState?.sourceSection === "map"
+      ? {
+          initialIndex: pendingReturnState.sourceChapterIndex ?? 0,
+          initialScrollTop: pendingReturnState.sourceInternalScroll ?? 0,
+        }
+      : {
+          initialIndex: 0,
+          initialScrollTop: 0,
+        }
+  })
   const {
     currentIndex: currentMapYear,
     isTransitioning: isMapScrolling,
@@ -156,13 +169,27 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
     panelSelector: ".journey-content-area",
     transitionMs: MAP_COOLDOWN_MS,
     settleMs: 100,
+    initialIndex: initialMapRestoreState.initialIndex,
+    initialPanelScrollTop: initialMapRestoreState.initialScrollTop,
   })
 
   const handleJourneyClick = useCallback(
     (slug: string) => {
+      const activePanel = panelRefs.current[currentMapYear]
+
+      saveEntryOriginState({
+        sourceRoute: "/",
+        sourceSection: "map",
+        homeSectionIndex: getHomeSectionIndexForOrigin("map"),
+        sourceScrollY: typeof window === "undefined" ? 0 : window.scrollY,
+        sourceInternalScroll: activePanel?.scrollTop ?? 0,
+        sourceChapterIndex: currentMapYear,
+        itemSlug: slug,
+      })
+
       router.push(`/item/${slug}`)
     },
-    [router],
+    [currentMapYear, panelRefs, router],
   )
 
   const swipeTouchStartXRef = useRef<number | null>(null)

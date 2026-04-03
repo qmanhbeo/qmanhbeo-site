@@ -11,6 +11,7 @@ type InfiniteCarouselProps<T> = {
   className?: string
   snap?: "left" | "center"
   itemAlign?: "stretch" | "start" | "center"
+  initialIndex?: number
 }
 
 export default function InfiniteCarousel<T>({
@@ -21,6 +22,7 @@ export default function InfiniteCarousel<T>({
   className = "",
   snap = "left",
   itemAlign = "stretch",
+  initialIndex = 0,
 }: InfiniteCarouselProps<T>) {
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
@@ -35,6 +37,7 @@ export default function InfiniteCarousel<T>({
   const itemCount = items.length
   const span = itemWidth + gap
   const totalSpan = itemCount * span
+  const normalizedInitialIndex = itemCount > 0 ? ((initialIndex % itemCount) + itemCount) % itemCount : 0
 
   const setTransform = useCallback((x: number) => {
     const track = trackRef.current
@@ -198,10 +201,10 @@ export default function InfiniteCarousel<T>({
     if (!track || itemCount === 0) return
 
     centerXRef.current = -itemCount * span
-    xRef.current = centerXRef.current
+    xRef.current = centerXRef.current - normalizedInitialIndex * span
     track.style.gap = `${gap}px`
     setTransform(xRef.current)
-  }, [gap, itemCount, setTransform, span])
+  }, [gap, itemCount, normalizedInitialIndex, setTransform, span])
 
   useEffect(() => {
     return () => {

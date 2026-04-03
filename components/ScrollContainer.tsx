@@ -2,20 +2,13 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { createKeyHandler, createWheelHandler } from "@/utils/handlers"
+import { clearPendingReturnState, readPendingReturnState, readReturnSection, saveReturnSection } from "@/utils/entryNavigation"
 import { sections } from "@/utils/sections"
 import ScrollArrows from "./ScrollArrows"
 import WandererTrail from "./WandererTrail"
 
 function getInitialSectionIndex() {
-  if (typeof window === "undefined") return 0
-
-  const saved = window.sessionStorage.getItem("returnSection")
-  if (!saved) return 0
-
-  const parsed = Number.parseInt(saved, 10)
-  if (Number.isNaN(parsed) || parsed < 0 || parsed >= sections.length) return 0
-
-  return parsed
+  return readReturnSection(sections.length)
 }
 
 export default function ScrollContainer() {
@@ -54,8 +47,13 @@ export default function ScrollContainer() {
   }, [currentSection])
 
   useEffect(() => {
-    sessionStorage.setItem("returnSection", String(currentSection))
+    saveReturnSection(currentSection)
   }, [currentSection])
+
+  useEffect(() => {
+    if (!readPendingReturnState("/")) return
+    clearPendingReturnState("/")
+  }, [])
 
   const alignToCurrentSection = useCallback(() => {
     const container = containerRef.current

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, Search, X } from "lucide-react"
 import {
@@ -12,6 +12,12 @@ import {
   getEntryPreviewText,
   searchEntries,
 } from "@/content/entries"
+import {
+  getHomeSectionIndexForOrigin,
+  readArchiveCodexState,
+  saveArchiveCodexState,
+  saveEntryOriginState,
+} from "@/utils/entryNavigation"
 
 interface ArchiveCodexOverlayProps {
   isOpen: boolean
@@ -28,15 +34,68 @@ const allEntries = getAllEntries()
 
 export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOverlayProps) {
   const router = useRouter()
-  const [selectedEntrySlug, setSelectedEntrySlug] = useState(allEntries[0]?.slug ?? "")
-  const [searchQuery, setSearchQuery] = useState("")
+  const [initialArchiveState] = useState(() => readArchiveCodexState())
+  const [selectedEntrySlug, setSelectedEntrySlug] = useState(
+    initialArchiveState?.selectedEntrySlug || allEntries[0]?.slug || "",
+  )
+  const [searchQuery, setSearchQuery] = useState(initialArchiveState?.searchQuery ?? "")
   const [isAnimatingOpen, setIsAnimatingOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
   const closeTimerRef = useRef<number | null>(null)
+  const leftPaneRef = useRef<HTMLDivElement | null>(null)
+  const rightPaneRef = useRef<HTMLDivElement | null>(null)
+  const hasRestoredScrollPositionsRef = useRef(false)
 
   const filteredEntries = searchEntries(searchQuery)
   const selectedEntry = filteredEntries.find((entry) => entry.slug === selectedEntrySlug) ?? filteredEntries[0] ?? null
+  const selectedEntrySlugToOpen = selectedEntry?.slug ?? ""
+
+  const persistCodexState = useCallback(
+    (nextIsOpen = isOpen) => {
+      saveArchiveCodexState({
+        isOpen: nextIsOpen,
+        searchQuery,
+        selectedEntrySlug,
+        leftPaneScrollTop: leftPaneRef.current?.scrollTop ?? 0,
+        rightPaneScrollTop: rightPaneRef.current?.scrollTop ?? 0,
+      })
+    },
+    [isOpen, searchQuery, selectedEntrySlug],
+  )
+
+  const handleClose = useCallback(() => {
+    persistCodexState(false)
+    onClose()
+  }, [onClose, persistCodexState])
+
+  const handleOpenEntry = () => {
+    if (!selectedEntrySlugToOpen) return
+
+    saveArchiveCodexState({
+      isOpen: true,
+      searchQuery,
+      selectedEntrySlug: selectedEntrySlugToOpen,
+      leftPaneScrollTop: leftPaneRef.current?.scrollTop ?? 0,
+      rightPaneScrollTop: rightPaneRef.current?.scrollTop ?? 0,
+    })
+
+    saveEntryOriginState({
+      sourceRoute: "/",
+      sourceSection: "archive",
+      homeSectionIndex: getHomeSectionIndexForOrigin("archive"),
+      sourceScrollY: typeof window === "undefined" ? 0 : window.scrollY,
+      sourceQuery: searchQuery,
+      sourceSelectedSlug: selectedEntrySlugToOpen,
+      sourceLeftPaneScrollTop: leftPaneRef.current?.scrollTop ?? 0,
+      sourceRightPaneScrollTop: rightPaneRef.current?.scrollTop ?? 0,
+      codexWasOpen: true,
+      itemSlug: selectedEntrySlugToOpen,
+    })
+
+    router.push(`/item/${selectedEntrySlugToOpen}`)
+    onClose()
+  }
 
   useEffect(() => {
     if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current)
@@ -81,7 +140,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
     const originalOverlayLock = document.body.dataset.overlayLock
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose()
+      if (event.key === "Escape") handleClose()
     }
 
     document.body.style.overflow = "hidden"
@@ -99,14 +158,47 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
       }
       document.removeEventListener("keydown", handleKeyDown)
     }
-  }, [isVisible, onClose])
+  }, [handleClose, isVisible])
+
+  useEffect(() => {
+    persistCodexState(isOpen)
+  }, [isOpen, persistCodexState])
+
+  useEffect(() => {
+    if (!isOpen) {
+      hasRestoredScrollPositionsRef.current = false
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isVisible || hasRestoredScrollPositionsRef.current) return
+
+    const savedCodexState = readArchiveCodexState()
+    if (!savedCodexState) return
+
+    const restoreScrollPositions = () => {
+      if (leftPaneRef.current) {
+        leftPaneRef.current.scrollTop = savedCodexState.leftPaneScrollTop
+      }
+
+      if (rightPaneRef.current) {
+        rightPaneRef.current.scrollTop = savedCodexState.rightPaneScrollTop
+      }
+    }
+
+    hasRestoredScrollPositionsRef.current = true
+    const frame = window.requestAnimationFrame(restoreScrollPositions)
+    return () => {
+      window.cancelAnimationFrame(frame)
+    }
+  }, [isVisible])
 
   if (!isVisible) return null
 
   return (
     <div
       className="fixed inset-0 z-[70] flex items-center justify-center p-4 md:p-6"
-      onClick={onClose}
+      onClick={handleClose}
       onWheelCapture={(event) => event.stopPropagation()}
     >
       <div
@@ -127,7 +219,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
       >
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleClose}
           className="medieval-button absolute right-3 top-3 z-30 rounded-full p-3 text-orange-100 transition-all duration-300 hover:ember-glow"
           aria-label="Close archive codex"
         >
@@ -190,7 +282,11 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                     </div>
                   </div>
 
-                  <div className="scrollable-content scrollbar-fade min-h-0 flex-1 space-y-3 overflow-y-auto pb-2 pr-2">
+                  <div
+                    ref={leftPaneRef}
+                    className="scrollable-content scrollbar-fade min-h-0 flex-1 space-y-3 overflow-y-auto pb-2 pr-2"
+                    onScroll={() => persistCodexState()}
+                  >
                     {filteredEntries.length > 0 ? (
                       filteredEntries.map((entry, index) => {
                         const isSelected = entry.slug === selectedEntry?.slug
@@ -250,7 +346,11 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
 
                 <div className="relative z-10 flex h-full min-h-0 flex-col">
                   {selectedEntry ? (
-                    <div className="scrollable-content scrollbar-fade min-h-0 flex-1 overflow-y-auto pb-4 pr-1">
+                    <div
+                      ref={rightPaneRef}
+                      className="scrollable-content scrollbar-fade min-h-0 flex-1 overflow-y-auto pb-4 pr-1"
+                      onScroll={() => persistCodexState()}
+                    >
                       <div className="text-center">
                         <h4 className="font-cinzel text-3xl font-bold leading-tight text-amber-950">
                           {selectedEntry.title}
@@ -291,10 +391,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                       <div className="mt-6 text-center">
                         <button
                           type="button"
-                          onClick={() => {
-                            router.push(`/item/${selectedEntry.slug}`)
-                            onClose()
-                          }}
+                          onClick={handleOpenEntry}
                           className="inline-flex items-center gap-3 rounded-lg px-8 py-4 font-garamond text-lg text-orange-100 transition-all duration-300 medieval-button hover:ember-glow"
                         >
                           <BookOpen className="h-5 w-5" />

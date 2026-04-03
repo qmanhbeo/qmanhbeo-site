@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, BookOpen, Filter, ScrollText, Search } from "lucide-react"
 import {
@@ -12,6 +12,13 @@ import {
   searchEntries,
   type EntryType,
 } from "@/content/entries"
+import {
+  clearPendingReturnState,
+  readLibraryViewState,
+  readPendingReturnState,
+  saveEntryOriginState,
+  saveLibraryViewState,
+} from "@/utils/entryNavigation"
 
 const entryTypes: Array<{ label: string; value: EntryType | "all" }> = [
   { label: "All Collections", value: "all" },
@@ -23,10 +30,77 @@ const entryTypes: Array<{ label: string; value: EntryType | "all" }> = [
 
 export default function LibraryPage() {
   const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filterType, setFilterType] = useState<EntryType | "all">("all")
+  const [initialLibraryState] = useState<{
+    searchQuery: string
+    filterType: EntryType | "all"
+    listScrollTop: number
+  }>(() => {
+    const pendingReturnState = readPendingReturnState("/library")
+    if (pendingReturnState?.sourceSection === "library") {
+      return {
+        searchQuery: pendingReturnState.sourceQuery ?? "",
+        filterType: pendingReturnState.sourceFilterType ?? "all",
+        listScrollTop: pendingReturnState.sourceListScrollTop ?? 0,
+      }
+    }
+
+    const savedLibraryViewState = readLibraryViewState()
+    return {
+      searchQuery: savedLibraryViewState?.searchQuery ?? "",
+      filterType: savedLibraryViewState?.filterType ?? "all",
+      listScrollTop: savedLibraryViewState?.listScrollTop ?? 0,
+    }
+  })
+  const listRef = useRef<HTMLDivElement | null>(null)
+  const hasRestoredListScrollRef = useRef(false)
+  const [searchQuery, setSearchQuery] = useState(initialLibraryState.searchQuery)
+  const [filterType, setFilterType] = useState<EntryType | "all">(initialLibraryState.filterType)
 
   const filteredEntries = searchEntries(searchQuery).filter((entry) => filterType === "all" || entry.type === filterType)
+
+  useEffect(() => {
+    if (!readPendingReturnState("/library")) return
+    clearPendingReturnState("/library")
+  }, [])
+
+  useEffect(() => {
+    saveLibraryViewState({
+      searchQuery,
+      filterType,
+      listScrollTop: listRef.current?.scrollTop ?? 0,
+    })
+  }, [filterType, searchQuery])
+
+  useLayoutEffect(() => {
+    if (hasRestoredListScrollRef.current) return
+    if (!listRef.current) return
+
+    listRef.current.scrollTop = initialLibraryState.listScrollTop
+    hasRestoredListScrollRef.current = true
+  }, [initialLibraryState.listScrollTop])
+
+  const handleOpenEntry = (slug: string) => {
+    const listScrollTop = listRef.current?.scrollTop ?? 0
+
+    saveLibraryViewState({
+      searchQuery,
+      filterType,
+      listScrollTop,
+    })
+
+    saveEntryOriginState({
+      sourceRoute: "/library",
+      sourceSection: "library",
+      sourceScrollY: typeof window === "undefined" ? 0 : window.scrollY,
+      sourceQuery: searchQuery,
+      sourceFilterType: filterType,
+      sourceListScrollTop: listScrollTop,
+      sourceSelectedSlug: slug,
+      itemSlug: slug,
+    })
+
+    router.push(`/item/${slug}`)
+  }
 
   return (
     <div className="h-screen forest-campfire overflow-hidden">
@@ -93,7 +167,17 @@ export default function LibraryPage() {
           </p>
         </div>
 
-        <div className="scrollable-content min-h-0 flex-1 overflow-y-auto px-8">
+        <div
+          ref={listRef}
+          className="scrollable-content min-h-0 flex-1 overflow-y-auto px-8"
+          onScroll={() =>
+            saveLibraryViewState({
+              searchQuery,
+              filterType,
+              listScrollTop: listRef.current?.scrollTop ?? 0,
+            })
+          }
+        >
           <div className="mx-auto max-w-7xl pb-8">
             {filteredEntries.length > 0 ? (
               <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -101,7 +185,7 @@ export default function LibraryPage() {
                   <button
                     key={entry.slug}
                     type="button"
-                    onClick={() => router.push(`/item/${entry.slug}`)}
+                    onClick={() => handleOpenEntry(entry.slug)}
                     className="group rounded-[1.75rem] border border-amber-200/20 bg-amber-50/75 p-6 text-left shadow-[0_18px_40px_rgba(34,19,11,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-amber-300/60"
                   >
                     <div className="mb-4 flex flex-wrap items-center gap-2">
