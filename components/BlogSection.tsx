@@ -6,6 +6,7 @@ import { noteEntries } from "@/content/entries"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
 import { getHomeSectionIndexForOrigin, readPendingReturnState, saveEntryOriginState } from "@/utils/entryNavigation"
 import MobileSnapCarousel from "./ui/MobileSnapCarousel"
+import SpellScroll from "./ui/SpellScroll"
 import TavernTale from "./ui/TavernTale"
 import InfiniteCarousel from "./ui/InfiniteCarousel"
 
@@ -60,17 +61,16 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
                 <MobileSnapCarousel
                   items={noteEntries}
                   initialIndex={initialNoteIndex}
-                  gap={16}
-                  itemWidth="91vw"
+                  gap={18}
+                  itemWidth="90vw"
                   className="pb-1"
-                  viewportClassName="px-[4.5vw]"
+                  viewportClassName="px-[5vw]"
                   renderItem={(note, index) => {
                     return (
-                      <TavernTale
+                      <SpellScroll
                         title={note.title}
-                        excerpt={note.excerpt}
-                        date={note.dateLabel ?? ""}
-                        readTime={note.noteLabel}
+                        description={note.excerpt}
+                        runes={[note.dateLabel, note.noteLabel].filter(Boolean)}
                         presentation="mobile"
                         className="w-full"
                         onClick={() => handleTaleClick(note.slug, index)}
