@@ -16,7 +16,6 @@ export default function ScrollContainer() {
   const containerRef = useRef<HTMLDivElement>(null)
   const hasSkippedInitialPersistRef = useRef(false)
   const initialRestoreFrameRef = useRef<number | null>(null)
-  const hasCompletedInitialRestoreRef = useRef(false)
 
   const [currentSection, setCurrentSection] = useState(0)
   const [revealedSections, setRevealedSections] = useState(() => sections.map((_, i) => i === 0))
@@ -122,24 +121,44 @@ export default function ScrollContainer() {
     const shouldSuppressEntryAnimation = pendingReturnState !== null
     const restoredSection = readReturnSection(sections.length)
 
-    currentSectionRef.current = 0
-
     if (shouldSuppressEntryAnimation) {
       document.documentElement.classList.add("suppress-home-entry-fixed-reveal")
     } else {
       document.documentElement.classList.remove("suppress-home-entry-fixed-reveal")
     }
 
-    if (restoredSection <= 0 || hasCompletedInitialRestoreRef.current) {
+    if (restoredSection <= 0) {
       return () => {
         document.documentElement.classList.remove("suppress-home-entry-fixed-reveal")
       }
     }
 
     initialRestoreFrameRef.current = window.requestAnimationFrame(() => {
-      hasCompletedInitialRestoreRef.current = true
+      const container = containerRef.current
+      if (!container) return
+
+      if (scrollTimeoutRef.current !== null) {
+        window.clearTimeout(scrollTimeoutRef.current)
+      }
+
       initialRestoreFrameRef.current = null
-      scrollToSection(restoredSection)
+      setIsScrolling(true)
+      setRevealedSections(sections.map((_, index) => index <= restoredSection))
+      setAnimatedSections(
+        sections.map((_, index) => !shouldSuppressEntryAnimation && index <= restoredSection),
+      )
+
+      container.scrollTo({
+        left: restoredSection * container.clientWidth,
+        behavior: "smooth",
+      })
+
+      setCurrentSection(restoredSection)
+
+      scrollTimeoutRef.current = window.setTimeout(() => {
+        setIsScrolling(false)
+        scrollTimeoutRef.current = null
+      }, 800)
     })
 
     return () => {
@@ -149,7 +168,7 @@ export default function ScrollContainer() {
         initialRestoreFrameRef.current = null
       }
     }
-  }, [scrollToSection])
+  }, [])
 
   useEffect(() => {
     const container = containerRef.current
