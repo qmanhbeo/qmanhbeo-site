@@ -30,6 +30,30 @@ function ArcDetailCard({ label, items }: { label: string; items: string[] }) {
   )
 }
 
+function WhomIMetCard({ items }: { items: string[] }) {
+  return (
+    <div
+      className="rounded-md p-3 md:p-4"
+      style={{
+        border: "1px solid rgba(255, 200, 120, 0.65)",
+        background: "rgba(255, 240, 210, 0.95)",
+      }}
+    >
+      <h5 className="mb-2 font-cinzel text-xs font-bold uppercase tracking-widest text-amber-700">
+        Whom I Met
+      </h5>
+      <ul className="space-y-1">
+        {items.slice(0, 3).map((item, i) => (
+          <li key={i} className="flex items-start gap-1.5 font-garamond text-sm leading-snug text-amber-950">
+            <span className="mt-0.5 flex-shrink-0 text-amber-600">·</span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 function NavPill({
   current,
   isTransitioning,
@@ -227,35 +251,35 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                           </p>
                         </div>
 
-                        {/* Narrative grid */}
-                        {(journey.whatIDid || journey.whatILearned || journey.outcomes || journey.themes) && (
+                        {/* Narrative grid — 2×2 */}
+                        {(journey.whatIDid || journey.whomIMet || journey.whatILearned || journey.achieved) && (
                           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                             {journey.whatIDid && (
                               <ArcDetailCard label="What I Did" items={journey.whatIDid} />
                             )}
+                            {journey.whomIMet && (
+                              <WhomIMetCard items={journey.whomIMet} />
+                            )}
                             {journey.whatILearned && (
                               <ArcDetailCard label="What I Learned" items={journey.whatILearned} />
                             )}
-                            {journey.outcomes && (
-                              <ArcDetailCard label="Outcomes" items={journey.outcomes} />
+                            {journey.achieved && (
+                              <ArcDetailCard label="What I Achieved" items={journey.achieved} />
                             )}
-                            {journey.themes && (
-                              <div className="rounded-md border border-amber-300/70 bg-amber-50/88 p-3 md:p-4">
-                                <h5 className="mb-2 font-cinzel text-xs font-bold uppercase tracking-widest text-amber-600">
-                                  Themes
-                                </h5>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {journey.themes.map((theme) => (
-                                    <span
-                                      key={theme}
-                                      className="rounded-full border border-amber-300/80 bg-amber-100/80 px-2.5 py-0.5 font-garamond text-xs text-amber-800"
-                                    >
-                                      {theme}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+                          </div>
+                        )}
+
+                        {/* Themes — pill row, matches Scholar Scrolls exactly */}
+                        {journey.themes && journey.themes.length > 0 && (
+                          <div className="flex flex-wrap justify-center gap-2">
+                            {journey.themes.map((theme) => (
+                              <span
+                                key={theme}
+                                className="rounded-full border border-amber-300/80 bg-amber-100/80 px-3 py-1 font-garamond text-sm text-amber-800"
+                              >
+                                {theme}
+                              </span>
+                            ))}
                           </div>
                         )}
 

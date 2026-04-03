@@ -10,8 +10,9 @@ export interface TravelYear {
     left: string
   }
   whatIDid?: string[]
+  whomIMet?: string[]
   whatILearned?: string[]
-  outcomes?: string[]
+  achieved?: string[]
   themes?: string[]
 }
 
@@ -35,19 +36,24 @@ export const travelYears: TravelYear[] = [
     whatIDid: [
       "Studied economics, statistics, and social science at UEH",
       "Assisted faculty research in energy forecasting and econometric modelling",
-      "Supported teaching and worked as a tutor across undergraduate subjects",
+      "Supported teaching and tutored undergraduate students across subjects",
+    ],
+    whomIMet: [
+      "Professors who showed me economics is a way of seeing, not just a set of models",
+      "Research peers who made empirical work feel like a shared project, not a solitary one",
+      "Students I tutored who asked the questions I hadn't thought to ask yet",
     ],
     whatILearned: [
       "How empirical questions sharpen into researchable problems",
       "Decomposition and longitudinal methods for inequality analysis",
       "The best policy questions begin with people, not with available data",
     ],
-    outcomes: [
+    achieved: [
       "UEH Young Researcher Award — First Prize (2024)",
-      "Undergraduate research on youth psychology and family verbal violence",
-      "Early foundation in energy economics and forecasting methods",
+      "Undergraduate research on verbal violence and youth psychology",
+      "A working foundation in energy economics and forecasting methods",
     ],
-    themes: ["Economics", "Research Methods", "Energy", "Social Science", "Education"],
+    themes: ["Economics", "Energy", "Social Systems", "Empirical Methods", "Policy"],
   },
   {
     year: "2024",
@@ -63,16 +69,22 @@ export const travelYears: TravelYear[] = [
       "Investigated socioeconomic effects of renewable energy project delays",
       "Analysed urban-rural energy burden disparities across Vietnam",
     ],
+    whomIMet: [
+      "Researchers who treated policy as something owed to real people, not just to models",
+      "Colleagues who showed that fieldwork and econometrics could live in the same sentence",
+      "Mentors who held the line between honesty and precision — and made me hold it too",
+    ],
     whatILearned: [
       "Energy transitions carry deeply unequal costs for ordinary households",
       "Policy timelines are not neutral — delays function as invisible taxes",
       "Empirical rigour must follow the question, not the data available",
     ],
-    outcomes: [
+    achieved: [
       "ELG 2025 publication on renewable energy delays in Vietnam",
       "Working paper on longitudinal urban-rural energy burden disparities",
+      "A sharpened conviction that research earns its purpose at the boundary of policy",
     ],
-    themes: ["Energy Policy", "Vietnam", "Sustainability", "Socioeconomics", "Empirical Research"],
+    themes: ["Energy Economics", "Policy Analysis", "Sustainability", "Vietnam", "Empirical Research"],
   },
   {
     year: "2025–2026",
@@ -88,17 +100,22 @@ export const travelYears: TravelYear[] = [
       "Built reinforcement learning agents and simulations for resource-allocation research",
       "Constructed data pipelines for UK procurement and Vietnamese housing markets",
     ],
+    whomIMet: [
+      "A cohort from across the world who brought different constraints to the same problem",
+      "Advisors who pushed back on my assumptions before I even knew I had them",
+      "Peers who made the work feel less like a degree and more like a shared inquiry into what's fair",
+    ],
     whatILearned: [
       "RL is a tool for navigating constraints, not just optimising outcomes",
       "Agent-based models surface emergent behaviour that equations miss",
       "Sustainability is a systems problem — metrics alone cannot solve it",
     ],
-    outcomes: [
+    achieved: [
       "GAIA: agent-based economic simulation for RL research (ongoing)",
       "Vietnam RL market sandbox with full market microstructure (ongoing)",
-      "Multiple research pipelines and tools published publicly",
+      "Multiple research tools and pipelines made public",
     ],
-    themes: ["AI", "Reinforcement Learning", "Sustainability", "Birmingham", "Agent-Based Modelling"],
+    themes: ["AI", "Reinforcement Learning", "Sustainability", "Systems Thinking", "Agent-Based Modelling"],
   },
 ]
 
