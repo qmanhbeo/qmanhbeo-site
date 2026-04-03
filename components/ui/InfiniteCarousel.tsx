@@ -217,11 +217,12 @@ export default function InfiniteCarousel<T>({
 
   const trackAlignItems =
     itemAlign === "start" ? "flex-start" : itemAlign === "center" ? "center" : "stretch"
+  const fadeStateClassName = className.includes("scroll-fade-horizontal") ? "mask-both-horizontal" : ""
 
   return (
     <div
       ref={viewportRef}
-      className={`carousel-viewport outline-none ${className}`}
+      className={`carousel-viewport outline-none ${fadeStateClassName} ${className}`}
       tabIndex={0}
       aria-label="Infinite carousel"
       role="region"

@@ -10,6 +10,9 @@ const INDICATOR_THUMB_CLASS_NAME = "scrollbar-fade-thumb"
 const MASK_TOP_ONLY_CLASS_NAME = "mask-top-only"
 const MASK_BOTTOM_ONLY_CLASS_NAME = "mask-bottom-only"
 const MASK_BOTH_CLASS_NAME = "mask-both"
+const MASK_LEFT_ONLY_CLASS_NAME = "mask-left-only"
+const MASK_RIGHT_ONLY_CLASS_NAME = "mask-right-only"
+const MASK_BOTH_HORIZONTAL_CLASS_NAME = "mask-both-horizontal"
 const INDICATOR_WIDTH_PX = 8
 const INDICATOR_TOP_INSET_PX = 12
 const INDICATOR_BOTTOM_INSET_PX = 12
@@ -52,13 +55,15 @@ export default function ScrollbarActivityManager() {
         }
 
         const updateIndicator = () => {
-          const hasOverflow = element.scrollHeight > element.clientHeight + 1
+          const hasVerticalOverflow = element.scrollHeight > element.clientHeight + 1
+          const hasHorizontalOverflow = element.scrollWidth > element.clientWidth + 1
+          const hasOverflow = hasVerticalOverflow
           const rect = element.getBoundingClientRect()
 
           if (element.classList.contains("scroll-fade-vertical")) {
             element.classList.remove(MASK_TOP_ONLY_CLASS_NAME, MASK_BOTTOM_ONLY_CLASS_NAME, MASK_BOTH_CLASS_NAME)
 
-            if (hasOverflow) {
+            if (hasVerticalOverflow) {
               const atTop = element.scrollTop <= 1
               const atBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1
 
@@ -68,6 +73,27 @@ export default function ScrollbarActivityManager() {
                 element.classList.add(MASK_BOTTOM_ONLY_CLASS_NAME)
               } else if (!atTop && atBottom) {
                 element.classList.add(MASK_TOP_ONLY_CLASS_NAME)
+              }
+            }
+          }
+
+          if (element.classList.contains("scroll-fade-horizontal")) {
+            element.classList.remove(
+              MASK_LEFT_ONLY_CLASS_NAME,
+              MASK_RIGHT_ONLY_CLASS_NAME,
+              MASK_BOTH_HORIZONTAL_CLASS_NAME,
+            )
+
+            if (hasHorizontalOverflow) {
+              const atLeft = element.scrollLeft <= 1
+              const atRight = element.scrollLeft + element.clientWidth >= element.scrollWidth - 1
+
+              if (!atLeft && !atRight) {
+                element.classList.add(MASK_BOTH_HORIZONTAL_CLASS_NAME)
+              } else if (atLeft && !atRight) {
+                element.classList.add(MASK_RIGHT_ONLY_CLASS_NAME)
+              } else if (!atLeft && atRight) {
+                element.classList.add(MASK_LEFT_ONLY_CLASS_NAME)
               }
             }
           }

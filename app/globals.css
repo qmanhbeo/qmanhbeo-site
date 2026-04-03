@@ -217,7 +217,8 @@
    Subtle masks soften content entering and leaving internal scroll regions.
    ============================================================================= */
 
-.scroll-fade-vertical {
+.scroll-fade-vertical,
+.scroll-fade-horizontal {
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-size: 100% 100%;
@@ -279,7 +280,41 @@
   );
 }
 
-.scroll-fade-horizontal {
+.scroll-fade-horizontal.mask-left-only {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgb(0 0 0 / 0.84) 0%,
+    rgb(0 0 0 / 0.94) 3%,
+    black 6.5%,
+    black 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    rgb(0 0 0 / 0.84) 0%,
+    rgb(0 0 0 / 0.94) 3%,
+    black 6.5%,
+    black 100%
+  );
+}
+
+.scroll-fade-horizontal.mask-right-only {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 93.5%,
+    rgb(0 0 0 / 0.94) 97%,
+    rgb(0 0 0 / 0.84) 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 93.5%,
+    rgb(0 0 0 / 0.94) 97%,
+    rgb(0 0 0 / 0.84) 100%
+  );
+}
+
+.scroll-fade-horizontal.mask-both-horizontal {
   -webkit-mask-image: linear-gradient(
     to right,
     rgb(0 0 0 / 0.84) 0%,
@@ -298,10 +333,6 @@
     rgb(0 0 0 / 0.94) 97%,
     rgb(0 0 0 / 0.84) 100%
   );
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
 }
 
 /* NEW: inner vertical zones trap their own overscroll; mobile vertical only */
@@ -685,7 +716,7 @@
    ============================================ */
 
 /* INFINITE CAROUSEL */
-.carousel-viewport { overflow: visible; touch-action: pan-x; overscroll-behavior-x: contain; cursor: grab; }
+.carousel-viewport { overflow: hidden; touch-action: pan-x; overscroll-behavior-x: contain; cursor: grab; }
 .carousel-viewport.is-dragging { cursor: grabbing; }
 .carousel-track { display: flex; align-items: stretch; will-change: transform; transform: translate3d(0,0,0); }
 .carousel-item { flex: 0 0 auto; }
