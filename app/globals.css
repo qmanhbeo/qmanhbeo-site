@@ -219,6 +219,8 @@
 
 .scroll-fade-vertical,
 .scroll-fade-horizontal {
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-size: 100% 100%;
@@ -228,15 +230,17 @@
 .scroll-fade-vertical.mask-top-only {
   -webkit-mask-image: linear-gradient(
     to bottom,
-    rgb(0 0 0 / 0.84) 0%,
-    rgb(0 0 0 / 0.94) 3.5%,
+    rgb(0 0 0 / 0.72) 0%,
+    rgb(0 0 0 / 0.88) 2.75%,
+    rgb(0 0 0 / 0.96) 4.75%,
     black 7%,
     black 100%
   );
   mask-image: linear-gradient(
     to bottom,
-    rgb(0 0 0 / 0.84) 0%,
-    rgb(0 0 0 / 0.94) 3.5%,
+    rgb(0 0 0 / 0.72) 0%,
+    rgb(0 0 0 / 0.88) 2.75%,
+    rgb(0 0 0 / 0.96) 4.75%,
     black 7%,
     black 100%
   );
@@ -247,52 +251,60 @@
     to bottom,
     black 0%,
     black 93%,
-    rgb(0 0 0 / 0.94) 96.5%,
-    rgb(0 0 0 / 0.84) 100%
+    rgb(0 0 0 / 0.96) 95.25%,
+    rgb(0 0 0 / 0.88) 97.25%,
+    rgb(0 0 0 / 0.72) 100%
   );
   mask-image: linear-gradient(
     to bottom,
     black 0%,
     black 93%,
-    rgb(0 0 0 / 0.94) 96.5%,
-    rgb(0 0 0 / 0.84) 100%
+    rgb(0 0 0 / 0.96) 95.25%,
+    rgb(0 0 0 / 0.88) 97.25%,
+    rgb(0 0 0 / 0.72) 100%
   );
 }
 
 .scroll-fade-vertical.mask-both {
   -webkit-mask-image: linear-gradient(
     to bottom,
-    rgb(0 0 0 / 0.84) 0%,
-    rgb(0 0 0 / 0.94) 3.5%,
+    rgb(0 0 0 / 0.72) 0%,
+    rgb(0 0 0 / 0.88) 2.75%,
+    rgb(0 0 0 / 0.96) 4.75%,
     black 7%,
     black 93%,
-    rgb(0 0 0 / 0.94) 96.5%,
-    rgb(0 0 0 / 0.84) 100%
+    rgb(0 0 0 / 0.96) 95.25%,
+    rgb(0 0 0 / 0.88) 97.25%,
+    rgb(0 0 0 / 0.72) 100%
   );
   mask-image: linear-gradient(
     to bottom,
-    rgb(0 0 0 / 0.84) 0%,
-    rgb(0 0 0 / 0.94) 3.5%,
+    rgb(0 0 0 / 0.72) 0%,
+    rgb(0 0 0 / 0.88) 2.75%,
+    rgb(0 0 0 / 0.96) 4.75%,
     black 7%,
     black 93%,
-    rgb(0 0 0 / 0.94) 96.5%,
-    rgb(0 0 0 / 0.84) 100%
+    rgb(0 0 0 / 0.96) 95.25%,
+    rgb(0 0 0 / 0.88) 97.25%,
+    rgb(0 0 0 / 0.72) 100%
   );
 }
 
 .scroll-fade-horizontal.mask-left-only {
   -webkit-mask-image: linear-gradient(
     to right,
-    rgb(0 0 0 / 0.84) 0%,
-    rgb(0 0 0 / 0.94) 3%,
-    black 6.5%,
+    rgb(0 0 0 / 0.72) 0%,
+    rgb(0 0 0 / 0.88) 2.5%,
+    rgb(0 0 0 / 0.96) 4.5%,
+    black 6.75%,
     black 100%
   );
   mask-image: linear-gradient(
     to right,
-    rgb(0 0 0 / 0.84) 0%,
-    rgb(0 0 0 / 0.94) 3%,
-    black 6.5%,
+    rgb(0 0 0 / 0.72) 0%,
+    rgb(0 0 0 / 0.88) 2.5%,
+    rgb(0 0 0 / 0.96) 4.5%,
+    black 6.75%,
     black 100%
   );
 }
@@ -301,37 +313,43 @@
   -webkit-mask-image: linear-gradient(
     to right,
     black 0%,
-    black 93.5%,
-    rgb(0 0 0 / 0.94) 97%,
-    rgb(0 0 0 / 0.84) 100%
+    black 93.25%,
+    rgb(0 0 0 / 0.96) 95.5%,
+    rgb(0 0 0 / 0.88) 97.5%,
+    rgb(0 0 0 / 0.72) 100%
   );
   mask-image: linear-gradient(
     to right,
     black 0%,
-    black 93.5%,
-    rgb(0 0 0 / 0.94) 97%,
-    rgb(0 0 0 / 0.84) 100%
+    black 93.25%,
+    rgb(0 0 0 / 0.96) 95.5%,
+    rgb(0 0 0 / 0.88) 97.5%,
+    rgb(0 0 0 / 0.72) 100%
   );
 }
 
 .scroll-fade-horizontal.mask-both-horizontal {
   -webkit-mask-image: linear-gradient(
     to right,
-    rgb(0 0 0 / 0.84) 0%,
-    rgb(0 0 0 / 0.94) 3%,
-    black 6.5%,
-    black 93.5%,
-    rgb(0 0 0 / 0.94) 97%,
-    rgb(0 0 0 / 0.84) 100%
+    rgb(0 0 0 / 0.72) 0%,
+    rgb(0 0 0 / 0.88) 2.5%,
+    rgb(0 0 0 / 0.96) 4.5%,
+    black 6.75%,
+    black 93.25%,
+    rgb(0 0 0 / 0.96) 95.5%,
+    rgb(0 0 0 / 0.88) 97.5%,
+    rgb(0 0 0 / 0.72) 100%
   );
   mask-image: linear-gradient(
     to right,
-    rgb(0 0 0 / 0.84) 0%,
-    rgb(0 0 0 / 0.94) 3%,
-    black 6.5%,
-    black 93.5%,
-    rgb(0 0 0 / 0.94) 97%,
-    rgb(0 0 0 / 0.84) 100%
+    rgb(0 0 0 / 0.72) 0%,
+    rgb(0 0 0 / 0.88) 2.5%,
+    rgb(0 0 0 / 0.96) 4.5%,
+    black 6.75%,
+    black 93.25%,
+    rgb(0 0 0 / 0.96) 95.5%,
+    rgb(0 0 0 / 0.88) 97.5%,
+    rgb(0 0 0 / 0.72) 100%
   );
 }
 
