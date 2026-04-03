@@ -227,14 +227,16 @@
 .scroll-fade-vertical.mask-top-only {
   -webkit-mask-image: linear-gradient(
     to bottom,
-    transparent 0%,
-    black 10%,
+    rgb(0 0 0 / 0.84) 0%,
+    rgb(0 0 0 / 0.94) 3.5%,
+    black 7%,
     black 100%
   );
   mask-image: linear-gradient(
     to bottom,
-    transparent 0%,
-    black 10%,
+    rgb(0 0 0 / 0.84) 0%,
+    rgb(0 0 0 / 0.94) 3.5%,
+    black 7%,
     black 100%
   );
 }
@@ -243,48 +245,58 @@
   -webkit-mask-image: linear-gradient(
     to bottom,
     black 0%,
-    black 90%,
-    transparent 100%
+    black 93%,
+    rgb(0 0 0 / 0.94) 96.5%,
+    rgb(0 0 0 / 0.84) 100%
   );
   mask-image: linear-gradient(
     to bottom,
     black 0%,
-    black 90%,
-    transparent 100%
+    black 93%,
+    rgb(0 0 0 / 0.94) 96.5%,
+    rgb(0 0 0 / 0.84) 100%
   );
 }
 
 .scroll-fade-vertical.mask-both {
   -webkit-mask-image: linear-gradient(
     to bottom,
-    transparent 0%,
-    black 10%,
-    black 90%,
-    transparent 100%
+    rgb(0 0 0 / 0.84) 0%,
+    rgb(0 0 0 / 0.94) 3.5%,
+    black 7%,
+    black 93%,
+    rgb(0 0 0 / 0.94) 96.5%,
+    rgb(0 0 0 / 0.84) 100%
   );
   mask-image: linear-gradient(
     to bottom,
-    transparent 0%,
-    black 10%,
-    black 90%,
-    transparent 100%
+    rgb(0 0 0 / 0.84) 0%,
+    rgb(0 0 0 / 0.94) 3.5%,
+    black 7%,
+    black 93%,
+    rgb(0 0 0 / 0.94) 96.5%,
+    rgb(0 0 0 / 0.84) 100%
   );
 }
 
 .scroll-fade-horizontal {
   -webkit-mask-image: linear-gradient(
     to right,
-    transparent 0%,
-    black 8%,
-    black 92%,
-    transparent 100%
+    rgb(0 0 0 / 0.84) 0%,
+    rgb(0 0 0 / 0.94) 3%,
+    black 6.5%,
+    black 93.5%,
+    rgb(0 0 0 / 0.94) 97%,
+    rgb(0 0 0 / 0.84) 100%
   );
   mask-image: linear-gradient(
     to right,
-    transparent 0%,
-    black 8%,
-    black 92%,
-    transparent 100%
+    rgb(0 0 0 / 0.84) 0%,
+    rgb(0 0 0 / 0.94) 3%,
+    black 6.5%,
+    black 93.5%,
+    rgb(0 0 0 / 0.94) 97%,
+    rgb(0 0 0 / 0.84) 100%
   );
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
