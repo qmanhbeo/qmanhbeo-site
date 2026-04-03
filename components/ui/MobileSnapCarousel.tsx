@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 type MobileSnapCarouselProps<T> = {
   items: T[]
@@ -30,15 +30,30 @@ export default function MobileSnapCarousel<T>({
   const itemCount = items.length
   const normalizedInitialIndex = itemCount > 0 ? ((initialIndex % itemCount) + itemCount) % itemCount : 0
   const [activeIndex, setActiveIndex] = useState(normalizedInitialIndex)
+  const repeatedItems = itemCount > 1 ? [...items, ...items, ...items] : items
+
+  const getLogicalIndex = useCallback(
+    (renderIndex: number) => (itemCount > 0 ? ((renderIndex % itemCount) + itemCount) % itemCount : 0),
+    [itemCount],
+  )
+
+  const getMiddleRenderIndex = useCallback(
+    (logicalIndex: number) => (itemCount > 1 ? itemCount + logicalIndex : logicalIndex),
+    [itemCount],
+  )
+
+  const getCenteredScrollLeft = useCallback((viewport: HTMLDivElement, item: HTMLDivElement) => {
+    return Math.max(0, item.offsetLeft - (viewport.clientWidth - item.clientWidth) / 2)
+  }, [])
 
   useEffect(() => {
     const viewport = viewportRef.current
-    const target = itemRefs.current[normalizedInitialIndex]
+    const target = itemRefs.current[getMiddleRenderIndex(normalizedInitialIndex)]
     if (!viewport || !target) return
 
-    const nextLeft = target.offsetLeft - (viewport.clientWidth - target.clientWidth) / 2
+    const nextLeft = getCenteredScrollLeft(viewport, target)
     viewport.scrollTo({ left: Math.max(0, nextLeft), behavior: "auto" })
-  }, [normalizedInitialIndex])
+  }, [getCenteredScrollLeft, getMiddleRenderIndex, normalizedInitialIndex])
 
   useEffect(() => {
     const viewport = viewportRef.current
@@ -46,7 +61,7 @@ export default function MobileSnapCarousel<T>({
 
     const updateActiveIndex = () => {
       const viewportCenter = viewport.scrollLeft + viewport.clientWidth / 2
-      let closestIndex = 0
+      let closestRenderIndex = 0
       let smallestDistance = Number.POSITIVE_INFINITY
 
       itemRefs.current.forEach((item, index) => {
@@ -56,11 +71,24 @@ export default function MobileSnapCarousel<T>({
 
         if (distance < smallestDistance) {
           smallestDistance = distance
-          closestIndex = index
+          closestRenderIndex = index
         }
       })
 
-      setActiveIndex((currentIndex) => (currentIndex === closestIndex ? currentIndex : closestIndex))
+      const nextLogicalIndex = getLogicalIndex(closestRenderIndex)
+      setActiveIndex((currentIndex) => (currentIndex === nextLogicalIndex ? currentIndex : nextLogicalIndex))
+
+      if (itemCount > 1 && (closestRenderIndex < itemCount || closestRenderIndex >= itemCount * 2)) {
+        const middleItem = itemRefs.current[getMiddleRenderIndex(nextLogicalIndex)]
+
+        if (middleItem) {
+          viewport.scrollTo({
+            left: getCenteredScrollLeft(viewport, middleItem),
+            behavior: "auto",
+          })
+        }
+      }
+
       scrollFrameRef.current = null
     }
 
@@ -78,7 +106,7 @@ export default function MobileSnapCarousel<T>({
         scrollFrameRef.current = null
       }
     }
-  }, [])
+  }, [getCenteredScrollLeft, getLogicalIndex, getMiddleRenderIndex, itemCount])
 
   return (
     <div className={`w-full ${className}`}>
@@ -89,16 +117,16 @@ export default function MobileSnapCarousel<T>({
         onWheelCapture={(event) => event.stopPropagation()}
       >
         <div className="mobile-card-carousel-track" style={{ gap: `${gap}px` }}>
-          {items.map((item, index) => (
+          {repeatedItems.map((item, index) => (
             <div
-              key={index}
+              key={`${index}-${getLogicalIndex(index)}`}
               ref={(element) => {
                 itemRefs.current[index] = element
               }}
               className={`mobile-card-carousel-item ${itemClassName}`}
               style={{ width: itemWidth }}
             >
-              {renderItem(item, index)}
+              {renderItem(item, getLogicalIndex(index))}
             </div>
           ))}
         </div>
