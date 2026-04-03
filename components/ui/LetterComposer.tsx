@@ -1,6 +1,6 @@
 "use client"
 
-import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from "react"
+import { type ChangeEvent, type FormEvent, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { Feather, MailCheck, Send } from "lucide-react"
 
 interface LetterComposerProps {
@@ -18,14 +18,25 @@ const rodStyle = {
   boxShadow: "0 8px 18px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,240,214,0.35)",
 }
 
-const fieldClassName =
-  "mt-2 w-full rounded-2xl border border-amber-900/20 bg-amber-50/85 px-4 py-3 text-base text-amber-950 shadow-sm outline-none transition placeholder:text-amber-800/55 focus:border-amber-700/45 focus:bg-amber-50 focus:ring-2 focus:ring-amber-500/25"
+const letterFieldLabelClassName = "font-garamond text-sm italic tracking-[0.06em] text-amber-900/62"
+
+const lineFieldClassName =
+  "mt-1.5 w-full border-0 border-b border-amber-900/22 bg-transparent px-0 pb-2 pt-1 font-garamond text-lg text-amber-950 outline-none transition-[border-color,color,opacity] duration-200 placeholder:text-amber-900/42 focus:border-amber-800/55 focus:ring-0"
+
+const messageFieldClassName =
+  "mt-1.5 w-full min-h-[3rem] overflow-hidden border-0 border-b border-amber-900/22 bg-transparent px-0 pb-2 pt-1 font-garamond text-lg leading-8 text-amber-950 outline-none transition-[height,border-color,color,opacity] duration-200 ease-out placeholder:text-amber-900/42 focus:border-amber-800/55 focus:ring-0 resize-none"
+
+const resizeTextarea = (textarea: HTMLTextAreaElement) => {
+  textarea.style.height = "0px"
+  textarea.style.height = `${textarea.scrollHeight}px`
+}
 
 export default function LetterComposer({ className = "" }: LetterComposerProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [letterSent, setLetterSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const resetTimerRef = useRef<number | null>(null)
+  const messageTextareaRef = useRef<HTMLTextAreaElement>(null)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -39,6 +50,12 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
       [name]: value,
     }))
   }
+
+  useLayoutEffect(() => {
+    if (!messageTextareaRef.current) return
+
+    resizeTextarea(messageTextareaRef.current)
+  }, [formData.message])
 
   const handleLetterSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -80,7 +97,7 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
   }, [])
 
   return (
-    <div className={`relative mx-auto w-full max-w-4xl px-4 py-7 sm:px-6 ${className}`}>
+    <div className={`relative mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 ${className}`}>
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center">
         <span className="h-9 w-9 rounded-full border border-amber-950/25" style={rodStyle} />
         <span className="h-6 flex-1 rounded-full border border-amber-950/20" style={rodStyle} />
@@ -94,7 +111,7 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
       </div>
 
       <div
-        className="relative overflow-hidden rounded-[2rem] border border-amber-950/20 px-6 pb-12 pt-12 md:px-10 md:pb-14 md:pt-14"
+        className="relative overflow-hidden rounded-[2rem] border border-amber-950/20 px-6 pb-10 pt-8 md:px-10 md:pb-12 md:pt-10"
         style={parchmentStyle}
       >
         <div className="pointer-events-none absolute left-5 top-5 h-5 w-5 border-l-2 border-t-2 border-amber-700/55" />
@@ -104,25 +121,19 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
         <Feather className="pointer-events-none absolute right-8 top-8 h-24 w-24 -rotate-12 text-amber-900/10" />
 
         {!letterSent ? (
-          <form className="relative z-10 space-y-6" onSubmit={handleLetterSubmit}>
-            <div className="text-center">
-              <p className="font-cinzel text-xs font-semibold uppercase tracking-[0.35em] text-amber-700/80">
-                Correspondence
-              </p>
-              <h3 className="mt-4 font-cinzel text-3xl font-bold text-amber-950 md:text-4xl">Unfurl a Letter</h3>
-              <p className="mx-auto mt-3 max-w-2xl font-garamond text-lg italic leading-relaxed text-amber-800">
+          <form className="relative z-10 space-y-7 md:space-y-8" onSubmit={handleLetterSubmit}>
+            <div className="max-w-2xl">
+              <p className="font-garamond text-lg italic leading-relaxed text-amber-800 md:text-xl">
                 If these pages speak to your own work, send word by firelight. I read every thoughtful note.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-amber-900/10 bg-amber-50/30 p-5 shadow-inner shadow-amber-900/5">
-              <p className="font-garamond text-xl italic text-amber-900">Dear Fellow Wanderer,</p>
-            </div>
+            <p className="font-garamond text-2xl italic text-amber-900/90">Dear Fellow Wanderer,</p>
 
             <div className="grid gap-5 md:grid-cols-2">
               <label className="block">
-                <span className="font-cinzel text-sm font-semibold uppercase tracking-wide text-amber-900">
-                  Your Name
+                <span className={letterFieldLabelClassName}>
+                  Your name
                 </span>
                 <input
                   type="text"
@@ -130,14 +141,14 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className={fieldClassName}
+                  className={lineFieldClassName}
                   placeholder="By what name shall I know you?"
                 />
               </label>
 
               <label className="block">
-                <span className="font-cinzel text-sm font-semibold uppercase tracking-wide text-amber-900">
-                  Your Reply Address
+                <span className={letterFieldLabelClassName}>
+                  Your reply address
                 </span>
                 <input
                   type="email"
@@ -145,23 +156,24 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className={fieldClassName}
+                  className={lineFieldClassName}
                   placeholder="your.email@realm.com"
                 />
               </label>
             </div>
 
             <label className="block">
-              <span className="font-cinzel text-sm font-semibold uppercase tracking-wide text-amber-900">
-                Your Letter
+              <span className={letterFieldLabelClassName}>
+                Your letter
               </span>
               <textarea
+                ref={messageTextareaRef}
                 name="message"
                 value={formData.message}
                 onChange={handleInputChange}
                 required
-                rows={8}
-                className={`${fieldClassName} scrollbar-fade min-h-[14rem] resize-y`}
+                rows={1}
+                className={messageFieldClassName}
                 placeholder="Share your thoughts, your work, your questions, or simply say hello."
               />
             </label>
@@ -172,8 +184,11 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
               </p>
             )}
 
-            <div className="flex flex-col gap-4 border-t border-amber-900/15 pt-6 md:flex-row md:items-center md:justify-between">
-              <p className="font-garamond text-lg italic text-amber-800">With warm regards from the hearth,</p>
+            <div className="flex flex-col gap-4 pt-3 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="font-garamond text-lg italic text-amber-800">With warm regards from the hearth,</p>
+                <p className="mt-1 font-cinzel text-xl text-amber-950/90">Leonardo</p>
+              </div>
 
               <button
                 type="submit"

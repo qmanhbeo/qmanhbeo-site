@@ -83,7 +83,7 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
         }`}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="letter-overlay-title"
+        aria-label="Write him a letter"
         onClick={(event) => event.stopPropagation()}
         onWheelCapture={(event) => event.stopPropagation()}
       >
@@ -95,15 +95,6 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
         >
           <X className="h-5 w-5" />
         </button>
-
-        <div className="mb-4 flex-shrink-0 px-4 text-center">
-          <h3 id="letter-overlay-title" className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">
-            Write Him a Letter
-          </h3>
-          <p className="map-sky-ink mx-auto mt-3 max-w-2xl font-garamond text-lg italic">
-            Unfurl the scroll and send word across the night.
-          </p>
-        </div>
 
         <div className="scrollable-content scrollbar-fade min-h-0 flex-1 overflow-y-auto">
           <LetterComposer />
