@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { blogPosts } from "@/utils/content"
+import { noteEntries } from "@/content/entries"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
 import TavernTale from "./ui/TavernTale"
 import InfiniteCarousel from "./ui/InfiniteCarousel"
@@ -15,8 +15,8 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
   const { shellRef, itemWidth } = useResponsiveCarouselWidth({ gap, minWidth: 240 })
   const router = useRouter()
 
-  const handleTaleClick = (id: string) => {
-    router.push(`/item/${id}`)
+  const handleTaleClick = (slug: string) => {
+    router.push(`/item/${slug}`)
   }
 
   return (
@@ -39,24 +39,21 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
             <div className="flex min-h-0 flex-1 items-center justify-center overflow-visible px-8 py-8 md:px-10 md:py-10">
               <div ref={shellRef} className="mx-auto flex w-full max-w-5xl items-center justify-center overflow-visible py-2 md:py-3">
                 <InfiniteCarousel
-                  items={blogPosts}
+                  items={noteEntries}
                   itemWidth={itemWidth}
                   gap={gap}
                   snap="left"
                   itemAlign="center"
                   className="w-full scroll-fade-horizontal py-1 md:py-2"
-                  renderItem={(tale) => {
-                    const index = blogPosts.indexOf(tale)
-                    const archiveId = index >= 0 ? `note-${index}` : "note-unknown"
-
+                  renderItem={(note) => {
                     return (
                       <TavernTale
-                        title={tale.title}
-                        excerpt={tale.excerpt}
-                        date={tale.date}
-                        readTime={tale.readTime}
+                        title={note.title}
+                        excerpt={note.excerpt}
+                        date={note.dateLabel ?? ""}
+                        readTime={note.noteLabel}
                         className="w-full"
-                        onClick={() => handleTaleClick(archiveId)}
+                        onClick={() => handleTaleClick(note.slug)}
                       />
                     )
                   }}

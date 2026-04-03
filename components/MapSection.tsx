@@ -4,8 +4,8 @@ import Image from "next/image"
 import { useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
+import { arcEntries, type ArcEntry } from "@/content/entries"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
-import { getTravelYearKey, travelYears, type TravelYear } from "@/utils/travel"
 
 const MAP_COOLDOWN_MS = 700
 
@@ -55,8 +55,8 @@ function WhomIMetCard({ items }: { items: string[] }) {
   )
 }
 
-function ArcImageRow({ location, photos }: { location: string; photos: string[] }) {
-  if (photos.length === 0) return null
+function ArcImageRow({ images }: { images: ArcEntry["images"] }) {
+  if (images.length === 0) return null
 
   return (
     <div className="mx-auto w-full max-w-[42rem] rounded-xl border border-amber-300/60 bg-amber-50/75 px-4 py-3 shadow-[0_8px_24px_rgba(80,42,18,0.08)]">
@@ -69,14 +69,14 @@ function ArcImageRow({ location, photos }: { location: string; photos: string[] 
       </div>
 
       <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-        {photos.map((src, index) => (
+        {images.map((image, index) => (
           <div
-            key={src}
+            key={image.src}
             className="wooden-frame h-[6rem] w-[6rem] flex-shrink-0 overflow-hidden rounded-lg sm:h-[7rem] sm:w-[7rem] md:h-[8rem] md:w-[8rem]"
           >
             <Image
-              src={src}
-              alt={`Journey memory from ${location} ${index + 1}`}
+              src={image.src}
+              alt={image.alt ?? `Journey memory ${index + 1}`}
               width={192}
               height={192}
               sizes="(max-width: 640px) 96px, (max-width: 768px) 112px, 128px"
@@ -114,9 +114,9 @@ function NavPill({
         <ChevronLeft className="h-4 w-4" />
       </button>
       <div className="flex gap-2">
-        {travelYears.map((journey, index) => (
+        {arcEntries.map((journey, index) => (
           <button
-            key={getTravelYearKey(journey)}
+            key={journey.slug}
             type="button"
             onClick={() => onGoTo(index)}
             className={`h-3 w-3 rounded-full transition-all duration-500 ${
@@ -124,7 +124,7 @@ function NavPill({
                 ? "scale-125 bg-orange-400 ember-glow"
                 : "bg-orange-200 hover:scale-110 hover:bg-orange-300"
             }`}
-            aria-label={`Go to year ${journey.year}`}
+            aria-label={`Go to year ${journey.yearLabel}`}
             disabled={isTransitioning && current !== index}
           />
         ))}
@@ -152,15 +152,15 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
     goPrevious: goToPreviousYear,
     goNext: goToNextYear,
   } = useBoundaryPagedScroll({
-    itemCount: travelYears.length,
+    itemCount: arcEntries.length,
     panelSelector: ".journey-content-area",
     transitionMs: MAP_COOLDOWN_MS,
     settleMs: 100,
   })
 
   const handleJourneyClick = useCallback(
-    (index: number) => {
-      router.push(`/item/journey-${index}`)
+    (slug: string) => {
+      router.push(`/item/${slug}`)
     },
     [router],
   )
@@ -250,9 +250,9 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                   className="flex h-full transition-transform duration-800 ease-in-out"
                   style={{ transform: `translateX(-${currentMapYear * 100}%)` }}
                 >
-                  {travelYears.map((journey: TravelYear, index) => (
+                  {arcEntries.map((journey: ArcEntry, index) => (
                     <div
-                      key={getTravelYearKey(journey)}
+                      key={journey.slug}
                       ref={(element) => {
                         panelRefs.current[index] = element
                       }}
@@ -264,7 +264,7 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                         <div className="text-center">
                           <div className="mb-1 flex items-center justify-center gap-3">
                             <span className="map-sky-ink-strong font-cinzel text-xl font-bold md:text-2xl">
-                              {journey.year}
+                              {journey.yearLabel}
                             </span>
                             <span className="map-mood-pill rounded-full px-3 py-1 font-garamond text-xs italic">
                               {journey.mood}
@@ -282,16 +282,16 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                             Chapter
                           </h4>
                           <p className="font-garamond text-base italic leading-relaxed text-amber-950">
-                            {journey.memory}
+                            {journey.chapter}
                           </p>
                         </div>
 
-                        {journey.photos && journey.photos.length > 0 && (
-                          <ArcImageRow location={journey.location} photos={journey.photos} />
+                        {journey.images.length > 0 && (
+                          <ArcImageRow images={journey.images} />
                         )}
 
                         {/* Narrative grid — 2×2 */}
-                        {(journey.whatIDid || journey.whomIMet || journey.whatILearned || journey.achieved) && (
+                        {(journey.whatIDid || journey.whomIMet || journey.whatILearned || journey.whatIAchieved) && (
                           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                             {journey.whatIDid && (
                               <ArcDetailCard label="What I Did" items={journey.whatIDid} />
@@ -302,16 +302,16 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                             {journey.whatILearned && (
                               <ArcDetailCard label="What I Learned" items={journey.whatILearned} />
                             )}
-                            {journey.achieved && (
-                              <ArcDetailCard label="What I Achieved" items={journey.achieved} />
+                            {journey.whatIAchieved && (
+                              <ArcDetailCard label="What I Achieved" items={journey.whatIAchieved} />
                             )}
                           </div>
                         )}
 
                         {/* Themes — pill row, matches Scholar Scrolls exactly */}
-                        {journey.themes && journey.themes.length > 0 && (
+                        {journey.tags.length > 0 && (
                           <div className="flex flex-wrap justify-center gap-2">
-                            {journey.themes.map((theme) => (
+                            {journey.tags.map((theme) => (
                               <span
                                 key={theme}
                                 className="rounded-full border border-amber-300/80 bg-amber-100/80 px-3 py-1 font-garamond text-sm text-amber-800"
@@ -326,14 +326,14 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                         <div className="flex flex-col items-center gap-3 border-t border-amber-300/50 pt-3">
                           <button
                             type="button"
-                            onClick={() => handleJourneyClick(index)}
+                            onClick={() => handleJourneyClick(journey.slug)}
                             className="inline-flex items-center gap-2 md:gap-3 rounded-lg px-6 py-3 font-garamond text-base text-orange-100 transition-all duration-300 medieval-button hover:ember-glow"
                           >
                             <BookOpen className="h-4 w-4 md:h-5 md:w-5" />
                             Read Full Story
                           </button>
                           <p className="font-garamond text-sm italic text-amber-300/80">
-                            Chapter {currentMapYear + 1} of {travelYears.length} &bull; {journey.location}
+                            Chapter {currentMapYear + 1} of {arcEntries.length} &bull; {journey.location}
                           </p>
                         </div>
 

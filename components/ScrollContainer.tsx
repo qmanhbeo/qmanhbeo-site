@@ -6,16 +6,29 @@ import { sections } from "@/utils/sections"
 import ScrollArrows from "./ScrollArrows"
 import WandererTrail from "./WandererTrail"
 
+function getInitialSectionIndex() {
+  if (typeof window === "undefined") return 0
+
+  const saved = window.sessionStorage.getItem("returnSection")
+  if (!saved) return 0
+
+  const parsed = Number.parseInt(saved, 10)
+  if (Number.isNaN(parsed) || parsed < 0 || parsed >= sections.length) return 0
+
+  return parsed
+}
+
 export default function ScrollContainer() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const hasAlignedInitialSectionRef = useRef(false)
 
-  const [currentSection, setCurrentSection] = useState(0)
-
-  const [revealedSections, setRevealedSections] = useState(() =>
-    sections.map((_, i) => i === 0)
-  )
-
+  const [currentSection, setCurrentSection] = useState(getInitialSectionIndex)
+  const [revealedSections, setRevealedSections] = useState(() => {
+    const initialSectionIndex = getInitialSectionIndex()
+    return sections.map((_, i) => i <= initialSectionIndex)
+  })
   const [isScrolling, setIsScrolling] = useState(false)
+
   const scrollTimeoutRef = useRef<number | null>(null)
   const currentSectionRef = useRef(currentSection)
   const resizeFrameRef = useRef<number | null>(null)
@@ -23,29 +36,25 @@ export default function ScrollContainer() {
   const touchStartYRef = useRef<number | null>(null)
   const touchTargetRef = useRef<Element | null>(null)
 
-  // Restore scroll position from sessionStorage after hydration
-  useEffect(() => {
-    const saved = sessionStorage.getItem('returnSection')
-    if (!saved) return
-    const n = parseInt(saved, 10)
-    const idx = isNaN(n) || n < 0 || n >= sections.length ? 0 : n
-    if (idx === 0) return
-    setCurrentSection(idx)
-    setRevealedSections(sections.map((_, i) => i <= idx))
+  useLayoutEffect(() => {
+    if (hasAlignedInitialSectionRef.current || currentSection === 0) return
+
     const container = containerRef.current
-    if (container) {
-      container.style.scrollBehavior = 'auto'
-      container.scrollLeft = idx * container.clientWidth
-      container.style.scrollBehavior = ''
-    }
-  }, []) // intentionally empty — runs once after first render
+    if (!container) return
+
+    const previousBehavior = container.style.scrollBehavior
+    container.style.scrollBehavior = "auto"
+    container.scrollLeft = currentSection * container.clientWidth
+    container.style.scrollBehavior = previousBehavior
+    hasAlignedInitialSectionRef.current = true
+  }, [currentSection])
 
   useEffect(() => {
     currentSectionRef.current = currentSection
   }, [currentSection])
 
   useEffect(() => {
-    sessionStorage.setItem('returnSection', String(currentSection))
+    sessionStorage.setItem("returnSection", String(currentSection))
   }, [currentSection])
 
   const alignToCurrentSection = useCallback(() => {
@@ -55,7 +64,7 @@ export default function ScrollContainer() {
     const nextLeft = currentSectionRef.current * container.clientWidth
     const previousBehavior = container.style.scrollBehavior
 
-    // Resize/zoom changes the viewport width without updating scrollLeft,
+    // Resize and zoom change the viewport width without updating scrollLeft,
     // so pin the current section back to the new width immediately.
     container.style.scrollBehavior = "auto"
     container.scrollLeft = nextLeft
@@ -134,27 +143,27 @@ export default function ScrollContainer() {
     const container = containerRef.current
     if (!container) return
 
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartXRef.current = e.touches[0].clientX
-      touchStartYRef.current = e.touches[0].clientY
-      touchTargetRef.current = e.target as Element
+    const handleTouchStart = (event: TouchEvent) => {
+      touchStartXRef.current = event.touches[0].clientX
+      touchStartYRef.current = event.touches[0].clientY
+      touchTargetRef.current = event.target as Element
     }
 
-    const handleTouchEnd = (e: TouchEvent) => {
+    const handleTouchEnd = (event: TouchEvent) => {
       if (touchStartXRef.current === null || touchStartYRef.current === null) return
 
-      const deltaX = touchStartXRef.current - e.changedTouches[0].clientX
-      const deltaY = touchStartYRef.current - e.changedTouches[0].clientY
+      const deltaX = touchStartXRef.current - event.changedTouches[0].clientX
+      const deltaY = touchStartYRef.current - event.changedTouches[0].clientY
 
       const target = touchTargetRef.current
       touchStartXRef.current = null
       touchStartYRef.current = null
       touchTargetRef.current = null
 
-      // Let inner swipe zones (e.g. Wanderer's Map chapters) own the gesture
-      if (target?.closest('[data-swipe-zone]')) return
+      // Let inner swipe zones such as Wanderer's Map chapters own the gesture.
+      if (target?.closest("[data-swipe-zone]")) return
 
-      // Only navigate if swipe is clearly horizontal (not a vertical scroll attempt)
+      // Only navigate if swipe is clearly horizontal.
       if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < 48) return
 
       if (deltaX > 0) {

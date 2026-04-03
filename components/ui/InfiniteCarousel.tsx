@@ -28,8 +28,6 @@ export default function InfiniteCarousel<T>({
   const xRef = useRef(0)
   const velocityRef = useRef(0)
   const isDraggingRef = useRef(false)
-  const pointerStartXRef = useRef(0)
-  const startXRef = useRef(0)
   const wheelIdleTimerRef = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
   const centerXRef = useRef(0)

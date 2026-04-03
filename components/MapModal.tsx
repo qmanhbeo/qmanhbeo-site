@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, Compass, X } from "lucide-react"
-import { getTravelYearKey, travelYears } from "@/utils/travel"
+import { arcEntries } from "@/content/entries"
 
 interface MapModalProps {
   isOpen: boolean
@@ -37,7 +37,7 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
     (yearIndex: number) => {
       if (isMapScrollingRef.current) return
 
-      const normalizedYear = (yearIndex + travelYears.length) % travelYears.length
+      const normalizedYear = (yearIndex + arcEntries.length) % arcEntries.length
       isMapScrollingRef.current = true
       setIsMapScrolling(true)
       setCurrentMapYear(normalizedYear)
@@ -180,9 +180,9 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
         </button>
 
         <div className="absolute left-1/2 top-8 z-20 flex -translate-x-1/2 gap-3">
-          {travelYears.map((journey, index) => (
+          {arcEntries.map((journey, index) => (
             <button
-              key={getTravelYearKey(journey)}
+              key={journey.slug}
               type="button"
               onClick={() => navigateToYear(index)}
               className={`h-3 w-3 rounded-full transition-all duration-500 ${
@@ -190,7 +190,7 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
                   ? "scale-125 bg-orange-400 ember-glow"
                   : "bg-orange-200 hover:scale-110 hover:bg-orange-300"
               }`}
-              aria-label={`Go to year ${journey.year}`}
+              aria-label={`Go to year ${journey.yearLabel}`}
               disabled={isMapScrolling && currentMapYear !== index}
             />
           ))}
@@ -208,8 +208,8 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
             className="flex h-full transition-transform duration-800 ease-in-out"
             style={{ transform: `translateX(-${currentMapYear * 100}%)` }}
           >
-            {travelYears.map((journey, index) => (
-              <div key={getTravelYearKey(journey)} className="flex h-full min-w-full items-center justify-center px-8">
+            {arcEntries.map((journey, index) => (
+              <div key={journey.slug} className="flex h-full min-w-full items-center justify-center px-8">
                 <div className="grid w-full max-w-6xl items-center gap-12 md:grid-cols-2">
                   <div className="relative">
                     <div className="world-map relative h-96 rounded-2xl bg-gradient-to-b from-amber-50 to-amber-100 p-8">
@@ -226,7 +226,7 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
                         {index > 0 && (
                           <svg className="absolute inset-0 h-full w-full opacity-30" viewBox="0 0 400 200">
                             <path
-                              d={`M${Number.parseFloat(travelYears[index - 1].coordinates.left) * 4},${Number.parseFloat(travelYears[index - 1].coordinates.top) * 2} Q${Number.parseFloat(journey.coordinates.left) * 4 - 50},${Number.parseFloat(journey.coordinates.top) * 2 - 30} ${Number.parseFloat(journey.coordinates.left) * 4},${Number.parseFloat(journey.coordinates.top) * 2}`}
+                              d={`M${Number.parseFloat(arcEntries[index - 1].coordinates.left) * 4},${Number.parseFloat(arcEntries[index - 1].coordinates.top) * 2} Q${Number.parseFloat(journey.coordinates.left) * 4 - 50},${Number.parseFloat(journey.coordinates.top) * 2 - 30} ${Number.parseFloat(journey.coordinates.left) * 4},${Number.parseFloat(journey.coordinates.top) * 2}`}
                               stroke="#ff6b35"
                               strokeWidth="3"
                               fill="none"
@@ -266,7 +266,7 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
                   <div className="parchment rounded-lg p-8">
                     <div className="mb-6">
                       <div className="mb-4 flex items-center gap-4">
-                        <span className="font-cinzel text-4xl font-bold text-amber-900">{journey.year}</span>
+                        <span className="font-cinzel text-4xl font-bold text-amber-900">{journey.yearLabel}</span>
                         <span className="rounded-full bg-amber-200 px-4 py-2 font-garamond text-sm italic text-amber-800">
                           {journey.mood}
                         </span>
@@ -275,23 +275,21 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
                       <p className="font-garamond text-lg text-amber-700">{journey.location}</p>
                     </div>
 
-                    <p className="mb-8 font-garamond text-xl italic leading-relaxed text-amber-800">
-                      {journey.memory}
-                    </p>
+                      <p className="mb-8 font-garamond text-xl italic leading-relaxed text-amber-800">{journey.chapter}</p>
 
-                    <div className="grid grid-cols-3 gap-4">
-                      {[1, 2, 3].map((memoryIndex) => (
-                        <div key={memoryIndex} className="wooden-frame aspect-square overflow-hidden rounded-lg">
-                          <Image
-                            src="/placeholder.svg"
-                            alt={`Memory from ${journey.location} ${memoryIndex}`}
-                            width={120}
-                            height={120}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
+                      <div className="grid grid-cols-3 gap-4">
+                        {journey.images.map((image) => (
+                          <div key={image.src} className="wooden-frame aspect-square overflow-hidden rounded-lg">
+                            <Image
+                              src={image.src}
+                              alt={image.alt}
+                              width={120}
+                              height={120}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        ))}
+                      </div>
                   </div>
                 </div>
               </div>
@@ -300,7 +298,7 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
 
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center font-garamond text-sm text-amber-700">
             <p className="mb-2">
-              Chapter {currentMapYear + 1} of {travelYears.length}
+              Chapter {currentMapYear + 1} of {arcEntries.length}
             </p>
             <p className="italic opacity-75">Use arrow keys, scroll, or click dots to navigate</p>
           </div>

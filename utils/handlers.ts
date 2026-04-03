@@ -1,6 +1,6 @@
 import type React from "react"
+import { arcEntries } from "@/content/entries"
 import { sections } from "./sections"
-import { travelYears } from "./travel"
 
 export interface NavigationHandlers {
   navigateForward: () => void
@@ -53,7 +53,7 @@ export const createNavigationHandlers = (
 
   const navigateForward = () => {
     if (isMapExpanded) {
-      const nextYear = (currentMapYear + 1) % travelYears.length
+      const nextYear = (currentMapYear + 1) % arcEntries.length
       scrollToMapYear(nextYear)
     } else {
       const nextSection = (currentSection + 1) % sections.length
@@ -63,7 +63,7 @@ export const createNavigationHandlers = (
 
   const navigateBackward = () => {
     if (isMapExpanded) {
-      const prevYear = currentMapYear === 0 ? travelYears.length - 1 : currentMapYear - 1
+      const prevYear = currentMapYear === 0 ? arcEntries.length - 1 : currentMapYear - 1
       scrollToMapYear(prevYear)
     } else {
       const prevSection = currentSection === 0 ? sections.length - 1 : currentSection - 1

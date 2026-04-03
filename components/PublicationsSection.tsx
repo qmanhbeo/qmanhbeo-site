@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
+import { publicationEntries, type PublicationEntry } from "@/content/entries"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
-import { publications, type Publication } from "@/utils/content"
 
 const MANUSCRIPT_TRANSITION_MS = 800
 
@@ -35,7 +35,7 @@ function NavPill({
   onPrev: () => void
   onNext: () => void
   onGoTo: (i: number) => void
-  pubs: Publication[]
+  pubs: PublicationEntry[]
 }) {
   return (
     <div className="flex items-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm">
@@ -87,7 +87,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
     goPrevious: navigateToPreviousManuscript,
     goNext: navigateToNextManuscript,
   } = useBoundaryPagedScroll({
-    itemCount: publications.length,
+    itemCount: publicationEntries.length,
     panelSelector: ".manuscript-scrollable-area",
     transitionMs: MANUSCRIPT_TRANSITION_MS,
   })
@@ -119,7 +119,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                 onPrev={navigateToPreviousManuscript}
                 onNext={navigateToNextManuscript}
                 onGoTo={navigateToManuscript}
-                pubs={publications}
+                pubs={publicationEntries}
               />
             </div>
 
@@ -131,7 +131,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                 onPrev={navigateToPreviousManuscript}
                 onNext={navigateToNextManuscript}
                 onGoTo={navigateToManuscript}
-                pubs={publications}
+                pubs={publicationEntries}
               />
             </div>
 
@@ -141,12 +141,10 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                 className="flex h-full transition-transform duration-800 ease-in-out"
                 style={{ transform: `translateX(-${currentManuscript * 100}%)` }}
               >
-                {publications.map((publication: Publication, index) => {
-                  const archiveId = `publication-${index}`
-
+                {publicationEntries.map((publication: PublicationEntry, index) => {
                   return (
                     <div
-                      key={publication.title}
+                      key={publication.slug}
                       ref={(element) => {
                         panelRefs.current[index] = element
                       }}
@@ -173,7 +171,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                           </span>
                           <span className="hidden h-1 w-1 rounded-full bg-amber-400/60 md:block" />
                           <span className="font-garamond text-amber-300">
-                            Anno Domini {publication.year}
+                            Anno Domini {publication.yearLabel}
                           </span>
                           {publication.status && (
                             <>
@@ -198,7 +196,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                         )}
 
                         {/* Detail grid — 2 col on desktop */}
-                        {(publication.researchQuestion || publication.methodology || publication.keyFindings || publication.implications) && (
+                        {(publication.researchQuestion || publication.methodology || publication.findings || publication.implications) && (
                           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                             {publication.researchQuestion && (
                               <ManuscriptDetailCard label="Research Question" content={publication.researchQuestion} />
@@ -206,8 +204,8 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                             {publication.methodology && (
                               <ManuscriptDetailCard label="Methodology" content={publication.methodology} />
                             )}
-                            {publication.keyFindings && (
-                              <ManuscriptDetailCard label="Key Findings" content={publication.keyFindings} />
+                            {publication.findings && (
+                              <ManuscriptDetailCard label="Key Findings" content={publication.findings} />
                             )}
                             {publication.implications && (
                               <ManuscriptDetailCard label="Implications" content={publication.implications} />
@@ -216,9 +214,9 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                         )}
 
                         {/* Keywords */}
-                        {publication.keywords && publication.keywords.length > 0 && (
+                        {publication.tags.length > 0 && (
                           <div className="flex flex-wrap justify-center gap-2">
-                            {publication.keywords.map((kw) => (
+                            {publication.tags.map((kw) => (
                               <span
                                 key={kw}
                                 className="rounded-full border border-amber-300/80 bg-amber-100/80 px-3 py-1 font-garamond text-sm text-amber-800"
@@ -233,14 +231,14 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                         <div className="flex flex-col items-center gap-3 border-t border-amber-300/50 pt-4">
                           <button
                             type="button"
-                            onClick={() => router.push(`/item/${archiveId}`)}
+                            onClick={() => router.push(`/item/${publication.slug}`)}
                             className="inline-flex items-center gap-3 rounded-lg px-7 py-3 font-garamond text-base text-orange-100 transition-all duration-300 medieval-button hover:ember-glow"
                           >
                             <ExternalLink className="h-4 w-4" />
                             Read full manuscript
                           </button>
                           <p className="font-garamond text-sm italic text-amber-300/80">
-                            Manuscript {currentManuscript + 1} of {publications.length}
+                            Manuscript {currentManuscript + 1} of {publicationEntries.length}
                           </p>
                         </div>
 

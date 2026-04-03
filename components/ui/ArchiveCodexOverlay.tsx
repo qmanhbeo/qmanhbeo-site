@@ -3,7 +3,15 @@
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, Search, X } from "lucide-react"
-import { archiveEntries, type ArchiveEntry } from "@/utils/content"
+import {
+  getAllEntries,
+  getEntryCollectionLabel,
+  getEntryKindLabel,
+  getEntryPeriodLabel,
+  getEntryPreviewHeading,
+  getEntryPreviewText,
+  searchEntries,
+} from "@/content/entries"
 
 interface ArchiveCodexOverlayProps {
   isOpen: boolean
@@ -16,65 +24,54 @@ const pageSurfaceStyle = {
   boxShadow: "inset 0 1px 0 rgba(255,248,232,0.65), inset 0 0 0 1px rgba(130,76,29,0.12)",
 }
 
-const previewHeadingByKind: Record<ArchiveEntry["kind"], string> = {
-  publication: "Abstract",
-  project: "Spell Summary",
-  note: "Note Preview",
-  journey: "Journey Notes",
-}
+const allEntries = getAllEntries()
 
 export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOverlayProps) {
   const router = useRouter()
-  const [selectedEntryId, setSelectedEntryId] = useState(archiveEntries[0]?.id ?? "")
+  const [selectedEntrySlug, setSelectedEntrySlug] = useState(allEntries[0]?.slug ?? "")
   const [searchQuery, setSearchQuery] = useState("")
   const [isAnimatingOpen, setIsAnimatingOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
   const closeTimerRef = useRef<number | null>(null)
 
-  const normalizedQuery = searchQuery.trim().toLowerCase()
-  const filteredEntries = archiveEntries.filter((entry) => {
-    if (normalizedQuery === "") return true
-
-    const searchableText = [
-      entry.title,
-      entry.subtitle,
-      entry.periodLabel,
-      entry.preview,
-      entry.kindLabel,
-      entry.collectionLabel,
-      entry.tags.join(" "),
-    ]
-      .join(" ")
-      .toLowerCase()
-
-    return searchableText.includes(normalizedQuery)
-  })
-
-  const selectedEntry = filteredEntries.find((entry) => entry.id === selectedEntryId) ?? filteredEntries[0] ?? null
+  const filteredEntries = searchEntries(searchQuery)
+  const selectedEntry = filteredEntries.find((entry) => entry.slug === selectedEntrySlug) ?? filteredEntries[0] ?? null
 
   useEffect(() => {
     if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current)
 
     if (isOpen) {
-      setIsVisible(true)
-      setIsClosing(false)
-      const raf = window.requestAnimationFrame(() => setIsAnimatingOpen(true))
-      return () => window.cancelAnimationFrame(raf)
-    } else {
-      // Start close: reverse the book-page transforms, then unmount
-      setIsClosing(true)
-      setIsAnimatingOpen(false)
-      closeTimerRef.current = window.setTimeout(() => {
-        setIsVisible(false)
+      const raf = window.requestAnimationFrame(() => {
+        setIsVisible(true)
         setIsClosing(false)
-      }, 600)
+        setIsAnimatingOpen(true)
+      })
+
+      return () => {
+        window.cancelAnimationFrame(raf)
+        if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current)
+      }
     }
 
+    if (!isVisible) return
+
+    // Start close: reverse the book-page transforms, then unmount.
+    const raf = window.requestAnimationFrame(() => {
+      setIsClosing(true)
+      setIsAnimatingOpen(false)
+    })
+
+    closeTimerRef.current = window.setTimeout(() => {
+      setIsVisible(false)
+      setIsClosing(false)
+    }, 600)
+
     return () => {
+      window.cancelAnimationFrame(raf)
       if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current)
     }
-  }, [isOpen])
+  }, [isOpen, isVisible])
 
   useEffect(() => {
     if (!isVisible) return
@@ -149,8 +146,8 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
               The Archive Codex
             </h3>
             <p className="map-sky-ink mx-auto mt-3 max-w-3xl font-garamond text-lg italic">
-              Search the gathered shelves from the hearth. Publications, spell scrolls, and campfire notes now rest in
-              one codex.
+              Search the gathered shelves from the hearth. Journeys, manuscripts, spell scrolls, and campfire notes
+              now rest in one codex.
             </p>
           </div>
 
@@ -164,7 +161,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                 <input
                   id="archive-codex-search"
                   type="text"
-                  placeholder="Search all scrolls, from publications to notes..."
+                  placeholder="Search all scrolls, from journeys to notes..."
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
                   className="w-full rounded-[1.2rem] border border-amber-700/20 bg-white/50 py-3 pl-12 pr-4 font-garamond text-lg text-amber-950 outline-none transition-colors duration-200 placeholder:text-amber-700/70 focus:border-amber-700/45 focus:bg-white/70"
@@ -196,13 +193,13 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                   <div className="scrollable-content scrollbar-fade min-h-0 flex-1 space-y-3 overflow-y-auto pb-2 pr-2">
                     {filteredEntries.length > 0 ? (
                       filteredEntries.map((entry, index) => {
-                        const isSelected = entry.id === selectedEntry?.id
+                        const isSelected = entry.slug === selectedEntry?.slug
 
                         return (
                           <button
-                            key={entry.id}
+                            key={entry.slug}
                             type="button"
-                            onClick={() => setSelectedEntryId(entry.id)}
+                            onClick={() => setSelectedEntrySlug(entry.slug)}
                             className={`w-full rounded-[1.4rem] border px-4 py-4 text-left transition-all duration-300 ${
                               isSelected
                                 ? "border-amber-700/45 bg-amber-100/75 shadow-[0_10px_24px_rgba(120,60,18,0.15)]"
@@ -216,9 +213,9 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                               <div className="min-w-0">
                                 <div className="mb-2 flex flex-wrap items-center gap-2">
                                   <span className="rounded-full bg-amber-100/75 px-3 py-1 font-cinzel text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-amber-900">
-                                    {entry.collectionLabel}
+                                    {getEntryCollectionLabel(entry)}
                                   </span>
-                                  <span className="font-garamond text-sm italic text-amber-700">{entry.periodLabel}</span>
+                                  <span className="font-garamond text-sm italic text-amber-700">{getEntryPeriodLabel(entry)}</span>
                                 </div>
                                 <h4 className="font-cinzel text-lg font-bold leading-snug text-amber-950">{entry.title}</h4>
                                 <p className="mt-1 font-garamond text-sm italic text-amber-800">{entry.subtitle}</p>
@@ -260,9 +257,9 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                         </h4>
 
                         <div className="mt-4 flex flex-wrap items-center justify-center gap-3 font-garamond text-base text-amber-800">
-                          <span className="rounded-full bg-amber-100/70 px-4 py-2 italic">{selectedEntry.kindLabel}</span>
-                          <span className="rounded-full bg-amber-100/70 px-4 py-2">{selectedEntry.collectionLabel}</span>
-                          <span className="rounded-full bg-amber-100/70 px-4 py-2">{selectedEntry.periodLabel}</span>
+                          <span className="rounded-full bg-amber-100/70 px-4 py-2 italic">{getEntryKindLabel(selectedEntry)}</span>
+                          <span className="rounded-full bg-amber-100/70 px-4 py-2">{getEntryCollectionLabel(selectedEntry)}</span>
+                          <span className="rounded-full bg-amber-100/70 px-4 py-2">{getEntryPeriodLabel(selectedEntry)}</span>
                         </div>
 
                         <p className="mt-4 font-garamond text-lg italic text-amber-800">{selectedEntry.subtitle}</p>
@@ -270,9 +267,9 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
 
                       <div className="mt-8 rounded-[1.6rem] border border-amber-800/15 bg-white/40 p-6 shadow-[inset_0_1px_0_rgba(255,248,232,0.65)]">
                         <div className="mb-3 font-cinzel text-lg font-semibold uppercase tracking-[0.12em] text-amber-900">
-                          {previewHeadingByKind[selectedEntry.kind]}
+                          {getEntryPreviewHeading(selectedEntry)}
                         </div>
-                        <p className="font-garamond text-lg italic leading-relaxed text-amber-800">{selectedEntry.preview}</p>
+                        <p className="font-garamond text-lg italic leading-relaxed text-amber-800">{getEntryPreviewText(selectedEntry)}</p>
                       </div>
 
                       <div className="mt-6 rounded-[1.6rem] border border-amber-800/15 bg-amber-50/60 p-5">
@@ -295,7 +292,7 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
                         <button
                           type="button"
                           onClick={() => {
-                            router.push(`/item/${selectedEntry.id}`)
+                            router.push(`/item/${selectedEntry.slug}`)
                             onClose()
                           }}
                           className="inline-flex items-center gap-3 rounded-lg px-8 py-4 font-garamond text-lg text-orange-100 transition-all duration-300 medieval-button hover:ember-glow"

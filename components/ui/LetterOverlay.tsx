@@ -18,20 +18,33 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
     if (exitTimerRef.current !== null) window.clearTimeout(exitTimerRef.current)
 
     if (isOpen) {
-      setIsVisible(true)
-      setIsExiting(false)
-    } else {
-      setIsExiting(true)
-      exitTimerRef.current = window.setTimeout(() => {
-        setIsVisible(false)
+      const raf = window.requestAnimationFrame(() => {
+        setIsVisible(true)
         setIsExiting(false)
-      }, 320)
+      })
+
+      return () => {
+        window.cancelAnimationFrame(raf)
+        if (exitTimerRef.current !== null) window.clearTimeout(exitTimerRef.current)
+      }
     }
 
+    if (!isVisible) return
+
+    const raf = window.requestAnimationFrame(() => {
+      setIsExiting(true)
+    })
+
+    exitTimerRef.current = window.setTimeout(() => {
+      setIsVisible(false)
+      setIsExiting(false)
+    }, 320)
+
     return () => {
+      window.cancelAnimationFrame(raf)
       if (exitTimerRef.current !== null) window.clearTimeout(exitTimerRef.current)
     }
-  }, [isOpen])
+  }, [isOpen, isVisible])
 
   useEffect(() => {
     if (!isVisible) return

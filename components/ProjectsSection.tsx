@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { ScrollText, Sparkles } from "lucide-react"
-import { projects } from "@/utils/content"
+import { projectEntries } from "@/content/entries"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
 import SpellScroll from "./ui/SpellScroll"
 import InfiniteCarousel from "./ui/InfiniteCarousel"
@@ -35,50 +35,40 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
           <div className="map-ghost-panel relative flex w-full flex-col overflow-hidden rounded-lg p-8">
             <div ref={shellRef} className="w-full overflow-visible py-2 md:py-3">
               <InfiniteCarousel
-                items={projects}
+                items={projectEntries}
                 itemWidth={itemWidth}
                 gap={gap}
                 snap="left"
                 itemAlign="center"
                 className="w-full scroll-fade-horizontal py-1 md:py-2"
                 renderItem={(project) => {
-                  const index = projects.indexOf(project)
-                  const archiveId = index >= 0 ? `project-${index}` : "project-unknown"
-                  const hasGithubLink = Boolean(project.github && project.github !== "#")
-                  const hasDemoLink = Boolean(project.demo && project.demo !== "#")
-                  const hasAnyProjectLink = hasGithubLink || hasDemoLink
+                  const cardLinks = project.links.filter((link) => link.showOnCard)
 
                   return (
                     <SpellScroll
                       title={project.title}
-                      description={project.description}
-                      runes={project.tech}
+                      description={project.summary}
+                      runes={project.tags}
                       className="w-full"
-                      onClick={() => router.push(`/item/${archiveId}`)}
+                      onClick={() => router.push(`/item/${project.slug}`)}
                     >
-                      {hasAnyProjectLink ? (
+                      {cardLinks.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
-                          {hasGithubLink && (
+                          {cardLinks.map((link) => (
                             <a
-                              href={project.github}
+                              key={link.href}
+                              href={link.href}
                               className="flex items-center gap-1.5 rounded px-3 py-1.5 font-garamond text-xs text-orange-100 medieval-button"
                               onClick={(event) => event.stopPropagation()}
                             >
-                              <ScrollText className="h-3.5 w-3.5" />
-                              Grimoire
+                              {link.kind === "demo" ? (
+                                <Sparkles className="h-3.5 w-3.5" />
+                              ) : (
+                                <ScrollText className="h-3.5 w-3.5" />
+                              )}
+                              {link.label}
                             </a>
-                          )}
-
-                          {hasDemoLink && (
-                            <a
-                              href={project.demo}
-                              className="flex items-center gap-1.5 rounded px-3 py-1.5 font-garamond text-xs text-orange-100 medieval-button"
-                              onClick={(event) => event.stopPropagation()}
-                            >
-                              <Sparkles className="h-3.5 w-3.5" />
-                              Cast Spell
-                            </a>
-                          )}
+                          ))}
                         </div>
                       ) : null}
                     </SpellScroll>
