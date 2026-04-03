@@ -59,19 +59,27 @@ function ArcImageRow({ location, photos }: { location: string; photos: string[] 
   if (photos.length === 0) return null
 
   return (
-    <div className="flex justify-center">
-      <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
+    <div className="mx-auto w-full max-w-[42rem] rounded-xl border border-amber-300/60 bg-amber-50/75 px-4 py-3 shadow-[0_8px_24px_rgba(80,42,18,0.08)]">
+      <div className="mb-3 flex items-center gap-3">
+        <span className="h-px flex-1 bg-amber-300/70" />
+        <span className="font-cinzel text-[0.65rem] font-bold uppercase tracking-[0.28em] text-amber-700/90">
+          Moments from the Road
+        </span>
+        <span className="h-px flex-1 bg-amber-300/70" />
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-3 md:gap-4">
         {photos.map((src, index) => (
           <div
             key={src}
-            className="wooden-frame h-[4.5rem] w-[4.5rem] flex-shrink-0 overflow-hidden rounded-lg sm:h-[5.25rem] sm:w-[5.25rem] md:h-[6rem] md:w-[6rem]"
+            className="wooden-frame h-[6rem] w-[6rem] flex-shrink-0 overflow-hidden rounded-lg sm:h-[7rem] sm:w-[7rem] md:h-[8rem] md:w-[8rem]"
           >
             <Image
               src={src}
               alt={`Journey memory from ${location} ${index + 1}`}
               width={192}
               height={192}
-              sizes="(max-width: 640px) 72px, (max-width: 768px) 84px, 96px"
+              sizes="(max-width: 640px) 96px, (max-width: 768px) 112px, 128px"
               className="h-full w-full object-cover"
             />
           </div>
