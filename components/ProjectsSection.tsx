@@ -40,7 +40,7 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                 itemWidth={itemWidth}
                 gap={gap}
                 snap="left"
-                itemAlign="start"
+                itemAlign="center"
                 renderItem={(project) => {
                   const index = projects.indexOf(project)
                   const archiveId = index >= 0 ? `project-${index}` : "project-unknown"
@@ -57,14 +57,14 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                       onClick={() => router.push(`/item/${archiveId}`)}
                     >
                       {hasAnyProjectLink ? (
-                        <div className="mt-4 flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-2">
                           {hasGithubLink && (
                             <a
                               href={project.github}
-                              className="flex items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 medieval-button"
+                              className="flex items-center gap-1.5 rounded px-3 py-1.5 font-garamond text-xs text-orange-100 medieval-button"
                               onClick={(event) => event.stopPropagation()}
                             >
-                              <ScrollText className="h-4 w-4" />
+                              <ScrollText className="h-3.5 w-3.5" />
                               Grimoire
                             </a>
                           )}
@@ -72,34 +72,15 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                           {hasDemoLink && (
                             <a
                               href={project.demo}
-                              className="flex items-center gap-2 rounded px-4 py-2 font-garamond text-sm text-orange-100 medieval-button"
+                              className="flex items-center gap-1.5 rounded px-3 py-1.5 font-garamond text-xs text-orange-100 medieval-button"
                               onClick={(event) => event.stopPropagation()}
                             >
-                              <Sparkles className="h-4 w-4" />
+                              <Sparkles className="h-3.5 w-3.5" />
                               Cast Spell
                             </a>
                           )}
                         </div>
-                      ) : (
-                        <p className="mt-4 font-garamond text-sm italic text-amber-700">
-                          Repository and public demo links are not published yet.
-                        </p>
-                      )}
-
-                      {project.related && project.related.length > 0 && (
-                        <div className="mt-3 flex flex-col gap-1">
-                          {project.related.map((rel) => (
-                            <a
-                              key={rel.url}
-                              href={rel.url}
-                              className="font-garamond text-xs italic text-amber-700 underline-offset-2 hover:text-amber-900 hover:underline transition-colors"
-                              onClick={(event) => event.stopPropagation()}
-                            >
-                              ↳ {rel.label}
-                            </a>
-                          ))}
-                        </div>
-                      )}
+                      ) : null}
                     </SpellScroll>
                   )
                 }}
