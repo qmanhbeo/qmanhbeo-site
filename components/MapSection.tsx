@@ -173,14 +173,14 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                         </p>
 
                         {journey.photos && journey.photos.length > 0 && (
-                          <div className={`mb-6 hidden md:grid gap-4 ${journey.photos.length === 1 ? "grid-cols-1 max-w-xs mx-auto" : journey.photos.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
+                          <div className="mb-6 hidden md:flex flex-wrap justify-center gap-4">
                             {journey.photos.map((src, i) => (
-                              <div key={i} className="wooden-frame aspect-square overflow-hidden rounded-lg">
+                              <div key={i} className="wooden-frame w-[200px] h-[200px] flex-shrink-0 overflow-hidden rounded-lg">
                                 <Image
                                   src={src}
                                   alt={`Memory from ${journey.location} ${i + 1}`}
-                                  width={240}
-                                  height={240}
+                                  width={200}
+                                  height={200}
                                   className="h-full w-full object-cover"
                                 />
                               </div>
