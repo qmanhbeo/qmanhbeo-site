@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { type MouseEvent, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, BookOpen, ExternalLink, MapPin } from "lucide-react"
+import { ExternalLink, X } from "lucide-react"
 import {
   getEntryCollectionLabel,
   getEntryKindLabel,
@@ -16,41 +16,89 @@ import {
   type EntryLink,
 } from "@/content/entries"
 
-function DetailCard({ label, content }: { label: string; content: string }) {
+interface MetaItem {
+  label: string
+  value: string
+}
+
+function getEntryMetaItems(entry: ContentEntry): MetaItem[] {
+  const items: MetaItem[] = [
+    { label: "Date", value: getEntryPeriodLabel(entry) },
+    { label: "Category", value: getEntryKindLabel(entry) },
+  ]
+
+  if (entry.type === "arc") {
+    items.push({ label: "Place", value: entry.location })
+    items.push({ label: "Mood", value: entry.mood })
+  }
+
+  if (entry.type === "project" && entry.status) {
+    items.push({ label: "Status", value: entry.status })
+  }
+
+  if (entry.type === "publication") {
+    items.push({ label: "Venue", value: entry.journal })
+    if (entry.status) {
+      items.push({ label: "Status", value: entry.status })
+    }
+  }
+
+  if (entry.type === "note") {
+    items.push({ label: "Note Type", value: entry.noteLabel })
+  }
+
+  return items
+}
+
+function ManuscriptSection({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}) {
   return (
-    <div className="rounded-2xl border border-amber-200/70 bg-white/65 p-5">
-      <h2 className="font-cinzel text-sm font-bold uppercase tracking-[0.18em] text-amber-700">{label}</h2>
-      <p className="mt-3 font-garamond text-lg leading-relaxed text-amber-900">{content}</p>
-    </div>
+    <section className="item-manuscript-rule border-t pt-8">
+      <h2 className="item-manuscript-heading font-cinzel text-xl font-bold tracking-[0.04em] md:text-2xl">{title}</h2>
+      <div className="mt-4 space-y-4">{children}</div>
+    </section>
   )
 }
 
-function DetailListCard({ label, items }: { label: string; items: string[] }) {
+function ManuscriptParagraph({ children, lead = false }: { children: React.ReactNode; lead?: boolean }) {
   return (
-    <div className="rounded-2xl border border-amber-200/70 bg-white/65 p-5">
-      <h2 className="font-cinzel text-sm font-bold uppercase tracking-[0.18em] text-amber-700">{label}</h2>
-      <ul className="mt-3 space-y-2">
-        {items.map((item) => (
-          <li key={item} className="flex items-start gap-2 font-garamond text-lg leading-relaxed text-amber-900">
-            <span className="mt-1 text-amber-600">·</span>
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <p
+      className={`item-manuscript-ink font-garamond leading-relaxed ${
+        lead ? "text-xl italic md:text-[1.5rem]" : "text-lg md:text-[1.2rem]"
+      }`}
+    >
+      {children}
+    </p>
   )
 }
 
-function EntryLinks({ links }: { links: EntryLink[] }) {
+function ManuscriptList({ items }: { items: string[] }) {
+  return (
+    <ul className="ml-5 list-disc space-y-2 marker:text-[#5a3117]">
+      {items.map((item) => (
+        <li key={item} className="item-manuscript-ink font-garamond text-lg leading-relaxed md:text-[1.2rem]">
+          {item}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function ResourceLinks({ links }: { links: EntryLink[] }) {
   if (links.length === 0) return null
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-col gap-3">
       {links.map((link) => (
         <a
           key={link.href}
           href={link.href}
-          className="inline-flex items-center gap-2 rounded-lg px-5 py-3 font-garamond text-base text-orange-100 medieval-button transition-all duration-300 hover:ember-glow"
+          className="item-manuscript-ink inline-flex w-fit items-center gap-2 font-garamond text-lg underline decoration-amber-700/45 underline-offset-4 transition-colors duration-200 hover:text-orange-800"
         >
           <ExternalLink className="h-4 w-4" />
           {link.label}
@@ -62,66 +110,65 @@ function EntryLinks({ links }: { links: EntryLink[] }) {
 
 function ArcBody({ entry }: { entry: Extract<ContentEntry, { type: "arc" }> }) {
   return (
-    <div className="space-y-6">
-      <div className="rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 to-orange-50/80 p-6">
-        <div className="flex flex-wrap items-center justify-center gap-3 text-center">
-          <span className="rounded-full bg-amber-100 px-4 py-2 font-garamond text-base italic text-amber-800">
-            {entry.mood}
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-2 font-garamond text-base text-amber-800">
-            <MapPin className="h-4 w-4" />
-            {entry.location}
-          </span>
-        </div>
-        <p className="mt-5 font-garamond text-xl italic leading-relaxed text-amber-900">{entry.chapter}</p>
-      </div>
+    <div className="space-y-8">
+      <ManuscriptSection title="Chapter">
+        <ManuscriptParagraph>{entry.chapter}</ManuscriptParagraph>
+      </ManuscriptSection>
 
-      {entry.images.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {entry.images.map((image) => (
-            <div key={image.src} className="wooden-frame overflow-hidden rounded-2xl">
-              <Image
-                src={image.src}
-                alt={image.alt}
-                width={640}
-                height={480}
-                className="h-56 w-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      {entry.images.length > 0 ? (
+        <ManuscriptSection title="Moments from the Road">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {entry.images.map((image) => (
+              <figure key={image.src} className="overflow-hidden rounded-2xl shadow-[0_12px_32px_rgba(55,27,10,0.18)]">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  width={720}
+                  height={540}
+                  className="h-56 w-full object-cover"
+                />
+              </figure>
+            ))}
+          </div>
+        </ManuscriptSection>
+      ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <DetailListCard label="What I Did" items={entry.whatIDid} />
-        <DetailListCard label="Whom I Met" items={entry.whomIMet} />
-        <DetailListCard label="What I Learned" items={entry.whatILearned} />
-        <DetailListCard label="What I Achieved" items={entry.whatIAchieved} />
-      </div>
+      <ManuscriptSection title="What I Did">
+        <ManuscriptList items={entry.whatIDid} />
+      </ManuscriptSection>
+
+      <ManuscriptSection title="Whom I Met">
+        <ManuscriptList items={entry.whomIMet} />
+      </ManuscriptSection>
+
+      <ManuscriptSection title="What I Learned">
+        <ManuscriptList items={entry.whatILearned} />
+      </ManuscriptSection>
+
+      <ManuscriptSection title="What I Achieved">
+        <ManuscriptList items={entry.whatIAchieved} />
+      </ManuscriptSection>
     </div>
   )
 }
 
 function ProjectBody({ entry }: { entry: Extract<ContentEntry, { type: "project" }> }) {
   return (
-    <div className="space-y-6">
-      <div className="rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 to-orange-50/80 p-6">
-        <p className="font-garamond text-xl italic leading-relaxed text-amber-900">{entry.description}</p>
-      </div>
+    <div className="space-y-8">
+      <ManuscriptSection title="Overview">
+        <ManuscriptParagraph>{entry.description}</ManuscriptParagraph>
+      </ManuscriptSection>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {entry.detailSections.map((section) => (
-          <DetailCard key={section.label} label={section.label} content={section.content} />
-        ))}
-      </div>
+      {entry.detailSections.map((section) => (
+        <ManuscriptSection key={section.label} title={section.label}>
+          <ManuscriptParagraph>{section.content}</ManuscriptParagraph>
+        </ManuscriptSection>
+      ))}
 
       {entry.links.length > 0 ? (
-        <div className="rounded-2xl border border-amber-200/70 bg-white/65 p-5">
-          <h2 className="font-cinzel text-sm font-bold uppercase tracking-[0.18em] text-amber-700">Project Links</h2>
-          <div className="mt-4">
-            <EntryLinks links={entry.links} />
-          </div>
-        </div>
+        <ManuscriptSection title="Resources">
+          <ResourceLinks links={entry.links} />
+        </ManuscriptSection>
       ) : null}
     </div>
   )
@@ -129,31 +176,31 @@ function ProjectBody({ entry }: { entry: Extract<ContentEntry, { type: "project"
 
 function PublicationBody({ entry }: { entry: Extract<ContentEntry, { type: "publication" }> }) {
   return (
-    <div className="space-y-6">
-      <div className="rounded-2xl border border-amber-200/70 bg-white/65 p-5">
-        <h2 className="font-cinzel text-sm font-bold uppercase tracking-[0.18em] text-amber-700">Venue</h2>
-        <p className="mt-3 font-garamond text-lg italic text-amber-900">{entry.journal}</p>
-      </div>
+    <div className="space-y-8">
+      <ManuscriptSection title="Abstract">
+        <ManuscriptParagraph>{entry.abstract}</ManuscriptParagraph>
+      </ManuscriptSection>
 
-      <div className="rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 to-orange-50/80 p-6">
-        <h2 className="font-cinzel text-sm font-bold uppercase tracking-[0.18em] text-amber-700">Abstract</h2>
-        <p className="mt-4 font-garamond text-xl italic leading-relaxed text-amber-900">{entry.abstract}</p>
-      </div>
+      <ManuscriptSection title="Research Question">
+        <ManuscriptParagraph>{entry.researchQuestion}</ManuscriptParagraph>
+      </ManuscriptSection>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <DetailCard label="Research Question" content={entry.researchQuestion} />
-        <DetailCard label="Methodology" content={entry.methodology} />
-        <DetailCard label="Key Findings" content={entry.findings} />
-        <DetailCard label="Implications" content={entry.implications} />
-      </div>
+      <ManuscriptSection title="Methodology">
+        <ManuscriptParagraph>{entry.methodology}</ManuscriptParagraph>
+      </ManuscriptSection>
+
+      <ManuscriptSection title="Findings">
+        <ManuscriptParagraph>{entry.findings}</ManuscriptParagraph>
+      </ManuscriptSection>
+
+      <ManuscriptSection title="Implications">
+        <ManuscriptParagraph>{entry.implications}</ManuscriptParagraph>
+      </ManuscriptSection>
 
       {entry.link ? (
-        <div className="rounded-2xl border border-amber-200/70 bg-white/65 p-5">
-          <h2 className="font-cinzel text-sm font-bold uppercase tracking-[0.18em] text-amber-700">Manuscript Link</h2>
-          <div className="mt-4">
-            <EntryLinks links={[entry.link]} />
-          </div>
-        </div>
+        <ManuscriptSection title="Resources">
+          <ResourceLinks links={[entry.link]} />
+        </ManuscriptSection>
       ) : null}
     </div>
   )
@@ -161,19 +208,16 @@ function PublicationBody({ entry }: { entry: Extract<ContentEntry, { type: "publ
 
 function NoteBody({ entry }: { entry: Extract<ContentEntry, { type: "note" }> }) {
   return (
-    <div className="space-y-6">
-      <div className="rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 to-orange-50/80 p-6">
-        <h2 className="font-cinzel text-sm font-bold uppercase tracking-[0.18em] text-amber-700">Excerpt</h2>
-        <p className="mt-4 font-garamond text-xl italic leading-relaxed text-amber-900">{entry.excerpt}</p>
-      </div>
+    <div className="space-y-8">
+      <ManuscriptSection title="Opening Note">
+        <ManuscriptParagraph>{entry.excerpt}</ManuscriptParagraph>
+      </ManuscriptSection>
 
-      <div className="space-y-4 rounded-3xl border border-amber-200/70 bg-white/65 p-6">
+      <ManuscriptSection title="Full Entry">
         {entry.body.map((paragraph) => (
-          <p key={paragraph} className="font-garamond text-lg leading-relaxed text-amber-900">
-            {paragraph}
-          </p>
+          <ManuscriptParagraph key={paragraph}>{paragraph}</ManuscriptParagraph>
         ))}
-      </div>
+      </ManuscriptSection>
     </div>
   )
 }
@@ -199,83 +243,92 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
     }
   }, [])
 
-  const handleReturn = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleClose = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     if (isLeaving) return
+
     setIsLeaving(true)
-    timerRef.current = window.setTimeout(() => router.push("/"), 320)
+    timerRef.current = window.setTimeout(() => {
+      if (window.history.length > 1) {
+        router.back()
+      } else {
+        router.push("/")
+      }
+    }, 220)
   }
 
-  return (
-    <div className="h-dvh forest-campfire">
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/15 to-black/40" />
+  const metaItems = getEntryMetaItems(entry)
 
-      <div
-        className={`relative z-10 mx-auto flex h-full max-w-5xl flex-col px-4 py-8 md:px-6 md:py-12 ${
+  return (
+    <div className="min-h-dvh forest-campfire px-4 py-6 md:px-8 md:py-10">
+      <div className="absolute inset-0 bg-gradient-to-b from-black/52 via-black/28 to-black/56" />
+
+      <article
+        className={`item-manuscript-surface relative z-10 mx-auto max-w-5xl overflow-hidden rounded-[2.4rem] border border-amber-200/25 ${
           isLeaving
-            ? "animate-out fade-out zoom-out-95 duration-300 fill-mode-both"
+            ? "animate-out fade-out zoom-out-95 duration-200 fill-mode-both"
             : "animate-in fade-in zoom-in-95 duration-500"
         }`}
       >
-        <div className="mb-6 flex flex-shrink-0 items-center justify-between gap-4">
-          <button
-            type="button"
-            onClick={handleReturn}
-            className="inline-flex items-center gap-2 rounded-lg px-5 py-2 font-garamond medieval-button text-sm text-orange-100 transition-all duration-300 hover:ember-glow"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Return to Hearth
-          </button>
+        <div className="item-manuscript-overlay pointer-events-none absolute inset-0 scholar-parchment" />
 
-          <div className="hidden flex-col items-end text-right font-garamond text-xs text-orange-200 md:flex">
-            <span className="uppercase tracking-[0.18em]">Archive Entry</span>
-            <span className="text-[0.7rem] italic opacity-80">{entry.slug}</span>
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={handleClose}
+          aria-label="Close entry"
+          className="item-manuscript-ink absolute right-4 top-4 z-20 rounded-full border border-amber-700/20 bg-[#f5eadc]/96 p-2.5 transition-all duration-200 hover:bg-white/95 hover:text-orange-800 md:right-6 md:top-6"
+        >
+          <X className="h-5 w-5" />
+        </button>
 
-        <main className="relative flex min-h-0 flex-1 flex-col rounded-3xl border border-amber-200/30 bg-amber-50/80 p-6 shadow-2xl md:p-10">
-          <div className="pointer-events-none absolute inset-0 rounded-3xl opacity-60 scholar-parchment" />
-
-          <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-6">
-            <header className="flex-shrink-0 text-center">
-              <p className="mb-3 inline-flex flex-wrap items-center justify-center gap-3 font-garamond text-xs uppercase tracking-[0.18em] text-amber-800">
-                <span className="rounded-full bg-amber-100 px-3 py-1">{getEntryKindLabel(entry)}</span>
-                <span className="rounded-full bg-amber-100 px-3 py-1">{getEntryCollectionLabel(entry)}</span>
-                <span className="rounded-full bg-amber-100 px-3 py-1">{getEntryPeriodLabel(entry)}</span>
+        <div className="relative z-10 px-6 py-10 md:px-10 md:py-14">
+          <div className="mx-auto max-w-[46rem]">
+            <header className="item-manuscript-rule border-b pb-10 pr-12 md:pr-16">
+              <p className="item-manuscript-ink-soft font-cinzel text-[0.72rem] font-semibold uppercase tracking-[0.26em]">
+                {getEntryCollectionLabel(entry)}
               </p>
 
-              <h1 className="map-sky-ink-strong font-cinzel text-3xl font-bold leading-tight md:text-5xl">{entry.title}</h1>
-              <p className="map-sky-ink mx-auto mt-4 max-w-3xl font-garamond text-base italic md:text-xl">
-                {entry.subtitle}
-              </p>
+              <h1 className="item-manuscript-heading mt-5 font-cinzel text-4xl font-bold leading-tight md:text-6xl">
+                {entry.title}
+              </h1>
+
+              {entry.subtitle ? (
+                <p className="item-manuscript-ink-soft mt-4 font-garamond text-xl italic leading-relaxed md:text-[1.65rem]">
+                  {entry.subtitle}
+                </p>
+              ) : null}
+
+              <div className="mt-8 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                {metaItems.map((item) => (
+                  <p key={item.label} className="item-manuscript-ink font-garamond text-base md:text-lg">
+                    <span className="item-manuscript-ink-soft font-cinzel text-[0.72rem] font-semibold uppercase tracking-[0.18em]">
+                      {item.label}
+                    </span>
+                    <span className="ml-3">{item.value}</span>
+                  </p>
+                ))}
+              </div>
+
+              <div className="mt-8">
+                <p className="item-manuscript-ink font-garamond text-xl italic leading-relaxed md:text-[1.45rem]">
+                  {entry.summary}
+                </p>
+              </div>
+
+              {entry.tags.length > 0 ? (
+                <p className="item-manuscript-ink-soft mt-6 font-garamond text-sm uppercase tracking-[0.1em] md:text-[0.92rem]">
+                  <span className="font-cinzel tracking-[0.18em]">Tags</span>
+                  <span className="item-manuscript-ink ml-3 normal-case tracking-normal">{entry.tags.join(" / ")}</span>
+                </p>
+              ) : null}
             </header>
 
-            <section className="scrollable-content min-h-0 flex-1 overflow-y-auto rounded-2xl border border-amber-200/60 bg-white/70 p-5 md:p-7">
+            <div className="pt-10">
               <EntryBody entry={entry} />
-            </section>
-
-            <footer className="mt-2 flex-shrink-0 border-t border-amber-200 pt-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-garamond text-amber-700 md:text-sm">
-                <div className="flex flex-wrap gap-2">
-                  {entry.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[0.7rem] uppercase tracking-[0.14em]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <span className="inline-flex items-center gap-2 italic text-amber-600">
-                  <BookOpen className="h-4 w-4" />
-                  This entry now lives in the shared codex.
-                </span>
-              </div>
-            </footer>
+            </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </article>
     </div>
   )
 }

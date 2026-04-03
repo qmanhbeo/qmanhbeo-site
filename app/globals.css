@@ -631,6 +631,28 @@
   border: 3px solid rgba(139,69,19,0.2);
   box-shadow: 0 12px 24px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.2);
 }
+.item-manuscript-surface {
+  background: rgba(245, 234, 220, 0.96);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+}
+.item-manuscript-overlay {
+  opacity: 0.3;
+}
+.item-manuscript-heading {
+  color: #2f170b;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.item-manuscript-ink {
+  color: #3b1f0f;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.item-manuscript-ink-soft {
+  color: #5a3117;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+.item-manuscript-rule {
+  border-color: rgba(161, 99, 56, 0.38);
+}
 .tavern-parchment {
   background:
     radial-gradient(circle at 25% 75%, rgba(139,69,19,0.12) 0%, transparent 50%),
