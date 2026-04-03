@@ -1,4 +1,4 @@
-import { Github, Linkedin, Mail, ScrollText } from "lucide-react"
+import { Facebook, Github, Instagram, Linkedin } from "lucide-react"
 import WoodenMedallion from "./ui/WoodenMedallion"
 import QuoteScroll from "./ui/QuoteScroll"
 
@@ -20,14 +20,34 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto mb-6 md:mb-12">
-          <WoodenMedallion icon={<Github className="w-8 h-8" />} label="GitHub" href="https://github.com/qmanhbeo" />
+          <WoodenMedallion
+            icon={<Github className="w-8 h-8" />}
+            label="GitHub"
+            href="https://github.com/qmanhbeo"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
           <WoodenMedallion
             icon={<Linkedin className="w-8 h-8" />}
             label="LinkedIn"
             href="https://www.linkedin.com/in/qmanhbeo/"
+            target="_blank"
+            rel="noopener noreferrer"
           />
-          <WoodenMedallion icon={<ScrollText className="w-8 h-8" />} label="Archive" href="/library" />
-          <WoodenMedallion icon={<Mail className="w-8 h-8" />} label="Letter" href="/letter" />
+          <WoodenMedallion
+            icon={<Facebook className="w-8 h-8" />}
+            label="Facebook"
+            href="https://www.facebook.com/qmanhbeo"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
+          <WoodenMedallion
+            icon={<Instagram className="w-8 h-8" />}
+            label="Instagram"
+            href="https://www.instagram.com/qmanhbeo/"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
         </div>
 
         <QuoteScroll

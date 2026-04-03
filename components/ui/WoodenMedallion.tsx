@@ -9,9 +9,19 @@ interface WoodenMedallionProps {
   href?: string
   onClick?: () => void
   className?: string
+  rel?: string
+  target?: string
 }
 
-export default function WoodenMedallion({ icon, label, href, onClick, className = "" }: WoodenMedallionProps) {
+export default function WoodenMedallion({
+  icon,
+  label,
+  href,
+  onClick,
+  className = "",
+  rel,
+  target,
+}: WoodenMedallionProps) {
   const [isGlowing, setIsGlowing] = useState(false)
   const isInteractive = Boolean(href || onClick)
 
@@ -52,7 +62,11 @@ export default function WoodenMedallion({ icon, label, href, onClick, className 
   )
 
   if (href) {
-    return <a href={href}>{content}</a>
+    return (
+      <a href={href} target={target} rel={rel}>
+        {content}
+      </a>
+    )
   }
 
   return content
