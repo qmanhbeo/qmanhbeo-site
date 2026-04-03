@@ -1,6 +1,6 @@
 import type { EntryType } from "@/content/entries"
 
-export type EntryOriginSection = "map" | "projects" | "publications" | "notes" | "archive" | "library"
+export type EntryOriginSection = "map" | "projects" | "publications" | "notes" | "archive"
 
 export interface EntryOriginState {
   sourceRoute: string
@@ -37,23 +37,15 @@ export interface ArchiveCodexState {
   updatedAt: number
 }
 
-export interface LibraryViewState {
-  searchQuery: string
-  filterType: EntryType | "all"
-  listScrollTop: number
-  updatedAt: number
-}
-
 const MAX_STATE_AGE_MS = 1000 * 60 * 60 * 6
 
 const ENTRY_ORIGIN_STATE_KEY = "entry-origin-state"
 const PENDING_RETURN_STATE_KEY = "entry-pending-return-state"
 const ARCHIVE_CODEX_STATE_KEY = "archive-codex-state"
-const LIBRARY_VIEW_STATE_KEY = "library-view-state"
 const RETURN_SECTION_KEY = "returnSection"
 const ITEM_SCROLL_STATE_PREFIX = "entry-scroll-state:"
 
-const HOME_SECTION_INDEX_BY_SOURCE: Record<Exclude<EntryOriginSection, "library">, number> = {
+const HOME_SECTION_INDEX_BY_SOURCE: Record<EntryOriginSection, number> = {
   archive: 0,
   map: 2,
   projects: 3,
@@ -100,7 +92,7 @@ function removeState(key: string) {
 }
 
 export function getHomeSectionIndexForOrigin(sourceSection?: EntryOriginSection) {
-  if (!sourceSection || sourceSection === "library") return 0
+  if (!sourceSection) return 0
   return HOME_SECTION_INDEX_BY_SOURCE[sourceSection]
 }
 
@@ -205,18 +197,4 @@ export function saveArchiveCodexState(state: Omit<ArchiveCodexState, "updatedAt"
 
 export function readArchiveCodexState() {
   return readFreshState<ArchiveCodexState>(ARCHIVE_CODEX_STATE_KEY)
-}
-
-export function saveLibraryViewState(state: Omit<LibraryViewState, "updatedAt">) {
-  const nextState: LibraryViewState = {
-    ...state,
-    updatedAt: Date.now(),
-  }
-
-  writeState(LIBRARY_VIEW_STATE_KEY, nextState)
-  return nextState
-}
-
-export function readLibraryViewState() {
-  return readFreshState<LibraryViewState>(LIBRARY_VIEW_STATE_KEY)
 }

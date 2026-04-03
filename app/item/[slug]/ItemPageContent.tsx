@@ -286,7 +286,7 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
         return
       }
 
-      router.replace("/library")
+      router.replace("/")
     }, 220)
   }, [router, saveCurrentItemScrollState])
 

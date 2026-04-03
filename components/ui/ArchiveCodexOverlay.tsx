@@ -13,7 +13,6 @@ import {
   searchEntries,
 } from "@/content/entries"
 import {
-  getHomeSectionIndexForOrigin,
   readArchiveCodexState,
   saveArchiveCodexState,
   saveEntryOriginState,
@@ -32,7 +31,10 @@ const pageSurfaceStyle = {
 
 const allEntries = getAllEntries()
 
-export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOverlayProps) {
+export default function ArchiveCodexOverlay({
+  isOpen,
+  onClose,
+}: ArchiveCodexOverlayProps) {
   const router = useRouter()
   const [initialArchiveState] = useState(() => readArchiveCodexState())
   const [selectedEntrySlug, setSelectedEntrySlug] = useState(
@@ -83,7 +85,6 @@ export default function ArchiveCodexOverlay({ isOpen, onClose }: ArchiveCodexOve
     saveEntryOriginState({
       sourceRoute: "/",
       sourceSection: "archive",
-      homeSectionIndex: getHomeSectionIndexForOrigin("archive"),
       sourceScrollY: typeof window === "undefined" ? 0 : window.scrollY,
       sourceQuery: searchQuery,
       sourceSelectedSlug: selectedEntrySlugToOpen,
