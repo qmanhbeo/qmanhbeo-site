@@ -1,6 +1,7 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import type { TouchEvent } from "react"
+import { useCallback, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { publicationEntries, type PublicationEntry } from "@/content/entries"
@@ -109,6 +110,8 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
     initialIndex: initialPublicationRestoreState.initialIndex,
     initialPanelScrollTop: initialPublicationRestoreState.initialScrollTop,
   })
+  const swipeTouchStartXRef = useRef<number | null>(null)
+  const swipeTouchStartYRef = useRef<number | null>(null)
 
   const handlePublicationClick = useCallback(
     (slug: string) => {
@@ -129,6 +132,34 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
     [currentManuscript, panelRefs, router],
   )
 
+  const handleSwipeTouchStart = useCallback((event: TouchEvent) => {
+    swipeTouchStartXRef.current = event.touches[0].clientX
+    swipeTouchStartYRef.current = event.touches[0].clientY
+  }, [])
+
+  const handleSwipeTouchEnd = useCallback(
+    (event: TouchEvent) => {
+      if (swipeTouchStartXRef.current === null || swipeTouchStartYRef.current === null) return
+
+      const deltaX = swipeTouchStartXRef.current - event.changedTouches[0].clientX
+      const deltaY = swipeTouchStartYRef.current - event.changedTouches[0].clientY
+
+      swipeTouchStartXRef.current = null
+      swipeTouchStartYRef.current = null
+
+      if (Math.abs(deltaX) <= Math.abs(deltaY) || Math.abs(deltaX) < 48) return
+
+      if (deltaX > 0) navigateToNextManuscript()
+      else navigateToPreviousManuscript()
+    },
+    [navigateToNextManuscript, navigateToPreviousManuscript],
+  )
+
+  const handleSwipeTouchCancel = useCallback(() => {
+    swipeTouchStartXRef.current = null
+    swipeTouchStartYRef.current = null
+  }, [])
+
   return (
     <section
       className="section-safe-area relative flex h-full min-w-full flex-col justify-start overflow-hidden md:justify-center"
@@ -147,7 +178,13 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
           </p>
         </div>
 
-        <div className="mb-2 flex h-[58dvh] min-h-[290px] flex-col md:h-[55dvh] md:min-h-[300px]">
+        <div
+          className="mb-2 flex h-[58dvh] min-h-[290px] flex-col md:h-[55dvh] md:min-h-[300px]"
+          data-swipe-zone
+          onTouchStart={handleSwipeTouchStart}
+          onTouchEnd={handleSwipeTouchEnd}
+          onTouchCancel={handleSwipeTouchCancel}
+        >
           <div className="map-ghost-panel flex h-full flex-col overflow-hidden rounded-[1rem] md:rounded-lg">
 
             {/* Mobile nav pill — in-flow above content */}

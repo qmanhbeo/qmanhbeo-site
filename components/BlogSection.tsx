@@ -54,55 +54,53 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
           </p>
         </div>
 
-        <div className="h-[55dvh] min-h-[280px]">
-          <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
-            <div className="flex min-h-0 flex-1 items-center justify-center overflow-visible px-4 py-6 md:px-10 md:py-10">
-              <div className="relative left-1/2 w-screen -translate-x-1/2 md:hidden">
-                <MobileSnapCarousel
-                  items={noteEntries}
-                  initialIndex={initialNoteIndex}
-                  gap={18}
-                  itemWidth="90vw"
-                  className="pb-1"
-                  viewportClassName="px-[5vw]"
-                  renderItem={(note, index) => {
-                    return (
-                      <SpellScroll
-                        title={note.title}
-                        description={note.excerpt}
-                        runes={[note.dateLabel, note.noteLabel].filter((value): value is string => Boolean(value))}
-                        presentation="mobile"
-                        className="w-full"
-                        onClick={() => handleTaleClick(note.slug, index)}
-                      />
-                    )
-                  }}
-                />
-              </div>
+        <div className="flex h-[55dvh] min-h-[280px] items-center justify-center">
+          <div className="map-ghost-panel relative flex w-full flex-col overflow-hidden rounded-lg px-4 py-6 md:p-8">
+            <div className="relative left-1/2 w-screen -translate-x-1/2 md:hidden">
+              <MobileSnapCarousel
+                items={noteEntries}
+                initialIndex={initialNoteIndex}
+                gap={18}
+                itemWidth="90vw"
+                className="pb-1"
+                viewportClassName="px-[5vw]"
+                renderItem={(note, index) => {
+                  return (
+                    <SpellScroll
+                      title={note.title}
+                      description={note.excerpt}
+                      runes={[note.dateLabel, note.noteLabel].filter((value): value is string => Boolean(value))}
+                      presentation="mobile"
+                      className="w-full"
+                      onClick={() => handleTaleClick(note.slug, index)}
+                    />
+                  )
+                }}
+              />
+            </div>
 
-              <div ref={shellRef} className="mx-auto hidden w-full max-w-5xl items-center justify-center overflow-visible py-2 md:flex md:py-3">
-                <InfiniteCarousel
-                  items={noteEntries}
-                  itemWidth={itemWidth}
-                  gap={gap}
-                  snap="left"
-                  itemAlign="center"
-                  initialIndex={initialNoteIndex}
-                  className="w-full scroll-fade-horizontal py-1 md:py-2"
-                  renderItem={(note, index) => {
-                    return (
-                      <TavernTale
-                        title={note.title}
-                        excerpt={note.excerpt}
-                        date={note.dateLabel ?? ""}
-                        readTime={note.noteLabel}
-                        className="w-full"
-                        onClick={() => handleTaleClick(note.slug, index)}
-                      />
-                    )
-                  }}
-                />
-              </div>
+            <div ref={shellRef} className="hidden w-full overflow-visible py-2 md:block md:py-3">
+              <InfiniteCarousel
+                items={noteEntries}
+                itemWidth={itemWidth}
+                gap={gap}
+                snap="left"
+                itemAlign="center"
+                initialIndex={initialNoteIndex}
+                className="w-full scroll-fade-horizontal py-1 md:py-2"
+                renderItem={(note, index) => {
+                  return (
+                    <TavernTale
+                      title={note.title}
+                      excerpt={note.excerpt}
+                      date={note.dateLabel ?? ""}
+                      readTime={note.noteLabel}
+                      className="w-full"
+                      onClick={() => handleTaleClick(note.slug, index)}
+                    />
+                  )
+                }}
+              />
             </div>
           </div>
         </div>
