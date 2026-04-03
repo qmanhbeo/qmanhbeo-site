@@ -13,7 +13,7 @@ interface LetterScrollTriggerProps {
 const scrollSurfaceStyle = {
   background:
     "radial-gradient(circle at 50% 18%, rgba(255,255,255,0.28) 0%, transparent 26%), radial-gradient(circle at 78% 78%, rgba(160,82,45,0.08) 0%, transparent 30%), linear-gradient(135deg, #f2d8a2 0%, #edbf78 48%, #c97723 100%)",
-  boxShadow: "0 24px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,244,220,0.4)",
+  boxShadow: "0 12px 24px rgba(47,23,10,0.16), 0 0 22px rgba(255,173,84,0.08), inset 0 1px 0 rgba(255,244,220,0.4)",
 }
 
 const rollerStyle = {

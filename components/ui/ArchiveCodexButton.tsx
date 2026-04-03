@@ -9,6 +9,11 @@ interface ArchiveCodexButtonProps {
   className?: string
 }
 
+const archiveGlowStyle = {
+  background:
+    "radial-gradient(circle at center, rgba(255, 208, 132, 0.34) 0%, rgba(255, 153, 51, 0.18) 42%, transparent 74%)",
+}
+
 export default function ArchiveCodexButton({
   isOpen = false,
   onOpen,
@@ -26,7 +31,10 @@ export default function ArchiveCodexButton({
         className="group relative w-full max-w-[30rem] outline-none"
       >
         {/* Glow layer */}
-        <div className="absolute inset-x-8 bottom-0 h-6 rounded-full bg-amber-500/25 blur-xl transition-all duration-500 group-hover:bg-amber-400/40 group-hover:h-8" />
+        <div
+          className="pointer-events-none absolute left-1/2 top-full h-12 w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-lg transition-all duration-500 group-hover:h-14 group-hover:w-[78%] group-hover:blur-xl"
+          style={archiveGlowStyle}
+        />
 
         {/* Button face */}
         <div
