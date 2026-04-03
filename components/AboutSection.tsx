@@ -17,7 +17,7 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
       <div className="firelight absolute inset-0 opacity-70" />
 
       <div
-        className={`${revealClassName} relative z-10 px-4 sm:px-8 max-w-6xl w-full
+        className={`${revealClassName} relative z-10 px-4 sm:px-8 max-w-6xl w-full mx-auto
           flex flex-col gap-3
           md:grid md:grid-cols-2 md:gap-8 md:items-center`}
       >

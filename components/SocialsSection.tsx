@@ -13,7 +13,7 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-40" />
-      <div className={`${revealClassName} relative z-10 text-center px-4 sm:px-8 max-w-4xl`}>
+      <div className={`${revealClassName} relative z-10 text-center px-4 sm:px-8 max-w-6xl w-full mx-auto`}>
         <h2 className="font-cinzel text-4xl font-bold mb-8 text-orange-100 sm:text-5xl md:text-6xl">Join the Fellowship</h2>
         <p className="text-xl text-orange-200 mb-12 max-w-2xl mx-auto font-garamond italic">
           Connect with Him across the digital realms, where stories continue and friendships are forged

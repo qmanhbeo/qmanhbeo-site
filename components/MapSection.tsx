@@ -109,9 +109,9 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
     >
       <div className="firelight absolute inset-0 opacity-50" />
 
-      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-4 sm:px-8`}>
+      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col px-4 sm:px-8`}>
         {/* Header */}
-        <div className="flex-shrink-0 py-3 md:py-6 text-center">
+        <div className="flex-shrink-0 py-4 md:py-6 text-center">
           <h2 className="font-cinzel text-3xl sm:text-4xl font-bold text-orange-100 md:text-5xl">Wanderer&apos;s Map</h2>
           <p className="mx-auto max-w-2xl font-garamond text-sm sm:text-lg italic text-orange-200">
             Paths walked, stories gathered, memories kindled across distant lands

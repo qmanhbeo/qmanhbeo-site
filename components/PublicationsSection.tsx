@@ -33,8 +33,8 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
     >
       <div className="firelight absolute inset-0 opacity-45" />
 
-      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col px-4 sm:px-8`}>
-        <div className="flex-shrink-0 py-6 text-center">
+      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col px-4 sm:px-8`}>
+        <div className="flex-shrink-0 py-4 md:py-6 text-center">
           <h2 className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">Scholar Scrolls</h2>
           <p className="map-sky-ink mx-auto max-w-2xl font-garamond text-lg italic">
             Manuscripts of scholarly wisdom, preserved in the digital scriptorium
