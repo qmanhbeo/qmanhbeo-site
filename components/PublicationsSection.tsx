@@ -28,12 +28,12 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
 
   return (
     <section
-      className="relative flex h-full min-w-full flex-col overflow-hidden section-safe-area"
+      className="relative flex h-full min-w-full flex-col justify-center overflow-hidden section-safe-area"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-45" />
 
-      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col px-4 sm:px-8`}>
+      <div className={`${revealClassName} relative z-10 mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-8`}>
         <div className="flex-shrink-0 py-4 md:py-6 text-center">
           <h2 className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">Scholar Scrolls</h2>
           <p className="map-sky-ink mx-auto max-w-2xl font-garamond text-lg italic">
@@ -41,7 +41,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
           </p>
         </div>
 
-        <div className="mb-4 min-h-0 flex-1">
+        <div className="mb-2 h-[55dvh] min-h-[300px]">
           <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
             {/* Mobile nav pill — in-flow, above the panel */}
             <div className="md:hidden flex-shrink-0 flex items-center justify-center gap-4 rounded-full bg-amber-100/90 px-4 py-2 shadow-lg backdrop-blur-sm mb-3 mx-auto">

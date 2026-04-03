@@ -104,12 +104,12 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
 
   return (
     <section
-      className="map-section section-safe-area relative flex h-full min-w-full flex-col overflow-hidden"
+      className="map-section section-safe-area relative flex h-full min-w-full flex-col justify-center overflow-hidden"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-50" />
 
-      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col px-4 sm:px-8`}>
+      <div className={`${revealClassName} relative z-10 mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-8`}>
         {/* Header */}
         <div className="flex-shrink-0 py-4 md:py-6 text-center">
           <h2 className="font-cinzel text-3xl sm:text-4xl font-bold text-orange-100 md:text-5xl">Wanderer&apos;s Map</h2>
@@ -120,7 +120,7 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
 
         {/* Swipe zone: nav pill + ghost panel (everything below the title) */}
         <div
-          className="flex flex-col min-h-0 flex-1"
+          className="flex flex-col h-[55dvh] min-h-[300px]"
           data-swipe-zone
           onTouchStart={handleSwipeTouchStart}
           onTouchEnd={handleSwipeTouchEnd}

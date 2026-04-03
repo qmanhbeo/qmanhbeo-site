@@ -22,12 +22,12 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
 
   return (
     <section
-      className="section-safe-area relative flex h-full min-w-full flex-col overflow-hidden"
+      className="section-safe-area relative flex h-full min-w-full flex-col justify-center overflow-hidden"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-50" />
 
-      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col px-4 sm:px-8`}>
+      <div className={`${revealClassName} relative z-10 mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-8`}>
         <div className="flex-shrink-0 py-4 md:py-6 text-center">
           <h2 className="font-cinzel text-4xl font-bold text-orange-100 md:text-5xl">Campfire Notes</h2>
           <p className="mx-auto max-w-2xl font-garamond text-lg italic text-orange-200">
@@ -35,7 +35,7 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
           </p>
         </div>
 
-        <div className="min-h-0 flex-1">
+        <div className="h-[55dvh] min-h-[280px]">
           <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
             <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden p-8">
               <div ref={shellRef} className="mx-auto flex w-full max-w-5xl items-center justify-center overflow-hidden">

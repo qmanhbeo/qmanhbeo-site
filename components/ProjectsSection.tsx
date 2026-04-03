@@ -19,12 +19,12 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
 
   return (
     <section
-      className="section-safe-area relative flex h-full min-w-full flex-col overflow-hidden"
+      className="section-safe-area relative flex h-full min-w-full flex-col justify-center overflow-hidden"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-60" />
 
-      <div className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col px-4 sm:px-8`}>
+      <div className={`${revealClassName} relative z-10 mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-8`}>
         <div className="flex-shrink-0 py-4 md:py-6 text-center">
           <h2 className="font-cinzel text-4xl font-bold text-orange-100 md:text-5xl">Spell Scrolls</h2>
           <p className="mx-auto max-w-2xl font-garamond text-lg italic text-orange-200">
@@ -32,7 +32,7 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
           </p>
         </div>
 
-        <div className="flex min-h-0 flex-1 items-center justify-center">
+        <div className="flex h-[55dvh] min-h-[280px] items-center justify-center">
           <div className="map-ghost-panel relative flex w-full flex-col overflow-hidden rounded-lg p-8">
             <div ref={shellRef} className="w-full overflow-visible">
               <InfiniteCarousel

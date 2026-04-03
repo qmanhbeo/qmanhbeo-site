@@ -9,9 +9,7 @@ interface AboutSectionProps {
 export default function AboutSection({ revealClassName = "" }: AboutSectionProps) {
   return (
     <section
-      className="min-w-full h-full relative overflow-hidden section-safe-area
-        flex flex-col
-        md:flex md:items-center md:justify-center"
+      className="min-w-full h-full relative overflow-hidden section-safe-area flex flex-col items-center justify-center"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-70" />
