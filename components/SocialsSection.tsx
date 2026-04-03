@@ -9,40 +9,42 @@ interface SocialsSectionProps {
 export default function SocialsSection({ revealClassName = "" }: SocialsSectionProps) {
   return (
     <section
-      className="min-w-full h-full flex items-center justify-center relative overflow-hidden section-safe-area"
+      className="section-safe-area relative flex h-full min-w-full items-start justify-center overflow-hidden md:items-center"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-40" />
-      <div className={`${revealClassName} relative z-10 text-center px-4 sm:px-8 max-w-6xl w-full mx-auto`}>
-        <h2 className="font-cinzel text-4xl font-bold mb-8 text-orange-100 sm:text-5xl md:text-6xl">Join the Fellowship</h2>
-        <p className="text-xl text-orange-200 mb-12 max-w-2xl mx-auto font-garamond italic">
+      <div className={`${revealClassName} relative z-10 mx-auto w-full max-w-6xl px-4 text-center sm:px-8`}>
+        <h2 className="mb-5 font-cinzel text-[2.2rem] font-bold leading-tight text-orange-100 sm:text-5xl md:mb-8 md:text-6xl">
+          Join the Fellowship
+        </h2>
+        <p className="mx-auto mb-8 max-w-xl font-garamond text-[1rem] italic leading-snug text-orange-200 sm:text-lg md:mb-12 md:max-w-2xl md:text-xl md:leading-normal">
           Connect with Him across the digital realms, where stories continue and friendships are forged
         </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto mb-6 md:mb-12">
+        <div className="mx-auto mb-5 grid max-w-[20rem] grid-cols-2 gap-4 sm:max-w-md sm:gap-5 md:mb-12 md:max-w-2xl md:grid-cols-4 md:gap-8">
           <WoodenMedallion
-            icon={<Github className="w-8 h-8" />}
+            icon={<Github className="h-6 w-6 md:h-8 md:w-8" />}
             label="GitHub"
             href="https://github.com/qmanhbeo"
             target="_blank"
             rel="noopener noreferrer"
           />
           <WoodenMedallion
-            icon={<Linkedin className="w-8 h-8" />}
+            icon={<Linkedin className="h-6 w-6 md:h-8 md:w-8" />}
             label="LinkedIn"
             href="https://www.linkedin.com/in/qmanhbeo/"
             target="_blank"
             rel="noopener noreferrer"
           />
           <WoodenMedallion
-            icon={<Facebook className="w-8 h-8" />}
+            icon={<Facebook className="h-6 w-6 md:h-8 md:w-8" />}
             label="Facebook"
             href="https://www.facebook.com/qmanhbeo"
             target="_blank"
             rel="noopener noreferrer"
           />
           <WoodenMedallion
-            icon={<Instagram className="w-8 h-8" />}
+            icon={<Instagram className="h-6 w-6 md:h-8 md:w-8" />}
             label="Instagram"
             href="https://www.instagram.com/qmanhbeo/"
             target="_blank"
@@ -51,9 +53,10 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
         </div>
 
         <QuoteScroll
-          quote={`Let me help —
+          className="mt-2 md:mt-0"
+          quote={`Let me help
 because it's the right thing to do.
-— Manh`}
+- Manh`}
         />
       </div>
     </section>

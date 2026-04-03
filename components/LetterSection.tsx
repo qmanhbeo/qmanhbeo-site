@@ -13,14 +13,16 @@ export default function LetterSection({ revealClassName = "" }: LetterSectionPro
 
   return (
     <section
-      className="min-w-full h-full flex items-center justify-center relative overflow-hidden section-safe-area"
+      className="section-safe-area relative flex h-full min-w-full items-start justify-center overflow-hidden md:items-center"
       style={{ scrollSnapAlign: "start" }}
     >
       <div className="firelight absolute inset-0 opacity-60" />
       <div className={`${revealClassName} relative z-10 px-4 sm:px-8 max-w-6xl w-full mx-auto content-container`}>
-        <div className="text-center mb-8 md:mb-16">
-          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-orange-100 font-cinzel">Write Him a Letter</h2>
-          <p className="text-xl text-orange-200 max-w-2xl mx-auto font-garamond italic">
+        <div className="mb-6 text-center md:mb-16">
+          <h2 className="mb-3 font-cinzel text-[2.55rem] font-bold leading-tight tracking-[-0.015em] text-orange-100 sm:text-5xl md:mb-4 md:text-6xl md:tracking-normal">
+            Write Him a Letter
+          </h2>
+          <p className="mx-auto max-w-xl font-garamond text-[1rem] italic leading-snug text-orange-200 sm:text-lg md:max-w-2xl md:text-xl md:leading-normal">
             If something in these pages speaks to your own work, send word across the night and He shall write back
           </p>
         </div>
@@ -29,11 +31,11 @@ export default function LetterSection({ revealClassName = "" }: LetterSectionPro
           <LetterScrollTrigger isOpen={isOverlayOpen} onOpen={() => setIsOverlayOpen(true)} />
         </div>
 
-        <div className="mt-12 md:mt-16 text-center">
-          <p className="font-garamond text-lg md:text-xl italic leading-relaxed text-orange-300/70">
+        <div className="mt-7 text-center md:mt-16">
+          <p className="font-garamond text-[1rem] italic leading-snug text-orange-300/70 md:text-xl md:leading-relaxed">
             The fire is patient. The night is long.
           </p>
-          <p className="font-garamond text-lg md:text-xl italic leading-relaxed text-orange-300/50">
+          <p className="font-garamond text-[1rem] italic leading-snug text-orange-300/50 md:text-xl md:leading-relaxed">
             Write whatever the pages stirred in you.
           </p>
         </div>

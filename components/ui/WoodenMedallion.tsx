@@ -32,7 +32,7 @@ export default function WoodenMedallion({
       onMouseLeave={() => setIsGlowing(false)}
       onClick={onClick}
     >
-      <div className={`relative rounded-full p-6 transition-all duration-300 ${isGlowing ? "ember-medallion-glow" : ""}`}>
+      <div className={`relative rounded-full p-4 transition-all duration-300 md:p-6 ${isGlowing ? "ember-medallion-glow" : ""}`}>
         {/* Wooden Background */}
         <div className="absolute inset-0 wood-medallion rounded-full shadow-lg" />
 
@@ -45,10 +45,12 @@ export default function WoodenMedallion({
 
         {/* Content */}
         <div
-          className={`relative z-10 flex flex-col items-center transition-all duration-300 ${isGlowing ? "transform scale-110" : ""}`}
+          className={`relative z-10 flex flex-col items-center transition-all duration-300 ${isGlowing ? "transform scale-105 md:scale-110" : ""}`}
         >
-          <div className="text-amber-100 mb-3 group-hover:text-orange-200 transition-colors carved-icon">{icon}</div>
-          <span className="block font-garamond font-medium text-amber-100 group-hover:text-orange-200 transition-colors text-sm">
+          <div className="carved-icon mb-2 text-amber-100 transition-colors group-hover:text-orange-200 md:mb-3">
+            {icon}
+          </div>
+          <span className="block font-garamond text-[0.82rem] font-medium text-amber-100 transition-colors group-hover:text-orange-200 md:text-sm">
             {label}
           </span>
         </div>

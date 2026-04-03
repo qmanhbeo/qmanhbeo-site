@@ -36,7 +36,7 @@ export default function QuoteScroll({ quote, author, className = "" }: QuoteScro
   return (
     <div className={`quote-scroll mx-auto w-fit max-w-full ${className}`}>
       <div
-        className="relative mx-auto inline-block px-4 py-4 sm:px-5 sm:py-5"
+        className="relative mx-auto inline-block px-3 py-3.5 sm:px-5 sm:py-5"
         style={{ transform: "rotate(-1.15deg)" }}
       >
         <div className="absolute inset-0 opacity-70" style={paperShadowStyle} />
@@ -60,18 +60,18 @@ export default function QuoteScroll({ quote, author, className = "" }: QuoteScro
         />
 
         <div className="relative z-10 text-center">
-          <blockquote className="mx-auto w-fit max-w-[19rem] sm:max-w-[23rem]">
-            <div className="space-y-1.5">
+          <blockquote className="mx-auto w-fit max-w-[16.5rem] sm:max-w-[23rem]">
+            <div className="space-y-1">
               {quoteLines.map((line, index) => {
-                const isSignatureLine = index === quoteLines.length - 1 && line.trim().startsWith("—")
+                const isSignatureLine = index === quoteLines.length - 1 && line.trim().startsWith("-")
 
                 return (
                   <p
                     key={`${line}-${index}`}
                     className={
                       isSignatureLine
-                        ? "pt-1 font-cinzel text-sm tracking-[0.12em] text-[#743313] sm:text-base"
-                        : "font-garamond text-lg italic leading-relaxed text-[#87401a] sm:text-xl"
+                        ? "pt-1 font-cinzel text-[0.72rem] tracking-[0.12em] text-[#743313] sm:text-base"
+                        : "font-garamond text-[1rem] italic leading-snug text-[#87401a] sm:text-xl sm:leading-relaxed"
                     }
                   >
                     {line}
@@ -81,7 +81,7 @@ export default function QuoteScroll({ quote, author, className = "" }: QuoteScro
             </div>
 
             {author ? (
-              <footer className="mt-3 text-right font-cinzel text-sm tracking-[0.16em] text-[#743313] sm:text-base">
+              <footer className="mt-2.5 text-right font-cinzel text-[0.72rem] tracking-[0.16em] text-[#743313] sm:mt-3 sm:text-base">
                 - {author}
               </footer>
             ) : null}

@@ -70,7 +70,7 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
                       <SpellScroll
                         title={note.title}
                         description={note.excerpt}
-                        runes={[note.dateLabel, note.noteLabel].filter(Boolean)}
+                        runes={[note.dateLabel, note.noteLabel].filter((value): value is string => Boolean(value))}
                         presentation="mobile"
                         className="w-full"
                         onClick={() => handleTaleClick(note.slug, index)}
