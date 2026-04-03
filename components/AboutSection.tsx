@@ -45,20 +45,25 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
             </h2>
             <p className="text-sm md:text-base text-amber-800 mb-3 md:mb-4 font-garamond leading-relaxed italic">
             He began in economics, following the promise that the world could be understood through systems and incentives.
-
+            </p>
+            <p className="text-sm md:text-base text-amber-800 mb-3 md:mb-4 font-garamond leading-relaxed italic">
             That part held. The world could be explained.
-
+            </p>
+            <p className="text-sm md:text-base text-amber-800 mb-3 md:mb-4 font-garamond leading-relaxed italic">
             But explanation was never the same as care.
-
+            </p>
+            <p className="text-sm md:text-base text-amber-800 mb-3 md:mb-4 font-garamond leading-relaxed italic">
             The systems worked—just not always for the people inside them.
-
+            </p>
+            <p className="text-sm md:text-base text-amber-800 mb-3 md:mb-4 font-garamond leading-relaxed italic">
             Over time, the questions shifted. From how things function to who they leave behind. From elegant models to the friction of real lives.
-
+            </p>
+            <p className="text-sm md:text-base text-amber-800 mb-3 md:mb-4 font-garamond leading-relaxed italic">
             The path wandered into AI, simulations, and data systems—not out of fascination with the tools, but with a quieter ambition:
-
+            </p>
+            <p className="text-sm md:text-base text-amber-800 mb-3 md:mb-4 font-garamond leading-relaxed italic">
             can we build systems that don’t quietly fail people?
             </p>
-
             <div className="space-y-1.5 md:space-y-2">
               <h3 className="text-lg md:text-xl font-semibold text-amber-900 font-cinzel mb-1.5 md:mb-2">
                 Chronicle of Adventures
