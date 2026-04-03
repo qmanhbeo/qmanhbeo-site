@@ -13,11 +13,11 @@ interface PublicationsSectionProps {
 
 function ManuscriptDetailCard({ label, content }: { label: string; content: string }) {
   return (
-    <div className="rounded-md border border-amber-200/60 bg-amber-50/50 p-4">
-      <h5 className="map-sky-ink-strong mb-1.5 font-cinzel text-xs font-bold uppercase tracking-widest opacity-70">
+    <div className="rounded-md border border-amber-300 bg-amber-50/90 p-4">
+      <h5 className="mb-1.5 font-cinzel text-xs font-bold uppercase tracking-widest text-amber-600">
         {label}
       </h5>
-      <p className="font-garamond text-base leading-relaxed text-amber-900/80">{content}</p>
+      <p className="font-garamond text-base leading-relaxed text-amber-950">{content}</p>
     </div>
   )
 }
@@ -168,17 +168,17 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
 
                         {/* Metadata row */}
                         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-                          <span className="font-garamond italic text-amber-700/80">
+                          <span className="font-garamond italic text-amber-200">
                             {publication.journal}
                           </span>
-                          <span className="hidden h-1 w-1 rounded-full bg-amber-500/50 md:block" />
-                          <span className="font-garamond text-amber-800/70">
+                          <span className="hidden h-1 w-1 rounded-full bg-amber-400/60 md:block" />
+                          <span className="font-garamond text-amber-300">
                             Anno Domini {publication.year}
                           </span>
                           {publication.status && (
                             <>
-                              <span className="hidden h-1 w-1 rounded-full bg-amber-500/50 md:block" />
-                              <span className="rounded-full border border-amber-400/50 bg-amber-100/60 px-2.5 py-0.5 font-garamond text-sm text-amber-700">
+                              <span className="hidden h-1 w-1 rounded-full bg-amber-400/60 md:block" />
+                              <span className="rounded-full border border-amber-400/70 bg-amber-900/40 px-2.5 py-0.5 font-garamond text-sm text-amber-200">
                                 {publication.status}
                               </span>
                             </>
@@ -187,11 +187,11 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
 
                         {/* Abstract */}
                         {publication.abstract && (
-                          <div className="rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-4 md:p-5">
-                            <h4 className="map-sky-ink-strong mb-2 font-cinzel text-xs font-bold uppercase tracking-widest opacity-60">
+                          <div className="rounded-lg border border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50/80 p-4 md:p-5">
+                            <h4 className="mb-2 font-cinzel text-xs font-bold uppercase tracking-widest text-amber-600">
                               Abstract
                             </h4>
-                            <p className="font-garamond text-base italic leading-relaxed text-amber-800 md:text-lg">
+                            <p className="font-garamond text-base italic leading-relaxed text-amber-950 md:text-lg">
                               {publication.abstract}
                             </p>
                           </div>
@@ -221,7 +221,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                             {publication.keywords.map((kw) => (
                               <span
                                 key={kw}
-                                className="rounded-full border border-amber-300/70 bg-amber-100/40 px-3 py-1 font-garamond text-sm text-amber-700/80"
+                                className="rounded-full border border-amber-300/80 bg-amber-100/80 px-3 py-1 font-garamond text-sm text-amber-800"
                               >
                                 {kw}
                               </span>
@@ -239,7 +239,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                             <ExternalLink className="h-4 w-4" />
                             Read full manuscript
                           </button>
-                          <p className="map-sky-ink font-garamond text-sm italic opacity-60">
+                          <p className="font-garamond text-sm italic text-amber-300/80">
                             Manuscript {currentManuscript + 1} of {publications.length}
                           </p>
                         </div>
