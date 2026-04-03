@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { createKeyHandler, createWheelHandler } from "@/utils/handlers"
-import { clearPendingReturnState, readPendingReturnState, readReturnSection, saveReturnSection } from "@/utils/entryNavigation"
+import {
+  clearPendingReturnState,
+  readPendingReturnState,
+  readReturnSection,
+  saveLastExploredSection,
+  saveReturnSection,
+} from "@/utils/entryNavigation"
 import { sections } from "@/utils/sections"
 import ScrollArrows from "./ScrollArrows"
 import WandererTrail from "./WandererTrail"
@@ -59,6 +65,9 @@ export default function ScrollContainer() {
     }
 
     saveReturnSection(currentSection)
+    if (currentSection !== 0) {
+      saveLastExploredSection(currentSection)
+    }
   }, [currentSection])
 
   useEffect(() => {
@@ -147,6 +156,24 @@ export default function ScrollContainer() {
       document.removeEventListener("keydown", keyHandler)
     }
   }, [isScrolling, navigateBackward, navigateForward])
+
+  useEffect(() => {
+    const handleNavigateToSection = (event: Event) => {
+      const customEvent = event as CustomEvent<{ sectionIndex?: number }>
+      const nextSection = customEvent.detail?.sectionIndex
+
+      if (typeof nextSection !== "number") return
+      if (nextSection < 0 || nextSection >= sections.length) return
+      if (nextSection === currentSectionRef.current) return
+
+      scrollToSection(nextSection)
+    }
+
+    window.addEventListener("site:navigate-to-section", handleNavigateToSection as EventListener)
+    return () => {
+      window.removeEventListener("site:navigate-to-section", handleNavigateToSection as EventListener)
+    }
+  }, [scrollToSection])
 
   useEffect(() => {
     const container = containerRef.current

@@ -48,6 +48,8 @@ export default function ArchiveCodexOverlay({
   const leftPaneRef = useRef<HTMLDivElement | null>(null)
   const rightPaneRef = useRef<HTMLDivElement | null>(null)
   const hasRestoredScrollPositionsRef = useRef(false)
+  const lastKnownLeftPaneScrollRef = useRef(initialArchiveState?.leftPaneScrollTop ?? 0)
+  const lastKnownRightPaneScrollRef = useRef(initialArchiveState?.rightPaneScrollTop ?? 0)
 
   const filteredEntries = searchEntries(searchQuery)
   const selectedEntry = filteredEntries.find((entry) => entry.slug === selectedEntrySlug) ?? filteredEntries[0] ?? null
@@ -55,12 +57,18 @@ export default function ArchiveCodexOverlay({
 
   const persistCodexState = useCallback(
     (nextIsOpen = isOpen) => {
+      const nextLeftPaneScrollTop = leftPaneRef.current?.scrollTop ?? lastKnownLeftPaneScrollRef.current
+      const nextRightPaneScrollTop = rightPaneRef.current?.scrollTop ?? lastKnownRightPaneScrollRef.current
+
+      lastKnownLeftPaneScrollRef.current = nextLeftPaneScrollTop
+      lastKnownRightPaneScrollRef.current = nextRightPaneScrollTop
+
       saveArchiveCodexState({
         isOpen: nextIsOpen,
         searchQuery,
         selectedEntrySlug,
-        leftPaneScrollTop: leftPaneRef.current?.scrollTop ?? 0,
-        rightPaneScrollTop: rightPaneRef.current?.scrollTop ?? 0,
+        leftPaneScrollTop: nextLeftPaneScrollTop,
+        rightPaneScrollTop: nextRightPaneScrollTop,
       })
     },
     [isOpen, searchQuery, selectedEntrySlug],
@@ -78,8 +86,8 @@ export default function ArchiveCodexOverlay({
       isOpen: true,
       searchQuery,
       selectedEntrySlug: selectedEntrySlugToOpen,
-      leftPaneScrollTop: leftPaneRef.current?.scrollTop ?? 0,
-      rightPaneScrollTop: rightPaneRef.current?.scrollTop ?? 0,
+      leftPaneScrollTop: leftPaneRef.current?.scrollTop ?? lastKnownLeftPaneScrollRef.current,
+      rightPaneScrollTop: rightPaneRef.current?.scrollTop ?? lastKnownRightPaneScrollRef.current,
     })
 
     saveEntryOriginState({
@@ -88,8 +96,8 @@ export default function ArchiveCodexOverlay({
       sourceScrollY: typeof window === "undefined" ? 0 : window.scrollY,
       sourceQuery: searchQuery,
       sourceSelectedSlug: selectedEntrySlugToOpen,
-      sourceLeftPaneScrollTop: leftPaneRef.current?.scrollTop ?? 0,
-      sourceRightPaneScrollTop: rightPaneRef.current?.scrollTop ?? 0,
+      sourceLeftPaneScrollTop: leftPaneRef.current?.scrollTop ?? lastKnownLeftPaneScrollRef.current,
+      sourceRightPaneScrollTop: rightPaneRef.current?.scrollTop ?? lastKnownRightPaneScrollRef.current,
       codexWasOpen: true,
       itemSlug: selectedEntrySlugToOpen,
     })
@@ -180,10 +188,12 @@ export default function ArchiveCodexOverlay({
     const restoreScrollPositions = () => {
       if (leftPaneRef.current) {
         leftPaneRef.current.scrollTop = savedCodexState.leftPaneScrollTop
+        lastKnownLeftPaneScrollRef.current = savedCodexState.leftPaneScrollTop
       }
 
       if (rightPaneRef.current) {
         rightPaneRef.current.scrollTop = savedCodexState.rightPaneScrollTop
+        lastKnownRightPaneScrollRef.current = savedCodexState.rightPaneScrollTop
       }
     }
 
@@ -286,7 +296,10 @@ export default function ArchiveCodexOverlay({
                   <div
                     ref={leftPaneRef}
                     className="scrollable-content scrollbar-fade min-h-0 flex-1 space-y-3 overflow-y-auto pb-2 pr-2"
-                    onScroll={() => persistCodexState()}
+                    onScroll={(event) => {
+                      lastKnownLeftPaneScrollRef.current = event.currentTarget.scrollTop
+                      persistCodexState()
+                    }}
                   >
                     {filteredEntries.length > 0 ? (
                       filteredEntries.map((entry, index) => {
@@ -350,7 +363,10 @@ export default function ArchiveCodexOverlay({
                     <div
                       ref={rightPaneRef}
                       className="scrollable-content scrollbar-fade min-h-0 flex-1 overflow-y-auto pb-4 pr-1"
-                      onScroll={() => persistCodexState()}
+                      onScroll={(event) => {
+                        lastKnownRightPaneScrollRef.current = event.currentTarget.scrollTop
+                        persistCodexState()
+                      }}
                     >
                       <div className="text-center">
                         <h4 className="font-cinzel text-3xl font-bold leading-tight text-amber-950">

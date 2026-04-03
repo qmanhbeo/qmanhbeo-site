@@ -1,7 +1,14 @@
 "use client"
 
-import { useState } from "react"
-import { readPendingReturnState } from "@/utils/entryNavigation"
+import { useEffect, useRef, useState } from "react"
+import {
+  clearCodexOriginSection,
+  readCodexOriginSection,
+  readLastExploredSection,
+  readPendingReturnState,
+  saveCodexOriginSection,
+  saveReturnSection,
+} from "@/utils/entryNavigation"
 import ArchiveCodexButton from "./ui/ArchiveCodexButton"
 import ArchiveCodexOverlay from "./ui/ArchiveCodexOverlay"
 import LetterOverlay from "./ui/LetterOverlay"
@@ -11,12 +18,51 @@ interface HeroSectionProps {
   revealClassName?: string
 }
 
+const ARCHIVE_CLOSE_RESTORE_MS = 620
+
 export default function HeroSection({ revealClassName = "" }: HeroSectionProps) {
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(() => {
     const pendingReturnState = readPendingReturnState("/")
     return pendingReturnState?.sourceSection === "archive" && pendingReturnState.codexWasOpen === true
   })
   const [isLetterOverlayOpen, setIsLetterOverlayOpen] = useState(false)
+  const restoreTimerRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (restoreTimerRef.current !== null) {
+        window.clearTimeout(restoreTimerRef.current)
+      }
+    }
+  }, [])
+
+  const handleArchiveOpen = () => {
+    const originSection = readLastExploredSection()
+    saveCodexOriginSection(originSection)
+    setIsArchiveOverlayOpen(true)
+  }
+
+  const handleArchiveClose = () => {
+    setIsArchiveOverlayOpen(false)
+
+    if (restoreTimerRef.current !== null) {
+      window.clearTimeout(restoreTimerRef.current)
+      restoreTimerRef.current = null
+    }
+
+    const originSection = readCodexOriginSection()
+    if (originSection <= 0) {
+      clearCodexOriginSection()
+      return
+    }
+
+    restoreTimerRef.current = window.setTimeout(() => {
+      saveReturnSection(originSection)
+      window.dispatchEvent(new CustomEvent("site:navigate-to-section", { detail: { sectionIndex: originSection } }))
+      clearCodexOriginSection()
+      restoreTimerRef.current = null
+    }, ARCHIVE_CLOSE_RESTORE_MS)
+  }
 
   return (
     <section
@@ -42,7 +88,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
           <div className="w-full max-w-[27rem] shrink-0">
             <ArchiveCodexButton
               isOpen={isArchiveOverlayOpen}
-              onOpen={() => setIsArchiveOverlayOpen(true)}
+              onOpen={handleArchiveOpen}
               className="max-w-none"
             />
           </div>
@@ -59,7 +105,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
         </div>
       </div>
 
-      <ArchiveCodexOverlay isOpen={isArchiveOverlayOpen} onClose={() => setIsArchiveOverlayOpen(false)} />
+      <ArchiveCodexOverlay isOpen={isArchiveOverlayOpen} onClose={handleArchiveClose} />
       <LetterOverlay isOpen={isLetterOverlayOpen} onClose={() => setIsLetterOverlayOpen(false)} />
     </section>
   )

@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { type UIEvent, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ExternalLink, X } from "lucide-react"
 import {
@@ -244,18 +244,25 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
   const timerRef = useRef<number | null>(null)
   const scrollSaveFrameRef = useRef<number | null>(null)
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const [initialItemScrollState] = useState(() => readItemScrollState(entry.slug))
   const originStateRef = useRef(readEntryOriginState(entry.slug))
-  const restoredItemScrollRef = useRef(readItemScrollState(entry.slug))
+  const restoredItemScrollRef = useRef(initialItemScrollState)
+  const lastKnownItemScrollRef = useRef(initialItemScrollState?.itemInternalScroll ?? 0)
 
   const saveCurrentItemScrollState = useCallback(() => {
+    const nextScrollTop = scrollContainerRef.current?.scrollTop ?? lastKnownItemScrollRef.current
+    lastKnownItemScrollRef.current = nextScrollTop
+
     saveItemScrollState({
       itemSlug: entry.slug,
-      itemInternalScroll: scrollContainerRef.current?.scrollTop ?? 0,
+      itemInternalScroll: nextScrollTop,
       origin: originStateRef.current ?? undefined,
     })
   }, [entry.slug])
 
-  const scheduleItemScrollSave = useCallback(() => {
+  const handleScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
+    lastKnownItemScrollRef.current = event.currentTarget.scrollTop
+
     if (scrollSaveFrameRef.current !== null) return
 
     scrollSaveFrameRef.current = window.requestAnimationFrame(() => {
@@ -296,6 +303,7 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
     if (!savedScrollState || !scrollContainer) return
 
     scrollContainer.scrollTop = savedScrollState.itemInternalScroll
+    lastKnownItemScrollRef.current = savedScrollState.itemInternalScroll
   }, [])
 
   useEffect(() => {
@@ -363,7 +371,7 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
           <div
             ref={scrollContainerRef}
             className="item-manuscript-scroll relative z-10 min-h-0 flex-1 overflow-y-auto px-6 py-10 md:px-10 md:py-14"
-            onScroll={scheduleItemScrollSave}
+            onScroll={handleScroll}
           >
             <div className="mx-auto max-w-[46rem]">
               <header className="item-manuscript-rule border-b pb-10 pr-12 md:pr-16">

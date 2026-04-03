@@ -37,6 +37,11 @@ export interface ArchiveCodexState {
   updatedAt: number
 }
 
+interface SectionRestoreState {
+  sectionIndex: number
+  updatedAt: number
+}
+
 const MAX_STATE_AGE_MS = 1000 * 60 * 60 * 6
 
 const ENTRY_ORIGIN_STATE_KEY = "entry-origin-state"
@@ -44,6 +49,8 @@ const PENDING_RETURN_STATE_KEY = "entry-pending-return-state"
 const ARCHIVE_CODEX_STATE_KEY = "archive-codex-state"
 const RETURN_SECTION_KEY = "returnSection"
 const ITEM_SCROLL_STATE_PREFIX = "entry-scroll-state:"
+const LAST_EXPLORED_SECTION_KEY = "last-explored-section"
+const CODEX_ORIGIN_SECTION_KEY = "codex-origin-section"
 
 const HOME_SECTION_INDEX_BY_SOURCE: Record<EntryOriginSection, number> = {
   archive: 0,
@@ -91,6 +98,14 @@ function removeState(key: string) {
   window.sessionStorage.removeItem(key)
 }
 
+function readSectionRestoreState(key: string, maxSectionCount?: number) {
+  const state = readFreshState<SectionRestoreState>(key)
+  if (!state) return 0
+  if (state.sectionIndex < 0) return 0
+  if (typeof maxSectionCount === "number" && state.sectionIndex >= maxSectionCount) return 0
+  return state.sectionIndex
+}
+
 export function getHomeSectionIndexForOrigin(sourceSection?: EntryOriginSection) {
   if (!sourceSection) return 0
   return HOME_SECTION_INDEX_BY_SOURCE[sourceSection]
@@ -111,6 +126,36 @@ export function readReturnSection(maxSectionCount?: number) {
 export function saveReturnSection(sectionIndex: number) {
   if (!isBrowser()) return
   window.sessionStorage.setItem(RETURN_SECTION_KEY, String(sectionIndex))
+}
+
+export function saveLastExploredSection(sectionIndex: number) {
+  if (!isBrowser()) return
+
+  writeState(LAST_EXPLORED_SECTION_KEY, {
+    sectionIndex,
+    updatedAt: Date.now(),
+  } satisfies SectionRestoreState)
+}
+
+export function readLastExploredSection(maxSectionCount?: number) {
+  return readSectionRestoreState(LAST_EXPLORED_SECTION_KEY, maxSectionCount)
+}
+
+export function saveCodexOriginSection(sectionIndex: number) {
+  if (!isBrowser()) return
+
+  writeState(CODEX_ORIGIN_SECTION_KEY, {
+    sectionIndex,
+    updatedAt: Date.now(),
+  } satisfies SectionRestoreState)
+}
+
+export function readCodexOriginSection(maxSectionCount?: number) {
+  return readSectionRestoreState(CODEX_ORIGIN_SECTION_KEY, maxSectionCount)
+}
+
+export function clearCodexOriginSection() {
+  removeState(CODEX_ORIGIN_SECTION_KEY)
 }
 
 export function saveEntryOriginState(state: Omit<EntryOriginState, "updatedAt">) {
