@@ -33,14 +33,14 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
 
         <div className="flex h-[55dvh] min-h-[280px] items-center justify-center">
           <div className="map-ghost-panel relative flex w-full flex-col overflow-hidden rounded-lg p-8">
-            <div ref={shellRef} className="w-full overflow-visible">
+            <div ref={shellRef} className="w-full overflow-visible py-2 md:py-3">
               <InfiniteCarousel
                 items={projects}
                 itemWidth={itemWidth}
                 gap={gap}
                 snap="left"
                 itemAlign="center"
-                className="w-full scroll-fade-horizontal"
+                className="w-full scroll-fade-horizontal py-1 md:py-2"
                 renderItem={(project) => {
                   const index = projects.indexOf(project)
                   const archiveId = index >= 0 ? `project-${index}` : "project-unknown"

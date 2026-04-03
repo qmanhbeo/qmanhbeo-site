@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useLayoutEffect, useMemo, useRef, useState } from "react"
+import { getScatteredCardPreset } from "@/utils/scatteredCards"
 
 interface SpellScrollProps {
   title: string
@@ -10,16 +11,6 @@ interface SpellScrollProps {
   children?: React.ReactNode
   className?: string
   onClick?: () => void
-}
-
-const getDeterministicTilt = (seed: string) => {
-  let hash = 0
-
-  for (const char of seed) {
-    hash = (hash * 31 + char.charCodeAt(0)) % 10000
-  }
-
-  return ((hash / 10000) * 10 - 5).toFixed(2)
 }
 
 export default function SpellScroll({
@@ -34,7 +25,7 @@ export default function SpellScroll({
   const [summaryLineClamp, setSummaryLineClamp] = useState(4)
   const summaryContainerRef = useRef<HTMLDivElement>(null)
   const summaryRef = useRef<HTMLParagraphElement>(null)
-  const tiltDeg = useMemo(() => getDeterministicTilt(`${title}-${description}`), [description, title])
+  const scatter = useMemo(() => getScatteredCardPreset(`${title}-${description}`, "medium"), [description, title])
   const isInteractive = Boolean(onClick)
   const hasFooterContent = runes.length > 0 || Boolean(children)
 
@@ -65,73 +56,77 @@ export default function SpellScroll({
   }, [description, hasFooterContent, runes.length, title])
 
   return (
-    <div className={`w-full h-[280px] box-border ${className}`}>
-      <div
-        className={`spell-scroll group relative w-full h-full ${isInteractive ? "cursor-pointer" : ""}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={onClick}
-        style={{
-          transform: `rotate(${tiltDeg}deg)`,
-          transition: "transform 500ms",
-        }}
-      >
+    <div className={`w-full h-[308px] box-border ${className}`}>
+      <div className="flex h-full items-center justify-center">
         <div
-          className="relative w-full h-full"
+          className={`spell-scroll group relative h-[280px] w-full ${isInteractive ? "cursor-pointer" : ""}`}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onClick={onClick}
           style={{
-            transform: isHovered ? "scale(1.05)" : "scale(1)",
-            transition: "transform 500ms",
+            transform: `translate3d(0, ${scatter.translateYPx}px, 0) rotate(${scatter.rotateDeg}deg)`,
+            transition: "transform 500ms cubic-bezier(0.22, 1, 0.36, 1)",
           }}
         >
-          <div className="absolute inset-0 spell-parchment rounded-lg shadow-lg" />
+          <div
+            className="relative h-full w-full"
+            style={{
+              transform: isHovered
+                ? `translate3d(0, ${scatter.hoverLiftPx}px, 0) scale(${scatter.hoverScale})`
+                : "translate3d(0, 0, 0) scale(1)",
+              transition: "transform 500ms cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            <div className="absolute inset-0 spell-parchment rounded-lg shadow-lg" />
 
-          <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-amber-600 opacity-60" />
-          <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-amber-600 opacity-60" />
-          <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-amber-600 opacity-60" />
-          <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-amber-600 opacity-60" />
+            <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-amber-600 opacity-60" />
+            <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-amber-600 opacity-60" />
+            <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-amber-600 opacity-60" />
+            <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-amber-600 opacity-60" />
 
-          <div className="relative z-10 flex h-full w-full flex-col p-4">
-            <div className="flex min-h-0 flex-1 flex-col">
-              <h3 className="line-clamp-3 text-xl font-bold leading-snug text-amber-900 transition-colors group-hover:text-orange-700 font-cinzel">
-                {title}
-              </h3>
+            <div className="relative z-10 flex h-full w-full flex-col p-4">
+              <div className="flex min-h-0 flex-1 flex-col">
+                <h3 className="line-clamp-3 text-xl font-bold leading-snug text-amber-900 transition-colors group-hover:text-orange-700 font-cinzel">
+                  {title}
+                </h3>
 
-              <div ref={summaryContainerRef} className="mt-2 min-h-0 flex-1 overflow-hidden">
-                <p
-                  ref={summaryRef}
-                  className="text-sm leading-snug text-amber-800 font-garamond"
-                  style={{
-                    display: "-webkit-box",
-                    WebkitBoxOrient: "vertical",
-                    WebkitLineClamp: summaryLineClamp,
-                    overflow: "hidden",
-                  }}
-                >
-                  {description}
-                </p>
+                <div ref={summaryContainerRef} className="mt-2 min-h-0 flex-1 overflow-hidden">
+                  <p
+                    ref={summaryRef}
+                    className="text-sm leading-snug text-amber-800 font-garamond"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: summaryLineClamp,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {description}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-3 flex flex-shrink-0 flex-col gap-2">
+                {runes.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {runes.map((rune, index) => (
+                      <span key={index} className="magical-rune px-2 py-0.5 text-xs font-garamond font-medium">
+                        {rune}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {children ? <div className="overflow-hidden">{children}</div> : null}
               </div>
             </div>
 
-            <div className="mt-3 flex flex-shrink-0 flex-col gap-2">
-              {runes.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {runes.map((rune, index) => (
-                    <span key={index} className="magical-rune px-2 py-0.5 text-xs font-garamond font-medium">
-                      {rune}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {children ? <div className="overflow-hidden">{children}</div> : null}
-            </div>
+            <div
+              className={`absolute inset-0 shimmer-overlay rounded-lg transition-opacity duration-500 ${
+                isHovered ? "opacity-100" : "opacity-0"
+              }`}
+            />
           </div>
-
-          <div
-            className={`absolute inset-0 shimmer-overlay rounded-lg transition-opacity duration-500 ${
-              isHovered ? "opacity-100" : "opacity-0"
-            }`}
-          />
         </div>
       </div>
     </div>

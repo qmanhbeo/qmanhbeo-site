@@ -36,14 +36,15 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
 
         <div className="h-[55dvh] min-h-[280px]">
           <div className="map-ghost-panel relative flex h-full flex-col overflow-hidden rounded-lg">
-            <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden p-8">
-              <div ref={shellRef} className="mx-auto flex w-full max-w-5xl items-center justify-center overflow-hidden">
+            <div className="flex min-h-0 flex-1 items-center justify-center overflow-visible px-8 py-8 md:px-10 md:py-10">
+              <div ref={shellRef} className="mx-auto flex w-full max-w-5xl items-center justify-center overflow-visible py-2 md:py-3">
                 <InfiniteCarousel
                   items={blogPosts}
                   itemWidth={itemWidth}
                   gap={gap}
                   snap="left"
-                  className="w-full scroll-fade-horizontal"
+                  itemAlign="center"
+                  className="w-full scroll-fade-horizontal py-1 md:py-2"
                   renderItem={(tale) => {
                     const index = blogPosts.indexOf(tale)
                     const archiveId = index >= 0 ? `note-${index}` : "note-unknown"
