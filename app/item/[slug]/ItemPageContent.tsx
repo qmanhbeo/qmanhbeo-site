@@ -402,12 +402,12 @@ export default function ItemPageContent({
                   {getEntryCollectionLabel(entry)}
                 </p>
 
-                <h1 className="item-manuscript-heading mt-5 font-cinzel text-4xl font-bold leading-tight md:text-6xl">
+                <h1 className="item-manuscript-heading mt-5 font-cinzel text-[2rem] font-bold leading-tight md:text-6xl">
                   {entry.title}
                 </h1>
 
                 {entry.subtitle ? (
-                  <p className="item-manuscript-ink-soft mt-4 font-garamond text-xl italic leading-relaxed md:text-[1.65rem]">
+                  <p className="item-manuscript-ink-soft mt-3 font-garamond text-[1.08rem] italic leading-relaxed md:mt-4 md:text-[1.65rem]">
                     {entry.subtitle}
                   </p>
                 ) : null}

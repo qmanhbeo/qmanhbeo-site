@@ -121,7 +121,7 @@ function CodexEntryPreview({
       {mobileBackButton}
 
       <div className="text-center">
-        <h4 className="font-cinzel text-3xl font-bold leading-tight text-amber-950">{entry.title}</h4>
+        <h4 className="font-cinzel text-[1.7rem] font-bold leading-tight text-amber-950 md:text-3xl">{entry.title}</h4>
 
         <div className="mt-4 flex flex-wrap items-center justify-center gap-3 font-garamond text-base text-amber-800">
           <span className="rounded-full bg-amber-100/70 px-4 py-2 italic">{getEntryKindLabel(entry)}</span>
@@ -129,7 +129,7 @@ function CodexEntryPreview({
           <span className="rounded-full bg-amber-100/70 px-4 py-2">{getEntryPeriodLabel(entry)}</span>
         </div>
 
-        <p className="mt-4 font-garamond text-lg italic text-amber-800">{entry.subtitle}</p>
+        <p className="mt-3 font-garamond text-[1rem] italic text-amber-800 md:mt-4 md:text-lg">{entry.subtitle}</p>
       </div>
 
       <div className="mt-8 rounded-[1.6rem] border border-amber-800/15 bg-white/40 p-6 shadow-[inset_0_1px_0_rgba(255,248,232,0.65)]">
