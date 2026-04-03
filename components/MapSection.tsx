@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
@@ -50,6 +51,32 @@ function WhomIMetCard({ items }: { items: string[] }) {
           </li>
         ))}
       </ul>
+    </div>
+  )
+}
+
+function ArcImageRow({ location, photos }: { location: string; photos: string[] }) {
+  if (photos.length === 0) return null
+
+  return (
+    <div className="flex justify-center">
+      <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
+        {photos.map((src, index) => (
+          <div
+            key={src}
+            className="wooden-frame h-[4.5rem] w-[4.5rem] flex-shrink-0 overflow-hidden rounded-lg sm:h-[5.25rem] sm:w-[5.25rem] md:h-[6rem] md:w-[6rem]"
+          >
+            <Image
+              src={src}
+              alt={`Journey memory from ${location} ${index + 1}`}
+              width={192}
+              height={192}
+              sizes="(max-width: 640px) 72px, (max-width: 768px) 84px, 96px"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -250,6 +277,10 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                             {journey.memory}
                           </p>
                         </div>
+
+                        {journey.photos && journey.photos.length > 0 && (
+                          <ArcImageRow location={journey.location} photos={journey.photos} />
+                        )}
 
                         {/* Narrative grid — 2×2 */}
                         {(journey.whatIDid || journey.whomIMet || journey.whatILearned || journey.achieved) && (
