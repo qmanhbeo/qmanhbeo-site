@@ -653,6 +653,16 @@
 .item-manuscript-rule {
   border-color: rgba(161, 99, 56, 0.38);
 }
+.item-manuscript-scroll {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.item-manuscript-scroll::-webkit-scrollbar {
+  display: none;
+}
 .tavern-parchment {
   background:
     radial-gradient(circle at 25% 75%, rgba(139,69,19,0.12) 0%, transparent 50%),

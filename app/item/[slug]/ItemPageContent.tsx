@@ -236,7 +236,16 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
   const timerRef = useRef<number | null>(null)
 
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow
+    const originalOverscrollBehavior = document.body.style.overscrollBehavior
+
+    document.body.style.overflow = "hidden"
+    document.body.style.overscrollBehavior = "contain"
+
     return () => {
+      document.body.style.overflow = originalOverflow
+      document.body.style.overscrollBehavior = originalOverscrollBehavior
+
       if (timerRef.current !== null) {
         window.clearTimeout(timerRef.current)
       }
@@ -260,75 +269,77 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
   const metaItems = getEntryMetaItems(entry)
 
   return (
-    <div className="min-h-dvh forest-campfire px-4 py-6 md:px-8 md:py-10">
+    <div className="relative h-dvh overflow-hidden forest-campfire">
       <div className="absolute inset-0 bg-gradient-to-b from-black/52 via-black/28 to-black/56" />
 
-      <article
-        className={`item-manuscript-surface relative z-10 mx-auto max-w-5xl overflow-hidden rounded-[2.4rem] border border-amber-200/25 ${
-          isLeaving
-            ? "animate-out fade-out zoom-out-95 duration-200 fill-mode-both"
-            : "animate-in fade-in zoom-in-95 duration-500"
-        }`}
-      >
-        <div className="item-manuscript-overlay pointer-events-none absolute inset-0 scholar-parchment" />
-
-        <button
-          type="button"
-          onClick={handleClose}
-          aria-label="Close entry"
-          className="item-manuscript-ink absolute right-4 top-4 z-20 rounded-full border border-amber-700/20 bg-[#f5eadc]/96 p-2.5 transition-all duration-200 hover:bg-white/95 hover:text-orange-800 md:right-6 md:top-6"
+      <div className="relative z-10 flex h-full items-center justify-center p-4 md:p-6">
+        <article
+          className={`item-manuscript-surface relative flex h-[calc(100dvh-2rem)] max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2.4rem] border border-amber-200/25 md:h-[calc(100dvh-3rem)] md:max-h-[calc(100dvh-3rem)] ${
+            isLeaving
+              ? "animate-out fade-out zoom-out-95 duration-200 fill-mode-both"
+              : "animate-in fade-in zoom-in-95 duration-500"
+          }`}
         >
-          <X className="h-5 w-5" />
-        </button>
+          <div className="item-manuscript-overlay pointer-events-none absolute inset-0 scholar-parchment" />
 
-        <div className="relative z-10 px-6 py-10 md:px-10 md:py-14">
-          <div className="mx-auto max-w-[46rem]">
-            <header className="item-manuscript-rule border-b pb-10 pr-12 md:pr-16">
-              <p className="item-manuscript-ink-soft font-cinzel text-[0.72rem] font-semibold uppercase tracking-[0.26em]">
-                {getEntryCollectionLabel(entry)}
-              </p>
+          <button
+            type="button"
+            onClick={handleClose}
+            aria-label="Close entry"
+            className="item-manuscript-ink absolute right-4 top-4 z-20 rounded-full border border-amber-700/20 bg-[#f5eadc]/96 p-2.5 transition-all duration-200 hover:bg-white/95 hover:text-orange-800 md:right-6 md:top-6"
+          >
+            <X className="h-5 w-5" />
+          </button>
 
-              <h1 className="item-manuscript-heading mt-5 font-cinzel text-4xl font-bold leading-tight md:text-6xl">
-                {entry.title}
-              </h1>
-
-              {entry.subtitle ? (
-                <p className="item-manuscript-ink-soft mt-4 font-garamond text-xl italic leading-relaxed md:text-[1.65rem]">
-                  {entry.subtitle}
+          <div className="item-manuscript-scroll relative z-10 min-h-0 flex-1 overflow-y-auto px-6 py-10 md:px-10 md:py-14">
+            <div className="mx-auto max-w-[46rem]">
+              <header className="item-manuscript-rule border-b pb-10 pr-12 md:pr-16">
+                <p className="item-manuscript-ink-soft font-cinzel text-[0.72rem] font-semibold uppercase tracking-[0.26em]">
+                  {getEntryCollectionLabel(entry)}
                 </p>
-              ) : null}
 
-              <div className="mt-8 grid gap-x-8 gap-y-3 sm:grid-cols-2">
-                {metaItems.map((item) => (
-                  <p key={item.label} className="item-manuscript-ink font-garamond text-base md:text-lg">
-                    <span className="item-manuscript-ink-soft font-cinzel text-[0.72rem] font-semibold uppercase tracking-[0.18em]">
-                      {item.label}
-                    </span>
-                    <span className="ml-3">{item.value}</span>
+                <h1 className="item-manuscript-heading mt-5 font-cinzel text-4xl font-bold leading-tight md:text-6xl">
+                  {entry.title}
+                </h1>
+
+                {entry.subtitle ? (
+                  <p className="item-manuscript-ink-soft mt-4 font-garamond text-xl italic leading-relaxed md:text-[1.65rem]">
+                    {entry.subtitle}
                   </p>
-                ))}
+                ) : null}
+
+                <div className="mt-8 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                  {metaItems.map((item) => (
+                    <p key={item.label} className="item-manuscript-ink font-garamond text-base md:text-lg">
+                      <span className="item-manuscript-ink-soft font-cinzel text-[0.72rem] font-semibold uppercase tracking-[0.18em]">
+                        {item.label}
+                      </span>
+                      <span className="ml-3">{item.value}</span>
+                    </p>
+                  ))}
+                </div>
+
+                <div className="mt-8">
+                  <p className="item-manuscript-ink font-garamond text-xl italic leading-relaxed md:text-[1.45rem]">
+                    {entry.summary}
+                  </p>
+                </div>
+
+                {entry.tags.length > 0 ? (
+                  <p className="item-manuscript-ink-soft mt-6 font-garamond text-sm uppercase tracking-[0.1em] md:text-[0.92rem]">
+                    <span className="font-cinzel tracking-[0.18em]">Tags</span>
+                    <span className="item-manuscript-ink ml-3 normal-case tracking-normal">{entry.tags.join(" / ")}</span>
+                  </p>
+                ) : null}
+              </header>
+
+              <div className="pt-10">
+                <EntryBody entry={entry} />
               </div>
-
-              <div className="mt-8">
-                <p className="item-manuscript-ink font-garamond text-xl italic leading-relaxed md:text-[1.45rem]">
-                  {entry.summary}
-                </p>
-              </div>
-
-              {entry.tags.length > 0 ? (
-                <p className="item-manuscript-ink-soft mt-6 font-garamond text-sm uppercase tracking-[0.1em] md:text-[0.92rem]">
-                  <span className="font-cinzel tracking-[0.18em]">Tags</span>
-                  <span className="item-manuscript-ink ml-3 normal-case tracking-normal">{entry.tags.join(" / ")}</span>
-                </p>
-              ) : null}
-            </header>
-
-            <div className="pt-10">
-              <EntryBody entry={entry} />
             </div>
           </div>
-        </div>
-      </article>
+        </article>
+      </div>
     </div>
   )
 }
