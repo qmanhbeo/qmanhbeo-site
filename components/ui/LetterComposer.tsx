@@ -7,6 +7,8 @@ interface LetterComposerProps {
   className?: string
 }
 
+const LETTER_DRAFT_STORAGE_KEY = "letter-composer-draft-v1"
+
 const parchmentStyle = {
   background:
     "radial-gradient(circle at 18% 16%, rgba(255,255,255,0.36) 0%, transparent 28%), radial-gradient(circle at 82% 78%, rgba(160,82,45,0.08) 0%, transparent 30%), linear-gradient(135deg, #f9f0dd 0%, #f2e0bf 48%, #e6cfab 100%)",
@@ -37,10 +39,28 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
   const [error, setError] = useState<string | null>(null)
   const resetTimerRef = useRef<number | null>(null)
   const messageTextareaRef = useRef<HTMLTextAreaElement>(null)
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
+  const [formData, setFormData] = useState(() => {
+    if (typeof window === "undefined") {
+      return { name: "", email: "", message: "" }
+    }
+
+    const savedDraft = window.sessionStorage.getItem(LETTER_DRAFT_STORAGE_KEY)
+
+    if (!savedDraft) {
+      return { name: "", email: "", message: "" }
+    }
+
+    try {
+      const parsedDraft = JSON.parse(savedDraft) as Partial<{ name: string; email: string; message: string }>
+
+      return {
+        name: parsedDraft.name ?? "",
+        email: parsedDraft.email ?? "",
+        message: parsedDraft.message ?? "",
+      }
+    } catch {
+      return { name: "", email: "", message: "" }
+    }
   })
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -57,6 +77,19 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
     resizeTextarea(messageTextareaRef.current)
   }, [formData.message])
 
+  useEffect(() => {
+    if (typeof window === "undefined" || letterSent) return
+
+    const hasDraftContent = Object.values(formData).some((value) => value.trim().length > 0)
+
+    if (!hasDraftContent) {
+      window.sessionStorage.removeItem(LETTER_DRAFT_STORAGE_KEY)
+      return
+    }
+
+    window.sessionStorage.setItem(LETTER_DRAFT_STORAGE_KEY, JSON.stringify(formData))
+  }, [formData, letterSent])
+
   const handleLetterSubmit = async (event: FormEvent) => {
     event.preventDefault()
     setIsSubmitting(true)
@@ -72,6 +105,7 @@ export default function LetterComposer({ className = "" }: LetterComposerProps) 
       if (!res.ok) throw new Error('Failed to send')
 
       setLetterSent(true)
+      window.sessionStorage.removeItem(LETTER_DRAFT_STORAGE_KEY)
 
       if (resetTimerRef.current !== null) {
         window.clearTimeout(resetTimerRef.current)

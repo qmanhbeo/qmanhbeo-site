@@ -75,29 +75,31 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
         }`}
       />
 
-      <div
-        className={`relative z-10 flex w-full max-w-5xl flex-col overflow-hidden h-[calc(100dvh-2rem)] md:h-[calc(100dvh-3rem)] ${
-          isExiting
-            ? "animate-out fade-out zoom-out-95 duration-300 fill-mode-both"
-            : "animate-in fade-in zoom-in-95 duration-300"
-        }`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Write him a letter"
-        onClick={(event) => event.stopPropagation()}
-        onWheelCapture={(event) => event.stopPropagation()}
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          className="medieval-button absolute right-4 top-4 z-20 rounded-full p-3 text-orange-100 transition-all duration-300 hover:ember-glow"
-          aria-label="Close letter overlay"
+      <div className="relative z-10 flex h-full w-full items-center justify-center">
+        <div
+          className={`relative w-full max-w-4xl ${
+            isExiting
+              ? "animate-out fade-out zoom-out-95 duration-300 fill-mode-both"
+              : "animate-in fade-in zoom-in-95 duration-300"
+          }`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Write him a letter"
+          onClick={(event) => event.stopPropagation()}
+          onWheelCapture={(event) => event.stopPropagation()}
         >
-          <X className="h-5 w-5" />
-        </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="medieval-button absolute right-6 top-6 z-20 rounded-full p-3 text-orange-100 transition-all duration-300 hover:ember-glow"
+            aria-label="Close letter overlay"
+          >
+            <X className="h-5 w-5" />
+          </button>
 
-        <div className="scrollable-content scrollbar-fade min-h-0 flex-1 overflow-y-auto">
-          <LetterComposer />
+          <div className="scrollable-content scrollbar-fade max-h-[calc(100dvh-2rem)] overflow-y-auto md:max-h-[calc(100dvh-3rem)]">
+            <LetterComposer />
+          </div>
         </div>
       </div>
     </div>
