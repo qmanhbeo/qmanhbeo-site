@@ -27,14 +27,14 @@ export default function ArchiveCodexButton({
       >
         {/* Button face */}
         <div
-          className="relative flex items-center justify-center gap-3 rounded-full border border-amber-700/40 px-8 py-4 text-amber-50 transition-all duration-300 group-hover:scale-[1.03] group-hover:border-amber-600/60 group-active:scale-[0.98]"
+          className="relative flex items-center justify-center gap-2.5 rounded-full border border-amber-700/40 px-6 py-3 text-amber-50 transition-all duration-300 group-hover:scale-[1.03] group-hover:border-amber-600/60 group-active:scale-[0.98] sm:gap-3 sm:px-8 sm:py-4"
           style={{
             background: "linear-gradient(160deg, #c47828 0%, #8e4b18 55%, #6f340f 100%)",
             boxShadow: "0 10px 22px rgba(37,17,7,0.22), 0 0 18px rgba(255,162,66,0.14), inset 0 1px 0 rgba(255,220,160,0.2)",
           }}
         >
-          <span className="font-cinzel text-lg font-bold tracking-wide sm:text-xl">{label}</span>
-          <Sparkles className="h-5 w-5 shrink-0 text-amber-200/90 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110" />
+          <span className="font-cinzel text-[1.02rem] font-bold tracking-wide sm:text-xl">{label}</span>
+          <Sparkles className="h-4.5 w-4.5 shrink-0 text-amber-200/90 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110 sm:h-5 sm:w-5" />
         </div>
       </button>
     </div>

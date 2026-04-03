@@ -40,9 +40,9 @@ export const sections: SiteSection[] = [
   },
   {
     id: "about",
-    title: "Lore",
-    navLabel: "Lore",
-    navDescription: "The tale of Leonardo",
+    title: "Chronicle",
+    navLabel: "Chronicle",
+    navDescription: "The chronicle of Leonardo",
     icon: User,
     Component: AboutSection,
   },

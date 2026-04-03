@@ -41,13 +41,22 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
               md:max-h-[68vh]"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-2 md:mb-3 text-amber-900 font-cinzel">
-              The Lore of Leo
+              The Chronicle of Leo
             </h2>
             <p className="text-sm md:text-base text-amber-800 mb-3 md:mb-4 font-garamond leading-relaxed italic">
-              He is a Vietnamese researcher and builder whose path began in economics and slowly wandered into AI,
-              simulations, data systems, and sustainability. What ties it all together is a simple question: how do we
-              build tools that stay honest about the world they are meant to serve, especially when resources are scarce,
-              trade-offs are real, and people must live with the outcomes?
+            He began in economics, following the promise that the world could be understood through systems and incentives.
+
+            That part held. The world could be explained.
+
+            But explanation was never the same as care.
+
+            The systems worked—just not always for the people inside them.
+
+            Over time, the questions shifted. From how things function to who they leave behind. From elegant models to the friction of real lives.
+
+            The path wandered into AI, simulations, and data systems—not out of fascination with the tools, but with a quieter ambition:
+
+            can we build systems that don’t quietly fail people?
             </p>
 
             <div className="space-y-1.5 md:space-y-2">
@@ -70,8 +79,21 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
             <div className="mt-3 md:mt-4 space-y-2 md:space-y-3">
               <h3 className="text-lg md:text-xl font-semibold text-amber-900 font-cinzel">The Path Forward</h3>
               <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
-                These days, that work takes the shape of reinforcement learning environments, agent-based simulations,
-                public data pipelines, and research on sustainability, energy, and equitable resource allocation.
+                These days, the work takes the form of reinforcement learning environments, agent-based worlds, and data systems shaped by real constraints.
+                
+                Not to replace the world as it is, but to understand whether it can be made to hold people better.
+                
+                There is no illusion that markets can simply be discarded, nor that optimization alone will solve everything.
+
+                But perhaps systems can be designed differently—
+                not just to function, but to catch.
+
+                To ensure that food, shelter, and the basics of living are not left to chance.
+
+                To leave more room for people to do what humans have always done best:
+                create, connect, and build meaning beyond survival.
+
+                Underneath it all is a simple belief:
               </p>
               <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
                 He is less interested in systems that look clever in a vacuum than in ones that can survive contact with
