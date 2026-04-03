@@ -34,7 +34,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
           of building systems that help people make fairer decisions under real constraints.
         </p>
 
-        <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row sm:items-end sm:gap-6">
+        <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row sm:items-center sm:gap-6">
           <div className="w-full max-w-[27rem] shrink-0">
             <ArchiveCodexButton
               isOpen={isArchiveOverlayOpen}
