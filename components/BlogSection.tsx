@@ -1,6 +1,5 @@
 "use client"
 
-import { useRef } from "react"
 import { useRouter } from "next/navigation"
 import { blogPosts } from "@/utils/content"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
@@ -44,7 +43,7 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
                   itemWidth={itemWidth}
                   gap={gap}
                   snap="left"
-                  className="w-full"
+                  className="w-full scroll-fade-horizontal"
                   renderItem={(tale) => {
                     const index = blogPosts.indexOf(tale)
                     const archiveId = index >= 0 ? `note-${index}` : "note-unknown"

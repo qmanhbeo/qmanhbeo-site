@@ -150,7 +150,7 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
                       ref={(element) => {
                         panelRefs.current[index] = element
                       }}
-                      className="manuscript-scrollable-area paged-scroll-area scrollable-content scrollbar-fade h-full min-w-full overflow-y-auto px-6 pb-6 pt-2 md:px-10"
+                      className="manuscript-scrollable-area paged-scroll-area scrollable-content scrollbar-fade scroll-fade-vertical h-full min-w-full overflow-y-auto px-6 pb-6 pt-2 md:px-10"
                     >
                       {/* Centered manuscript column */}
                       <div className="mx-auto max-w-3xl space-y-4">

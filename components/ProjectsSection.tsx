@@ -1,6 +1,5 @@
 "use client"
 
-import { useRef } from "react"
 import { useRouter } from "next/navigation"
 import { ScrollText, Sparkles } from "lucide-react"
 import { projects } from "@/utils/content"
@@ -41,6 +40,7 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                 gap={gap}
                 snap="left"
                 itemAlign="center"
+                className="w-full scroll-fade-horizontal"
                 renderItem={(project) => {
                   const index = projects.indexOf(project)
                   const archiveId = index >= 0 ? `project-${index}` : "project-unknown"

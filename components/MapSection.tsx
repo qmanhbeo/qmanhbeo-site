@@ -256,7 +256,7 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
                       ref={(element) => {
                         panelRefs.current[index] = element
                       }}
-                      className="journey-content-area paged-scroll-area scrollable-content scrollbar-fade h-full min-w-full overflow-y-auto px-5 pb-5 pt-2 md:px-10 md:pb-6"
+                      className="journey-content-area paged-scroll-area scrollable-content scrollbar-fade scroll-fade-vertical h-full min-w-full overflow-y-auto px-5 pb-5 pt-2 md:px-10 md:pb-6"
                     >
                       <div className="mx-auto max-w-3xl space-y-3">
 
