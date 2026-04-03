@@ -1,12 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { createKeyHandler, createWheelHandler } from "@/utils/handlers"
 import {
   clearPendingReturnState,
   readPendingReturnState,
   readReturnSection,
-  saveLastExploredSection,
   saveReturnSection,
 } from "@/utils/entryNavigation"
 import { sections } from "@/utils/sections"
@@ -15,11 +14,13 @@ import WandererTrail from "./WandererTrail"
 
 export default function ScrollContainer() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const hasRestoredInitialSectionRef = useRef(false)
   const hasSkippedInitialPersistRef = useRef(false)
+  const initialRestoreFrameRef = useRef<number | null>(null)
+  const hasCompletedInitialRestoreRef = useRef(false)
 
   const [currentSection, setCurrentSection] = useState(0)
   const [revealedSections, setRevealedSections] = useState(() => sections.map((_, i) => i === 0))
+  const [animatedSections, setAnimatedSections] = useState(() => sections.map((_, i) => i === 0))
   const [isScrolling, setIsScrolling] = useState(false)
 
   const scrollTimeoutRef = useRef<number | null>(null)
@@ -28,31 +29,6 @@ export default function ScrollContainer() {
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const touchTargetRef = useRef<Element | null>(null)
-
-  useLayoutEffect(() => {
-    const container = containerRef.current
-    if (!container || hasRestoredInitialSectionRef.current) return
-
-    hasRestoredInitialSectionRef.current = true
-
-    const savedSection = readReturnSection(sections.length)
-    if (savedSection === 0) return
-
-    const previousBehavior = container.style.scrollBehavior
-    container.style.scrollBehavior = "auto"
-    container.scrollLeft = savedSection * container.clientWidth
-    container.style.scrollBehavior = previousBehavior
-
-    const frame = window.requestAnimationFrame(() => {
-      currentSectionRef.current = savedSection
-      setCurrentSection(savedSection)
-      setRevealedSections(sections.map((_, index) => index <= savedSection))
-    })
-
-    return () => {
-      window.cancelAnimationFrame(frame)
-    }
-  }, [])
 
   useEffect(() => {
     currentSectionRef.current = currentSection
@@ -65,9 +41,6 @@ export default function ScrollContainer() {
     }
 
     saveReturnSection(currentSection)
-    if (currentSection !== 0) {
-      saveLastExploredSection(currentSection)
-    }
   }, [currentSection])
 
   useEffect(() => {
@@ -108,9 +81,17 @@ export default function ScrollContainer() {
         const start = Math.min(from, to)
         const end = Math.max(from, to)
 
-        return previous.map((isRevealed, sectionIndex) =>
+        const nextRevealed = previous.map((isRevealed, sectionIndex) =>
           sectionIndex >= start && sectionIndex <= end ? true : isRevealed,
         )
+
+        setAnimatedSections((previousAnimated) =>
+          previousAnimated.map((hasAnimated, sectionIndex) =>
+            hasAnimated || (nextRevealed[sectionIndex] && !previous[sectionIndex]),
+          ),
+        )
+
+        return nextRevealed
       })
 
       container.scrollTo({
@@ -129,12 +110,46 @@ export default function ScrollContainer() {
   )
 
   const navigateForward = useCallback(() => {
-    scrollToSection((currentSection + 1) % sections.length)
-  }, [currentSection, scrollToSection])
+    scrollToSection((currentSectionRef.current + 1) % sections.length)
+  }, [scrollToSection])
 
   const navigateBackward = useCallback(() => {
-    scrollToSection(currentSection === 0 ? sections.length - 1 : currentSection - 1)
-  }, [currentSection, scrollToSection])
+    scrollToSection(currentSectionRef.current === 0 ? sections.length - 1 : currentSectionRef.current - 1)
+  }, [scrollToSection])
+
+  useEffect(() => {
+    const pendingReturnState = readPendingReturnState("/")
+    const shouldSuppressEntryAnimation = pendingReturnState !== null
+    const restoredSection = readReturnSection(sections.length)
+
+    currentSectionRef.current = 0
+
+    if (shouldSuppressEntryAnimation) {
+      document.documentElement.classList.add("suppress-home-entry-fixed-reveal")
+    } else {
+      document.documentElement.classList.remove("suppress-home-entry-fixed-reveal")
+    }
+
+    if (restoredSection <= 0 || hasCompletedInitialRestoreRef.current) {
+      return () => {
+        document.documentElement.classList.remove("suppress-home-entry-fixed-reveal")
+      }
+    }
+
+    initialRestoreFrameRef.current = window.requestAnimationFrame(() => {
+      hasCompletedInitialRestoreRef.current = true
+      initialRestoreFrameRef.current = null
+      scrollToSection(restoredSection)
+    })
+
+    return () => {
+      document.documentElement.classList.remove("suppress-home-entry-fixed-reveal")
+      if (initialRestoreFrameRef.current !== null) {
+        window.cancelAnimationFrame(initialRestoreFrameRef.current)
+        initialRestoreFrameRef.current = null
+      }
+    }
+  }, [scrollToSection])
 
   useEffect(() => {
     const container = containerRef.current
@@ -156,24 +171,6 @@ export default function ScrollContainer() {
       document.removeEventListener("keydown", keyHandler)
     }
   }, [isScrolling, navigateBackward, navigateForward])
-
-  useEffect(() => {
-    const handleNavigateToSection = (event: Event) => {
-      const customEvent = event as CustomEvent<{ sectionIndex?: number }>
-      const nextSection = customEvent.detail?.sectionIndex
-
-      if (typeof nextSection !== "number") return
-      if (nextSection < 0 || nextSection >= sections.length) return
-      if (nextSection === currentSectionRef.current) return
-
-      scrollToSection(nextSection)
-    }
-
-    window.addEventListener("site:navigate-to-section", handleNavigateToSection as EventListener)
-    return () => {
-      window.removeEventListener("site:navigate-to-section", handleNavigateToSection as EventListener)
-    }
-  }, [scrollToSection])
 
   useEffect(() => {
     const container = containerRef.current
@@ -263,6 +260,10 @@ export default function ScrollContainer() {
 
   useEffect(() => {
     return () => {
+      if (initialRestoreFrameRef.current !== null) {
+        window.cancelAnimationFrame(initialRestoreFrameRef.current)
+        initialRestoreFrameRef.current = null
+      }
       if (scrollTimeoutRef.current !== null) {
         window.clearTimeout(scrollTimeoutRef.current)
       }
@@ -283,7 +284,7 @@ export default function ScrollContainer() {
         {sections.map((section, index) => (
           <section.Component
             key={section.id}
-            revealClassName={revealedSections[index] ? "page-load-unblur" : ""}
+            revealClassName={revealedSections[index] && animatedSections[index] ? "page-load-unblur" : ""}
           />
         ))}
       </div>

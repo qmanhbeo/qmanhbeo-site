@@ -39,5 +39,5 @@ export default async function ItemPage({ params }: ItemPageProps) {
     notFound()
   }
 
-  return <ItemPageContent entry={entry} />
+  return <ItemPageContent entry={entry} presentation="page" />
 }

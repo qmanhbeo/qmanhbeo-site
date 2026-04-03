@@ -103,7 +103,6 @@ export default function ArchiveCodexOverlay({
     })
 
     router.push(`/item/${selectedEntrySlugToOpen}`)
-    onClose()
   }
 
   useEffect(() => {

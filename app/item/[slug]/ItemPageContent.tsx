@@ -237,8 +237,15 @@ function EntryBody({ entry }: { entry: ContentEntry }) {
   return null
 }
 
-export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
+export default function ItemPageContent({
+  entry,
+  presentation = "page",
+}: {
+  entry: ContentEntry
+  presentation?: "page" | "modal"
+}) {
   const router = useRouter()
+  const isModal = presentation === "modal"
   const [isLeaving, setIsLeaving] = useState(false)
   const isLeavingRef = useRef(false)
   const timerRef = useRef<number | null>(null)
@@ -281,6 +288,16 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
     timerRef.current = window.setTimeout(() => {
       const originState = originStateRef.current
 
+      if (isModal) {
+        if (window.history.length > 1) {
+          router.back()
+          return
+        }
+
+        router.replace(originState?.sourceRoute ?? "/")
+        return
+      }
+
       if (originState) {
         savePendingReturnState(originState)
 
@@ -295,7 +312,7 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
 
       router.replace("/")
     }, 220)
-  }, [router, saveCurrentItemScrollState])
+  }, [isModal, router, saveCurrentItemScrollState])
 
   useLayoutEffect(() => {
     const savedScrollState = restoredItemScrollRef.current
@@ -343,13 +360,19 @@ export default function ItemPageContent({ entry }: { entry: ContentEntry }) {
   }, [entry.slug, handleClose, saveCurrentItemScrollState])
 
   const metaItems = getEntryMetaItems(entry)
+  const rootClassName = isModal ? "fixed inset-0 z-[90] overflow-hidden" : "relative h-dvh overflow-hidden forest-campfire"
+  const backdropClassName = isModal
+    ? "absolute inset-0 bg-slate-950/76 backdrop-blur-[3px]"
+    : "absolute inset-0 bg-gradient-to-b from-black/52 via-black/28 to-black/56"
 
   return (
-    <div className="relative h-dvh overflow-hidden forest-campfire">
-      <div className="absolute inset-0 bg-gradient-to-b from-black/52 via-black/28 to-black/56" />
+    <div className={rootClassName} onWheelCapture={(event) => event.stopPropagation()}>
+      <div className={backdropClassName} />
 
       <div className="relative z-10 flex h-full items-center justify-center p-4 md:p-6" onClick={handleClose}>
         <article
+          role={isModal ? "dialog" : undefined}
+          aria-modal={isModal ? true : undefined}
           className={`item-manuscript-surface relative flex h-[calc(100dvh-2rem)] max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[2.4rem] border border-amber-200/25 md:h-[calc(100dvh-3rem)] md:max-h-[calc(100dvh-3rem)] ${
             isLeaving
               ? "animate-out fade-out zoom-out-95 duration-200 fill-mode-both"

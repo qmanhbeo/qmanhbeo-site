@@ -535,6 +535,12 @@
   will-change: filter, opacity;
 }
 
+.suppress-home-entry-fixed-reveal .page-load-unblur-fixed {
+  animation: none;
+  filter: none;
+  opacity: 1;
+}
+
 @keyframes page-unblur-reveal {
   0% {
     opacity: 0.18;
