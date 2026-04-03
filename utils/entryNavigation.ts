@@ -28,12 +28,15 @@ export interface EntryScrollState {
   updatedAt: number
 }
 
+export type ArchiveCodexMobileView = "list" | "detail"
+
 export interface ArchiveCodexState {
   isOpen: boolean
   searchQuery: string
   selectedEntrySlug: string
   leftPaneScrollTop: number
   rightPaneScrollTop: number
+  mobileView?: ArchiveCodexMobileView
   updatedAt: number
 }
 
