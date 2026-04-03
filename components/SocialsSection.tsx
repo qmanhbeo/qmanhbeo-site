@@ -51,8 +51,9 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
         </div>
 
         <QuoteScroll
-          quote="Somewhere between the campfire and the model, I am still looking for ways to make difficult choices a little wiser and a little fairer."
-          author="Manh"
+          quote={`Let me help —
+because it's the right thing to do.
+— Manh`}
         />
       </div>
     </section>
