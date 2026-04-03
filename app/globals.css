@@ -230,18 +230,18 @@
 .scroll-fade-vertical.mask-top-only {
   -webkit-mask-image: linear-gradient(
     to bottom,
-    rgb(0 0 0 / 0.72) 0%,
-    rgb(0 0 0 / 0.88) 2.75%,
-    rgb(0 0 0 / 0.96) 4.75%,
-    black 7%,
+    rgb(0 0 0 / 0.46) 0%,
+    rgb(0 0 0 / 0.76) 2.75%,
+    rgb(0 0 0 / 0.92) 5.25%,
+    black 7.75%,
     black 100%
   );
   mask-image: linear-gradient(
     to bottom,
-    rgb(0 0 0 / 0.72) 0%,
-    rgb(0 0 0 / 0.88) 2.75%,
-    rgb(0 0 0 / 0.96) 4.75%,
-    black 7%,
+    rgb(0 0 0 / 0.46) 0%,
+    rgb(0 0 0 / 0.76) 2.75%,
+    rgb(0 0 0 / 0.92) 5.25%,
+    black 7.75%,
     black 100%
   );
 }
@@ -250,61 +250,61 @@
   -webkit-mask-image: linear-gradient(
     to bottom,
     black 0%,
-    black 93%,
-    rgb(0 0 0 / 0.96) 95.25%,
-    rgb(0 0 0 / 0.88) 97.25%,
-    rgb(0 0 0 / 0.72) 100%
+    black 92.25%,
+    rgb(0 0 0 / 0.92) 94.75%,
+    rgb(0 0 0 / 0.76) 97.25%,
+    rgb(0 0 0 / 0.46) 100%
   );
   mask-image: linear-gradient(
     to bottom,
     black 0%,
-    black 93%,
-    rgb(0 0 0 / 0.96) 95.25%,
-    rgb(0 0 0 / 0.88) 97.25%,
-    rgb(0 0 0 / 0.72) 100%
+    black 92.25%,
+    rgb(0 0 0 / 0.92) 94.75%,
+    rgb(0 0 0 / 0.76) 97.25%,
+    rgb(0 0 0 / 0.46) 100%
   );
 }
 
 .scroll-fade-vertical.mask-both {
   -webkit-mask-image: linear-gradient(
     to bottom,
-    rgb(0 0 0 / 0.72) 0%,
-    rgb(0 0 0 / 0.88) 2.75%,
-    rgb(0 0 0 / 0.96) 4.75%,
-    black 7%,
-    black 93%,
-    rgb(0 0 0 / 0.96) 95.25%,
-    rgb(0 0 0 / 0.88) 97.25%,
-    rgb(0 0 0 / 0.72) 100%
+    rgb(0 0 0 / 0.46) 0%,
+    rgb(0 0 0 / 0.76) 2.75%,
+    rgb(0 0 0 / 0.92) 5.25%,
+    black 7.75%,
+    black 92.25%,
+    rgb(0 0 0 / 0.92) 94.75%,
+    rgb(0 0 0 / 0.76) 97.25%,
+    rgb(0 0 0 / 0.46) 100%
   );
   mask-image: linear-gradient(
     to bottom,
-    rgb(0 0 0 / 0.72) 0%,
-    rgb(0 0 0 / 0.88) 2.75%,
-    rgb(0 0 0 / 0.96) 4.75%,
-    black 7%,
-    black 93%,
-    rgb(0 0 0 / 0.96) 95.25%,
-    rgb(0 0 0 / 0.88) 97.25%,
-    rgb(0 0 0 / 0.72) 100%
+    rgb(0 0 0 / 0.46) 0%,
+    rgb(0 0 0 / 0.76) 2.75%,
+    rgb(0 0 0 / 0.92) 5.25%,
+    black 7.75%,
+    black 92.25%,
+    rgb(0 0 0 / 0.92) 94.75%,
+    rgb(0 0 0 / 0.76) 97.25%,
+    rgb(0 0 0 / 0.46) 100%
   );
 }
 
 .scroll-fade-horizontal.mask-left-only {
   -webkit-mask-image: linear-gradient(
     to right,
-    rgb(0 0 0 / 0.72) 0%,
-    rgb(0 0 0 / 0.88) 2.5%,
-    rgb(0 0 0 / 0.96) 4.5%,
-    black 6.75%,
+    rgb(0 0 0 / 0.28) 0%,
+    rgb(0 0 0 / 0.6) 2.5%,
+    rgb(0 0 0 / 0.86) 4.75%,
+    black 7.5%,
     black 100%
   );
   mask-image: linear-gradient(
     to right,
-    rgb(0 0 0 / 0.72) 0%,
-    rgb(0 0 0 / 0.88) 2.5%,
-    rgb(0 0 0 / 0.96) 4.5%,
-    black 6.75%,
+    rgb(0 0 0 / 0.28) 0%,
+    rgb(0 0 0 / 0.6) 2.5%,
+    rgb(0 0 0 / 0.86) 4.75%,
+    black 7.5%,
     black 100%
   );
 }
@@ -313,43 +313,43 @@
   -webkit-mask-image: linear-gradient(
     to right,
     black 0%,
-    black 93.25%,
-    rgb(0 0 0 / 0.96) 95.5%,
-    rgb(0 0 0 / 0.88) 97.5%,
-    rgb(0 0 0 / 0.72) 100%
+    black 92.5%,
+    rgb(0 0 0 / 0.86) 95.25%,
+    rgb(0 0 0 / 0.6) 97.5%,
+    rgb(0 0 0 / 0.28) 100%
   );
   mask-image: linear-gradient(
     to right,
     black 0%,
-    black 93.25%,
-    rgb(0 0 0 / 0.96) 95.5%,
-    rgb(0 0 0 / 0.88) 97.5%,
-    rgb(0 0 0 / 0.72) 100%
+    black 92.5%,
+    rgb(0 0 0 / 0.86) 95.25%,
+    rgb(0 0 0 / 0.6) 97.5%,
+    rgb(0 0 0 / 0.28) 100%
   );
 }
 
 .scroll-fade-horizontal.mask-both-horizontal {
   -webkit-mask-image: linear-gradient(
     to right,
-    rgb(0 0 0 / 0.72) 0%,
-    rgb(0 0 0 / 0.88) 2.5%,
-    rgb(0 0 0 / 0.96) 4.5%,
-    black 6.75%,
-    black 93.25%,
-    rgb(0 0 0 / 0.96) 95.5%,
-    rgb(0 0 0 / 0.88) 97.5%,
-    rgb(0 0 0 / 0.72) 100%
+    rgb(0 0 0 / 0.28) 0%,
+    rgb(0 0 0 / 0.6) 2.5%,
+    rgb(0 0 0 / 0.86) 4.75%,
+    black 7.5%,
+    black 92.5%,
+    rgb(0 0 0 / 0.86) 95.25%,
+    rgb(0 0 0 / 0.6) 97.5%,
+    rgb(0 0 0 / 0.28) 100%
   );
   mask-image: linear-gradient(
     to right,
-    rgb(0 0 0 / 0.72) 0%,
-    rgb(0 0 0 / 0.88) 2.5%,
-    rgb(0 0 0 / 0.96) 4.5%,
-    black 6.75%,
-    black 93.25%,
-    rgb(0 0 0 / 0.96) 95.5%,
-    rgb(0 0 0 / 0.88) 97.5%,
-    rgb(0 0 0 / 0.72) 100%
+    rgb(0 0 0 / 0.28) 0%,
+    rgb(0 0 0 / 0.6) 2.5%,
+    rgb(0 0 0 / 0.86) 4.75%,
+    black 7.5%,
+    black 92.5%,
+    rgb(0 0 0 / 0.86) 95.25%,
+    rgb(0 0 0 / 0.6) 97.5%,
+    rgb(0 0 0 / 0.28) 100%
   );
 }
 
