@@ -412,43 +412,46 @@ export default function ArchiveCodexOverlay({
         <button
           type="button"
           onClick={handleClose}
-          className="medieval-button absolute right-3 top-3 z-30 rounded-full p-3 text-orange-100 transition-all duration-300 hover:ember-glow"
+          className="medieval-button absolute right-2.5 top-2.5 z-30 rounded-full p-2.5 text-orange-100 transition-all duration-300 hover:ember-glow md:right-3 md:top-3 md:p-3"
           aria-label="Close archive codex"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4.5 w-4.5 md:h-5 md:w-5" />
         </button>
 
         <div
-          className="relative flex h-[calc(100dvh-2rem)] max-h-[calc(100dvh-2rem)] flex-col overflow-x-hidden overflow-y-auto rounded-[2.6rem] border border-amber-200/10 bg-gradient-to-br from-[#58290f]/95 via-[#30150b]/98 to-[#170c08]/98 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.55)] md:h-[calc(100dvh-3rem)] md:max-h-[calc(100dvh-3rem)] md:overflow-hidden md:p-5"
+          className="relative flex h-[calc(100dvh-1.5rem)] max-h-[calc(100dvh-1.5rem)] flex-col overflow-x-hidden overflow-y-auto rounded-[2.2rem] border border-amber-200/10 bg-gradient-to-br from-[#58290f]/95 via-[#30150b]/98 to-[#170c08]/98 p-3 shadow-[0_30px_80px_rgba(0,0,0,0.55)] md:h-[calc(100dvh-3rem)] md:max-h-[calc(100dvh-3rem)] md:overflow-hidden md:rounded-[2.6rem] md:p-5"
           style={{ perspective: "2200px" }}
         >
-          <div className="absolute inset-x-8 top-4 h-12 rounded-full bg-amber-100/6 blur-2xl" />
+          <div className="absolute inset-x-6 top-3 h-10 rounded-full bg-amber-100/6 blur-2xl md:inset-x-8 md:top-4 md:h-12" />
           <div className="absolute inset-y-6 left-1/2 z-20 hidden w-8 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#1a0d08] via-[#704324]/75 to-[#1a0d08] shadow-[0_0_24px_rgba(0,0,0,0.35)] md:block" />
 
-          <div className="relative z-30 px-6 pb-4 pt-8 text-center md:px-10">
-            <h3 id="archive-codex-title" className="map-sky-ink-strong font-cinzel text-4xl font-bold md:text-5xl">
+          <div className="relative z-30 px-4 pb-2 pt-4 text-center md:px-10 md:pb-4 md:pt-8">
+            <h3
+              id="archive-codex-title"
+              className="map-sky-ink-strong font-cinzel text-2xl font-bold leading-tight md:text-5xl md:leading-none"
+            >
               The Archive Codex
             </h3>
-            <p className="map-sky-ink mx-auto mt-3 max-w-3xl font-garamond text-lg italic">
+            <p className="map-sky-ink mx-auto mt-2 line-clamp-2 max-w-3xl font-garamond text-sm italic leading-snug opacity-85 md:mt-3 md:line-clamp-none md:text-lg md:leading-normal md:opacity-100">
               Search the gathered shelves from the hearth. Journeys, manuscripts, spell scrolls, and campfire notes
               now rest in one codex.
             </p>
           </div>
 
-          <div className="relative z-30 px-6 pb-4 md:px-10">
-            <div className="mx-auto max-w-3xl rounded-[1.6rem] border border-amber-100/15 bg-amber-50/70 p-4 shadow-[0_12px_28px_rgba(34,19,11,0.18)]">
+          <div className="relative z-30 px-4 pb-3 md:px-10 md:pb-4">
+            <div className="mx-auto max-w-3xl rounded-[1.2rem] border border-amber-100/15 bg-amber-50/70 p-3 shadow-[0_12px_28px_rgba(34,19,11,0.18)] md:rounded-[1.6rem] md:p-4">
               <label htmlFor="archive-codex-search" className="sr-only">
                 Search the archive codex
               </label>
               <div className="relative">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-amber-700" />
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-amber-700 md:left-4 md:h-5 md:w-5" />
                 <input
                   id="archive-codex-search"
                   type="text"
                   placeholder="Search all scrolls, from journeys to notes..."
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  className="w-full rounded-[1.2rem] border border-amber-700/20 bg-white/50 py-3 pl-12 pr-4 font-garamond text-lg text-amber-950 outline-none transition-colors duration-200 placeholder:text-amber-700/70 focus:border-amber-700/45 focus:bg-white/70"
+                  className="w-full rounded-[0.95rem] border border-amber-700/20 bg-white/50 py-2.5 pl-10 pr-3 font-garamond text-base text-amber-950 outline-none transition-colors duration-200 placeholder:text-sm placeholder:text-amber-700/70 focus:border-amber-700/45 focus:bg-white/70 md:rounded-[1.2rem] md:py-3 md:pl-12 md:pr-4 md:text-lg md:placeholder:text-base"
                 />
               </div>
             </div>
