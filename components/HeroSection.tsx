@@ -34,8 +34,8 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
 
         <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 sm:mb-6 text-orange-100 font-cinzel">Leonardo Manh Nguyen</h1>
         <p className="text-lg sm:text-xl md:text-2xl mb-4 sm:mb-8 text-orange-200 max-w-2xl mx-auto leading-relaxed font-garamond italic">
-          By this fire are notes on reinforcement learning, agent-based worlds, sustainability, and the quiet craft
-          of building systems that help people make fairer decisions under real constraints.
+          By this fire are passing thoughts and experiments, on AI, people, and the systems that decide who
+          gets what.
         </p>
 
         <div className="relative isolate flex w-full flex-col items-center justify-center gap-4 sm:flex-row sm:items-center sm:gap-6">
