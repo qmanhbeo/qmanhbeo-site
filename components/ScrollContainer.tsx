@@ -7,19 +7,13 @@ import { sections } from "@/utils/sections"
 import ScrollArrows from "./ScrollArrows"
 import WandererTrail from "./WandererTrail"
 
-function getInitialSectionIndex() {
-  return readReturnSection(sections.length)
-}
-
 export default function ScrollContainer() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const hasAlignedInitialSectionRef = useRef(false)
+  const hasRestoredInitialSectionRef = useRef(false)
+  const hasSkippedInitialPersistRef = useRef(false)
 
-  const [currentSection, setCurrentSection] = useState(getInitialSectionIndex)
-  const [revealedSections, setRevealedSections] = useState(() => {
-    const initialSectionIndex = getInitialSectionIndex()
-    return sections.map((_, i) => i <= initialSectionIndex)
-  })
+  const [currentSection, setCurrentSection] = useState(0)
+  const [revealedSections, setRevealedSections] = useState(() => sections.map((_, i) => i === 0))
   const [isScrolling, setIsScrolling] = useState(false)
 
   const scrollTimeoutRef = useRef<number | null>(null)
@@ -30,23 +24,40 @@ export default function ScrollContainer() {
   const touchTargetRef = useRef<Element | null>(null)
 
   useLayoutEffect(() => {
-    if (hasAlignedInitialSectionRef.current || currentSection === 0) return
-
     const container = containerRef.current
-    if (!container) return
+    if (!container || hasRestoredInitialSectionRef.current) return
+
+    hasRestoredInitialSectionRef.current = true
+
+    const savedSection = readReturnSection(sections.length)
+    if (savedSection === 0) return
 
     const previousBehavior = container.style.scrollBehavior
     container.style.scrollBehavior = "auto"
-    container.scrollLeft = currentSection * container.clientWidth
+    container.scrollLeft = savedSection * container.clientWidth
     container.style.scrollBehavior = previousBehavior
-    hasAlignedInitialSectionRef.current = true
-  }, [currentSection])
+
+    const frame = window.requestAnimationFrame(() => {
+      currentSectionRef.current = savedSection
+      setCurrentSection(savedSection)
+      setRevealedSections(sections.map((_, index) => index <= savedSection))
+    })
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+    }
+  }, [])
 
   useEffect(() => {
     currentSectionRef.current = currentSection
   }, [currentSection])
 
   useEffect(() => {
+    if (!hasSkippedInitialPersistRef.current) {
+      hasSkippedInitialPersistRef.current = true
+      return
+    }
+
     saveReturnSection(currentSection)
   }, [currentSection])
 
