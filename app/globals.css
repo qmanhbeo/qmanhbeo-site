@@ -100,6 +100,15 @@
   align-items: center;
 }
 
+.hero-content-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hero-content-container::-webkit-scrollbar {
+  display: none;
+}
+
 .parchment-safe {
   margin-bottom: 2rem;
   max-height: calc(100dvh - var(--nav-safe-area) - 4rem);
@@ -466,6 +475,12 @@
   background:
     radial-gradient(circle at 50% 70%, rgba(255, 232, 170, 0.24) 0%, rgba(255, 166, 76, 0.22) 10%, rgba(255, 98, 24, 0.12) 22%, transparent 40%),
     radial-gradient(ellipse at 50% 77%, rgba(255, 116, 34, 0.18) 0%, transparent 42%);
+}
+
+.hero-firelight {
+  background:
+    radial-gradient(circle at 50% 83%, rgba(255, 232, 170, 0.17) 0%, rgba(255, 166, 76, 0.16) 8%, rgba(255, 98, 24, 0.08) 17%, transparent 30%),
+    radial-gradient(ellipse at 50% 93%, rgba(255, 116, 34, 0.14) 0%, transparent 34%);
 }
 .ember-glow { box-shadow: 0 0 20px rgba(255,140,0,0.3), 0 0 40px rgba(255,69,0,0.2), inset 0 0 20px rgba(255,140,0,0.1); }
 .enchanted-glow { box-shadow: 0 0 30px rgba(255,215,0,0.4), 0 0 60px rgba(255,140,0,0.2); }
