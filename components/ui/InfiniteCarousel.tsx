@@ -223,6 +223,7 @@ export default function InfiniteCarousel<T>({
   return (
     <div
       ref={viewportRef}
+      data-swipe-zone
       className={`carousel-viewport outline-none ${fadeStateClassName} ${className}`}
       tabIndex={0}
       aria-label="Infinite carousel"

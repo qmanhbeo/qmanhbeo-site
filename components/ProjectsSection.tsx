@@ -6,6 +6,7 @@ import { ScrollText, Sparkles } from "lucide-react"
 import { projectEntries } from "@/content/entries"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
 import { getHomeSectionIndexForOrigin, readPendingReturnState, saveEntryOriginState } from "@/utils/entryNavigation"
+import MobileSnapCarousel from "./ui/MobileSnapCarousel"
 import SpellScroll from "./ui/SpellScroll"
 import InfiniteCarousel from "./ui/InfiniteCarousel"
 
@@ -54,8 +55,53 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
         </div>
 
         <div className="flex h-[55dvh] min-h-[280px] items-center justify-center">
-          <div className="map-ghost-panel relative flex w-full flex-col overflow-hidden rounded-lg p-8">
-            <div ref={shellRef} className="w-full overflow-visible py-2 md:py-3">
+          <div className="map-ghost-panel relative flex w-full flex-col overflow-hidden rounded-lg px-4 py-6 md:p-8">
+            <div className="md:hidden relative left-1/2 w-screen -translate-x-1/2">
+              <MobileSnapCarousel
+                items={projectEntries}
+                initialIndex={initialProjectIndex}
+                gap={18}
+                itemWidth="90vw"
+                className="pb-1"
+                viewportClassName="px-[5vw]"
+                renderItem={(project, index) => {
+                  const cardLinks = project.links.filter((link) => link.showOnCard)
+
+                  return (
+                    <SpellScroll
+                      title={project.title}
+                      description={project.summary}
+                      runes={project.tags}
+                      presentation="mobile"
+                      className="w-full"
+                      onClick={() => handleProjectClick(project.slug, index)}
+                    >
+                      {cardLinks.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {cardLinks.map((link) => (
+                            <a
+                              key={link.href}
+                              href={link.href}
+                              className="flex items-center gap-1.5 rounded px-3 py-1.5 font-garamond text-xs text-orange-100 medieval-button"
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              {link.kind === "demo" ? (
+                                <Sparkles className="h-3.5 w-3.5" />
+                              ) : (
+                                <ScrollText className="h-3.5 w-3.5" />
+                              )}
+                              {link.label}
+                            </a>
+                          ))}
+                        </div>
+                      ) : null}
+                    </SpellScroll>
+                  )
+                }}
+              />
+            </div>
+
+            <div ref={shellRef} className="hidden w-full overflow-visible py-2 md:block md:py-3">
               <InfiniteCarousel
                 items={projectEntries}
                 itemWidth={itemWidth}

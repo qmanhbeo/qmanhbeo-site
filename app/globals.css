@@ -792,6 +792,32 @@
 .carousel-track { display: flex; align-items: stretch; will-change: transform; transform: translate3d(0,0,0); }
 .carousel-item { flex: 0 0 auto; }
 
+.mobile-card-carousel {
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.mobile-card-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-card-carousel-track {
+  display: flex;
+  align-items: stretch;
+}
+
+.mobile-card-carousel-item {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
 /* =============================================================================
    WORLD MAP STYLES
    ============================================================================= */
