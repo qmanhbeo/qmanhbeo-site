@@ -112,7 +112,7 @@ export default function ScrollbarActivityManager() {
           const thumbHeight =
             maxScroll > 0 ? Math.max(36, Math.round(trackHeight * (element.clientHeight / element.scrollHeight))) : trackHeight
           const thumbTravel = Math.max(0, trackHeight - thumbHeight)
-          const scrollProgress = maxScroll > 0 ? element.scrollTop / maxScroll : 0
+          const scrollProgress = maxScroll > 0 ? Math.max(0, Math.min(1, element.scrollTop / maxScroll)) : 0
           const thumbOffset = Math.round(thumbTravel * scrollProgress)
 
           indicator.style.top = `${Math.round(rect.top + INDICATOR_TOP_INSET_PX)}px`
