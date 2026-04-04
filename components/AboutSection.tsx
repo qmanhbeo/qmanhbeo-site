@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useRef, useCallback } from "react"
 import Image from "next/image"
 import avatarWizardy from "@/img/avt2-wizardy.png"
 import { timelineEvents } from "@/utils/sections"
@@ -7,6 +10,15 @@ interface AboutSectionProps {
 }
 
 export default function AboutSection({ revealClassName = "" }: AboutSectionProps) {
+  const [isAtBottom, setIsAtBottom] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const checkBottom = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    setIsAtBottom(el.scrollTop + el.clientHeight >= el.scrollHeight - 4)
+  }, [])
+
   return (
     <section
       className="min-w-full h-full relative overflow-hidden section-safe-area flex flex-col items-center justify-center"
@@ -33,6 +45,8 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
 
         <div className="relative flex flex-col min-h-0">
           <div
+            ref={scrollRef}
+            onScroll={checkBottom}
             className="parchment rounded-lg scrollable-content scrollbar-fade overflow-y-auto
               p-3 sm:p-4 md:p-5
               max-h-[calc(100dvh-var(--nav-safe-area)-9rem)]
@@ -121,7 +135,9 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
               </div>
             </div>
           </div>
-          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 rounded-b-lg bg-gradient-to-t from-[#f5e6c8] to-transparent" />
+          {!isAtBottom && (
+            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 rounded-b-lg bg-gradient-to-t from-[#f5e6c8] to-transparent" />
+          )}
         </div>
       </div>
     </section>
