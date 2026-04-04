@@ -21,6 +21,11 @@ const paperUrbanRuralEnergyBurdenVietnam: PublicationEntry = {
     "Rural households consistently devote a higher share of income to energy, and the gap has widened as urban infrastructure improvements outpace rural electrification quality.",
   implications:
     "Energy affordability policy that ignores geography will systematically undercount who carries the burden of the low-carbon transition.",
+  link: {
+    label: "Seek the Original Parchment",
+    href: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5261109",
+    kind: "reference",
+  },
   tags: ["Energy Burden", "Urban-Rural Inequality", "Vietnam", "Decomposition", "Longitudinal"],
 }
 

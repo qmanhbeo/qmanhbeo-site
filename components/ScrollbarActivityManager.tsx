@@ -98,9 +98,12 @@ export default function ScrollbarActivityManager() {
             }
           }
 
-          if (!hasOverflow || rect.height <= 0 || rect.width <= 0) {
+          const isOutsideViewport = rect.right <= 0 || rect.left >= window.innerWidth
+
+          if (!hasOverflow || rect.height <= 0 || rect.width <= 0 || isOutsideViewport) {
             indicator.classList.remove(ACTIVE_CLASS_NAME)
             indicator.dataset.visible = "false"
+            clearTimeoutRef()
             return
           }
 
@@ -189,12 +192,12 @@ export default function ScrollbarActivityManager() {
     })
 
     window.addEventListener("resize", updateAllIndicators)
-    window.addEventListener("scroll", updateAllIndicators, { passive: true })
+    document.addEventListener("scroll", updateAllIndicators, { passive: true, capture: true })
 
     return () => {
       observer.disconnect()
       window.removeEventListener("resize", updateAllIndicators)
-      window.removeEventListener("scroll", updateAllIndicators)
+      document.removeEventListener("scroll", updateAllIndicators, { capture: true })
 
       trackedElements.forEach(({ handleScroll, handleInput, clearTimeout, indicator, resizeObserver }, element) => {
         clearTimeout()
