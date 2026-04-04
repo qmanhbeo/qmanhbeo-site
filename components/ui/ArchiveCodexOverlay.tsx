@@ -185,6 +185,7 @@ export default function ArchiveCodexOverlay({
   const [isClosing, setIsClosing] = useState(false)
   const closeTimerRef = useRef<number | null>(null)
   const leftPaneRef = useRef<HTMLDivElement | null>(null)
+  const mobileListPaneRef = useRef<HTMLDivElement | null>(null)
   const rightPaneRef = useRef<HTMLDivElement | null>(null)
   const hasRestoredScrollPositionsRef = useRef(false)
   const lastKnownLeftPaneScrollRef = useRef(initialArchiveState?.leftPaneScrollTop ?? 0)
@@ -371,8 +372,9 @@ export default function ArchiveCodexOverlay({
     if (!isVisible) return
 
     const frame = window.requestAnimationFrame(() => {
-      if (visibleMobileView === "list" && leftPaneRef.current) {
-        leftPaneRef.current.scrollTop = lastKnownLeftPaneScrollRef.current
+      if (visibleMobileView === "list") {
+        if (mobileListPaneRef.current) mobileListPaneRef.current.scrollTop = lastKnownLeftPaneScrollRef.current
+        if (leftPaneRef.current) leftPaneRef.current.scrollTop = lastKnownLeftPaneScrollRef.current
       }
 
       if (visibleMobileView === "detail" && rightPaneRef.current) {
@@ -474,7 +476,7 @@ export default function ArchiveCodexOverlay({
                     </div>
 
                     <div
-                      ref={leftPaneRef}
+                      ref={mobileListPaneRef}
                       className="scrollable-content scrollbar-fade min-h-0 flex-1 space-y-3 overflow-y-auto pb-2 pr-1"
                       onScroll={(event) => {
                         lastKnownLeftPaneScrollRef.current = event.currentTarget.scrollTop
