@@ -1,7 +1,17 @@
 "use client"
 
 import type { TouchEvent } from "react"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+
+const PUB_INDEX_KEY = "carousel:publications:index"
+const PUB_SCROLL_KEY = "carousel:publications:scroll"
+function readStoredPub() {
+  try {
+    const idx = parseInt(sessionStorage.getItem(PUB_INDEX_KEY) ?? "", 10)
+    const scroll = parseInt(sessionStorage.getItem(PUB_SCROLL_KEY) ?? "", 10)
+    return { index: isNaN(idx) ? 0 : idx, scroll: isNaN(scroll) ? 0 : scroll }
+  } catch { return { index: 0, scroll: 0 } }
+}
 import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { publicationEntries, type PublicationEntry } from "@/content/entries"
@@ -86,15 +96,14 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
   const router = useRouter()
   const [initialPublicationRestoreState] = useState(() => {
     const pendingReturnState = readPendingReturnState("/")
-    return pendingReturnState?.sourceSection === "publications"
-      ? {
-          initialIndex: pendingReturnState.sourceChapterIndex ?? 0,
-          initialScrollTop: pendingReturnState.sourceInternalScroll ?? 0,
-        }
-      : {
-          initialIndex: 0,
-          initialScrollTop: 0,
-        }
+    if (pendingReturnState?.sourceSection === "publications") {
+      return {
+        initialIndex: pendingReturnState.sourceChapterIndex ?? 0,
+        initialScrollTop: pendingReturnState.sourceInternalScroll ?? 0,
+      }
+    }
+    const stored = readStoredPub()
+    return { initialIndex: stored.index, initialScrollTop: stored.scroll }
   })
   const {
     currentIndex: currentManuscript,
@@ -112,6 +121,29 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
   })
   const swipeTouchStartXRef = useRef<number | null>(null)
   const swipeTouchStartYRef = useRef<number | null>(null)
+
+  // Persist manuscript index on change
+  useEffect(() => {
+    try { sessionStorage.setItem(PUB_INDEX_KEY, String(currentManuscript)) } catch { /* noop */ }
+  }, [currentManuscript])
+
+  // Persist manuscript scroll position
+  useEffect(() => {
+    const panel = panelRefs.current[currentManuscript]
+    if (!panel) return
+    let timer: number | null = null
+    const handleScroll = () => {
+      if (timer !== null) window.clearTimeout(timer)
+      timer = window.setTimeout(() => {
+        try { sessionStorage.setItem(PUB_SCROLL_KEY, String(panel.scrollTop)) } catch { /* noop */ }
+      }, 150)
+    }
+    panel.addEventListener("scroll", handleScroll, { passive: true })
+    return () => {
+      panel.removeEventListener("scroll", handleScroll)
+      if (timer !== null) window.clearTimeout(timer)
+    }
+  }, [currentManuscript, panelRefs])
 
   const handlePublicationClick = useCallback(
     (slug: string) => {

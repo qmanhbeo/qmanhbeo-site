@@ -12,6 +12,7 @@ type MobileSnapCarouselProps<T> = {
   className?: string
   viewportClassName?: string
   itemClassName?: string
+  onActiveIndexChange?: (index: number) => void
 }
 
 export default function MobileSnapCarousel<T>({
@@ -23,6 +24,7 @@ export default function MobileSnapCarousel<T>({
   className = "",
   viewportClassName = "",
   itemClassName = "",
+  onActiveIndexChange,
 }: MobileSnapCarouselProps<T>) {
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const itemRefs = useRef<Array<HTMLDivElement | null>>([])
@@ -55,6 +57,9 @@ export default function MobileSnapCarousel<T>({
     viewport.scrollTo({ left: Math.max(0, nextLeft), behavior: "auto" })
   }, [getCenteredScrollLeft, getMiddleRenderIndex, normalizedInitialIndex])
 
+  const onActiveIndexChangeRef = useRef(onActiveIndexChange)
+  useEffect(() => { onActiveIndexChangeRef.current = onActiveIndexChange }, [onActiveIndexChange])
+
   useEffect(() => {
     const viewport = viewportRef.current
     if (!viewport) return
@@ -76,7 +81,11 @@ export default function MobileSnapCarousel<T>({
       })
 
       const nextLogicalIndex = getLogicalIndex(closestRenderIndex)
-      setActiveIndex((currentIndex) => (currentIndex === nextLogicalIndex ? currentIndex : nextLogicalIndex))
+      setActiveIndex((currentIndex) => {
+        if (currentIndex === nextLogicalIndex) return currentIndex
+        onActiveIndexChangeRef.current?.(nextLogicalIndex)
+        return nextLogicalIndex
+      })
 
       if (itemCount > 1 && (closestRenderIndex < itemCount || closestRenderIndex >= itemCount * 2)) {
         const middleItem = itemRefs.current[getMiddleRenderIndex(nextLogicalIndex)]

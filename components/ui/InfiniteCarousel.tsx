@@ -12,6 +12,7 @@ type InfiniteCarouselProps<T> = {
   snap?: "left" | "center"
   itemAlign?: "stretch" | "start" | "center"
   initialIndex?: number
+  onActiveIndexChange?: (index: number) => void
 }
 
 export default function InfiniteCarousel<T>({
@@ -23,9 +24,13 @@ export default function InfiniteCarousel<T>({
   snap = "left",
   itemAlign = "stretch",
   initialIndex = 0,
+  onActiveIndexChange,
 }: InfiniteCarouselProps<T>) {
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
+
+  const onActiveIndexChangeRef = useRef(onActiveIndexChange)
+  useEffect(() => { onActiveIndexChangeRef.current = onActiveIndexChange }, [onActiveIndexChange])
 
   const xRef = useRef(0)
   const velocityRef = useRef(0)
@@ -110,6 +115,10 @@ export default function InfiniteCarousel<T>({
         wrapIfNeeded()
         setTransform(xRef.current)
         rafRef.current = requestAnimationFrame(tick)
+      } else if (itemCount > 0) {
+        const k = Math.round((xRef.current - centerXRef.current) / span)
+        const idx = ((-k % itemCount) + itemCount) % itemCount
+        onActiveIndexChangeRef.current?.(idx)
       }
     }
 

@@ -1,6 +1,17 @@
 "use client"
 
 import { useCallback, useState } from "react"
+
+const STORAGE_KEY = "carousel:projects"
+function readStoredIndex(): number {
+  try {
+    const v = parseInt(sessionStorage.getItem(STORAGE_KEY) ?? "", 10)
+    return isNaN(v) ? 0 : v
+  } catch { return 0 }
+}
+function saveStoredIndex(index: number) {
+  try { sessionStorage.setItem(STORAGE_KEY, String(index)) } catch { /* noop */ }
+}
 import { useRouter } from "next/navigation"
 import { ScrollText, Sparkles } from "lucide-react"
 import { projectEntries } from "@/content/entries"
@@ -20,8 +31,11 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
   const router = useRouter()
   const [initialProjectIndex] = useState(() => {
     const pendingReturnState = readPendingReturnState("/")
-    return pendingReturnState?.sourceSection === "projects" ? pendingReturnState.sourceCarouselIndex ?? 0 : 0
+    if (pendingReturnState?.sourceSection === "projects") return pendingReturnState.sourceCarouselIndex ?? 0
+    return readStoredIndex()
   })
+
+  const handleIndexChange = useCallback((index: number) => saveStoredIndex(index), [])
 
   const handleProjectClick = useCallback(
     (slug: string, index: number) => {
@@ -60,6 +74,7 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
               <MobileSnapCarousel
                 items={projectEntries}
                 initialIndex={initialProjectIndex}
+                onActiveIndexChange={handleIndexChange}
                 gap={18}
                 itemWidth="90vw"
                 className="pb-1"
@@ -109,6 +124,7 @@ export default function ProjectsSection({ revealClassName = "" }: ProjectsSectio
                 snap="left"
                 itemAlign="center"
                 initialIndex={initialProjectIndex}
+                onActiveIndexChange={handleIndexChange}
                 className="w-full scroll-fade-horizontal py-1 md:py-2"
                 renderItem={(project, index) => {
                   const cardLinks = project.links.filter((link) => link.showOnCard)

@@ -1,6 +1,8 @@
 "use client"
 
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
+
+const CHRONICLE_SCROLL_KEY = "chronicle:scrollTop"
 import Image from "next/image"
 import avatarWizardy from "@/img/avt2-wizardy.png"
 import { timelineEvents } from "@/utils/sections"
@@ -17,6 +19,20 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
     const el = scrollRef.current
     if (!el) return
     setIsAtBottom(el.scrollTop + el.clientHeight >= el.scrollHeight - 4)
+    try { sessionStorage.setItem(CHRONICLE_SCROLL_KEY, String(el.scrollTop)) } catch { /* noop */ }
+  }, [])
+
+  // Restore scroll position on mount
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    try {
+      const saved = parseInt(sessionStorage.getItem(CHRONICLE_SCROLL_KEY) ?? "", 10)
+      if (!isNaN(saved) && saved > 0) {
+        el.scrollTop = saved
+        setIsAtBottom(el.scrollTop + el.clientHeight >= el.scrollHeight - 4)
+      }
+    } catch { /* noop */ }
   }, [])
 
   return (

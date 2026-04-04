@@ -1,6 +1,17 @@
 "use client"
 
 import { useCallback, useState } from "react"
+
+const STORAGE_KEY = "carousel:notes"
+function readStoredIndex(): number {
+  try {
+    const v = parseInt(sessionStorage.getItem(STORAGE_KEY) ?? "", 10)
+    return isNaN(v) ? 0 : v
+  } catch { return 0 }
+}
+function saveStoredIndex(index: number) {
+  try { sessionStorage.setItem(STORAGE_KEY, String(index)) } catch { /* noop */ }
+}
 import { useRouter } from "next/navigation"
 import { noteEntries } from "@/content/entries"
 import { useResponsiveCarouselWidth } from "@/hooks/useResponsiveCarouselWidth"
@@ -20,8 +31,11 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
   const router = useRouter()
   const [initialNoteIndex] = useState(() => {
     const pendingReturnState = readPendingReturnState("/")
-    return pendingReturnState?.sourceSection === "notes" ? pendingReturnState.sourceCarouselIndex ?? 0 : 0
+    if (pendingReturnState?.sourceSection === "notes") return pendingReturnState.sourceCarouselIndex ?? 0
+    return readStoredIndex()
   })
+
+  const handleIndexChange = useCallback((index: number) => saveStoredIndex(index), [])
 
   const handleTaleClick = useCallback(
     (slug: string, index: number) => {
@@ -60,6 +74,7 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
               <MobileSnapCarousel
                 items={noteEntries}
                 initialIndex={initialNoteIndex}
+                onActiveIndexChange={handleIndexChange}
                 gap={18}
                 itemWidth="90vw"
                 className="pb-1"
@@ -87,6 +102,7 @@ export default function BlogSection({ revealClassName = "" }: BlogSectionProps) 
                 snap="left"
                 itemAlign="center"
                 initialIndex={initialNoteIndex}
+                onActiveIndexChange={handleIndexChange}
                 className="w-full scroll-fade-horizontal py-1 md:py-2"
                 renderItem={(note, index) => {
                   return (
