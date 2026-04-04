@@ -796,7 +796,6 @@
   overflow-x: auto;
   overflow-y: visible;
   scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
   overscroll-behavior-x: contain;
   touch-action: pan-x pinch-zoom;
   -ms-overflow-style: none;
