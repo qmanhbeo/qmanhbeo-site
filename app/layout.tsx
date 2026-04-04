@@ -1,7 +1,8 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { EB_Garamond, Cinzel } from "next/font/google"
-import ScrollbarActivityManager from "@/components/ScrollbarActivityManager"
+// SCROLLBARS INTENTIONALLY DISABLED — do not re-enable without discussion
+// import ScrollbarActivityManager from "@/components/ScrollbarActivityManager"
 import tabIcon from "@/img/tab-icon.png"
 import "./globals.css"
 
@@ -42,7 +43,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${ebGaramond.variable} ${cinzel.variable} antialiased`}>
-        <ScrollbarActivityManager />
+        {/* SCROLLBARS INTENTIONALLY DISABLED — do not re-enable without discussion */}
+        {/* <ScrollbarActivityManager /> */}
         {children}
         {modal}
       </body>
