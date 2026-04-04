@@ -739,7 +739,7 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 50;
-  width: 90%;
+  width: 82%;
   max-width: 800px;
   height: var(--nav-trail-height);
 }
@@ -841,7 +841,7 @@
    TOOLTIP STYLES
    ============================================================================= */
 
-.trail-tooltip { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 10px; z-index:60; animation: tooltip-appear 0.3s ease-out; }
+.trail-tooltip { position: absolute; bottom: 100%; left: 0; transform: translateX(-50%); margin-bottom: 10px; z-index:60; animation: tooltip-appear 0.3s ease-out; }
 @keyframes tooltip-appear {
   0% { opacity:0; transform: translateX(-50%) translateY(10px); }
   100% { opacity:1; transform: translateX(-50%) translateY(0); }
