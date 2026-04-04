@@ -842,6 +842,8 @@
    ============================================================================= */
 
 .trail-tooltip { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 10px; z-index:60; animation: tooltip-appear 0.3s ease-out; }
+.trail-tooltip.tooltip-align-left  { left: 0;    right: auto; transform: none; }
+.trail-tooltip.tooltip-align-right { left: auto; right: 0;    transform: none; }
 @keyframes tooltip-appear {
   0% { opacity:0; transform: translateX(-50%) translateY(10px); }
   100% { opacity:1; transform: translateX(-50%) translateY(0); }
