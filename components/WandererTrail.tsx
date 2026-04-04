@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { sections } from "@/utils/sections"
 
 interface WandererTrailProps {
@@ -11,11 +11,63 @@ interface WandererTrailProps {
 
 export default function WandererTrail({ currentSection, isMapExpanded, onSectionClick }: WandererTrailProps) {
   const [hoveredSection, setHoveredSection] = useState<number | null>(null)
+  const [pendingSection, setPendingSection] = useState<number | null>(null)
+  const touchedRef = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Clear pending tooltip whenever navigation happens (e.g. via swipe)
+  useEffect(() => {
+    setPendingSection(null)
+  }, [currentSection])
+
+  // Dismiss pending tooltip on outside tap
+  useEffect(() => {
+    const handleOutsideTouch = (event: TouchEvent) => {
+      if (pendingSection === null) return
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setPendingSection(null)
+      }
+    }
+    document.addEventListener("touchstart", handleOutsideTouch, { passive: true })
+    return () => document.removeEventListener("touchstart", handleOutsideTouch)
+  }, [pendingSection])
+
+  const handleTouchStart = () => {
+    touchedRef.current = true
+  }
+
+  const handleTouchCancel = () => {
+    touchedRef.current = false
+  }
+
+  const handleMouseEnter = (index: number) => {
+    // Ignore synthetic mouseenter fired by mobile after touchend
+    if (touchedRef.current) return
+    setHoveredSection(index)
+  }
+
+  const handleClick = (index: number) => {
+    if (touchedRef.current) {
+      // Touch-originated click: two-tap pattern
+      touchedRef.current = false
+      if (pendingSection === index) {
+        // Second tap — navigate and dismiss
+        setPendingSection(null)
+        onSectionClick(index)
+      } else {
+        // First tap — show tooltip
+        setPendingSection(index)
+      }
+    } else {
+      // Mouse click on desktop — navigate immediately
+      onSectionClick(index)
+    }
+  }
 
   if (isMapExpanded) return null
 
   return (
-    <div className="page-load-unblur-fixed wanderer-trail-container">
+    <div ref={containerRef} className="page-load-unblur-fixed wanderer-trail-container">
       {/* Transparent container with dotted trail path */}
       <div className="trail-transparent">
         {/* Trail path line */}
@@ -37,18 +89,21 @@ export default function WandererTrail({ currentSection, isMapExpanded, onSection
             const IconComponent = section.icon
             const isActive = currentSection === index
             const isHovered = hoveredSection === index
+            const isPending = pendingSection === index
             const progress = sections.length > 1 ? (index / (sections.length - 1)) * 100 : 50
 
             return (
               <div key={index} className="trail-marker-container" style={{ left: `${progress}%` }}>
                 {/* Marker */}
                 <button
-                  className={`trail-marker ${isActive ? "active" : ""} ${isHovered ? "hovered" : ""}`}
-                  onClick={() => onSectionClick(index)}
-                  onMouseEnter={() => setHoveredSection(index)}
+                  className={`trail-marker ${isActive ? "active" : ""} ${isHovered || isPending ? "hovered" : ""}`}
+                  onClick={() => handleClick(index)}
+                  onMouseEnter={() => handleMouseEnter(index)}
                   onMouseLeave={() => setHoveredSection(null)}
                   onFocus={() => setHoveredSection(index)}
                   onBlur={() => setHoveredSection(null)}
+                  onTouchStart={handleTouchStart}
+                  onTouchCancel={handleTouchCancel}
                   aria-label={`Go to ${section.navLabel}`}
                 >
                   <div className="marker-icon">
@@ -60,7 +115,7 @@ export default function WandererTrail({ currentSection, isMapExpanded, onSection
                 </button>
 
                 {/* Tooltip */}
-                {isHovered && (
+                {(isHovered || isPending) && (
                   <div className="trail-tooltip">
                     <div className="tooltip-content">
                       <h4 className="tooltip-title font-cinzel">{section.navLabel}</h4>
