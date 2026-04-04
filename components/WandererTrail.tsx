@@ -91,7 +91,6 @@ export default function WandererTrail({ currentSection, isMapExpanded, onSection
             const isHovered = hoveredSection === index
             const isPending = pendingSection === index
             const progress = sections.length > 1 ? (index / (sections.length - 1)) * 100 : 50
-            const tooltipAlign = progress < 25 ? "tooltip-align-left" : progress > 75 ? "tooltip-align-right" : ""
 
             return (
               <div key={index} className="trail-marker-container" style={{ left: `${progress}%` }}>
@@ -117,7 +116,7 @@ export default function WandererTrail({ currentSection, isMapExpanded, onSection
 
                 {/* Tooltip */}
                 {(isHovered || isPending) && (
-                  <div className={`trail-tooltip ${tooltipAlign}`}>
+                  <div className="trail-tooltip">
                     <div className="tooltip-content">
                       <h4 className="tooltip-title font-cinzel">{section.navLabel}</h4>
                       <p className="tooltip-description font-garamond italic">{section.navDescription}</p>

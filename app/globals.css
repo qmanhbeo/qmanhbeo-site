@@ -746,7 +746,7 @@
 .trail-transparent { position: relative; height: 100%; }
 .trail-path { position: absolute; top: 50%; left: 0; right: 0; height: 20px; transform: translateY(-50%); }
 .trail-svg { width: 100%; height: 100%; }
-.trail-markers { position: relative; height: 100%; padding: 0 clamp(8px, 3vw, 40px); }
+.trail-markers { position: relative; height: 100%; padding: 0 clamp(40px, 10vw, 60px); }
 .trail-marker-container { position: absolute; top: 50%; transform: translateY(-50%); }
 
 .trail-marker {
@@ -842,15 +842,13 @@
    ============================================================================= */
 
 .trail-tooltip { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 10px; z-index:60; animation: tooltip-appear 0.3s ease-out; }
-.trail-tooltip.tooltip-align-left  { left: 0;    right: auto; transform: none; }
-.trail-tooltip.tooltip-align-right { left: auto; right: 0;    transform: none; }
 @keyframes tooltip-appear {
   0% { opacity:0; transform: translateX(-50%) translateY(10px); }
   100% { opacity:1; transform: translateX(-50%) translateY(0); }
 }
 .tooltip-content {
   background: radial-gradient(circle at 20% 80%, rgba(139,69,19,0.08) 0%, transparent 50%), linear-gradient(45deg, #faf7f0, #f5e6d3);
-  border: 2px solid rgba(139,69,19,0.3); border-radius: 12px; padding: 12px 16px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); white-space: nowrap;
+  border: 2px solid rgba(139,69,19,0.3); border-radius: 12px; padding: 12px 16px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); white-space: normal; max-width: 160px;
 }
 .tooltip-arrow {
   position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
