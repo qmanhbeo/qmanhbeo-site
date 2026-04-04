@@ -367,13 +367,13 @@
 .journey-content-area,
 .manuscript-scrollable-area {
   overscroll-behavior: contain;  /* prevent browser fling into parent */
-  touch-action: pan-y;           /* vertical gestures stay inside */
+  touch-action: pan-y pinch-zoom; /* vertical gestures stay inside; pinch-zoom restored */
 }
 
 /* NEW: outer horizontal scroller prefers horizontal gestures */
 .horizontal-sections {
   overscroll-behavior-x: contain;
-  touch-action: pan-x;
+  touch-action: pan-xy pinch-zoom; /* pan-xy allows pull-to-refresh on non-scrollable areas; pinch-zoom restored */
 }
 
 /* =============================================================================
@@ -662,7 +662,7 @@
 .item-manuscript-scroll {
   scroll-behavior: smooth;
   overscroll-behavior: contain;
-  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -787,7 +787,7 @@
    ============================================ */
 
 /* INFINITE CAROUSEL */
-.carousel-viewport { overflow: hidden; touch-action: pan-x; overscroll-behavior-x: contain; cursor: grab; }
+.carousel-viewport { overflow: hidden; touch-action: pan-x pinch-zoom; overscroll-behavior-x: contain; cursor: grab; }
 .carousel-viewport.is-dragging { cursor: grabbing; }
 .carousel-track { display: flex; align-items: stretch; will-change: transform; transform: translate3d(0,0,0); }
 .carousel-item { flex: 0 0 auto; }
@@ -798,7 +798,7 @@
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   overscroll-behavior-x: contain;
-  touch-action: pan-x;
+  touch-action: pan-x pinch-zoom;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
