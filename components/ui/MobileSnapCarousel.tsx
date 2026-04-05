@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useAudioContext } from "@/context/AudioContext"
 
 type MobileSnapCarouselProps<T> = {
   items: T[]
@@ -60,6 +61,8 @@ export default function MobileSnapCarousel<T>({
   const onActiveIndexChangeRef = useRef(onActiveIndexChange)
   useEffect(() => { onActiveIndexChangeRef.current = onActiveIndexChange }, [onActiveIndexChange])
 
+  const { playSfx } = useAudioContext()
+
   useEffect(() => {
     const viewport = viewportRef.current
     if (!viewport) return
@@ -83,6 +86,7 @@ export default function MobileSnapCarousel<T>({
       const nextLogicalIndex = getLogicalIndex(closestRenderIndex)
       setActiveIndex((currentIndex) => {
         if (currentIndex === nextLogicalIndex) return currentIndex
+        playSfx("transition")
         onActiveIndexChangeRef.current?.(nextLogicalIndex)
         return nextLogicalIndex
       })

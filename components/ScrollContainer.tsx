@@ -11,6 +11,7 @@ import {
 import { sections } from "@/utils/sections"
 import ScrollArrows from "./ScrollArrows"
 import WandererTrail from "./WandererTrail"
+import { useAudioContext } from "@/context/AudioContext"
 
 export default function ScrollContainer() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -28,6 +29,8 @@ export default function ScrollContainer() {
   const touchStartXRef = useRef<number | null>(null)
   const touchStartYRef = useRef<number | null>(null)
   const touchTargetRef = useRef<Element | null>(null)
+
+  const { playSfx } = useAudioContext()
 
   useEffect(() => {
     currentSectionRef.current = currentSection
@@ -93,6 +96,7 @@ export default function ScrollContainer() {
         return nextRevealed
       })
 
+      playSfx("transition")
       container.scrollTo({
         left: index * container.clientWidth,
         behavior: "smooth",

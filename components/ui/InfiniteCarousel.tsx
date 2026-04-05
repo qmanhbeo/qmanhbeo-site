@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react"
+import { useAudioContext } from "@/context/AudioContext"
 
 type InfiniteCarouselProps<T> = {
   items: T[]
@@ -31,6 +32,8 @@ export default function InfiniteCarousel<T>({
 
   const onActiveIndexChangeRef = useRef(onActiveIndexChange)
   useEffect(() => { onActiveIndexChangeRef.current = onActiveIndexChange }, [onActiveIndexChange])
+
+  const { playSfx } = useAudioContext()
 
   const xRef = useRef(0)
   const velocityRef = useRef(0)
@@ -118,6 +121,7 @@ export default function InfiniteCarousel<T>({
       } else if (itemCount > 0) {
         const k = Math.round((xRef.current - centerXRef.current) / span)
         const idx = ((-k % itemCount) + itemCount) % itemCount
+        playSfx("transition")
         onActiveIndexChangeRef.current?.(idx)
       }
     }
