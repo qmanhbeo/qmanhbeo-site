@@ -541,6 +541,14 @@
   opacity: 1;
 }
 
+@keyframes ambient-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0); }
+  50%       { box-shadow: 0 0 8px 2px rgba(255, 140, 0, 0.18); }
+}
+.ambient-pill-active {
+  animation: ambient-pulse 2.4s ease-in-out infinite;
+}
+
 @keyframes page-unblur-reveal {
   0% {
     opacity: 0.18;
