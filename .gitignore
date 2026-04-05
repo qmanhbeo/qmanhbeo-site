@@ -47,3 +47,6 @@ coverage/
 *.ai
 *.zip
 *.rar
+
+# Brainstorm mockups
+.superpowers/
