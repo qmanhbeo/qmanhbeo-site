@@ -22,6 +22,7 @@ import {
   saveItemScrollState,
   savePendingReturnState,
 } from "@/utils/entryNavigation"
+import AmbientPlayer from "@/components/ui/AmbientPlayer"
 
 interface MetaItem {
   label: string
@@ -444,6 +445,7 @@ export default function ItemPageContent({
           </div>
         </article>
       </div>
+      <AmbientPlayer />
     </div>
   )
 }
