@@ -109,7 +109,7 @@ export default function ScrollContainer() {
         scrollTimeoutRef.current = null
       }, 800)
     },
-    [isScrolling],
+    [isScrolling, playSfx],
   )
 
   const navigateForward = useCallback(() => {

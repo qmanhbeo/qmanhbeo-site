@@ -127,7 +127,7 @@ export default function InfiniteCarousel<T>({
     }
 
     rafRef.current = requestAnimationFrame(tick)
-  }, [getSnapTarget, setTransform, wrapIfNeeded])
+  }, [getSnapTarget, playSfx, setTransform, wrapIfNeeded])
 
   const animateTo = useCallback(
     (target: number) => {
