@@ -1,3 +1,4 @@
+// hooks/useAudio.ts
 "use client"
 
 import { useCallback, useEffect, useRef } from "react"
@@ -24,7 +25,12 @@ export function useAudio({ src, loop = false, volume = 1 }: UseAudioOptions) {
       howlRef.current?.unload()
       howlRef.current = null
     }
-  }, [src, loop, volume])
+  }, [src, loop]) // volume intentionally omitted — see separate effect below
+
+  // Sync volume changes without recreating the Howl instance
+  useEffect(() => {
+    howlRef.current?.volume(volume)
+  }, [volume])
 
   const play = useCallback(() => {
     howlRef.current?.play()
@@ -46,7 +52,10 @@ export function useAudio({ src, loop = false, volume = 1 }: UseAudioOptions) {
     const h = howlRef.current
     if (!h) return
     h.fade(h.volume(), 0, ms)
-    if (onDone) setTimeout(onDone, ms)
+    setTimeout(() => {
+      h.stop()
+      onDone?.()
+    }, ms)
   }, [])
 
   const setVolume = useCallback((v: number) => {
