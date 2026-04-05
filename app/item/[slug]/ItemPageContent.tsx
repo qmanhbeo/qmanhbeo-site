@@ -367,7 +367,7 @@ export default function ItemPageContent({
     : "absolute inset-0 bg-gradient-to-b from-black/52 via-black/28 to-black/56"
 
   return (
-    <div className={rootClassName} onWheelCapture={(event) => event.stopPropagation()}>
+    <div className={`${rootClassName} item-page-outer`} onWheelCapture={(event) => event.stopPropagation()}>
       <div className={backdropClassName} />
 
       <div className="relative z-10 flex h-full items-center justify-center p-4 md:p-6" onClick={handleClose}>

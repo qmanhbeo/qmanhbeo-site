@@ -868,3 +868,50 @@
 .tooltip-title { font-size: 14px; font-weight: bold; color: #8b4513; margin-bottom: 4px; }
 .tooltip-description { font-size: 12px; color: #a0522d; }
 
+/* =============================================================================
+   LIGHT MODE — PARCHMENT THEME
+   Applied when <html data-theme="light">
+   ============================================================================= */
+
+[data-theme="light"] body {
+  background-color: #f5ead8;
+}
+
+/* Page body background (behind manuscript card on item pages) */
+[data-theme="light"] .min-h-screen,
+[data-theme="light"] [class*="bg-\\[\\#0"] {
+  background-color: #f5ead8 !important;
+}
+
+/* Darken the forest campfire sections to a daytime version */
+[data-theme="light"] .forest-campfire {
+  background: #e8d5b7 !important;
+  background-image: none !important;
+}
+[data-theme="light"] .forest-campfire::before,
+[data-theme="light"] .forest-campfire::after {
+  display: none;
+}
+
+/* Reduce firelight overlays to near-invisible in light mode */
+[data-theme="light"] .firelight,
+[data-theme="light"] .hero-firelight {
+  opacity: 0.08 !important;
+}
+
+/* WandererTrail nav: invert to parchment */
+[data-theme="light"] .wanderer-trail-container {
+  filter: invert(1) hue-rotate(175deg) saturate(0.7) brightness(0.9);
+}
+
+/* Item page outer wrapper background */
+[data-theme="light"] .item-page-outer {
+  background-color: #ede0c8;
+}
+
+/* Main section text: keep orange tones readable on light background */
+[data-theme="light"] .text-orange-100 { color: #7a3d0f !important; }
+[data-theme="light"] .text-orange-200 { color: #8a4d1f !important; }
+[data-theme="light"] .text-amber-100  { color: #7a5020 !important; }
+[data-theme="light"] .text-amber-200  { color: #8a6030 !important; }
+
