@@ -1,9 +1,9 @@
+// app/layout.tsx
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { EB_Garamond, Cinzel } from "next/font/google"
-// SCROLLBARS INTENTIONALLY DISABLED — do not re-enable without discussion
-// import ScrollbarActivityManager from "@/components/ScrollbarActivityManager"
 import tabIcon from "@/img/tab-icon.png"
+import { AudioProvider } from "@/context/AudioContext"
 import "./globals.css"
 
 const ebGaramond = EB_Garamond({
@@ -19,9 +19,9 @@ const cinzel = Cinzel({
 })
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
-  themeColor: '#1a0a00',
+  themeColor: "#1a0a00",
 }
 
 export const metadata: Metadata = {
@@ -42,11 +42,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme:pref');if(t==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className={`${ebGaramond.variable} ${cinzel.variable} antialiased`}>
-        {/* SCROLLBARS INTENTIONALLY DISABLED — do not re-enable without discussion */}
-        {/* <ScrollbarActivityManager /> */}
-        {children}
-        {modal}
+        <AudioProvider>
+          {children}
+          {modal}
+        </AudioProvider>
       </body>
     </html>
   )
