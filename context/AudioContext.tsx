@@ -23,11 +23,20 @@ const AudioContext = createContext<AudioContextValue | null>(null)
 const STORAGE_KEY = "audio:prefs"
 
 function loadPrefs(): { sfxEnabled: boolean; ambientVolumes: AmbientVolumes } {
+  const defaults = { sfxEnabled: true, ambientVolumes: { fire: 0, rain: 0, music: 0 } }
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return JSON.parse(raw)
-  } catch { /* noop */ }
-  return { sfxEnabled: true, ambientVolumes: { fire: 0, rain: 0, music: 0 } }
+    if (!raw) return defaults
+    const parsed = JSON.parse(raw)
+    return {
+      sfxEnabled: typeof parsed.sfxEnabled === "boolean" ? parsed.sfxEnabled : defaults.sfxEnabled,
+      ambientVolumes: {
+        fire:  typeof parsed.ambientVolumes?.fire  === "number" ? parsed.ambientVolumes.fire  : 0,
+        rain:  typeof parsed.ambientVolumes?.rain  === "number" ? parsed.ambientVolumes.rain  : 0,
+        music: typeof parsed.ambientVolumes?.music === "number" ? parsed.ambientVolumes.music : 0,
+      },
+    }
+  } catch { return defaults }
 }
 
 function savePrefs(prefs: { sfxEnabled: boolean; ambientVolumes: AmbientVolumes }) {
@@ -49,12 +58,16 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   // Preload SFX Howl instances
   useEffect(() => {
+    let cancelled = false
     import("howler").then(({ Howl }) => {
+      if (cancelled) return
       sfxHowlsRef.current.click = new Howl({ src: ["/sounds/click.ogg"], volume: 0.08, html5: false })
       sfxHowlsRef.current.transition = new Howl({ src: ["/sounds/transition.ogg"], volume: 0.06, html5: false })
     })
     return () => {
+      cancelled = true
       Object.values(sfxHowlsRef.current).forEach((h) => h.unload())
+      sfxHowlsRef.current = {}
     }
   }, [])
 
