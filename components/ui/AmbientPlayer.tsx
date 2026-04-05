@@ -13,23 +13,29 @@ const TRACK_META: { key: Track; emoji: string; label: string; src: string }[] = 
   { key: "music", emoji: "🎵", label: "Music", src: "/sounds/music.ogg" },
 ]
 
+const FADE_MS = 400
+
 export default function AmbientPlayer() {
   const { ambientVolumes, setAmbientVolume } = useAudioContext()
   const [expanded, setExpanded] = useState(false)
   const howlsRef = useRef<Partial<Record<Track, Howl>>>({})
+  // Mirror of ambientVolumes for access inside async callbacks
+  const ambientVolumesRef = useRef(ambientVolumes)
+  useEffect(() => { ambientVolumesRef.current = ambientVolumes }, [ambientVolumes])
 
-  // Load Howl instances on mount
+  // Load Howl instances on mount, apply any persisted volumes immediately
   useEffect(() => {
     let cancelled = false
     import("howler").then(({ Howl }) => {
       if (cancelled) return
+      const vols = ambientVolumesRef.current
       for (const t of TRACK_META) {
-        howlsRef.current[t.key] = new Howl({
-          src: [t.src],
-          loop: true,
-          volume: ambientVolumes[t.key],
-          html5: true,
-        })
+        const h = new Howl({ src: [t.src], loop: true, volume: 0, html5: true })
+        howlsRef.current[t.key] = h
+        if (vols[t.key] > 0) {
+          h.play()
+          h.fade(0, vols[t.key], FADE_MS)
+        }
       }
     })
     return () => {
@@ -40,27 +46,35 @@ export default function AmbientPlayer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Sync volume changes to Howl instances and play/pause accordingly
+  // Sync volume changes to Howl instances
   useEffect(() => {
+    const timerIds: ReturnType<typeof setTimeout>[] = []
     for (const t of TRACK_META) {
       const h = howlsRef.current[t.key]
       if (!h) continue
       const v = ambientVolumes[t.key]
       if (v > 0) {
-        h.volume(v)
-        if (!h.playing()) h.play()
+        if (!h.playing()) {
+          h.volume(0)
+          h.play()
+          h.fade(0, v, FADE_MS)
+        } else {
+          h.volume(v)
+        }
       } else {
-        if (h.playing()) h.fade(h.volume(), 0, 400)
-        setTimeout(() => { if (!howlsRef.current[t.key]?.playing()) howlsRef.current[t.key]?.stop() }, 420)
+        if (h.playing()) h.fade(h.volume(), 0, FADE_MS)
+        const key = t.key
+        const id = setTimeout(() => { howlsRef.current[key]?.stop() }, FADE_MS + 20)
+        timerIds.push(id)
       }
     }
+    return () => { timerIds.forEach(clearTimeout) }
   }, [ambientVolumes])
 
   const isAnyPlaying = Object.values(ambientVolumes).some((v) => v > 0)
 
   const handlePillClick = useCallback(() => {
     if (!expanded && !isAnyPlaying) {
-      // First click: start fire at 70% and expand
       setAmbientVolume("fire", 0.7)
     }
     setExpanded((e) => !e)
@@ -76,6 +90,7 @@ export default function AmbientPlayer() {
           <div className="mb-2 flex items-center justify-between">
             <span className="font-cinzel text-[10px] uppercase tracking-widest text-amber-400">Ambience</span>
             <button
+              type="button"
               onClick={() => setExpanded(false)}
               className="text-xs text-amber-700 hover:text-amber-400"
               aria-label="Close ambient player"
@@ -105,6 +120,7 @@ export default function AmbientPlayer() {
       )}
 
       <button
+        type="button"
         onClick={handlePillClick}
         className={`flex items-center gap-2 rounded-full border border-amber-800/60 bg-[#1a0e05]/90 px-3 py-2 shadow-lg backdrop-blur-sm transition-all hover:border-amber-600/80 ${isAnyPlaying ? "ambient-pill-active" : ""}`}
         aria-label="Toggle ambient sounds"
