@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react"
 import { sections } from "@/utils/sections"
+import { useTheme } from "@/hooks/useTheme"
+import { useAudioContext } from "@/context/AudioContext"
 
 interface WandererTrailProps {
   currentSection: number
@@ -14,6 +16,8 @@ export default function WandererTrail({ currentSection, isMapExpanded, onSection
   const [pendingSection, setPendingSection] = useState<number | null>(null)
   const touchedRef = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { theme, toggleTheme } = useTheme()
+  const { sfxEnabled, toggleSfx } = useAudioContext()
 
   // Clear pending tooltip whenever navigation happens (e.g. via swipe)
   useEffect(() => {
@@ -127,6 +131,28 @@ export default function WandererTrail({ currentSection, isMapExpanded, onSection
               </div>
             )
           })}
+        </div>
+
+        {/* Atmosphere controls */}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-base opacity-60 transition-opacity hover:opacity-100"
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            title={theme === "dark" ? "Light mode" : "Dark mode"}
+          >
+            {theme === "dark" ? "🌙" : "☀️"}
+          </button>
+          <button
+            type="button"
+            onClick={toggleSfx}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-base opacity-60 transition-opacity hover:opacity-100"
+            aria-label={sfxEnabled ? "Mute sounds" : "Unmute sounds"}
+            title={sfxEnabled ? "Mute SFX" : "Unmute SFX"}
+          >
+            {sfxEnabled ? "🔊" : "🔇"}
+          </button>
         </div>
       </div>
     </div>
