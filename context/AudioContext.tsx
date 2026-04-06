@@ -102,7 +102,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     })
   }, [sfxEnabled])
 
-  const playSfx = useCallback((type: "click" | "transition") => {
+  const playSfx = useCallback((type: "click" | "transition" | "open" | "flip") => {
     if (!sfxEnabled) return
     sfxHowlsRef.current[type]?.play()
   }, [sfxEnabled])
