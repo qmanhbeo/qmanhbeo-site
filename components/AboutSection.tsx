@@ -123,6 +123,9 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
                 shaped by real constraints.
               </p>
               <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
+                (Side but foundational works include truth-seeking systems and the art of formalizing language.)
+              </p>
+              <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">
                 Not to replace the world as it is, but to understand whether it can be made to hold people better.
               </p>
               <p className="text-sm md:text-base text-amber-800 font-garamond leading-relaxed italic">

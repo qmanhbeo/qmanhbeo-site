@@ -98,34 +98,50 @@ export const sections: SiteSection[] = [
 
 export const timelineEvents = [
   {
-    year: "2018–2021",
+    year: "6-2021",
     event:
-      "At Gia Định High School for the Gifted, the world first revealed its underlying language. Mathematics gave it structure. Physics, chemistry, and biology gave it rules. History gave it memory. And English, quietly, became the key that opened everything beyond it.",
+      "At Gia Định High School for the Gifted, the World revealed its language. Mathematics shaped it. The sciences gave it rules. History gave it memory. And English became the key that opened everything beyond.",
   },
   {
-    year: "2021",
+    year: "8-2021",
     event:
-      "Set out from UEH in Applied Economics, following questions about systems, incentives, and how people live within them.",
+      "Set forth to the University of Economics HCMC in Applied Economics, following questions of systems, incentives, and how people live within them.",
   },
   {
-    year: "2023",
-    event: "Learned the patience of research through forecasting work and time-series econometrics.",
+    year: "10-2023",
+    event: "Learned the discipline of research, studying, and teaching the patterns that unfold through time—what others call time-series econometrics.",
   },
   {
-    year: "2024",
-    event: "Entered energy and policy research at EEPSEA, and received the UEH Young Researcher Award.",
+    year: "3-2024",
+    event: "Honored with the UEH Young Researcher Award.",
   },
   {
-    year: "2025",
+    year: "10-2024",
+    event: "Embarked on studying energy and the societal systems that decide how it flows at Economy and Environment Partnership SEA.",
+  },
+  {
+    year: "3-2025",
+    event: "Conferred Excellence by UEH.",
+  },
+  {
+    year: "4-2025",
+    event: "Seduced by the Art and Potential of Artificial Intelligence, where the craft of building worlds that learn begins to take shape.",
+  },
+  {
+    year: "6-2025",
     event: "Crossed through Xi'an and then Birmingham, where design, AI, and sustainability began to converge.",
   },
   {
-    year: "2025",
-    event: "Worked with the SHAPE AI Challenge and brought research to ELG 2025.",
+    year: "8-2025",
+    event: "Brought research before scholars from around the world at the Economics, Law, and Government International Conference 2025.",
   },
   {
-    year: "2026",
+    year: "12-2025",
+    event: "Answered the call of the Oxford University Press' SHAPE AI Challenge, where intelligence begins to reshape the craft of teaching.",
+  },
+  {
+    year: "Today",
     event:
-      "Now building reinforcement learning worlds, agent-based economies, and data systems shaped by real constraints.",
+      "Building worlds that learn, agent-based economies, and systems that align research and policy through language. The journey continues, and the map is still being drawn.",
   },
 ]
