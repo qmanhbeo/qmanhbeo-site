@@ -1,7 +1,7 @@
 "use client"
 
 import type { TouchEvent } from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react"
 
 const PUB_INDEX_KEY = "carousel:publications:index"
 const PUB_SCROLL_KEY = "carousel:publications:scroll"
@@ -17,6 +17,7 @@ import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { publicationEntries, type PublicationEntry } from "@/content/entries"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
 import { getHomeSectionIndexForOrigin, readPendingReturnState, saveEntryOriginState } from "@/utils/entryNavigation"
+import { useAudioContext } from "@/context/AudioContext"
 
 const MANUSCRIPT_TRANSITION_MS = 800
 
@@ -94,21 +95,12 @@ function NavPill({
 
 export default function PublicationsSection({ revealClassName = "" }: PublicationsSectionProps) {
   const router = useRouter()
-  const [initialPublicationRestoreState] = useState(() => {
-    const pendingReturnState = readPendingReturnState("/")
-    if (pendingReturnState?.sourceSection === "publications") {
-      return {
-        initialIndex: pendingReturnState.sourceChapterIndex ?? 0,
-        initialScrollTop: pendingReturnState.sourceInternalScroll ?? 0,
-      }
-    }
-    const stored = readStoredPub()
-    return { initialIndex: stored.index, initialScrollTop: stored.scroll }
-  })
+  const { playSfx } = useAudioContext()
   const {
     currentIndex: currentManuscript,
     isTransitioning: isManuscriptScrolling,
     panelRefs,
+    jumpToIndex: jumpToManuscript,
     goToIndex: navigateToManuscript,
     goPrevious: navigateToPreviousManuscript,
     goNext: navigateToNextManuscript,
@@ -116,11 +108,26 @@ export default function PublicationsSection({ revealClassName = "" }: Publicatio
     itemCount: publicationEntries.length,
     panelSelector: ".manuscript-scrollable-area",
     transitionMs: MANUSCRIPT_TRANSITION_MS,
-    initialIndex: initialPublicationRestoreState.initialIndex,
-    initialPanelScrollTop: initialPublicationRestoreState.initialScrollTop,
+    onNavigate: () => playSfx("flip"),
   })
   const swipeTouchStartXRef = useRef<number | null>(null)
   const swipeTouchStartYRef = useRef<number | null>(null)
+
+  // Restore position from sessionStorage/pendingReturnState after mount (SSR-safe)
+  useLayoutEffect(() => {
+    const pendingReturnState = readPendingReturnState("/")
+    if (pendingReturnState?.sourceSection === "publications") {
+      const idx = pendingReturnState.sourceChapterIndex ?? 0
+      const scrollTop = pendingReturnState.sourceInternalScroll ?? 0
+      jumpToManuscript(idx)
+      // Panel scroll is applied by the hook's own useLayoutEffect after index change
+      const panel = panelRefs.current[idx]
+      if (panel) panel.scrollTop = scrollTop
+      return
+    }
+    const stored = readStoredPub()
+    if (stored.index !== 0) jumpToManuscript(stored.index)
+  }, [jumpToManuscript, panelRefs])
 
   // Persist manuscript index on change
   useEffect(() => {

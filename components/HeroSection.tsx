@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { readPendingReturnState } from "@/utils/entryNavigation"
+import { useAudioContext } from "@/context/AudioContext"
 import ArchiveCodexButton from "./ui/ArchiveCodexButton"
 import ArchiveCodexOverlay from "./ui/ArchiveCodexOverlay"
 import LetterOverlay from "./ui/LetterOverlay"
@@ -17,6 +18,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
     return pendingReturnState?.sourceSection === "archive" && pendingReturnState.codexWasOpen === true
   })
   const [isLetterOverlayOpen, setIsLetterOverlayOpen] = useState(false)
+  const { playSfx } = useAudioContext()
 
   return (
     <section
@@ -42,7 +44,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
           <div className="w-full max-w-[27rem] shrink-0">
             <ArchiveCodexButton
               isOpen={isArchiveOverlayOpen}
-              onOpen={() => setIsArchiveOverlayOpen(true)}
+              onOpen={() => { playSfx("open"); setIsArchiveOverlayOpen(true) }}
               className="max-w-none"
             />
           </div>
@@ -50,7 +52,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
           <div className="w-full max-w-md shrink-0">
             <LetterScrollTrigger
               isOpen={isLetterOverlayOpen}
-              onOpen={() => setIsLetterOverlayOpen(true)}
+              onOpen={() => { playSfx("open"); setIsLetterOverlayOpen(true) }}
               label="Send a Letter"
               helperText="Open the scroll and write by firelight."
               variant="compact"

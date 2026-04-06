@@ -24,6 +24,7 @@ export default function ScrollContainer() {
   const [isScrolling, setIsScrolling] = useState(false)
 
   const scrollTimeoutRef = useRef<number | null>(null)
+  const isScrollingRef = useRef(false)
   const currentSectionRef = useRef(currentSection)
   const resizeFrameRef = useRef<number | null>(null)
   const touchStartXRef = useRef<number | null>(null)
@@ -67,12 +68,13 @@ export default function ScrollContainer() {
   const scrollToSection = useCallback(
     (index: number) => {
       const container = containerRef.current
-      if (!container || isScrolling) return
+      if (!container || isScrollingRef.current) return
 
       if (scrollTimeoutRef.current !== null) {
         window.clearTimeout(scrollTimeoutRef.current)
       }
 
+      isScrollingRef.current = true
       setIsScrolling(true)
       setRevealedSections((previous) => {
         const from = currentSectionRef.current
@@ -96,7 +98,7 @@ export default function ScrollContainer() {
         return nextRevealed
       })
 
-      playSfx("transition")
+      if (index !== currentSectionRef.current) playSfx("transition")
       container.scrollTo({
         left: index * container.clientWidth,
         behavior: "smooth",
@@ -105,11 +107,12 @@ export default function ScrollContainer() {
       setCurrentSection(index)
 
       scrollTimeoutRef.current = window.setTimeout(() => {
+        isScrollingRef.current = false
         setIsScrolling(false)
         scrollTimeoutRef.current = null
       }, 800)
     },
-    [isScrolling, playSfx],
+    [playSfx],
   )
 
   const navigateForward = useCallback(() => {

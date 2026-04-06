@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useAudioContext } from "@/context/AudioContext"
 import LetterOverlay from "./ui/LetterOverlay"
 import LetterScrollTrigger from "./ui/LetterScrollTrigger"
 
@@ -10,6 +11,7 @@ interface LetterSectionProps {
 
 export default function LetterSection({ revealClassName = "" }: LetterSectionProps) {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
+  const { playSfx } = useAudioContext()
 
   return (
     <section
@@ -28,7 +30,7 @@ export default function LetterSection({ revealClassName = "" }: LetterSectionPro
         </div>
 
         <div className="w-full max-w-3xl mx-auto">
-          <LetterScrollTrigger isOpen={isOverlayOpen} onOpen={() => setIsOverlayOpen(true)} />
+          <LetterScrollTrigger isOpen={isOverlayOpen} onOpen={() => { playSfx("open"); setIsOverlayOpen(true) }} />
         </div>
 
         <div className="mt-7 text-center md:mt-16">

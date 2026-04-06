@@ -32,7 +32,7 @@ export default function MobileSnapCarousel<T>({
   const scrollFrameRef = useRef<number | null>(null)
   const itemCount = items.length
   const normalizedInitialIndex = itemCount > 0 ? ((initialIndex % itemCount) + itemCount) % itemCount : 0
-  const [activeIndex, setActiveIndex] = useState(normalizedInitialIndex)
+  const [activeIndex, setActiveIndex] = useState(0)
   const repeatedItems = itemCount > 1 ? [...items, ...items, ...items] : items
 
   const getLogicalIndex = useCallback(

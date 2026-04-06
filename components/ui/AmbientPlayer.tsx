@@ -8,9 +8,9 @@ import { useAudioContext } from "@/context/AudioContext"
 type Track = "fire" | "rain" | "music"
 
 const TRACK_META: { key: Track; emoji: string; label: string; src: string }[] = [
-  { key: "fire",  emoji: "🔥", label: "Fire",  src: "/sounds/fire.ogg"  },
-  { key: "rain",  emoji: "🌧", label: "Rain",  src: "/sounds/rain.ogg"  },
-  { key: "music", emoji: "🎵", label: "Music", src: "/sounds/music.ogg" },
+  { key: "fire",  emoji: "🔥", label: "Fire",  src: "/sounds/fire-loop.wav"  },
+  { key: "rain",  emoji: "🌧", label: "Rain",  src: "/sounds/rain-loop.mp3"  },
+  { key: "music", emoji: "🎵", label: "Music", src: "/sounds/lute-loop.wav" },
 ]
 
 const FADE_MS = 400

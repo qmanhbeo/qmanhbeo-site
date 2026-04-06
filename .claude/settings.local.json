@@ -9,7 +9,19 @@
       "Bash(npx tsc:*)",
       "Bash(git commit:*)",
       "Read(//tmp/**)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "WebSearch",
+      "WebFetch(domain:opengameart.org)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:gamesounds.xyz)",
+      "Bash(curl -sI \"https://opengameart.org/sites/default/files/fire.wav\")",
+      "Bash(curl -s \"https://opengameart.org/sites/default/files/tinysized.zip\")",
+      "Bash(python3 -c \" import zipfile, io, sys data = sys.stdin.buffer.read\\(\\) z = zipfile.ZipFile\\(io.BytesIO\\(data\\)\\) for name in z.namelist\\(\\): if any\\(kw in name.lower\\(\\) for kw in ['whoosh', 'swoosh', 'swipe', 'paper', 'page', 'transition', 'book', 'scroll']\\): info = z.getinfo\\(name\\) print\\(f'{name} \\({info.file_size} bytes\\)'\\) \")",
+      "Bash(curl -s \"https://opengameart.org/sites/default/files/kenney_interfaceSounds.zip\")",
+      "Bash(python3 -c \" import zipfile, io, sys data = sys.stdin.buffer.read\\(\\) z = zipfile.ZipFile\\(io.BytesIO\\(data\\)\\) for name in z.namelist\\(\\): info = z.getinfo\\(name\\) print\\(f'{name} \\({info.file_size} bytes\\)'\\) \")",
+      "Bash(curl -sI \"https://raw.githubusercontent.com/Calinou/kenney-interface-sounds/master/addons/kenney_interface_sounds/scroll_001.wav\")",
+      "Bash(curl -sI \"https://raw.githubusercontent.com/Calinou/kenney-interface-sounds/master/addons/kenney_interface_sounds/minimize_001.wav\")",
+      "Bash(curl -sI \"https://raw.githubusercontent.com/Calinou/kenney-interface-sounds/master/addons/kenney_interface_sounds/click_001.wav\")"
     ]
   }
 }

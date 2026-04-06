@@ -7,6 +7,7 @@ import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
 import { arcEntries, type ArcEntry } from "@/content/entries"
 import { useBoundaryPagedScroll } from "@/hooks/useBoundaryPagedScroll"
 import { getHomeSectionIndexForOrigin, readPendingReturnState, saveEntryOriginState } from "@/utils/entryNavigation"
+import { useAudioContext } from "@/context/AudioContext"
 
 const MAP_COOLDOWN_MS = 700
 
@@ -145,6 +146,7 @@ function NavPill({
 
 export default function MapSection({ revealClassName = "" }: MapSectionProps) {
   const router = useRouter()
+  const { playSfx } = useAudioContext()
   const [initialMapRestoreState] = useState(() => {
     const pendingReturnState = readPendingReturnState("/")
     return pendingReturnState?.sourceSection === "map"
@@ -171,6 +173,7 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
     settleMs: 100,
     initialIndex: initialMapRestoreState.initialIndex,
     initialPanelScrollTop: initialMapRestoreState.initialScrollTop,
+    onNavigate: () => playSfx("flip"),
   })
 
   const handleJourneyClick = useCallback(

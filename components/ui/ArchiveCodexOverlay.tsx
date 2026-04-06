@@ -2,6 +2,7 @@
 
 import { type RefObject, type UIEvent, useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useAudioContext } from "@/context/AudioContext"
 import { ArrowLeft, BookOpen, Search, X } from "lucide-react"
 import {
   getAllEntries,
@@ -174,6 +175,7 @@ export default function ArchiveCodexOverlay({
   onClose,
 }: ArchiveCodexOverlayProps) {
   const router = useRouter()
+  const { playSfx } = useAudioContext()
   const [initialArchiveState] = useState(() => readArchiveCodexState())
   const [selectedEntrySlug, setSelectedEntrySlug] = useState(
     initialArchiveState?.selectedEntrySlug || allEntries[0]?.slug || "",
@@ -223,11 +225,13 @@ export default function ArchiveCodexOverlay({
   }, [onClose, persistCodexState])
 
   const handleSelectDesktopEntry = useCallback((slug: string) => {
+    playSfx("transition")
     setSelectedEntrySlug(slug)
-  }, [])
+  }, [playSfx])
 
   const handleSelectMobileEntry = useCallback(
     (slug: string) => {
+      playSfx("transition")
       if (slug !== activeEntrySlug) {
         lastKnownRightPaneScrollRef.current = 0
       }
@@ -235,7 +239,7 @@ export default function ArchiveCodexOverlay({
       setSelectedEntrySlug(slug)
       setMobileView("detail")
     },
-    [activeEntrySlug],
+    [activeEntrySlug, playSfx],
   )
 
   const handleBackToShelf = useCallback(() => {
@@ -245,6 +249,7 @@ export default function ArchiveCodexOverlay({
 
   const handleOpenEntry = () => {
     if (!selectedEntrySlugToOpen) return
+    playSfx("open")
 
     saveArchiveCodexState({
       isOpen: true,

@@ -11,6 +11,7 @@ type UseBoundaryPagedScrollOptions = {
   gestureIdleMs?: number
   initialIndex?: number
   initialPanelScrollTop?: number
+  onNavigate?: () => void
 }
 
 export function useBoundaryPagedScroll({
@@ -22,6 +23,7 @@ export function useBoundaryPagedScroll({
   gestureIdleMs = 160,
   initialIndex = 0,
   initialPanelScrollTop = 0,
+  onNavigate,
 }: UseBoundaryPagedScrollOptions) {
   const normalizedInitialIndex = itemCount > 0 ? ((initialIndex % itemCount) + itemCount) % itemCount : 0
 
@@ -74,6 +76,16 @@ export function useBoundaryPagedScroll({
     }
   }, [])
 
+  const jumpToIndex = useCallback(
+    (index: number) => {
+      if (itemCount <= 0) return
+      const normalizedIndex = ((index % itemCount) + itemCount) % itemCount
+      currentIndexRef.current = normalizedIndex
+      setCurrentIndex(normalizedIndex)
+    },
+    [itemCount],
+  )
+
   const goToIndex = useCallback(
     (index: number) => {
       if (isTransitioningRef.current || itemCount <= 0) return
@@ -82,6 +94,7 @@ export function useBoundaryPagedScroll({
       isTransitioningRef.current = true
       setIsTransitioning(true)
       setCurrentIndex(normalizedIndex)
+      onNavigate?.()
       wheelStateRef.current.inhibitUntil = performance.now() + transitionMs
 
       clearTransitionTimeout()
@@ -91,7 +104,7 @@ export function useBoundaryPagedScroll({
         transitionTimeoutRef.current = null
       }, transitionMs + settleMs)
     },
-    [clearTransitionTimeout, itemCount, settleMs, transitionMs],
+    [clearTransitionTimeout, itemCount, onNavigate, settleMs, transitionMs],
   )
 
   const goPrevious = useCallback(() => {
@@ -181,6 +194,7 @@ export function useBoundaryPagedScroll({
     currentIndex,
     isTransitioning,
     panelRefs,
+    jumpToIndex,
     goToIndex,
     goPrevious,
     goNext,

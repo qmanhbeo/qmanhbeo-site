@@ -1,4 +1,7 @@
+"use client"
+
 import { Facebook, Github, Instagram, Linkedin } from "lucide-react"
+import { useAudioContext } from "@/context/AudioContext"
 import WoodenMedallion from "./ui/WoodenMedallion"
 import QuoteScroll from "./ui/QuoteScroll"
 
@@ -7,6 +10,7 @@ interface SocialsSectionProps {
 }
 
 export default function SocialsSection({ revealClassName = "" }: SocialsSectionProps) {
+  const { playSfx } = useAudioContext()
   return (
     <section
       className="section-safe-area relative flex h-full min-w-full items-center justify-center overflow-hidden"
@@ -28,6 +32,7 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
             href="https://github.com/qmanhbeo"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => playSfx("click")}
           />
           <WoodenMedallion
             icon={<Linkedin className="h-6 w-6 md:h-8 md:w-8" />}
@@ -35,6 +40,7 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
             href="https://www.linkedin.com/in/qmanhbeo/"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => playSfx("click")}
           />
           <WoodenMedallion
             icon={<Facebook className="h-6 w-6 md:h-8 md:w-8" />}
@@ -42,6 +48,7 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
             href="https://www.facebook.com/qmanhbeo"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => playSfx("click")}
           />
           <WoodenMedallion
             icon={<Instagram className="h-6 w-6 md:h-8 md:w-8" />}
@@ -49,6 +56,7 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
             href="https://www.instagram.com/qmanhbeo/"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => playSfx("click")}
           />
         </div>
 

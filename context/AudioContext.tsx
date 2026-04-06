@@ -15,7 +15,7 @@ interface AudioContextValue {
   toggleSfx: () => void
   ambientVolumes: AmbientVolumes
   setAmbientVolume: (track: keyof AmbientVolumes, value: number) => void
-  playSfx: (type: "click" | "transition") => void
+  playSfx: (type: "click" | "transition" | "open" | "flip") => void
 }
 
 const AudioContext = createContext<AudioContextValue | null>(null)
@@ -61,8 +61,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false
     import("howler").then(({ Howl }) => {
       if (cancelled) return
-      sfxHowlsRef.current.click = new Howl({ src: ["/sounds/click.ogg"], volume: 0.08, html5: false })
-      sfxHowlsRef.current.transition = new Howl({ src: ["/sounds/transition.ogg"], volume: 0.06, html5: false })
+      sfxHowlsRef.current.click = new Howl({ src: ["/sounds/wood-knock-click.wav"], volume: 0.08, html5: false })
+      sfxHowlsRef.current.transition = new Howl({ src: ["/sounds/page-turn.wav"], volume: 0.06, html5: false })
+      sfxHowlsRef.current.open = new Howl({ src: ["/sounds/book-open.wav"], volume: 0.15, html5: false })
+      sfxHowlsRef.current.flip = new Howl({ src: ["/sounds/page-turn-heavy.mp3"], volume: 0.12, html5: false })
     })
     return () => {
       cancelled = true
