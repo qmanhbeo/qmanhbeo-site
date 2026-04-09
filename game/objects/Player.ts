@@ -15,9 +15,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     alternateInteract: Phaser.Input.Keyboard.Key
   } | null
   private lastInteractPressed = false
+  private readonly shadow: Phaser.GameObjects.Ellipse
 
   constructor(scene: Phaser.Scene, x: number, y: number, private readonly getJoystickInput: GetJoystickInput) {
     super(scene, x, y, "world-player")
+
+    this.shadow = scene.add.ellipse(x, y + 12, 19, 7, 0x000000, 0.32)
+      .setDepth(9)
 
     scene.add.existing(this)
     scene.physics.add.existing(this)
@@ -88,5 +92,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       justInteracted,
       moving: direction.lengthSq() > 0,
     }
+  }
+
+  preUpdate(time: number, delta: number) {
+    super.preUpdate(time, delta)
+    this.shadow.setPosition(this.x, this.y + 12)
+  }
+
+  destroy(fromScene?: boolean) {
+    this.shadow.destroy()
+    super.destroy(fromScene)
   }
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useEffectEvent, useMemo, useRef } from "react"
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react"
 import { Sparkles, Swords } from "lucide-react"
 import ExitButton from "@/app/world/_components/ExitButton"
 import VirtualJoystick from "@/app/world/_components/VirtualJoystick"
@@ -31,6 +31,7 @@ export default function WorldScreen() {
   } = useWorld()
   const { pauseAllAmbient, resumeAllAmbient } = useAudioContext()
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
+  const [promptText, setPromptText] = useState("")
 
   const handleCloseDialogue = useCallback(() => {
     gameBridge.emit("dialogue-closed", undefined)
@@ -94,6 +95,9 @@ export default function WorldScreen() {
     const offPlayerPosition = gameBridge.on("player-position", (nextPosition) => {
       setPlayerPosition(nextPosition)
     })
+    const offPromptChanged = gameBridge.on("prompt-changed", ({ prompt }) => {
+      setPromptText(prompt)
+    })
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return
@@ -110,6 +114,7 @@ export default function WorldScreen() {
       offOpenDialogue()
       offDialogueClosed()
       offPlayerPosition()
+      offPromptChanged()
       document.body.style.overflow = originalOverflow
       document.body.style.overscrollBehavior = originalOverscrollBehavior
       if (originalOverlayLock) {
@@ -158,6 +163,16 @@ export default function WorldScreen() {
                 joystickRef={joystickRef}
               />
               <VirtualJoystick joystickRef={joystickRef} />
+              {promptText ? (
+                <div className="pointer-events-none absolute inset-x-4 bottom-5 z-20 flex justify-center">
+                  <div
+                    data-testid="world-prompt"
+                    className="max-w-[min(92%,34rem)] rounded-full border border-amber-300/26 bg-[#090504]/78 px-4 py-2 text-center font-cinzel text-[0.72rem] leading-5 text-amber-100 shadow-[0_10px_30px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:text-sm"
+                  >
+                    {promptText}
+                  </div>
+                </div>
+              ) : null}
               <WorldDialogueBox />
             </div>
 

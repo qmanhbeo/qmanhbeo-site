@@ -5,6 +5,11 @@ import { chromium, devices } from "playwright"
 const BASE_URL = "http://127.0.0.1:3000"
 const FAILURE_DIR = "/tmp/playwright-qmanhbeo-site"
 const CHROMIUM_EXECUTABLE_PATH = "/home/manh/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome"
+const DEFAULT_WORLD_SESSION = {
+  activeSectionId: null,
+  dialogueState: { isOpen: false, npcId: null, speaker: "", lines: [], lineIndex: 0 },
+  playerPosition: { x: 320, y: 352 },
+}
 
 async function getPlayerPosition(page) {
   const value = await page
@@ -72,7 +77,7 @@ async function dragJoystick(page, dx, dy, holdMs = 450) {
     pointerType: "touch",
   })
 
-  await page.evaluate(({ clientX, clientY }) => {
+  const dispatchMove = async () => page.evaluate(({ clientX, clientY }) => {
     window.dispatchEvent(new PointerEvent("pointermove", {
       bubbles: true,
       clientX,
@@ -82,7 +87,10 @@ async function dragJoystick(page, dx, dy, holdMs = 450) {
     }))
   }, { clientX: moveX, clientY: moveY })
 
-  await page.waitForTimeout(holdMs)
+  for (let elapsed = 0; elapsed < holdMs; elapsed += 100) {
+    await dispatchMove()
+    await page.waitForTimeout(100)
+  }
 
   await page.evaluate(() => {
     window.dispatchEvent(new PointerEvent("pointerup", {
@@ -296,14 +304,17 @@ async function run() {
       await page.getByTestId("world-section-panel").waitFor({ state: "hidden" })
     }, devices["iPhone 14 Pro Max"])
 
-    await runStep(browser, "mobile joystick movement and interact", async (page) => {
+    await runStep(browser, "mobile joystick movement", async (page) => {
       await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
       await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
 
       const initialPosition = await getPlayerPosition(page)
       await dragJoystick(page, 28, 0)
       await waitForPlayerPosition(page, (position) => position.x >= initialPosition.x + 12, "mobile joystick movement")
+    }, devices["iPhone 13"])
 
+    await runStep(browser, "mobile interact", async (page) => {
+      await seedWorldSession(page, DEFAULT_WORLD_SESSION)
       await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
       await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
 

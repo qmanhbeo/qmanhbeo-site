@@ -8,6 +8,7 @@ type WorldBridgeEventMap = {
   "open-dialogue": WorldDialogueState
   "open-section": { sectionId: WorldSectionId }
   "player-position": PlayerPosition
+  "prompt-changed": { prompt: string }
   "section-closed": undefined
 }
 

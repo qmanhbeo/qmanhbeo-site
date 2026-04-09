@@ -5,13 +5,17 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
   readonly id: string
   readonly displayName: string
   readonly dialogueLines: string[]
+  private readonly shadow: Phaser.GameObjects.Ellipse
 
   constructor(scene: Phaser.Scene, data: NpcData) {
-    super(scene, data.x, data.y, "world-npc")
+    const textureKey = scene.textures.exists(`world-npc-${data.id}`) ? `world-npc-${data.id}` : "world-npc"
+    super(scene, data.x, data.y, textureKey)
 
     this.id = data.id
     this.displayName = data.name
     this.dialogueLines = data.dialogueLines
+    this.shadow = scene.add.ellipse(data.x, data.y + 11, 17, 6, 0x000000, 0.28)
+      .setDepth(7)
 
     scene.add.existing(this)
     scene.physics.add.existing(this)
@@ -21,8 +25,13 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     body.setAllowGravity(false)
     body.setSize(18, 18)
 
-    this.setTint(data.tint)
+    if (textureKey === "world-npc") this.setTint(data.tint)
     this.setDepth(8)
     this.setOrigin(0.5, 0.5)
+  }
+
+  destroy(fromScene?: boolean) {
+    this.shadow.destroy()
+    super.destroy(fromScene)
   }
 }

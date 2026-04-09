@@ -123,30 +123,63 @@ export class WorldScene extends Phaser.Scene {
     const background = this.add.graphics()
     background.fillStyle(0x0a0604, 1)
     background.fillRect(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
-    background.fillStyle(0x20140e, 1)
+    background.fillStyle(0x1a120d, 1)
     background.fillRect(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
 
-    background.fillStyle(0x6f4d2a, 1)
-    background.fillRect(304, 104, 32, 432)
-    background.fillRect(104, 304, 432, 32)
+    for (let x = 0; x < WORLD_BOUNDS.width; x += 16) {
+      for (let y = 0; y < WORLD_BOUNDS.height; y += 16) {
+        const variant = (x * 13 + y * 7) % 5
+        background.fillStyle(variant === 0 ? 0x1f160f : 0x19110c, 1)
+        background.fillRect(x, y, 16, 16)
+        if (variant === 1) {
+          background.fillStyle(0x3f2b19, 0.44)
+          background.fillRect(x + 3, y + 11, 2, 2)
+        }
+        if (variant === 3) {
+          background.fillStyle(0x2e2316, 0.6)
+          background.fillRect(x + 10, y + 5, 2, 2)
+        }
+      }
+    }
+
+    background.fillStyle(0x4b331d, 1)
+    background.fillRoundedRect(298, 100, 44, 440, 12)
+    background.fillRoundedRect(100, 298, 440, 44, 12)
+    background.fillStyle(0x7d5730, 0.5)
+    background.fillRoundedRect(306, 108, 28, 424, 8)
+    background.fillRoundedRect(108, 306, 424, 28, 8)
 
     buildingData.forEach((building) => {
+      const left = building.x - building.width / 2
+      const top = building.y - building.height / 2
+      const right = building.x + building.width / 2
+      const baseTop = top + 14
+
+      background.fillStyle(0x080403, 0.28)
+      background.fillRoundedRect(left - 4, baseTop + 6, building.width + 8, building.height - 8, 14)
+      background.fillStyle(0x2a150d, 1)
+      background.fillTriangle(left - 8, baseTop + 8, building.x, top - 16, right + 8, baseTop + 8)
       background.fillStyle(building.color, 1)
       background.fillRoundedRect(
-        building.x - building.width / 2,
-        building.y - building.height / 2,
+        left,
+        baseTop,
         building.width,
-        building.height,
+        building.height - 12,
         12,
       )
+      background.fillStyle(0x120907, 0.34)
+      background.fillRoundedRect(left + 8, baseTop + 8, building.width - 16, 10, 5)
       background.lineStyle(3, 0x28140c, 0.9)
-      background.strokeRoundedRect(
-        building.x - building.width / 2,
-        building.y - building.height / 2,
-        building.width,
-        building.height,
-        12,
-      )
+      background.strokeRoundedRect(left, baseTop, building.width, building.height - 12, 12)
+      background.fillStyle(0xf4c46d, 0.88)
+      background.fillRoundedRect(left + 16, baseTop + 18, 13, 15, 3)
+      background.fillRoundedRect(right - 29, baseTop + 18, 13, 15, 3)
+      background.fillStyle(0x21110b, 1)
+      background.fillRoundedRect(building.x - 9, baseTop + 34, 18, 26, 5)
+      background.fillStyle(0xffc56f, 0.72)
+      background.fillCircle(building.x + 5, baseTop + 46, 2)
+      background.fillStyle(0xffbd65, 0.18)
+      background.fillCircle(building.x, baseTop + 46, 24)
       this.add.text(building.x, building.y + building.height / 2 + 10, building.label, {
         color: "#f4dcb1",
         fontFamily: "var(--font-cinzel), serif",
@@ -157,14 +190,32 @@ export class WorldScene extends Phaser.Scene {
     })
 
     const glow = this.add.graphics()
-    glow.fillStyle(0xffad42, 0.18)
-    glow.fillCircle(320, 320, 90)
-    glow.fillStyle(0xffd27b, 0.14)
-    glow.fillCircle(320, 320, 44)
+    glow.fillStyle(0xffad42, 0.2)
+    glow.fillCircle(320, 320, 102)
+    glow.fillStyle(0xffd27b, 0.16)
+    glow.fillCircle(320, 320, 52)
 
     const fire = this.add.sprite(320, 320, "world-fire")
       .setDepth(6)
       .setScale(1.1)
+
+    for (let index = 0; index < 7; index += 1) {
+      const spark = this.add.sprite(312 + index * 3, 306 + (index % 3) * 3, "world-spark")
+        .setDepth(7)
+        .setAlpha(0.35)
+      this.tweens.add({
+        targets: spark,
+        alpha: { from: 0.35, to: 0 },
+        duration: 850 + index * 120,
+        repeat: -1,
+        y: spark.y - 18,
+        delay: index * 120,
+        onRepeat: () => {
+          spark.setPosition(308 + ((index * 11) % 24), 313 + (index % 2) * 3)
+          spark.setAlpha(0.35)
+        },
+      })
+    }
 
     this.tweens.add({
       targets: fire,
