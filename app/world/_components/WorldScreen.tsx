@@ -1,7 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react"
-import { Sparkles, Swords } from "lucide-react"
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react"
 import ExitButton from "@/app/world/_components/ExitButton"
 import VirtualJoystick from "@/app/world/_components/VirtualJoystick"
 import WorldCanvas from "@/app/world/_components/WorldCanvas"
@@ -11,7 +10,6 @@ import { useAudioContext } from "@/context/AudioContext"
 import { useWorld } from "@/context/WorldContext"
 import { gameBridge } from "@/game/GameBridge"
 import type { JoystickInputState } from "@/game/types"
-import { WORLD_SECTION_LABELS } from "@/utils/worldSections"
 
 const INITIAL_JOYSTICK_STATE: JoystickInputState = {
   x: 0,
@@ -132,9 +130,22 @@ export default function WorldScreen() {
     setPlayerPosition,
   ])
 
-  const panelLabel = useMemo(() => {
-    return activeSectionId ? WORLD_SECTION_LABELS[activeSectionId] : "No panel open"
-  }, [activeSectionId])
+  useEffect(() => {
+    const renderGameToText = () => JSON.stringify({
+      activeSectionId,
+      dialogueOpen: dialogueState.isOpen,
+      playerPosition,
+      prompt: promptText,
+    })
+    const targetWindow = window as typeof window & { render_game_to_text?: () => string }
+    targetWindow.render_game_to_text = renderGameToText
+
+    return () => {
+      if (targetWindow.render_game_to_text === renderGameToText) {
+        delete targetWindow.render_game_to_text
+      }
+    }
+  }, [activeSectionId, dialogueState.isOpen, playerPosition, promptText])
 
   return (
     <main className="relative min-h-dvh overflow-x-hidden overflow-y-auto bg-[#0a0604] text-amber-50">
@@ -152,17 +163,16 @@ export default function WorldScreen() {
         </header>
 
         <section className="flex flex-1 items-start justify-center px-4 pb-6 pt-2 sm:px-6 sm:pb-8 xl:items-center">
-          <div className="grid w-full max-w-7xl gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] xl:gap-6">
+          <div className="flex w-full max-w-[43rem] flex-col gap-4">
             <div
               data-testid="world-map-card"
-              className="relative aspect-square min-w-0 w-full max-w-full rounded-[2rem] border border-amber-500/20 bg-[#120b08]/85 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:p-4 xl:aspect-auto xl:min-h-[32rem]"
+              className="relative aspect-square min-w-0 w-full max-w-full rounded-[2rem] border border-amber-500/20 bg-[#120b08]/85 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:p-4"
             >
               <WorldCanvas
                 initialPlayerPosition={playerPosition}
                 initialUiLocked={dialogueState.isOpen || activeSectionId !== null}
                 joystickRef={joystickRef}
               />
-              <VirtualJoystick joystickRef={joystickRef} />
               {promptText ? (
                 <div className="pointer-events-none absolute inset-x-4 bottom-5 z-20 flex justify-center">
                   <div
@@ -176,42 +186,7 @@ export default function WorldScreen() {
               <WorldDialogueBox />
             </div>
 
-            <aside className="min-w-0 space-y-4">
-              <div className="rounded-[1.75rem] border border-amber-500/20 bg-[#140c08]/92 p-5">
-                <div className="flex items-center gap-2 text-amber-200/80">
-                  <Swords className="h-4 w-4" />
-                  <p className="font-cinzel text-xs uppercase tracking-[0.28em]">First playable</p>
-                </div>
-                <dl className="mt-4 space-y-4 text-sm text-amber-100/80">
-                  <div>
-                    <dt className="font-cinzel text-[0.7rem] uppercase tracking-[0.24em] text-amber-300/60">Route</dt>
-                    <dd className="mt-1 text-base text-amber-50">/world</dd>
-                  </div>
-                  <div>
-                    <dt className="font-cinzel text-[0.7rem] uppercase tracking-[0.24em] text-amber-300/60">Player position</dt>
-                    <dd className="mt-1 text-base text-amber-50">
-                      {playerPosition.x}, {playerPosition.y}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="font-cinzel text-[0.7rem] uppercase tracking-[0.24em] text-amber-300/60">Active panel</dt>
-                    <dd className="mt-1 text-base text-amber-50">{panelLabel}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div className="rounded-[1.75rem] border border-amber-500/20 bg-[#140c08]/92 p-5">
-                <div className="flex items-center gap-2 text-amber-200/80">
-                  <Sparkles className="h-4 w-4" />
-                  <p className="font-cinzel text-xs uppercase tracking-[0.28em]">What works now</p>
-                </div>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-amber-100/78">
-                  <li>The world owns its own route, audio lifecycle, and viewport.</li>
-                  <li>Player position and world UI state persist in session storage.</li>
-                  <li>Shared site sections render inside world panels with a dedicated `world-panel` surface.</li>
-                </ul>
-              </div>
-            </aside>
+            <VirtualJoystick joystickRef={joystickRef} placement="docked" />
           </div>
         </section>
 

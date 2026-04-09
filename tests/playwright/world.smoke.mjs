@@ -12,22 +12,9 @@ const DEFAULT_WORLD_SESSION = {
 }
 
 async function getPlayerPosition(page) {
-  const value = await page
-    .locator("dt")
-    .filter({ hasText: "Player position" })
-    .locator("..")
-    .locator("dd")
-    .textContent()
-
-  const match = value?.match(/(\d+),\s*(\d+)/)
-  if (!match) {
-    throw new Error(`Unable to parse player position from: ${value ?? "<empty>"}`)
-  }
-
-  return {
-    x: Number(match[1]),
-    y: Number(match[2]),
-  }
+  await page.waitForFunction(() => typeof window.render_game_to_text === "function")
+  const state = await page.evaluate(() => JSON.parse(window.render_game_to_text()))
+  return state.playerPosition
 }
 
 async function waitForPlayerPosition(page, predicate, description, timeout = 12_000) {
@@ -150,7 +137,6 @@ async function run() {
       await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
 
       await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
-      await page.getByText("/world", { exact: true }).waitFor({ state: "visible" })
 
       await focusWorldCanvas(page)
       const initialPosition = await getPlayerPosition(page)
@@ -239,8 +225,10 @@ async function run() {
       const mapCard = await page.getByTestId("world-map-card").boundingBox()
       const canvasShell = await page.getByTestId("world-canvas-shell").boundingBox()
       const canvas = await page.locator("canvas").first().boundingBox()
+      const controls = await page.getByTestId("world-mobile-controls").boundingBox()
 
       assert.ok(mapCard, "World map card is missing")
+      assert.ok(controls, "World mobile controls are missing")
       assert.ok(mapCard.width <= viewport.width + 1, `Map card width exceeds viewport: ${JSON.stringify({ viewport, mapCard })}`)
       assert.ok(mapCard.x >= -1, `Map card starts off-screen: ${JSON.stringify({ viewport, mapCard })}`)
       assert.ok(
@@ -250,6 +238,13 @@ async function run() {
 
       assertRectWithin(mapCard, canvasShell, "Canvas shell within map card")
       assertRectWithin(canvasShell, canvas, "Canvas within shell")
+      assert.ok(
+        controls.y >= mapCard.y + mapCard.height + 8,
+        `Mobile controls should sit below the map card, not overlay it: ${JSON.stringify({ mapCard, controls })}`,
+      )
+      await page.getByText("Player position", { exact: true }).waitFor({ state: "hidden" })
+      await page.getByText("Active panel", { exact: true }).waitFor({ state: "hidden" })
+      await page.getByText("What works now", { exact: true }).waitFor({ state: "hidden" })
     }, devices["iPhone 14 Pro Max"])
 
     await runStep(browser, "iphone 14 pro max publications panel fit", async (page) => {
