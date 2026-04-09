@@ -128,7 +128,7 @@ export default function SpellScroll({
                     {runes.map((rune, index) => (
                       <span
                         key={index}
-                        className={`magical-rune font-garamond font-medium ${isMobilePresentation ? "px-2.5 py-1 text-[0.78rem]" : "px-2 py-0.5 text-xs"}`}
+                        className={`magical-rune font-garamond font-medium text-amber-900 ${isMobilePresentation ? "px-2.5 py-1 text-[0.78rem]" : "px-2 py-0.5 text-xs"}`}
                       >
                         {rune}
                       </span>
