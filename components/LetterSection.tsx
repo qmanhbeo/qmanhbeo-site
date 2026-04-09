@@ -1,10 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { X } from "lucide-react"
 import { useAudioContext } from "@/context/AudioContext"
 import type { SectionSurface } from "@/utils/worldSections"
-import LetterComposer from "./ui/LetterComposer"
 import LetterOverlay from "./ui/LetterOverlay"
 import LetterScrollTrigger from "./ui/LetterScrollTrigger"
 
@@ -27,6 +25,7 @@ export default function LetterSection({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return
       event.preventDefault()
+      event.stopPropagation()
       setIsComposerOpen(false)
     }
 
@@ -64,48 +63,19 @@ export default function LetterSection({
               setIsComposerOpen(true)
             }}
             variant={isWorldPanel ? "compact" : "full"}
-            helperText={isWorldPanel ? "Open the messenger desk without leaving the world." : undefined}
           />
         </div>
 
-        {isWorldPanel ? (
-          <div className="mt-5 min-h-0 flex-1 overflow-hidden">
-            {isComposerOpen ? (
-              <div className="relative h-full overflow-hidden rounded-[2rem] border border-amber-200/15 bg-black/20 backdrop-blur-sm">
-                <button
-                  type="button"
-                  onClick={() => setIsComposerOpen(false)}
-                  className="medieval-button absolute right-4 top-4 z-20 rounded-full p-2.5 text-orange-100 transition hover:ember-glow"
-                  aria-label="Close world letter composer"
-                >
-                  <X className="h-4.5 w-4.5" />
-                </button>
-                <div className="scrollable-content scrollbar-fade h-full overflow-y-auto px-2 py-2 md:px-3">
-                  <LetterComposer />
-                </div>
-              </div>
-            ) : (
-              <div className="flex h-full items-center justify-center rounded-[2rem] border border-dashed border-amber-400/20 bg-black/10 px-6 text-center">
-                <p className="max-w-xl font-garamond text-lg italic text-orange-300/78">
-                  The messenger desk stays inside the world route. Open the scroll when you are ready to send word.
-                </p>
-              </div>
-            )}
-          </div>
-        ) : (
-          <>
-            <div className="mt-7 text-center md:mt-16">
-              <p className="font-garamond text-[1rem] italic leading-snug text-orange-300/70 md:text-xl md:leading-relaxed">
-                The fire is patient. The night is long.
-              </p>
-              <p className="font-garamond text-[1rem] italic leading-snug text-orange-300/50 md:text-xl md:leading-relaxed">
-                Write whatever the pages stirred in you.
-              </p>
-            </div>
+        <div className={`text-center ${isWorldPanel ? "mt-5" : "mt-7 md:mt-16"}`}>
+          <p className="font-garamond text-[1rem] italic leading-snug text-orange-300/70 md:text-xl md:leading-relaxed">
+            The fire is patient. The night is long.
+          </p>
+          <p className="font-garamond text-[1rem] italic leading-snug text-orange-300/50 md:text-xl md:leading-relaxed">
+            Write whatever the pages stirred in you.
+          </p>
+        </div>
 
-            <LetterOverlay isOpen={isComposerOpen} onClose={() => setIsComposerOpen(false)} />
-          </>
-        )}
+        <LetterOverlay isOpen={isComposerOpen} onClose={() => setIsComposerOpen(false)} />
       </div>
     </section>
   )

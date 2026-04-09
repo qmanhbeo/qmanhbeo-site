@@ -235,6 +235,26 @@ async function run() {
       await page.getByText("Scholar Scrolls", { exact: true }).waitFor({ state: "visible" })
     })
 
+    await runStep(browser, "post office uses normal letter overlay", async (page) => {
+      await seedWorldSession(page, {
+        activeSectionId: "letter",
+        dialogueState: { isOpen: false, npcId: null, speaker: "", lines: [], lineIndex: 0 },
+        playerPosition: { x: 320, y: 352 },
+      })
+
+      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
+      await page.getByTestId("world-section-panel").waitFor({ state: "visible" })
+      await page.getByRole("heading", { name: "Write Him a Letter", exact: true }).waitFor({ state: "visible" })
+
+      await page.getByLabel("Open the letter composer").click()
+      await page.getByLabel("Close letter overlay").waitFor({ state: "visible" })
+
+      await page.keyboard.press("Escape")
+      await page.getByLabel("Close letter overlay").waitFor({ state: "hidden" })
+      await page.getByTestId("world-section-panel").waitFor({ state: "visible" })
+      await page.getByLabel("Close world panel").waitFor({ state: "visible" })
+    })
+
     await runStep(browser, "iphone 14 pro max viewport fit", async (page) => {
       await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
       await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })

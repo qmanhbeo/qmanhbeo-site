@@ -24,7 +24,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 **Last updated:** 2026-04-09
 
-**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. The world layout now constrains the map card responsively on phone viewports instead of allowing the fixed 640px Phaser surface to force horizontal overflow, and section panels now render as route-level overlays rather than being trapped inside the square map card on mobile. Mobile panel chrome now accounts for safe-area insets and uses a 44px close touch target. Mobile controls now dock below the game viewport instead of overlaying the canvas, and the old route/coordinate/active-panel debug sidebar has been removed from the user-facing UI on all viewports. The prompt system now separates a one-time React onboarding hint from contextual interaction CTAs: the tutorial copy fades out after initial load, while building/NPC prompts appear only while the player stays in interaction range. The procedural fallback art pass now includes richer generated player/NPC sprites, character shadows, textured ground/path tiles, building facades, door/window lighting, building-specific signs, interaction halos, NPC idle bob, player walk bob, campfire sparks, and a readable React prompt plaque driven by Phaser prompt events. World interaction polish now reuses the site's existing Howler SFX via semantic `world-sfx` bridge cues for panel open, dialogue open, dialogue advance, and close/exit actions. Playwright smoke coverage now includes desktop prompt onboarding plus contextual CTA dismissal, desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, mobile joystick drag plus interact dialogue, an iPhone 14 Pro Max viewport-fit assertion for the map canvas, iPhone 14 Pro Max docked-control placement, and an iPhone 14 Pro Max publications-panel fit/touch-target assertion. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
+**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. The world layout now constrains the map card responsively on phone viewports instead of allowing the fixed 640px Phaser surface to force horizontal overflow, and section panels now render as route-level overlays rather than being trapped inside the square map card on mobile. Mobile panel chrome now accounts for safe-area insets and uses a 44px close touch target. Mobile controls now dock below the game viewport instead of overlaying the canvas, and the old route/coordinate/active-panel debug sidebar has been removed from the user-facing UI on all viewports. The prompt system now separates a one-time React onboarding hint from contextual interaction CTAs: the tutorial copy fades out after initial load, while building/NPC prompts appear only while the player stays in interaction range. The post office no longer uses a custom inline world composer; it now reuses the normal `LetterOverlay` flow inside the shared world panel, and nested modal Escape handling closes the letter overlay before closing the panel. The procedural fallback art pass now includes richer generated player/NPC sprites, character shadows, textured ground/path tiles, building facades, door/window lighting, building-specific signs, interaction halos, NPC idle bob, player walk bob, campfire sparks, and a readable React prompt plaque driven by Phaser prompt events. World interaction polish now reuses the site's existing Howler SFX via semantic `world-sfx` bridge cues for panel open, dialogue open, dialogue advance, and close/exit actions. Playwright smoke coverage now includes desktop prompt onboarding plus contextual CTA dismissal, desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, post-office letter-overlay behavior, mobile joystick drag plus interact dialogue, an iPhone 14 Pro Max viewport-fit assertion for the map canvas, iPhone 14 Pro Max docked-control placement, and an iPhone 14 Pro Max publications-panel fit/touch-target assertion. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
 
 **Start here next session:**
 1. Do a manual touch-device pass for mobile docked controls, panel behavior, and overall feel
@@ -63,6 +63,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-09: Verified the SFX reuse pass with targeted ESLint, production build, the existing World Playwright smoke suite, and a mobile dialogue screenshot/text-state observation.
 - [x] 2026-04-09: Split prompt behavior into a one-time fading onboarding hint plus contextual interaction CTAs that only appear while the player is in range, and added smoke coverage for the new lifecycle.
 - [x] 2026-04-09: Verified prompt polish with targeted ESLint, production build, the expanded World Playwright smoke suite, the web-game state capture client, and mobile tutorial/contextual prompt screenshots.
+- [x] 2026-04-09: Removed the experimental inline world letter desk; the post office now reuses the normal `LetterOverlay` flow inside the world panel, Escape closes the nested letter modal before the panel, and the behavior is covered by smoke plus mobile visual verification.
 
 ---
 
@@ -209,7 +210,7 @@ Building → Section mapping:
 - [x] Add the same `surface` prop to `LetterSection`
 - [x] Normalize world/home section ids through a shared mapping layer
 - [x] Ensure item detail opened from world returns to `/world`
-- [x] Replace route-global letter overlay behavior with a world-scoped letter panel/composer path
+- [x] Make the letter section work inside the world panel while preserving the normal `LetterOverlay` composer flow
 
 ### Phase 3 — First Playable World
 - [x] `game/config/npcData.ts` — pre-written dialogue for Alex, Adam, Avery
@@ -229,7 +230,7 @@ Building → Section mapping:
 - [x] Prompt behavior polish — onboarding hint is transient on mount; contextual prompts are range-based and disappear when irrelevant
 
 ### Phase 4 — Verification
-- [x] Playwright smoke: desktop dialogue plus input lock, home CTA → `/world`, Library → item → `/world` return restore, mobile joystick drag plus interact dialogue, iPhone 14 Pro Max viewport-fit, docked mobile controls below the game, and iPhone 14 Pro Max publications-panel fit/touch-target
+- [x] Playwright smoke: desktop prompt lifecycle, desktop dialogue plus input lock, home CTA → `/world`, Library → item → `/world` return restore, Post Office → normal letter overlay, mobile joystick drag plus interact dialogue, iPhone 14 Pro Max viewport-fit, docked mobile controls below the game, and iPhone 14 Pro Max publications-panel fit/touch-target
 - [x] Test full cycle: home → `/world` → move → enter building → open section panel → open item → return to `/world` → restore state
 - [x] Test dialogue and input lock behavior
 - [x] Test mobile joystick movement
@@ -247,7 +248,7 @@ Building → Section mapping:
 
 **World is not a modal** — do not reintroduce a route-wide overlay mounted over the home page.
 
-**Panel input lock is required** — while a world panel or world-scoped composer is open, gameplay input must be paused and `Escape` should close the active world UI first.
+**Panel input lock is required** — while a world panel or nested modal such as the letter overlay is open, gameplay input must be paused and `Escape` should close the top-most world UI first.
 
 **Ambient audio** — pause/resume must use window events so saved ambient prefs remain intact.
 

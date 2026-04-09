@@ -72,6 +72,10 @@ export default function WorldScreen() {
   }, [setActiveSectionId])
 
   const handleEscape = useEffectEvent(() => {
+    if (document.querySelector('[aria-modal="true"]')) {
+      return
+    }
+
     if (dialogueState.isOpen) {
       handleCloseDialogue()
       return
