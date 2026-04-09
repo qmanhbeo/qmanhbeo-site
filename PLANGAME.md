@@ -24,7 +24,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 **Last updated:** 2026-04-09
 
-**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. The world layout now constrains the map card responsively on phone viewports instead of allowing the fixed 640px Phaser surface to force horizontal overflow, and section panels now render as route-level overlays rather than being trapped inside the square map card on mobile. Mobile panel chrome now accounts for safe-area insets and uses a 44px close touch target. The procedural fallback art pass now includes richer generated player/NPC sprites, character shadows, textured ground/path tiles, building facades, door/window lighting, campfire sparks, and a readable React prompt plaque driven by Phaser prompt events. Playwright smoke coverage now includes desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, mobile joystick drag plus interact dialogue, an iPhone 14 Pro Max viewport-fit assertion for the map canvas, and an iPhone 14 Pro Max publications-panel fit/touch-target assertion. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
+**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. The world layout now constrains the map card responsively on phone viewports instead of allowing the fixed 640px Phaser surface to force horizontal overflow, and section panels now render as route-level overlays rather than being trapped inside the square map card on mobile. Mobile panel chrome now accounts for safe-area insets and uses a 44px close touch target. The procedural fallback art pass now includes richer generated player/NPC sprites, character shadows, textured ground/path tiles, building facades, door/window lighting, building-specific signs, interaction halos, NPC idle bob, player walk bob, campfire sparks, and a readable React prompt plaque driven by Phaser prompt events. Playwright smoke coverage now includes desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, mobile joystick drag plus interact dialogue, an iPhone 14 Pro Max viewport-fit assertion for the map canvas, and an iPhone 14 Pro Max publications-panel fit/touch-target assertion. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
 
 **Start here next session:**
 1. Do a manual touch-device pass for mobile panel behavior and overall feel now that panel overlays are route-level on mobile
@@ -57,6 +57,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-09: Added safe-area-aware world panel padding and enforced a 44px mobile close-button touch target in the Playwright panel check.
 - [x] 2026-04-09: Added the first procedural art polish pass: generated pixel character textures, player/NPC shadows, textured ground/path, richer building facades, warm windows/doors, and animated campfire sparks.
 - [x] 2026-04-09: Moved prompt rendering out of scaled Phaser canvas text into a React prompt plaque fed by `prompt-changed` bridge events, so interaction prompts stay readable on mobile.
+- [x] 2026-04-09: Added code-drawn interaction polish: building-specific signs, active target halos, NPC idle bob, and player walk bob while moving.
 
 ---
 
@@ -218,7 +219,7 @@ Building → Section mapping:
 - [x] `app/world/_components/WorldDialogueBox.tsx` — dialogue UI
 - [x] `app/world/_components/VirtualJoystick.tsx` — mobile controls
 - [x] `app/world/_components/WorldScreen.tsx` — top-level route shell that coordinates input lock, audio, and persistence
-- [x] Procedural fallback art polish — generated sprites, building facades, ground/path texture, shadows, campfire sparks, and readable React prompt plaque
+- [x] Procedural fallback art polish — generated sprites, building facades/signs, ground/path texture, shadows, target halos, walk/idle bob, campfire sparks, and readable React prompt plaque
 
 ### Phase 4 — Verification
 - [x] Playwright smoke: desktop dialogue plus input lock, home CTA → `/world`, Library → item → `/world` return restore, mobile joystick drag plus interact dialogue, iPhone 14 Pro Max viewport-fit, and iPhone 14 Pro Max publications-panel fit/touch-target

@@ -28,9 +28,11 @@ type ActiveTarget =
 
 export class WorldScene extends Phaser.Scene {
   private readonly cleanupFns: Array<() => void> = []
+  private buildingHalo?: Phaser.GameObjects.Ellipse
   private buildings: BuildingZone[] = []
   private getJoystickInput: GetJoystickInput = () => ({ x: 0, y: 0, interact: false })
   private lastPersistAt = 0
+  private npcHalo?: Phaser.GameObjects.Ellipse
   private npcs: NPC[] = []
   private player?: Player
   private uiLocked = false
@@ -60,6 +62,22 @@ export class WorldScene extends Phaser.Scene {
 
     this.buildings = buildingData.map((building) => new BuildingZone(this, building))
     this.npcs = npcData.map((npc) => new NPC(this, npc))
+    this.buildingHalo = this.add.ellipse(0, 0, 94, 70, 0xffc56f, 0)
+      .setDepth(5)
+      .setStrokeStyle(2, 0xffd27b, 0.42)
+      .setVisible(false)
+    this.npcHalo = this.add.ellipse(0, 0, 42, 24, 0xffd27b, 0)
+      .setDepth(7)
+      .setStrokeStyle(2, 0xffd27b, 0.5)
+      .setVisible(false)
+
+    this.tweens.add({
+      targets: [this.buildingHalo, this.npcHalo],
+      alpha: { from: 0.35, to: 0.85 },
+      duration: 900,
+      yoyo: true,
+      repeat: -1,
+    })
 
     const offSectionClosed = gameBridge.on("section-closed", () => this.unlockWorldUi())
     const offDialogueClosed = gameBridge.on("dialogue-closed", () => this.unlockWorldUi())
@@ -91,6 +109,7 @@ export class WorldScene extends Phaser.Scene {
     }
 
     const activeTarget = this.getActiveTarget()
+    this.syncTargetHalo(activeTarget)
     this.registry.set(
       "promptText",
       activeTarget?.prompt ?? "Use WASD or arrows to walk. Press E near a building or friend.",
@@ -180,6 +199,7 @@ export class WorldScene extends Phaser.Scene {
       background.fillCircle(building.x + 5, baseTop + 46, 2)
       background.fillStyle(0xffbd65, 0.18)
       background.fillCircle(building.x, baseTop + 46, 24)
+      this.drawBuildingMark(background, building.id, building.x, baseTop + 26)
       this.add.text(building.x, building.y + building.height / 2 + 10, building.label, {
         color: "#f4dcb1",
         fontFamily: "var(--font-cinzel), serif",
@@ -266,6 +286,59 @@ export class WorldScene extends Phaser.Scene {
       lines: nearestNpc.dialogueLines,
       prompt: `Press E to talk to ${nearestNpc.displayName}`,
     }
+  }
+
+  private drawBuildingMark(graphics: Phaser.GameObjects.Graphics, id: string, x: number, y: number) {
+    graphics.lineStyle(2, 0xffdf9a, 0.9)
+    graphics.fillStyle(0xffdf9a, 0.9)
+
+    if (id === "library") {
+      graphics.strokeRect(x - 10, y - 5, 8, 10)
+      graphics.strokeRect(x + 2, y - 5, 8, 10)
+      graphics.lineBetween(x, y - 5, x, y + 6)
+      return
+    }
+
+    if (id === "workshop") {
+      graphics.lineBetween(x - 9, y + 6, x + 7, y - 8)
+      graphics.strokeCircle(x + 9, y - 9, 4)
+      graphics.lineBetween(x + 3, y - 2, x + 11, y + 6)
+      return
+    }
+
+    if (id === "tavern") {
+      graphics.strokeRoundedRect(x - 8, y - 5, 16, 10, 3)
+      graphics.lineBetween(x + 8, y - 1, x + 13, y - 1)
+      graphics.lineBetween(x - 4, y + 5, x + 4, y + 5)
+      return
+    }
+
+    graphics.strokeRect(x - 10, y - 6, 20, 12)
+    graphics.lineBetween(x - 10, y - 6, x, y + 1)
+    graphics.lineBetween(x + 10, y - 6, x, y + 1)
+  }
+
+  private syncTargetHalo(activeTarget: ActiveTarget | null) {
+    this.buildingHalo?.setVisible(false)
+    this.npcHalo?.setVisible(false)
+
+    if (!activeTarget) return
+
+    if (activeTarget.kind === "building") {
+      const building = this.buildings.find((candidate) => candidate.sectionId === activeTarget.sectionId)
+      if (!building || !this.buildingHalo) return
+      this.buildingHalo
+        .setPosition(building.x, building.y + building.height * 0.36)
+        .setSize(building.width + 18, building.height * 0.75)
+        .setVisible(true)
+      return
+    }
+
+    const npc = this.npcs.find((candidate) => candidate.id === activeTarget.npcId)
+    if (!npc || !this.npcHalo) return
+    this.npcHalo
+      .setPosition(npc.x, npc.y + 12)
+      .setVisible(true)
   }
 
   private persistPlayerPosition() {

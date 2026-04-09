@@ -16,6 +16,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   } | null
   private lastInteractPressed = false
   private readonly shadow: Phaser.GameObjects.Ellipse
+  private walkBobPhase = 0
 
   constructor(scene: Phaser.Scene, x: number, y: number, private readonly getJoystickInput: GetJoystickInput) {
     super(scene, x, y, "world-player")
@@ -76,8 +77,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.setVelocity(direction.x * PLAYER_SPEED, direction.y * PLAYER_SPEED)
 
+    const isMoving = direction.lengthSq() > 0
+
     if (direction.x !== 0) {
       this.setFlipX(direction.x < 0)
+    }
+
+    if (isMoving) {
+      this.walkBobPhase += 0.32
+      this.setScale(1, 1 + Math.sin(this.walkBobPhase) * 0.045)
+      this.setAngle(Math.sin(this.walkBobPhase * 0.5) * 1.6)
+    } else {
+      this.walkBobPhase = 0
+      this.setScale(1, 1)
+      this.setAngle(0)
     }
 
     const interactPressed = Boolean(
@@ -90,7 +103,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     return {
       justInteracted,
-      moving: direction.lengthSq() > 0,
+      moving: isMoving,
     }
   }
 

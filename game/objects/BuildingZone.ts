@@ -7,6 +7,10 @@ export class BuildingZone {
   readonly label: string
   readonly prompt: string
   readonly sectionId: BuildingData["sectionId"]
+  readonly x: number
+  readonly y: number
+  readonly width: number
+  readonly height: number
   private readonly zone: Phaser.GameObjects.Zone
 
   constructor(private readonly scene: Phaser.Scene, data: BuildingData) {
@@ -14,6 +18,10 @@ export class BuildingZone {
     this.label = data.label
     this.prompt = data.prompt
     this.sectionId = data.sectionId
+    this.x = data.x
+    this.y = data.y
+    this.width = data.width
+    this.height = data.height
 
     this.zone = scene.add.zone(data.x, data.y, data.width, data.height)
     scene.physics.add.existing(this.zone, true)
