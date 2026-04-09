@@ -5,6 +5,7 @@ import ExitButton from "@/app/world/_components/ExitButton"
 import VirtualJoystick from "@/app/world/_components/VirtualJoystick"
 import WorldCanvas from "@/app/world/_components/WorldCanvas"
 import WorldDialogueBox from "@/app/world/_components/WorldDialogueBox"
+import WorldPromptOverlay, { useWorldPromptState } from "@/app/world/_components/WorldPromptOverlay"
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
 import { useAudioContext } from "@/context/AudioContext"
 import { useWorld } from "@/context/WorldContext"
@@ -37,6 +38,11 @@ export default function WorldScreen() {
   const { pauseAllAmbient, playSfx, resumeAllAmbient } = useAudioContext()
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
   const [promptText, setPromptText] = useState("")
+  const uiLocked = dialogueState.isOpen || activeSectionId !== null
+  const promptState = useWorldPromptState({
+    contextualPrompt: promptText,
+    uiLocked,
+  })
 
   const handleWorldSfx = useEffectEvent(({ cue }: { cue: WorldSfxCue }) => {
     playSfx(WORLD_SFX_BY_CUE[cue])
@@ -155,7 +161,9 @@ export default function WorldScreen() {
       activeSectionId,
       dialogueOpen: dialogueState.isOpen,
       playerPosition,
-      prompt: promptText,
+      prompt: promptState.isVisible ? promptState.renderedPrompt : "",
+      promptKind: promptState.isVisible ? promptState.renderedKind : null,
+      contextualPrompt: promptText,
     })
     const targetWindow = window as typeof window & { render_game_to_text?: () => string }
     targetWindow.render_game_to_text = renderGameToText
@@ -165,7 +173,15 @@ export default function WorldScreen() {
         delete targetWindow.render_game_to_text
       }
     }
-  }, [activeSectionId, dialogueState.isOpen, playerPosition, promptText])
+  }, [
+    activeSectionId,
+    dialogueState.isOpen,
+    playerPosition,
+    promptState.isVisible,
+    promptState.renderedKind,
+    promptState.renderedPrompt,
+    promptText,
+  ])
 
   return (
     <main className="relative min-h-dvh overflow-x-hidden overflow-y-auto bg-[#0a0604] text-amber-50">
@@ -190,19 +206,10 @@ export default function WorldScreen() {
             >
               <WorldCanvas
                 initialPlayerPosition={playerPosition}
-                initialUiLocked={dialogueState.isOpen || activeSectionId !== null}
+                initialUiLocked={uiLocked}
                 joystickRef={joystickRef}
               />
-              {promptText ? (
-                <div className="pointer-events-none absolute inset-x-4 bottom-5 z-20 flex justify-center">
-                  <div
-                    data-testid="world-prompt"
-                    className="max-w-[min(92%,34rem)] rounded-full border border-amber-300/26 bg-[#090504]/78 px-4 py-2 text-center font-cinzel text-[0.72rem] leading-5 text-amber-100 shadow-[0_10px_30px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:text-sm"
-                  >
-                    {promptText}
-                  </div>
-                </div>
-              ) : null}
+              <WorldPromptOverlay promptState={promptState} />
               <WorldDialogueBox />
             </div>
 

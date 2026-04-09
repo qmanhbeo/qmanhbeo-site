@@ -83,10 +83,7 @@ export class WorldScene extends Phaser.Scene {
     const offDialogueClosed = gameBridge.on("dialogue-closed", () => this.unlockWorldUi())
     this.cleanupFns.push(offSectionClosed, offDialogueClosed)
 
-    this.registry.set(
-      "promptText",
-      this.uiLocked ? "" : "Use WASD or arrows to walk. Press E near a building or friend.",
-    )
+    this.registry.set("promptText", "")
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.cleanupFns.forEach((cleanup) => cleanup())
@@ -101,6 +98,8 @@ export class WorldScene extends Phaser.Scene {
     const { justInteracted } = this.player.updatePlayer()
 
     if (this.uiLocked) {
+      this.syncTargetHalo(null)
+      this.registry.set("promptText", "")
       if (time - this.lastPersistAt > 250) {
         this.lastPersistAt = time
         this.persistPlayerPosition()
@@ -110,14 +109,13 @@ export class WorldScene extends Phaser.Scene {
 
     const activeTarget = this.getActiveTarget()
     this.syncTargetHalo(activeTarget)
-    this.registry.set(
-      "promptText",
-      activeTarget?.prompt ?? "Use WASD or arrows to walk. Press E near a building or friend.",
-    )
+    this.registry.set("promptText", activeTarget?.prompt ?? "")
 
     if (justInteracted && activeTarget) {
       this.uiLocked = true
       this.player.setControlsLocked(true)
+      this.syncTargetHalo(null)
+      this.registry.set("promptText", "")
 
       if (activeTarget.kind === "building") {
         gameBridge.emit("world-sfx", { cue: "panel-open" })

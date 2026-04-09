@@ -17,6 +17,11 @@ async function getPlayerPosition(page) {
   return state.playerPosition
 }
 
+async function getWorldState(page) {
+  await page.waitForFunction(() => typeof window.render_game_to_text === "function")
+  return page.evaluate(() => JSON.parse(window.render_game_to_text()))
+}
+
 async function waitForPlayerPosition(page, predicate, description, timeout = 12_000) {
   const deadline = Date.now() + timeout
   let lastPosition = await getPlayerPosition(page)
@@ -133,6 +138,32 @@ async function run() {
   })
 
   try {
+    await runStep(browser, "desktop prompt onboarding and contextual CTA", async (page) => {
+      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
+      await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
+
+      const prompt = page.getByTestId("world-prompt")
+      await prompt.waitFor({ state: "visible" })
+      assert.match(await prompt.textContent() ?? "", /Use WASD or arrows to walk\. Press E near a building or friend\./)
+      assert.equal(await prompt.getAttribute("data-prompt-kind"), "tutorial")
+
+      await page.waitForTimeout(2900)
+
+      await prompt.waitFor({ state: "visible" })
+      assert.match(await prompt.textContent() ?? "", /Press E to talk to Avery/)
+      assert.equal(await prompt.getAttribute("data-prompt-kind"), "contextual")
+
+      await focusWorldCanvas(page)
+      await page.keyboard.down("d")
+      await waitForPlayerPosition(page, (position) => position.x >= 390, "the player to leave Avery prompt range")
+      await page.keyboard.up("d")
+
+      await prompt.waitFor({ state: "hidden" })
+      const worldState = await getWorldState(page)
+      assert.equal(worldState.prompt, "", `Prompt should be cleared after leaving interaction range: ${JSON.stringify(worldState)}`)
+      assert.equal(worldState.contextualPrompt, "", `Contextual prompt should be empty after leaving interaction range: ${JSON.stringify(worldState)}`)
+    })
+
     await runStep(browser, "desktop dialogue and input lock", async (page) => {
       await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
 
