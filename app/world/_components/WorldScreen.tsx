@@ -159,7 +159,6 @@ export default function WorldScreen() {
               />
               <VirtualJoystick joystickRef={joystickRef} />
               <WorldDialogueBox />
-              <WorldSectionPanel />
             </div>
 
             <aside className="min-w-0 space-y-4">
@@ -200,6 +199,8 @@ export default function WorldScreen() {
             </aside>
           </div>
         </section>
+
+        <WorldSectionPanel />
       </div>
     </main>
   )

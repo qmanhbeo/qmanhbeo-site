@@ -24,15 +24,16 @@ export default function WorldSectionPanel() {
   const SectionComponent = WORLD_SECTION_COMPONENTS[activeSectionId]
 
   return (
-    <div className="absolute inset-0 z-35 flex items-center justify-center bg-[#050302]/68 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-[#050302]/74 p-3 backdrop-blur-sm sm:p-4 md:items-center md:p-6">
       <div
-        className="relative flex h-full max-h-[92dvh] w-full max-w-6xl overflow-hidden rounded-[2.2rem] border border-amber-500/16 bg-[#0c0806]/95 shadow-[0_24px_80px_rgba(0,0,0,0.55)]"
+        data-testid="world-section-panel"
+        className="relative flex h-full min-h-0 w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-amber-500/16 bg-[#0c0806]/95 shadow-[0_24px_80px_rgba(0,0,0,0.55)] md:h-auto md:max-h-[92dvh] md:rounded-[2.2rem]"
         onWheelCapture={(event) => event.stopPropagation()}
       >
-        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between border-b border-amber-200/8 bg-black/18 px-5 py-4 backdrop-blur-sm">
+        <div className="flex items-start justify-between gap-4 border-b border-amber-200/8 bg-black/18 px-4 py-4 backdrop-blur-sm sm:px-5">
           <div>
             <p className="font-cinzel text-[0.72rem] uppercase tracking-[0.3em] text-amber-300/70">Inside The World</p>
-            <p className="mt-1 font-cinzel text-lg text-amber-50">{WORLD_SECTION_LABELS[activeSectionId]}</p>
+            <p className="mt-1 font-cinzel text-base text-amber-50 sm:text-lg">{WORLD_SECTION_LABELS[activeSectionId]}</p>
           </div>
 
           <button
@@ -48,7 +49,7 @@ export default function WorldSectionPanel() {
           </button>
         </div>
 
-        <div className="h-full w-full pt-[5.1rem]">
+        <div data-testid="world-section-panel-body" className="min-h-0 flex-1">
           <SectionComponent surface="world-panel" />
         </div>
       </div>

@@ -125,6 +125,12 @@ async function runStep(browser, name, fn, contextOptions = {}) {
   }
 }
 
+async function seedWorldSession(page, sessionState) {
+  await page.addInitScript((nextState) => {
+    window.sessionStorage.setItem("world:session:v1", JSON.stringify(nextState))
+  }, sessionState)
+}
+
 async function run() {
   const browser = await chromium.launch({
     executablePath: CHROMIUM_EXECUTABLE_PATH,
@@ -236,6 +242,52 @@ async function run() {
 
       assertRectWithin(mapCard, canvasShell, "Canvas shell within map card")
       assertRectWithin(canvasShell, canvas, "Canvas within shell")
+    }, devices["iPhone 14 Pro Max"])
+
+    await runStep(browser, "iphone 14 pro max publications panel fit", async (page) => {
+      await seedWorldSession(page, {
+        activeSectionId: "publications",
+        dialogueState: { isOpen: false, npcId: null, speaker: "", lines: [], lineIndex: 0 },
+        playerPosition: { x: 320, y: 352 },
+      })
+
+      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
+      await page.getByTestId("world-section-panel").waitFor({ state: "visible" })
+      await page.getByText("Scholar Scrolls", { exact: true }).waitFor({ state: "visible" })
+
+      const viewport = page.viewportSize()
+      assert.ok(viewport, "Viewport size is missing")
+
+      const mapCard = await page.getByTestId("world-map-card").boundingBox()
+      const panel = await page.getByTestId("world-section-panel").boundingBox()
+      const scrollMetrics = await page.evaluate(() => {
+        const scrollArea = document.querySelector(".manuscript-scrollable-area")
+        if (!scrollArea) return null
+        return {
+          clientHeight: scrollArea.clientHeight,
+          scrollHeight: scrollArea.scrollHeight,
+        }
+      })
+
+      assert.ok(mapCard, "World map card is missing")
+      assert.ok(panel, "World section panel is missing")
+      assert.ok(scrollMetrics, "Publications scroll area is missing")
+      assert.ok(panel.y <= 16, `Panel should anchor near the viewport top: ${JSON.stringify({ viewport, panel })}`)
+      assert.ok(
+        panel.height >= viewport.height - 32,
+        `Panel height is still too constrained on mobile: ${JSON.stringify({ viewport, panel })}`,
+      )
+      assert.ok(
+        panel.height > mapCard.height + 120,
+        `Panel is still trapped inside the map card: ${JSON.stringify({ mapCard, panel })}`,
+      )
+      assert.ok(
+        scrollMetrics.clientHeight >= 220,
+        `Publications scroll area is too short on mobile: ${JSON.stringify(scrollMetrics)}`,
+      )
+
+      await page.getByLabel("Close world panel").click()
+      await page.getByTestId("world-section-panel").waitFor({ state: "hidden" })
     }, devices["iPhone 14 Pro Max"])
 
     await runStep(browser, "mobile joystick movement and interact", async (page) => {
