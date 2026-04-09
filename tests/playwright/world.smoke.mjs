@@ -363,13 +363,25 @@ async function run() {
       await seedWorldSession(page, DEFAULT_WORLD_SESSION)
       await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
       await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
+      await page.waitForFunction(() => {
+        if (typeof window.render_game_to_text !== "function") return false
+        return JSON.parse(window.render_game_to_text()).contextualPrompt === "Press E to talk to Avery"
+      })
 
       const interactButton = page.getByTestId("world-interact-button")
       await interactButton.waitFor({ state: "visible" })
 
-      await interactButton.dispatchEvent("pointerdown")
+      await interactButton.dispatchEvent("pointerdown", {
+        bubbles: true,
+        pointerId: 1,
+        pointerType: "touch",
+      })
       await page.waitForTimeout(300)
-      await interactButton.dispatchEvent("pointerup")
+      await interactButton.dispatchEvent("pointerup", {
+        bubbles: true,
+        pointerId: 1,
+        pointerType: "touch",
+      })
 
       await page.getByText("Avery", { exact: true }).waitFor({ state: "visible" })
       await page

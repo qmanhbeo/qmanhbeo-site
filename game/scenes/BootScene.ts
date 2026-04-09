@@ -2,6 +2,15 @@ import Phaser from "phaser"
 import { gameBridge } from "@/game/GameBridge"
 import { npcData } from "@/game/config/npcData"
 
+const CHARACTER_ASSETS = [
+  { key: "world-player", path: "/game/characters/player.png" },
+  ...npcData.map((npc) => ({
+    key: `world-npc-${npc.id}`,
+    path: `/game/characters/npc-${npc.id}.png`,
+  })),
+  { key: "world-fire", path: "/game/characters/campfire.png" },
+] as const
+
 function generateRoundedTexture(
   scene: Phaser.Scene,
   key: string,
@@ -108,17 +117,29 @@ export class BootScene extends Phaser.Scene {
 
   preload() {
     gameBridge.emit("load-progress", { progress: 0.12, label: "Lighting the hearth" })
+    CHARACTER_ASSETS.forEach((asset) => {
+      this.load.image(asset.key, asset.path)
+    })
+    this.load.on("progress", (progress: number) => {
+      gameBridge.emit("load-progress", {
+        progress: 0.12 + progress * 0.76,
+        label: "Gathering village sprites",
+      })
+    })
   }
 
   create() {
-    generateCharacterTexture(this, "world-player", {
-      accent: 0xffd27b,
-      cloak: 0x8a4f24,
-      hair: 0x3a1f13,
-      skin: 0xf5d08b,
-    })
+    if (!this.textures.exists("world-player")) {
+      generateCharacterTexture(this, "world-player", {
+        accent: 0xffd27b,
+        cloak: 0x8a4f24,
+        hair: 0x3a1f13,
+        skin: 0xf5d08b,
+      })
+    }
     generateRoundedTexture(this, "world-npc", 20, 20, 0xbcc9ff, 0x1c2437)
     npcData.forEach((npc, index) => {
+      if (this.textures.exists(`world-npc-${npc.id}`)) return
       const hairColors = [0x24130c, 0x44301d, 0x201a24]
       generateCharacterTexture(this, `world-npc-${npc.id}`, {
         accent: 0xffd27b,
@@ -128,7 +149,9 @@ export class BootScene extends Phaser.Scene {
       })
     })
     generateCircleTexture(this, "world-spark", 2, 0xffe1a3)
-    generateCampfireTexture(this)
+    if (!this.textures.exists("world-fire")) {
+      generateCampfireTexture(this)
+    }
     gameBridge.emit("load-progress", { progress: 1, label: "World ready" })
     this.scene.start("WorldScene")
     this.scene.start("UIScene")
