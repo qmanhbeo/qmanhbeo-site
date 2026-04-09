@@ -33,6 +33,7 @@ Next todos:
 - Add more social media links
 - Add real relfections to campfire notes
 
+- **[Fun Mode / 2D pixel RPG village → see PLANGAME.md](./PLANGAME.md)**
 - Add Toggle for "Fun mode" or "Wander mode"
 - Turns into a 2D pixel game, a small town with some buildings.
 - Add a “Fun Mode” toggle to the existing Next.js site. When flipped, the normal layout gives way to a small pixel world. Same content, different door. The world: A campfire at the center. Paths lead out to a few small buildings — one for projects, one for papers, one for notes, one for contact. Walk in, content appears. The stack: Phaser.js for the game layer. It lives alongside the existing site, not replacing it. The order:

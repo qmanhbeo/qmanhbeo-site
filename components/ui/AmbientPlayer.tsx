@@ -19,9 +19,53 @@ export default function AmbientPlayer() {
   const { ambientVolumes, setAmbientVolume } = useAudioContext()
   const [expanded, setExpanded] = useState(false)
   const howlsRef = useRef<Partial<Record<Track, Howl>>>({})
+  const stopTimersRef = useRef<Partial<Record<Track, ReturnType<typeof setTimeout>>>>({})
+  const isAmbientPausedRef = useRef(false)
   // Mirror of ambientVolumes for access inside async callbacks
   const ambientVolumesRef = useRef(ambientVolumes)
   useEffect(() => { ambientVolumesRef.current = ambientVolumes }, [ambientVolumes])
+
+  const clearStopTimer = useCallback((track: Track) => {
+    const timerId = stopTimersRef.current[track]
+    if (timerId) {
+      clearTimeout(timerId)
+      delete stopTimersRef.current[track]
+    }
+  }, [])
+
+  const scheduleStop = useCallback((track: Track) => {
+    clearStopTimer(track)
+    stopTimersRef.current[track] = setTimeout(() => {
+      howlsRef.current[track]?.stop()
+      delete stopTimersRef.current[track]
+    }, FADE_MS + 20)
+  }, [clearStopTimer])
+
+  const clearAllStopTimers = useCallback(() => {
+    for (const track of Object.keys(stopTimersRef.current) as Track[]) {
+      clearStopTimer(track)
+    }
+  }, [clearStopTimer])
+
+  const fadeTrackToVolume = useCallback((track: Track, nextVolume: number) => {
+    const howl = howlsRef.current[track]
+    if (!howl) return
+
+    clearStopTimer(track)
+
+    if (nextVolume <= 0) {
+      if (howl.playing()) howl.fade(howl.volume(), 0, FADE_MS)
+      scheduleStop(track)
+      return
+    }
+
+    if (!howl.playing()) {
+      howl.volume(0)
+      howl.play()
+    }
+
+    howl.fade(howl.volume(), nextVolume, FADE_MS)
+  }, [clearStopTimer, scheduleStop])
 
   // Load Howl instances on mount, apply any persisted volumes immediately
   useEffect(() => {
@@ -40,36 +84,47 @@ export default function AmbientPlayer() {
     })
     return () => {
       cancelled = true
+      clearAllStopTimers()
       Object.values(howlsRef.current).forEach((h) => { h?.stop(); h?.unload() })
       howlsRef.current = {}
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [clearAllStopTimers])
 
   // Sync volume changes to Howl instances
   useEffect(() => {
-    const timerIds: ReturnType<typeof setTimeout>[] = []
+    if (isAmbientPausedRef.current) return
+
     for (const t of TRACK_META) {
-      const h = howlsRef.current[t.key]
-      if (!h) continue
-      const v = ambientVolumes[t.key]
-      if (v > 0) {
-        if (!h.playing()) {
-          h.volume(0)
-          h.play()
-          h.fade(0, v, FADE_MS)
-        } else {
-          h.volume(v)
-        }
-      } else {
-        if (h.playing()) h.fade(h.volume(), 0, FADE_MS)
-        const key = t.key
-        const id = setTimeout(() => { howlsRef.current[key]?.stop() }, FADE_MS + 20)
-        timerIds.push(id)
+      fadeTrackToVolume(t.key, ambientVolumes[t.key])
+    }
+  }, [ambientVolumes, fadeTrackToVolume])
+
+  useEffect(() => {
+    const handleAmbientPause = () => {
+      isAmbientPausedRef.current = true
+      for (const { key } of TRACK_META) {
+        fadeTrackToVolume(key, 0)
       }
     }
-    return () => { timerIds.forEach(clearTimeout) }
-  }, [ambientVolumes])
+
+    const handleAmbientResume = (event: Event) => {
+      isAmbientPausedRef.current = false
+      const customEvent = event as CustomEvent<{ ambientVolumes?: Partial<Record<Track, number>> }>
+      const volumes = customEvent.detail?.ambientVolumes ?? ambientVolumesRef.current
+
+      for (const { key } of TRACK_META) {
+        fadeTrackToVolume(key, volumes[key] ?? ambientVolumesRef.current[key])
+      }
+    }
+
+    window.addEventListener("ambient:pause", handleAmbientPause)
+    window.addEventListener("ambient:resume", handleAmbientResume as EventListener)
+
+    return () => {
+      window.removeEventListener("ambient:pause", handleAmbientPause)
+      window.removeEventListener("ambient:resume", handleAmbientResume as EventListener)
+    }
+  }, [fadeTrackToVolume])
 
   const isAnyPlaying = Object.values(ambientVolumes).some((v) => v > 0)
 

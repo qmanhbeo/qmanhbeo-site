@@ -22,3 +22,6 @@ Recent commits use short, imperative subjects such as `Fix map cards contrast` a
 
 ## Security & Configuration Tips
 Keep secrets in `.env.local` only. The current app expects `RESEND_API_KEY` and `LETTER_TO_EMAIL` for the letter API. Never hard-code keys, commit real credentials, or include temporary audit artifacts in a review branch.
+
+## Game View Tracking Rule
+Any work on the dedicated Game view / Fun Mode flow must update `PLANGAME.md` in the same change. Treat `PLANGAME.md` as the source of truth for Game view architecture, checklist state, current session handoff, and step-by-step progress notes.

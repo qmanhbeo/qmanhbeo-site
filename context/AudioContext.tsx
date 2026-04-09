@@ -16,6 +16,8 @@ interface AudioContextValue {
   ambientVolumes: AmbientVolumes
   setAmbientVolume: (track: keyof AmbientVolumes, value: number) => void
   playSfx: (type: "click" | "transition" | "open" | "flip") => void
+  pauseAllAmbient: () => void
+  resumeAllAmbient: () => void
 }
 
 const AudioContext = createContext<AudioContextValue | null>(null)
@@ -47,7 +49,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [sfxEnabled, setSfxEnabled] = useState(true)
   const [ambientVolumes, setAmbientVolumesState] = useState<AmbientVolumes>({ fire: 0, rain: 0, music: 0 })
   const sfxHowlsRef = useRef<Record<string, Howl>>({})
-  const unlockedRef = useRef(false)
+  const ambientVolumesRef = useRef(ambientVolumes)
+
+  useEffect(() => {
+    ambientVolumesRef.current = ambientVolumes
+  }, [ambientVolumes])
 
   // Load persisted prefs on mount
   useEffect(() => {
@@ -107,8 +113,30 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     sfxHowlsRef.current[type]?.play()
   }, [sfxEnabled])
 
+  const pauseAllAmbient = useCallback(() => {
+    if (typeof window === "undefined") return
+    window.dispatchEvent(new CustomEvent("ambient:pause"))
+  }, [])
+
+  const resumeAllAmbient = useCallback(() => {
+    if (typeof window === "undefined") return
+    window.dispatchEvent(new CustomEvent("ambient:resume", {
+      detail: { ambientVolumes: ambientVolumesRef.current },
+    }))
+  }, [])
+
   return (
-    <AudioContext.Provider value={{ sfxEnabled, toggleSfx, ambientVolumes, setAmbientVolume, playSfx }}>
+    <AudioContext.Provider
+      value={{
+        sfxEnabled,
+        toggleSfx,
+        ambientVolumes,
+        setAmbientVolume,
+        playSfx,
+        pauseAllAmbient,
+        resumeAllAmbient,
+      }}
+    >
       {children}
     </AudioContext.Provider>
   )

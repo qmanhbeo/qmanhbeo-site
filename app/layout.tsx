@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from "next"
 import { EB_Garamond, Cinzel } from "next/font/google"
 import tabIcon from "@/img/tab-icon.png"
 import { AudioProvider } from "@/context/AudioContext"
+import { FunModeProvider } from "@/context/FunModeContext"
 import AtmosphereControls from "@/components/ui/AtmosphereControls"
 import "./globals.css"
 
@@ -52,9 +53,11 @@ export default function RootLayout({
       </head>
       <body className={`${ebGaramond.variable} ${cinzel.variable} antialiased`}>
         <AudioProvider>
-          <AtmosphereControls />
-          {children}
-          {modal}
+          <FunModeProvider>
+            <AtmosphereControls />
+            {children}
+            {modal}
+          </FunModeProvider>
         </AudioProvider>
       </body>
     </html>

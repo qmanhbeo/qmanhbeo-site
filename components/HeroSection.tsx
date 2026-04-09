@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { readPendingReturnState } from "@/utils/entryNavigation"
 import { useAudioContext } from "@/context/AudioContext"
+import { useFunMode } from "@/context/FunModeContext"
 import ArchiveCodexButton from "./ui/ArchiveCodexButton"
 import ArchiveCodexOverlay from "./ui/ArchiveCodexOverlay"
 import LetterOverlay from "./ui/LetterOverlay"
@@ -19,6 +20,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
   })
   const [isLetterOverlayOpen, setIsLetterOverlayOpen] = useState(false)
   const { playSfx } = useAudioContext()
+  const { openFunMode } = useFunMode()
 
   return (
     <section
@@ -57,6 +59,37 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
               helperText="Open the scroll and write by firelight."
               variant="compact"
             />
+          </div>
+
+          <div className="w-full max-w-md shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                playSfx("open")
+                openFunMode()
+              }}
+              className="group relative w-full overflow-hidden rounded-[1.8rem] border border-amber-500/40 bg-[linear-gradient(155deg,#2b150d_0%,#6d3516_58%,#c06b1f_100%)] px-6 py-5 text-left shadow-[0_22px_55px_rgba(40,17,6,0.32)] transition duration-300 hover:scale-[1.02] hover:border-amber-300/65 hover:shadow-[0_28px_70px_rgba(40,17,6,0.45)]"
+              aria-label="Enter the World"
+            >
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,214,145,0.28),_transparent_38%)] opacity-80 transition duration-300 group-hover:opacity-100" />
+              <div className="relative flex items-center justify-between gap-4">
+                <div>
+                  <p className="font-cinzel text-[0.72rem] uppercase tracking-[0.34em] text-amber-100/75">
+                    Dedicated Game Route
+                  </p>
+                  <p className="mt-2 font-cinzel text-xl font-semibold text-amber-50 sm:text-2xl">
+                    Enter the World
+                  </p>
+                  <p className="mt-2 max-w-sm text-sm leading-6 text-amber-100/78">
+                    Leave the scroll behind and step into the village as its own screen.
+                  </p>
+                </div>
+
+                <div className="rounded-full border border-amber-200/25 bg-black/15 px-3 py-2 font-cinzel text-sm text-amber-50/90">
+                  /game
+                </div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
