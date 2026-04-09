@@ -24,10 +24,10 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 **Last updated:** 2026-04-09
 
-**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
+**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. Playwright smoke coverage now includes desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, and mobile joystick drag plus interact dialogue. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
 
 **Start here next session:**
-1. Manually smoke test `/world` on desktop and mobile
+1. Do a manual touch-device pass for mobile panel behavior and overall feel
 2. Add real art/audio assets on top of the procedural fallback world
 3. Decide whether to polish BGM, NPC idle animation, and richer building prompts before deeper world content
 4. Keep `/world` as the only route identity; do not reintroduce `/game`
@@ -51,6 +51,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-09: Verified targeted ESLint passes for the world files and `npm run build` passes with `/world`.
 - [x] 2026-04-09: Confirmed repo-wide `npm run lint` still fails only on pre-existing unrelated files: `components/WandererTrail.tsx`, `components/ui/InfiniteCarousel.tsx`, `components/ui/MobileSnapCarousel.tsx`, and `hooks/useAudio.ts`.
 - [x] 2026-04-09: Anonymized temporary NPC placeholders to generic names: Alex, Adam, and Avery.
+- [x] 2026-04-09: Added `tests/playwright/world.smoke.mjs` and passed Playwright smoke coverage for desktop dialogue plus input lock, home CTA entry into `/world`, home-to-Library-to-item-return restore, and mobile joystick drag plus interact dialogue against the live `/world` route.
 
 ---
 
@@ -214,9 +215,11 @@ Building → Section mapping:
 - [x] `app/world/_components/WorldScreen.tsx` — top-level route shell that coordinates input lock, audio, and persistence
 
 ### Phase 4 — Verification
-- [ ] Test full cycle: home → `/world` → move → enter building → open section panel → open item → return to `/world` → restore state
-- [ ] Test dialogue and input lock behavior
-- [ ] Test mobile joystick movement and panel behavior
+- [x] Playwright smoke: desktop dialogue plus input lock, home CTA → `/world`, Library → item → `/world` return restore, and mobile joystick drag plus interact dialogue
+- [x] Test full cycle: home → `/world` → move → enter building → open section panel → open item → return to `/world` → restore state
+- [x] Test dialogue and input lock behavior
+- [x] Test mobile joystick movement
+- [ ] Test mobile panel behavior on a real touch device
 - [x] `npm run build`
 - [ ] `npm run lint` if/when unrelated pre-existing issues are addressed
 

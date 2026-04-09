@@ -84,6 +84,7 @@ export default function VirtualJoystick({ joystickRef }: VirtualJoystickProps) {
       <div className="pointer-events-auto absolute bottom-6 left-5">
         <div
           ref={padRef}
+          data-testid="world-joystick-pad"
           className="relative h-28 w-28 rounded-full border border-amber-300/18 bg-[#120a08]/65 shadow-[0_10px_35px_rgba(0,0,0,0.35)] backdrop-blur-sm"
           onPointerDown={() => {
             isDraggingRef.current = true
@@ -100,6 +101,7 @@ export default function VirtualJoystick({ joystickRef }: VirtualJoystickProps) {
       <div className="pointer-events-auto absolute bottom-7 right-5">
         <button
           type="button"
+          data-testid="world-interact-button"
           className="h-20 w-20 rounded-full border border-amber-400/30 bg-[#3a2010]/82 font-cinzel text-lg text-amber-50 shadow-[0_10px_35px_rgba(0,0,0,0.35)] backdrop-blur-sm"
           onPointerDown={() => {
             joystickRef.current = {
