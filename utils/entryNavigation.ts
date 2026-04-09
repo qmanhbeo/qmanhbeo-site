@@ -1,6 +1,14 @@
 import type { EntryType } from "@/content/entries"
+import {
+  type CanonicalEntryOriginSection,
+  type EntryOriginSectionLike,
+  normalizeEntryOriginSection,
+} from "@/utils/worldSections"
 
-export type EntryOriginSection = "map" | "projects" | "publications" | "notes" | "archive"
+export type EntryOriginSection =
+  | CanonicalEntryOriginSection
+  | "notes"
+  | "scrolls"
 
 export interface EntryOriginState {
   sourceRoute: string
@@ -48,12 +56,13 @@ const ARCHIVE_CODEX_STATE_KEY = "archive-codex-state"
 const RETURN_SECTION_KEY = "returnSection"
 const ITEM_SCROLL_STATE_PREFIX = "entry-scroll-state:"
 
-const HOME_SECTION_INDEX_BY_SOURCE: Record<EntryOriginSection, number> = {
+const HOME_SECTION_INDEX_BY_SOURCE: Record<CanonicalEntryOriginSection, number> = {
   archive: 0,
+  blog: 5,
+  letter: 6,
   map: 2,
   projects: 3,
   publications: 4,
-  notes: 5,
 }
 
 function isBrowser() {
@@ -94,9 +103,18 @@ function removeState(key: string) {
   window.sessionStorage.removeItem(key)
 }
 
-export function getHomeSectionIndexForOrigin(sourceSection?: EntryOriginSection) {
-  if (!sourceSection) return 0
-  return HOME_SECTION_INDEX_BY_SOURCE[sourceSection]
+function normalizeOriginState(state: EntryOriginState): EntryOriginState {
+  const normalizedSourceSection = normalizeEntryOriginSection(state.sourceSection)
+  return {
+    ...state,
+    sourceSection: normalizedSourceSection,
+  }
+}
+
+export function getHomeSectionIndexForOrigin(sourceSection?: EntryOriginSectionLike) {
+  const normalizedSourceSection = normalizeEntryOriginSection(sourceSection)
+  if (!normalizedSourceSection) return 0
+  return HOME_SECTION_INDEX_BY_SOURCE[normalizedSourceSection] ?? 0
 }
 
 export function readReturnSection(maxSectionCount?: number) {
@@ -117,10 +135,10 @@ export function saveReturnSection(sectionIndex: number) {
 }
 
 export function saveEntryOriginState(state: Omit<EntryOriginState, "updatedAt">) {
-  const nextState: EntryOriginState = {
+  const nextState = normalizeOriginState({
     ...state,
     updatedAt: Date.now(),
-  }
+  })
 
   writeState(ENTRY_ORIGIN_STATE_KEY, nextState)
 
@@ -135,7 +153,7 @@ export function readEntryOriginState(itemSlug?: string) {
   const state = readFreshState<EntryOriginState>(ENTRY_ORIGIN_STATE_KEY)
   if (!state) return null
   if (itemSlug && state.itemSlug !== itemSlug) return null
-  return state
+  return normalizeOriginState(state)
 }
 
 export function clearEntryOriginState(itemSlug?: string) {
@@ -146,10 +164,10 @@ export function clearEntryOriginState(itemSlug?: string) {
 }
 
 export function savePendingReturnState(state: Omit<EntryOriginState, "updatedAt"> | EntryOriginState) {
-  const nextState: EntryOriginState = {
+  const nextState = normalizeOriginState({
     ...state,
     updatedAt: Date.now(),
-  }
+  })
 
   writeState(PENDING_RETURN_STATE_KEY, nextState)
 
@@ -164,7 +182,7 @@ export function readPendingReturnState(sourceRoute?: string) {
   const state = readFreshState<EntryOriginState>(PENDING_RETURN_STATE_KEY)
   if (!state) return null
   if (sourceRoute && state.sourceRoute !== sourceRoute) return null
-  return state
+  return normalizeOriginState(state)
 }
 
 export function clearPendingReturnState(sourceRoute?: string) {

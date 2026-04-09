@@ -2,14 +2,14 @@
 
 import { useTheme } from "@/hooks/useTheme"
 import { useAudioContext } from "@/context/AudioContext"
-import { useFunMode } from "@/context/FunModeContext"
+import { useWorld } from "@/context/WorldContext"
 
 export default function AtmosphereControls() {
   const { theme, toggleTheme } = useTheme()
   const { sfxEnabled, toggleSfx } = useAudioContext()
-  const { isFunModeActive } = useFunMode()
+  const { isWorldActive } = useWorld()
 
-  if (isFunModeActive) return null
+  if (isWorldActive) return null
 
   return (
     <div className="fixed top-3 right-3 z-[80] flex items-center gap-1">
