@@ -93,6 +93,15 @@ async function dragJoystick(page, dx, dy, holdMs = 450) {
   })
 }
 
+function assertRectWithin(outerRect, innerRect, label, tolerance = 1) {
+  assert.ok(Boolean(outerRect), `${label} outer rect is missing`)
+  assert.ok(Boolean(innerRect), `${label} inner rect is missing`)
+  assert.ok(innerRect.x >= outerRect.x - tolerance, `${label} overflows left edge`)
+  assert.ok(innerRect.y >= outerRect.y - tolerance, `${label} overflows top edge`)
+  assert.ok(innerRect.x + innerRect.width <= outerRect.x + outerRect.width + tolerance, `${label} overflows right edge`)
+  assert.ok(innerRect.y + innerRect.height <= outerRect.y + outerRect.height + tolerance, `${label} overflows bottom edge`)
+}
+
 async function saveFailureArtifact(page, name) {
   const filePath = path.join(FAILURE_DIR, `${name}.png`)
   await page.screenshot({ path: filePath, fullPage: true }).catch(() => {})
@@ -194,6 +203,40 @@ async function run() {
       await page.getByLabel("Close world panel").waitFor({ state: "visible" })
       await page.getByText("Scholar Scrolls", { exact: true }).waitFor({ state: "visible" })
     })
+
+    await runStep(browser, "iphone 14 pro max viewport fit", async (page) => {
+      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
+      await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
+      await page.locator("canvas").first().waitFor({ state: "visible" })
+
+      const viewport = page.viewportSize()
+      assert.ok(viewport, "Viewport size is missing")
+
+      const pageMetrics = await page.evaluate(() => ({
+        scrollWidth: document.documentElement.scrollWidth,
+        innerWidth: window.innerWidth,
+      }))
+
+      assert.ok(
+        pageMetrics.scrollWidth <= pageMetrics.innerWidth + 1,
+        `Page scroll width exceeds viewport width: ${JSON.stringify(pageMetrics)}`,
+      )
+
+      const mapCard = await page.getByTestId("world-map-card").boundingBox()
+      const canvasShell = await page.getByTestId("world-canvas-shell").boundingBox()
+      const canvas = await page.locator("canvas").first().boundingBox()
+
+      assert.ok(mapCard, "World map card is missing")
+      assert.ok(mapCard.width <= viewport.width + 1, `Map card width exceeds viewport: ${JSON.stringify({ viewport, mapCard })}`)
+      assert.ok(mapCard.x >= -1, `Map card starts off-screen: ${JSON.stringify({ viewport, mapCard })}`)
+      assert.ok(
+        mapCard.x + mapCard.width <= viewport.width + 1,
+        `Map card right edge exceeds viewport: ${JSON.stringify({ viewport, mapCard })}`,
+      )
+
+      assertRectWithin(mapCard, canvasShell, "Canvas shell within map card")
+      assertRectWithin(canvasShell, canvas, "Canvas within shell")
+    }, devices["iPhone 14 Pro Max"])
 
     await runStep(browser, "mobile joystick movement and interact", async (page) => {
       await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })

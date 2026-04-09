@@ -132,7 +132,7 @@ export default function WorldScreen() {
   }, [activeSectionId])
 
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-[#0a0604] text-amber-50">
+    <main className="relative min-h-dvh overflow-x-hidden overflow-y-auto bg-[#0a0604] text-amber-50">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.2),_transparent_28%),linear-gradient(180deg,_rgba(23,12,8,0.96),_rgba(6,4,3,1))]" />
       <div className="absolute inset-x-0 top-0 h-44 bg-[linear-gradient(180deg,_rgba(248,195,92,0.12),_transparent)]" />
 
@@ -146,9 +146,12 @@ export default function WorldScreen() {
           <ExitButton onClick={closeWorld} />
         </header>
 
-        <section className="flex flex-1 items-center justify-center px-4 pb-8 pt-2 sm:px-6">
-          <div className="grid w-full max-w-7xl gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-            <div className="relative min-h-[32rem] rounded-[2rem] border border-amber-500/20 bg-[#120b08]/85 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:p-4">
+        <section className="flex flex-1 items-start justify-center px-4 pb-6 pt-2 sm:px-6 sm:pb-8 xl:items-center">
+          <div className="grid w-full max-w-7xl gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] xl:gap-6">
+            <div
+              data-testid="world-map-card"
+              className="relative aspect-square min-w-0 w-full max-w-full rounded-[2rem] border border-amber-500/20 bg-[#120b08]/85 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:p-4 xl:aspect-auto xl:min-h-[32rem]"
+            >
               <WorldCanvas
                 initialPlayerPosition={playerPosition}
                 initialUiLocked={dialogueState.isOpen || activeSectionId !== null}
@@ -159,7 +162,7 @@ export default function WorldScreen() {
               <WorldSectionPanel />
             </div>
 
-            <aside className="space-y-4">
+            <aside className="min-w-0 space-y-4">
               <div className="rounded-[1.75rem] border border-amber-500/20 bg-[#140c08]/92 p-5">
                 <div className="flex items-center gap-2 text-amber-200/80">
                   <Swords className="h-4 w-4" />

@@ -17,6 +17,9 @@ Use TypeScript and TSX with 2-space indentation and the repo's existing semicolo
 ## Testing Guidelines
 There is no dedicated automated test suite or coverage gate yet. Every change should pass `npm run lint` and `npm run build`. For UI work, manually smoke test the main routes (`/`, `/item/[id]`, `/map`, `/letter`) and verify desktop plus mobile behavior. For letter-form changes, validate the API path and error handling without committing credentials.
 
+## Cross-Device Compatibility Rule
+Cross-device compatibility is a hard rule in this repo. Any UI or layout change is incomplete until it is verified against both desktop and mobile viewport behavior. Do not rely on post-hoc viewport patches after shipping a desktop-first layout. For route-level or immersive surfaces such as `/world`, update automated viewport coverage where practical and treat mobile clipping, overflow, or inaccessible controls as blocking regressions.
+
 ## Commit & Pull Request Guidelines
 Recent commits use short, imperative subjects such as `Fix map cards contrast` and `Add sections to manuscripts`. Keep commits focused, present tense, and under roughly 72 characters. PRs should include a concise description, note affected routes/components, link the related task if one exists, and attach screenshots for visual changes.
 
