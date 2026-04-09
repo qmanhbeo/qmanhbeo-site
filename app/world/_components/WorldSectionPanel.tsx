@@ -39,6 +39,7 @@ export default function WorldSectionPanel() {
           <button
             type="button"
             onClick={() => {
+              gameBridge.emit("world-sfx", { cue: "ui-close" })
               setActiveSectionId(null)
               gameBridge.emit("section-closed", undefined)
             }}

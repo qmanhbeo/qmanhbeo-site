@@ -8,7 +8,7 @@ import WorldDialogueBox from "@/app/world/_components/WorldDialogueBox"
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
 import { useAudioContext } from "@/context/AudioContext"
 import { useWorld } from "@/context/WorldContext"
-import { gameBridge } from "@/game/GameBridge"
+import { gameBridge, type WorldSfxCue } from "@/game/GameBridge"
 import type { JoystickInputState } from "@/game/types"
 
 const INITIAL_JOYSTICK_STATE: JoystickInputState = {
@@ -16,6 +16,13 @@ const INITIAL_JOYSTICK_STATE: JoystickInputState = {
   y: 0,
   interact: false,
 }
+
+const WORLD_SFX_BY_CUE = {
+  "dialogue-advance": "flip",
+  "dialogue-open": "open",
+  "panel-open": "open",
+  "ui-close": "click",
+} satisfies Record<WorldSfxCue, "click" | "transition" | "open" | "flip">
 
 export default function WorldScreen() {
   const {
@@ -27,11 +34,21 @@ export default function WorldScreen() {
     setDialogueState,
     setPlayerPosition,
   } = useWorld()
-  const { pauseAllAmbient, resumeAllAmbient } = useAudioContext()
+  const { pauseAllAmbient, playSfx, resumeAllAmbient } = useAudioContext()
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
   const [promptText, setPromptText] = useState("")
 
+  const handleWorldSfx = useEffectEvent(({ cue }: { cue: WorldSfxCue }) => {
+    playSfx(WORLD_SFX_BY_CUE[cue])
+  })
+
+  const handleExitWorld = useCallback(() => {
+    gameBridge.emit("world-sfx", { cue: "ui-close" })
+    closeWorld()
+  }, [closeWorld])
+
   const handleCloseDialogue = useCallback(() => {
+    gameBridge.emit("world-sfx", { cue: "ui-close" })
     gameBridge.emit("dialogue-closed", undefined)
     setDialogueState({
       isOpen: false,
@@ -43,6 +60,7 @@ export default function WorldScreen() {
   }, [setDialogueState])
 
   const handleCloseSection = useCallback(() => {
+    gameBridge.emit("world-sfx", { cue: "ui-close" })
     gameBridge.emit("section-closed", undefined)
     setActiveSectionId(null)
   }, [setActiveSectionId])
@@ -58,7 +76,7 @@ export default function WorldScreen() {
       return
     }
 
-    closeWorld()
+    handleExitWorld()
   })
 
   useEffect(() => {
@@ -96,6 +114,7 @@ export default function WorldScreen() {
     const offPromptChanged = gameBridge.on("prompt-changed", ({ prompt }) => {
       setPromptText(prompt)
     })
+    const offWorldSfx = gameBridge.on("world-sfx", handleWorldSfx)
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return
@@ -113,6 +132,7 @@ export default function WorldScreen() {
       offDialogueClosed()
       offPlayerPosition()
       offPromptChanged()
+      offWorldSfx()
       document.body.style.overflow = originalOverflow
       document.body.style.overscrollBehavior = originalOverscrollBehavior
       if (originalOverlayLock) {
@@ -159,7 +179,7 @@ export default function WorldScreen() {
             <h1 className="font-cinzel text-2xl font-semibold text-amber-50 sm:text-3xl">Village At Night</h1>
           </div>
 
-          <ExitButton onClick={closeWorld} />
+          <ExitButton onClick={handleExitWorld} />
         </header>
 
         <section className="flex flex-1 items-start justify-center px-4 pb-6 pt-2 sm:px-6 sm:pb-8 xl:items-center">

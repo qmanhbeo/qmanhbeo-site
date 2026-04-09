@@ -24,12 +24,12 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 **Last updated:** 2026-04-09
 
-**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. The world layout now constrains the map card responsively on phone viewports instead of allowing the fixed 640px Phaser surface to force horizontal overflow, and section panels now render as route-level overlays rather than being trapped inside the square map card on mobile. Mobile panel chrome now accounts for safe-area insets and uses a 44px close touch target. Mobile controls now dock below the game viewport instead of overlaying the canvas, and the old route/coordinate/active-panel debug sidebar has been removed from the user-facing UI on all viewports. The procedural fallback art pass now includes richer generated player/NPC sprites, character shadows, textured ground/path tiles, building facades, door/window lighting, building-specific signs, interaction halos, NPC idle bob, player walk bob, campfire sparks, and a readable React prompt plaque driven by Phaser prompt events. Playwright smoke coverage now includes desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, mobile joystick drag plus interact dialogue, an iPhone 14 Pro Max viewport-fit assertion for the map canvas, iPhone 14 Pro Max docked-control placement, and an iPhone 14 Pro Max publications-panel fit/touch-target assertion. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
+**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. The world layout now constrains the map card responsively on phone viewports instead of allowing the fixed 640px Phaser surface to force horizontal overflow, and section panels now render as route-level overlays rather than being trapped inside the square map card on mobile. Mobile panel chrome now accounts for safe-area insets and uses a 44px close touch target. Mobile controls now dock below the game viewport instead of overlaying the canvas, and the old route/coordinate/active-panel debug sidebar has been removed from the user-facing UI on all viewports. The procedural fallback art pass now includes richer generated player/NPC sprites, character shadows, textured ground/path tiles, building facades, door/window lighting, building-specific signs, interaction halos, NPC idle bob, player walk bob, campfire sparks, and a readable React prompt plaque driven by Phaser prompt events. World interaction polish now reuses the site's existing Howler SFX via semantic `world-sfx` bridge cues for panel open, dialogue open, dialogue advance, and close/exit actions. Playwright smoke coverage now includes desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, mobile joystick drag plus interact dialogue, an iPhone 14 Pro Max viewport-fit assertion for the map canvas, iPhone 14 Pro Max docked-control placement, and an iPhone 14 Pro Max publications-panel fit/touch-target assertion. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
 
 **Start here next session:**
 1. Do a manual touch-device pass for mobile docked controls, panel behavior, and overall feel
 2. Add real raster art/audio assets on top of the improved procedural fallback world
-3. Decide whether to polish BGM, NPC idle animation, and richer building prompts before deeper world content
+3. Decide whether to add dedicated world BGM/footsteps or keep reusing existing site SFX for UI-first game feel
 4. Keep `/world` as the only route identity; do not reintroduce `/game`
 5. Update this file before and after each meaningful World Mode step
 
@@ -59,6 +59,8 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-09: Moved prompt rendering out of scaled Phaser canvas text into a React prompt plaque fed by `prompt-changed` bridge events, so interaction prompts stay readable on mobile.
 - [x] 2026-04-09: Added code-drawn interaction polish: building-specific signs, active target halos, NPC idle bob, and player walk bob while moving.
 - [x] 2026-04-09: Restructured mobile `/world` layout so joystick/E controls dock below the game viewport, removed user-facing debug/status panels on all viewports, and exposed non-visual `render_game_to_text` state for Playwright instead of relying on visible coordinates.
+- [x] 2026-04-09: Reused existing site SFX for World Mode through semantic `world-sfx` bridge cues: building panels and NPC dialogue use `open`, dialogue advance uses `flip`, and close/exit actions use `click`.
+- [x] 2026-04-09: Verified the SFX reuse pass with targeted ESLint, production build, the existing World Playwright smoke suite, and a mobile dialogue screenshot/text-state observation.
 
 ---
 
@@ -221,6 +223,7 @@ Building → Section mapping:
 - [x] `app/world/_components/VirtualJoystick.tsx` — docked mobile controls below the game viewport
 - [x] `app/world/_components/WorldScreen.tsx` — top-level route shell that coordinates input lock, audio, and persistence
 - [x] Procedural fallback art polish — generated sprites, building facades/signs, ground/path texture, shadows, target halos, walk/idle bob, campfire sparks, and readable React prompt plaque
+- [x] Existing SFX reuse — world interactions emit semantic bridge cues that `WorldScreen` maps to the existing site Howler sounds
 
 ### Phase 4 — Verification
 - [x] Playwright smoke: desktop dialogue plus input lock, home CTA → `/world`, Library → item → `/world` return restore, mobile joystick drag plus interact dialogue, iPhone 14 Pro Max viewport-fit, docked mobile controls below the game, and iPhone 14 Pro Max publications-panel fit/touch-target
@@ -244,6 +247,8 @@ Building → Section mapping:
 **Panel input lock is required** — while a world panel or world-scoped composer is open, gameplay input must be paused and `Escape` should close the active world UI first.
 
 **Ambient audio** — pause/resume must use window events so saved ambient prefs remain intact.
+
+**World SFX reuse** — gameplay should emit semantic `world-sfx` cues and let `WorldScreen` map them to the existing site Howler sounds. Do not load duplicate Phaser UI sounds unless the repo adds dedicated game-only audio assets later.
 
 **Full persistence uses sessionStorage first** — persist player position, active panel, and dialogue/world context there rather than `localStorage`.
 

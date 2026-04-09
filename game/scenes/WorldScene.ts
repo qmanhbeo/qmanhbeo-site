@@ -120,8 +120,10 @@ export class WorldScene extends Phaser.Scene {
       this.player.setControlsLocked(true)
 
       if (activeTarget.kind === "building") {
+        gameBridge.emit("world-sfx", { cue: "panel-open" })
         gameBridge.emit("open-section", { sectionId: activeTarget.sectionId })
       } else {
+        gameBridge.emit("world-sfx", { cue: "dialogue-open" })
         gameBridge.emit("open-dialogue", {
           isOpen: true,
           npcId: activeTarget.npcId,

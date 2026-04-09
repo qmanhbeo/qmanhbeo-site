@@ -9,6 +9,7 @@ export default function WorldDialogueBox() {
   const { dialogueState, setDialogueState } = useWorld()
 
   const handleClose = useCallback(() => {
+    gameBridge.emit("world-sfx", { cue: "ui-close" })
     gameBridge.emit("dialogue-closed", undefined)
     setDialogueState({
       isOpen: false,
@@ -53,6 +54,7 @@ export default function WorldDialogueBox() {
                 return
               }
 
+              gameBridge.emit("world-sfx", { cue: "dialogue-advance" })
               setDialogueState({
                 ...dialogueState,
                 lineIndex: dialogueState.lineIndex + 1,

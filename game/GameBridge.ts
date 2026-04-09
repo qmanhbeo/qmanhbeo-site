@@ -2,6 +2,8 @@ import type { WorldDialogueState } from "@/context/WorldContext"
 import type { WorldSectionId } from "@/utils/worldSections"
 import type { PlayerPosition } from "@/game/types"
 
+export type WorldSfxCue = "dialogue-advance" | "dialogue-open" | "panel-open" | "ui-close"
+
 type WorldBridgeEventMap = {
   "dialogue-closed": undefined
   "load-progress": { progress: number; label?: string }
@@ -10,6 +12,7 @@ type WorldBridgeEventMap = {
   "player-position": PlayerPosition
   "prompt-changed": { prompt: string }
   "section-closed": undefined
+  "world-sfx": { cue: WorldSfxCue }
 }
 
 class WorldBridge extends EventTarget {
