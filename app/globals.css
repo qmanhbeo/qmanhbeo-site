@@ -178,6 +178,20 @@
   z-index: 120;
 }
 
+.world-panel-overlay {
+  padding:
+    max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+}
+
+@media (min-width: 768px) {
+  .world-panel-overlay {
+    padding: 1.5rem;
+  }
+}
+
 .scrollbar-fade-indicator[data-visible="false"] {
   opacity: 0;
 }
@@ -914,4 +928,3 @@
 [data-theme="light"] .text-orange-200 { color: #8a4d1f !important; }
 [data-theme="light"] .text-amber-100  { color: #7a5020 !important; }
 [data-theme="light"] .text-amber-200  { color: #8a6030 !important; }
-

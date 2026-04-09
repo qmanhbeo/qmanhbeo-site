@@ -260,6 +260,7 @@ async function run() {
 
       const mapCard = await page.getByTestId("world-map-card").boundingBox()
       const panel = await page.getByTestId("world-section-panel").boundingBox()
+      const closeButton = await page.getByTestId("world-section-panel-close").boundingBox()
       const scrollMetrics = await page.evaluate(() => {
         const scrollArea = document.querySelector(".manuscript-scrollable-area")
         if (!scrollArea) return null
@@ -271,6 +272,7 @@ async function run() {
 
       assert.ok(mapCard, "World map card is missing")
       assert.ok(panel, "World section panel is missing")
+      assert.ok(closeButton, "World section panel close button is missing")
       assert.ok(scrollMetrics, "Publications scroll area is missing")
       assert.ok(panel.y <= 16, `Panel should anchor near the viewport top: ${JSON.stringify({ viewport, panel })}`)
       assert.ok(
@@ -284,6 +286,10 @@ async function run() {
       assert.ok(
         scrollMetrics.clientHeight >= 220,
         `Publications scroll area is too short on mobile: ${JSON.stringify(scrollMetrics)}`,
+      )
+      assert.ok(
+        closeButton.width >= 44 && closeButton.height >= 44,
+        `Close button touch target is too small: ${JSON.stringify(closeButton)}`,
       )
 
       await page.getByLabel("Close world panel").click()

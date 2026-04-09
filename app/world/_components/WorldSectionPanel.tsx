@@ -24,7 +24,7 @@ export default function WorldSectionPanel() {
   const SectionComponent = WORLD_SECTION_COMPONENTS[activeSectionId]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-stretch justify-center bg-[#050302]/74 p-3 backdrop-blur-sm sm:p-4 md:items-center md:p-6">
+    <div className="world-panel-overlay fixed inset-0 z-50 flex items-stretch justify-center bg-[#050302]/74 backdrop-blur-sm md:items-center">
       <div
         data-testid="world-section-panel"
         className="relative flex h-full min-h-0 w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-amber-500/16 bg-[#0c0806]/95 shadow-[0_24px_80px_rgba(0,0,0,0.55)] md:h-auto md:max-h-[92dvh] md:rounded-[2.2rem]"
@@ -42,7 +42,8 @@ export default function WorldSectionPanel() {
               setActiveSectionId(null)
               gameBridge.emit("section-closed", undefined)
             }}
-            className="rounded-full border border-amber-400/18 bg-black/22 p-2 text-amber-100 transition hover:border-amber-300/40 hover:bg-black/35"
+            data-testid="world-section-panel-close"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-full border border-amber-400/18 bg-black/22 p-2.5 text-amber-100 transition hover:border-amber-300/40 hover:bg-black/35"
             aria-label="Close world panel"
           >
             <X className="h-5 w-5" />
