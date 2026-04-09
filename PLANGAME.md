@@ -34,6 +34,14 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 **Assets still not sourced yet** — dedicated game audio is still pending. Phaser scenes and the world route must fall back gracefully to procedural graphics and silent-safe audio behavior when tiles, sprites, map data, or game audio are missing.
 
+**End-of-day handoff — 2026-04-09:**
+- Latest completed implementation slice is the repo-owned tileset/map pass, pushed as `7963867 Add world tileset map assets`
+- Expected unrelated local workspace entries at handoff: `.claude/settings.local.json` and `test-results/`; do not stage or revert them unless the user explicitly asks
+- Resume with the dedicated world audio slice: BGM, footsteps, door-enter, and dialogue blip, with mobile-safe gesture gating and silent fallback
+- Preserve the existing `world-sfx` bridge for UI cues unless a dedicated game-only sound intentionally replaces one
+- If asset generation continues, regenerate via `python3 scripts/generate_world_assets.py` and keep `public/game/ASSET_SOURCES.md` current
+- Before changing `/world`, run `git status --short`, update this file first, and keep desktop plus mobile viewport verification as a blocking requirement
+
 ---
 
 ## Progress Log
@@ -69,6 +77,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-09: Generated the repo-owned `tiny-town.png` tileset and `world.json` Tiled map from `scripts/generate_world_assets.py`, documented provenance, and wired `BootScene`/`WorldScene` to prefer the tilemap render path with procedural fallback.
 - [x] 2026-04-09: Fixed a keyboard interaction reliability issue exposed during tilemap verification by queueing E/Space keydown events in `Player`, so short interaction taps are not missed between Phaser update frames.
 - [x] 2026-04-09: Verified the tileset/map slice with targeted ESLint, Python syntax check, production build, the full `/world` Playwright smoke suite, a web-game text-state capture, and desktop/iPhone 14 Pro Max full-page screenshot/resource checks showing all `/game/` assets loaded with no console errors.
+- [x] 2026-04-09: Wrapped the day with documentation cleanup: README now reflects the dedicated `/world` route and generated asset pipeline, `ASSET_SOURCES.md` documents regeneration and pending audio assets, and this handoff calls out the next audio slice plus known unrelated local workspace entries.
 
 ---
 
