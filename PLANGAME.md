@@ -24,16 +24,15 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 **Last updated:** 2026-04-09
 
-**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. The world layout now constrains the map card responsively on phone viewports instead of allowing the fixed 640px Phaser surface to force horizontal overflow, and section panels now render as route-level overlays rather than being trapped inside the square map card on mobile. Mobile panel chrome now accounts for safe-area insets and uses a 44px close touch target. Mobile controls now dock below the game viewport instead of overlaying the canvas, and the old route/coordinate/active-panel debug sidebar has been removed from the user-facing UI on all viewports. The prompt system now separates a one-time React onboarding hint from contextual interaction CTAs: the tutorial copy fades out after initial load, while building/NPC prompts appear only while the player stays in interaction range. The post office no longer uses a custom inline world composer; it now reuses the normal `LetterOverlay` flow inside the shared world panel, and nested modal Escape handling closes the letter overlay before closing the panel. SpellScroll rune/tag chips now keep the same dark parchment ink on home and world-panel surfaces instead of inheriting the world panel's light text. The first repo-owned raster asset pass is in place: player, Alex, Adam, Avery, and campfire PNGs live under `public/game/characters/`, are documented in `public/game/ASSET_SOURCES.md`, and load through `BootScene` with procedural fallback still available. The procedural fallback art pass still covers ground/path tiles, building facades, door/window lighting, building-specific signs, interaction halos, NPC idle bob, player walk bob, campfire sparks, and a readable React prompt plaque driven by Phaser prompt events. World interaction polish now reuses the site's existing Howler SFX via semantic `world-sfx` bridge cues for panel open, dialogue open, dialogue advance, and close/exit actions. Playwright smoke coverage now includes desktop prompt onboarding plus contextual CTA dismissal, desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, post-office letter-overlay behavior, mobile joystick drag plus interact dialogue, an iPhone 14 Pro Max viewport-fit assertion for the map canvas, iPhone 14 Pro Max docked-control placement, and an iPhone 14 Pro Max publications-panel fit/touch-target assertion. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
+**Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. The world layout now constrains the map card responsively on phone viewports instead of allowing the fixed 640px Phaser surface to force horizontal overflow, and section panels now render as route-level overlays rather than being trapped inside the square map card on mobile. Mobile panel chrome now accounts for safe-area insets and uses a 44px close touch target. Mobile controls now dock below the game viewport instead of overlaying the canvas, and the old route/coordinate/active-panel debug sidebar has been removed from the user-facing UI on all viewports. The mobile docked controls, panel behavior, and overall phone feel have also been manually confirmed on an iPhone 14 Pro Max. The prompt system now separates a one-time React onboarding hint from contextual interaction CTAs: the tutorial copy fades out after initial load, while building/NPC prompts appear only while the player stays in interaction range. The post office no longer uses a custom inline world composer; it now reuses the normal `LetterOverlay` flow inside the shared world panel, and nested modal Escape handling closes the letter overlay before closing the panel. SpellScroll rune/tag chips now keep the same dark parchment ink on home and world-panel surfaces instead of inheriting the world panel's light text. Repo-owned world assets now include generated player, Alex, Adam, Avery, campfire, `tiny-town.png` tileset, and `world.json` map files documented in `public/game/ASSET_SOURCES.md`. `BootScene` preloads the raster assets, and `WorldScene` now prefers the generated Tiled map/tileset render path while keeping the old procedural world renderer as a fallback if tiles or map data are missing. The tilemap slice has been verified by the existing `/world` Playwright smoke suite, desktop and iPhone 14 Pro Max resource/screenshot checks, and production build. A queued keyboard interaction fix is also in place so short E/Space taps are not missed between Phaser update frames. The procedural fallback art pass still covers ground/path tiles, building facades, door/window lighting, building-specific signs, interaction halos, NPC idle bob, player walk bob, campfire sparks, and a readable React prompt plaque driven by Phaser prompt events. World interaction polish now reuses the site's existing Howler SFX via semantic `world-sfx` bridge cues for panel open, dialogue open, dialogue advance, and close/exit actions. Playwright smoke coverage now includes desktop prompt onboarding plus contextual CTA dismissal, desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, post-office letter-overlay behavior, mobile joystick drag plus interact dialogue, an iPhone 14 Pro Max viewport-fit assertion for the map canvas, iPhone 14 Pro Max docked-control placement, and an iPhone 14 Pro Max publications-panel fit/touch-target assertion. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
 
 **Start here next session:**
-1. Do a manual touch-device pass for mobile docked controls, panel behavior, and overall feel
-2. Continue asset sourcing with a small tileset/map slice and dedicated world audio assets
-3. Decide whether to add dedicated world BGM/footsteps or keep reusing existing site SFX for UI-first game feel
-4. Keep `/world` as the only route identity; do not reintroduce `/game`
-5. Update this file before and after each meaningful World Mode step
+1. Decide and implement the dedicated world audio slice: BGM, footsteps, door-enter, and dialogue blip, while preserving mobile-safe gesture gating and silent fallback
+2. Keep the existing site SFX bridge for UI cues unless a dedicated game-only sound clearly replaces one of those cues
+3. Keep `/world` as the only route identity; do not reintroduce `/game`
+4. Update this file before and after each meaningful World Mode step
 
-**Assets still not sourced yet** — tileset/map and dedicated game audio are still pending. Phaser scenes and the world route must fall back gracefully to procedural graphics and silent-safe audio behavior when tiles, sprites, or game audio are missing.
+**Assets still not sourced yet** — dedicated game audio is still pending. Phaser scenes and the world route must fall back gracefully to procedural graphics and silent-safe audio behavior when tiles, sprites, map data, or game audio are missing.
 
 ---
 
@@ -66,6 +65,10 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-09: Removed the experimental inline world letter desk; the post office now reuses the normal `LetterOverlay` flow inside the world panel, Escape closes the nested letter modal before the panel, and the behavior is covered by smoke plus mobile visual verification.
 - [x] 2026-04-09: Fixed SpellScroll rune/tag chip ink so Workshop and mobile Tavern cards keep dark parchment text inside `/world` instead of inheriting the light world-panel text color.
 - [x] 2026-04-09: Added the first repo-owned raster asset slice: generated player/NPC/campfire PNGs under `public/game/characters/`, documented provenance in `public/game/ASSET_SOURCES.md`, and wired `BootScene` to preload them with procedural fallback.
+- [x] 2026-04-09: Recorded the user-confirmed real-device iPhone 14 Pro Max pass for mobile docked controls and panels, then started the tileset/map asset slice using `PLANGAME.md` as the repo-specific progress tracker.
+- [x] 2026-04-09: Generated the repo-owned `tiny-town.png` tileset and `world.json` Tiled map from `scripts/generate_world_assets.py`, documented provenance, and wired `BootScene`/`WorldScene` to prefer the tilemap render path with procedural fallback.
+- [x] 2026-04-09: Fixed a keyboard interaction reliability issue exposed during tilemap verification by queueing E/Space keydown events in `Player`, so short interaction taps are not missed between Phaser update frames.
+- [x] 2026-04-09: Verified the tileset/map slice with targeted ESLint, Python syntax check, production build, the full `/world` Playwright smoke suite, a web-game text-state capture, and desktop/iPhone 14 Pro Max full-page screenshot/resource checks showing all `/game/` assets loaded with no console errors.
 
 ---
 
@@ -181,7 +184,7 @@ Building → Section mapping:
 
 ## Assets Needed (can be added after wiring)
 
-- [ ] **Tileset** — `public/game/tilesets/tiny-town.png`
+- [x] **Tileset** — `public/game/tilesets/tiny-town.png`
 - [x] **Player sprite** — `public/game/characters/player.png`
 - [x] **NPC sprites** — `public/game/characters/npc-alex.png`, `npc-adam.png`, `npc-avery.png`
 - [x] **Campfire sprite** — `public/game/characters/campfire.png`
@@ -189,7 +192,7 @@ Building → Section mapping:
 - [ ] **SFX footstep** — `public/game/sounds/footstep.wav`
 - [ ] **SFX door** — `public/game/sounds/door-enter.wav`
 - [ ] **SFX dialogue blip** — `public/game/sounds/dialogue-bleep.wav`
-- [ ] **Tiled map** — `public/game/maps/world.json`
+- [x] **Tiled map** — `public/game/maps/world.json`
 
 ---
 
@@ -231,15 +234,17 @@ Building → Section mapping:
 - [x] Existing SFX reuse — world interactions emit semantic bridge cues that `WorldScreen` maps to the existing site Howler sounds
 - [x] Prompt behavior polish — onboarding hint is transient on mount; contextual prompts are range-based and disappear when irrelevant
 - [x] First repo-owned raster sprite pass — player, NPC, and campfire PNGs load from `public/game/characters/` with procedural fallback
+- [x] Repo-owned tileset/map slice — generated `tiny-town.png` and `world.json` load through Phaser with procedural fallback
 
 ### Phase 4 — Verification
 - [x] Playwright smoke: desktop prompt lifecycle, desktop dialogue plus input lock, home CTA → `/world`, Library → item → `/world` return restore, Post Office → normal letter overlay, mobile joystick drag plus interact dialogue, iPhone 14 Pro Max viewport-fit, docked mobile controls below the game, and iPhone 14 Pro Max publications-panel fit/touch-target
+- [x] Playwright resource/screenshot check: desktop and iPhone 14 Pro Max render the generated `tiny-town.png`/`world.json` map assets with no missing `/game/` resources or console errors
 - [x] Test full cycle: home → `/world` → move → enter building → open section panel → open item → return to `/world` → restore state
 - [x] Test dialogue and input lock behavior
 - [x] Test mobile joystick movement
 - [x] Test mobile viewport fit on an iPhone-class viewport
 - [x] Test mobile panel fit on an iPhone-class viewport
-- [ ] Test mobile panel behavior on a real touch device
+- [x] Test mobile panel behavior on a real touch device
 - [x] `npm run build`
 - [ ] `npm run lint` if/when unrelated pre-existing issues are addressed
 

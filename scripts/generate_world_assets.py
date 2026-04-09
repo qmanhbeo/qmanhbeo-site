@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""Generate repo-owned pixel art sprites for the /world route."""
+"""Generate repo-owned pixel art assets for the /world route."""
 
 from __future__ import annotations
 
+import json
 import struct
 import zlib
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT_DIR = ROOT / "public" / "game" / "characters"
+CHARACTER_DIR = ROOT / "public" / "game" / "characters"
+TILESET_DIR = ROOT / "public" / "game" / "tilesets"
+MAP_DIR = ROOT / "public" / "game" / "maps"
 
 RGBA = tuple[int, int, int, int]
 
@@ -43,6 +46,19 @@ def write_png(path: Path, width: int, height: int, pixels: list[list[RGBA]]) -> 
 
 def blank(width: int, height: int) -> list[list[RGBA]]:
     return [[TRANSPARENT for _ in range(width)] for _ in range(height)]
+
+
+def clamp(value: int) -> int:
+    return max(0, min(255, value))
+
+
+def shift(color: RGBA, amount: int) -> RGBA:
+    return (
+        clamp(color[0] + amount),
+        clamp(color[1] + amount),
+        clamp(color[2] + amount),
+        color[3],
+    )
 
 
 def rect(pixels: list[list[RGBA]], x: int, y: int, width: int, height: int, color: RGBA) -> None:
@@ -81,6 +97,233 @@ def triangle(
         w2 = edge(a, b, point)
         if (w0 >= 0 and w1 >= 0 and w2 >= 0) or (w0 <= 0 and w1 <= 0 and w2 <= 0):
             pixels[row][col] = color
+
+
+def scatter(pixels: list[list[RGBA]], color: RGBA, seed: int, period: int, opacity: int = 255) -> None:
+    for row in range(len(pixels)):
+        for col in range(len(pixels[row])):
+            if (col * 17 + row * 29 + seed * 11) % period == 0:
+                pixels[row][col] = (color[0], color[1], color[2], opacity)
+
+
+def ground_tile(base: RGBA, seed: int) -> list[list[RGBA]]:
+    pixels = blank(16, 16)
+    rect(pixels, 0, 0, 16, 16, base)
+    scatter(pixels, shift(base, 12), seed, 19)
+    scatter(pixels, shift(base, -10), seed + 4, 23)
+    rect(pixels, 0, 15, 16, 1, shift(base, -14))
+    rect(pixels, 15, 0, 1, 16, shift(base, -10))
+    return pixels
+
+
+def path_tile(base: RGBA, seed: int, edge: bool = False) -> list[list[RGBA]]:
+    pixels = blank(16, 16)
+    rect(pixels, 0, 0, 16, 16, base)
+    if edge:
+        rect(pixels, 0, 0, 2, 16, (29, 21, 14, 255))
+        rect(pixels, 14, 0, 2, 16, (29, 21, 14, 255))
+    scatter(pixels, shift(base, 24), seed, 17)
+    scatter(pixels, shift(base, -18), seed + 2, 13)
+    rect(pixels, 0, 15, 16, 1, shift(base, -16))
+    return pixels
+
+
+def roof_tile(kind: str) -> list[list[RGBA]]:
+    pixels = blank(16, 16)
+    dark: RGBA = (42, 21, 13, 255)
+    mid: RGBA = (96, 48, 24, 255)
+    light: RGBA = (163, 91, 43, 255)
+    rect(pixels, 0, 3, 16, 13, dark)
+    rect(pixels, 0, 5, 16, 9, mid)
+    rect(pixels, 0, 9, 16, 2, (69, 33, 19, 255))
+    if kind == "left":
+        triangle(pixels, (15, 3), (0, 15), (15, 15), dark)
+        rect(pixels, 12, 5, 4, 9, light)
+    elif kind == "right":
+        triangle(pixels, (0, 3), (0, 15), (15, 15), dark)
+        rect(pixels, 0, 5, 4, 9, light)
+    else:
+        rect(pixels, 0, 4, 16, 2, light)
+        rect(pixels, 0, 11, 16, 1, (34, 16, 10, 255))
+    rect(pixels, 0, 15, 16, 1, (23, 11, 8, 255))
+    return pixels
+
+
+def wall_tile(base: RGBA) -> list[list[RGBA]]:
+    pixels = blank(16, 16)
+    rect(pixels, 0, 0, 16, 16, base)
+    rect(pixels, 0, 0, 16, 1, shift(base, 18))
+    rect(pixels, 0, 7, 16, 1, shift(base, -18))
+    rect(pixels, 0, 15, 16, 1, shift(base, -26))
+    for col in (4, 11):
+        rect(pixels, col, 1, 1, 14, shift(base, -14))
+    scatter(pixels, shift(base, 10), base[0], 31)
+    return pixels
+
+
+def window_tile() -> list[list[RGBA]]:
+    pixels = blank(16, 16)
+    rect(pixels, 3, 4, 10, 9, (35, 18, 11, 255))
+    rect(pixels, 4, 5, 8, 7, (244, 196, 109, 230))
+    rect(pixels, 4, 8, 8, 1, (143, 83, 41, 255))
+    rect(pixels, 7, 5, 1, 7, (143, 83, 41, 255))
+    rect(pixels, 5, 6, 2, 2, (255, 224, 150, 255))
+    return pixels
+
+
+def door_tile() -> list[list[RGBA]]:
+    pixels = blank(16, 16)
+    rect(pixels, 3, 1, 10, 15, (33, 17, 11, 255))
+    rect(pixels, 4, 2, 8, 14, (84, 43, 24, 255))
+    rect(pixels, 5, 3, 6, 2, (119, 65, 33, 255))
+    rect(pixels, 10, 8, 2, 2, (255, 197, 94, 255))
+    return pixels
+
+
+def sign_tile() -> list[list[RGBA]]:
+    pixels = blank(16, 16)
+    rect(pixels, 2, 5, 12, 6, (48, 26, 15, 255))
+    rect(pixels, 3, 6, 10, 4, (187, 126, 60, 255))
+    rect(pixels, 5, 8, 6, 1, (255, 223, 151, 255))
+    return pixels
+
+
+def lantern_tile() -> list[list[RGBA]]:
+    pixels = blank(16, 16)
+    rect(pixels, 7, 2, 2, 4, (37, 20, 13, 255))
+    rect(pixels, 5, 6, 6, 7, (37, 20, 13, 255))
+    rect(pixels, 6, 7, 4, 5, (255, 203, 103, 235))
+    rect(pixels, 4, 5, 8, 8, (255, 174, 66, 55))
+    return pixels
+
+
+def compose_tileset(tiles: list[list[list[RGBA]]], columns: int = 4) -> list[list[RGBA]]:
+    rows = (len(tiles) + columns - 1) // columns
+    pixels = blank(columns * 16, rows * 16)
+    for index, tile_pixels in enumerate(tiles):
+        tile_x = (index % columns) * 16
+        tile_y = (index // columns) * 16
+        for row in range(16):
+            for col in range(16):
+                pixels[tile_y + row][tile_x + col] = tile_pixels[row][col]
+    return pixels
+
+
+def generate_tileset() -> None:
+    tiles = [
+        ground_tile((25, 17, 12, 255), 1),
+        ground_tile((30, 21, 14, 255), 4),
+        ground_tile((23, 20, 13, 255), 9),
+        path_tile((72, 47, 27, 255), 2),
+        path_tile((88, 59, 32, 255), 5),
+        path_tile((65, 42, 25, 255), 7, edge=True),
+        roof_tile("left"),
+        roof_tile("middle"),
+        roof_tile("right"),
+        wall_tile((83, 64, 42, 255)),
+        wall_tile((112, 67, 31, 255)),
+        wall_tile((105, 50, 32, 255)),
+        window_tile(),
+        door_tile(),
+        sign_tile(),
+        lantern_tile(),
+    ]
+    write_png(TILESET_DIR / "tiny-town.png", 64, 64, compose_tileset(tiles))
+
+
+def generate_world_map() -> None:
+    width = 40
+    height = 40
+    ground = [[1 + ((col * 7 + row * 11) % 3 == 0) + ((col * 5 + row * 13) % 11 == 0) for col in range(width)] for row in range(height)]
+    path = [[0 for _ in range(width)] for _ in range(height)]
+    buildings = [[0 for _ in range(width)] for _ in range(height)]
+    decor = [[0 for _ in range(width)] for _ in range(height)]
+
+    def paint_path(left: int, top: int, right: int, bottom: int) -> None:
+        for row in range(max(0, top), min(height, bottom + 1)):
+            for col in range(max(0, left), min(width, right + 1)):
+                path[row][col] = 4 + ((col + row) % 2)
+
+    paint_path(18, 6, 21, 34)
+    paint_path(6, 18, 34, 21)
+    paint_path(7, 9, 18, 10)
+    paint_path(21, 9, 32, 10)
+    paint_path(7, 30, 18, 31)
+    paint_path(21, 30, 32, 31)
+
+    def stamp_building(col: int, row: int, wall_gid: int) -> None:
+        roof_gids = [7, 8, 8, 8, 8, 9]
+        for offset, gid in enumerate(roof_gids):
+            buildings[row][col + offset] = gid
+        for tile_row in range(row + 1, row + 5):
+            for tile_col in range(col, col + 6):
+                buildings[tile_row][tile_col] = wall_gid
+        decor[row + 2][col + 1] = 13
+        decor[row + 2][col + 4] = 13
+        decor[row + 3][col + 2] = 15
+        decor[row + 3][col + 4] = 16
+        decor[row + 4][col + 2] = 14
+
+    stamp_building(5, 4, 10)
+    stamp_building(29, 4, 11)
+    stamp_building(5, 28, 12)
+    stamp_building(29, 28, 10)
+
+    layers = [
+        ("ground", ground),
+        ("path", path),
+        ("buildings", buildings),
+        ("decor", decor),
+    ]
+
+    tiled_map = {
+        "compressionlevel": -1,
+        "height": height,
+        "infinite": False,
+        "layers": [
+            {
+                "data": [tile for map_row in data for tile in map_row],
+                "height": height,
+                "id": index + 1,
+                "name": name,
+                "opacity": 1,
+                "type": "tilelayer",
+                "visible": True,
+                "width": width,
+                "x": 0,
+                "y": 0,
+            }
+            for index, (name, data) in enumerate(layers)
+        ],
+        "nextlayerid": len(layers) + 1,
+        "nextobjectid": 1,
+        "orientation": "orthogonal",
+        "renderorder": "right-down",
+        "tiledversion": "1.11.2",
+        "tileheight": 16,
+        "tilesets": [
+            {
+                "columns": 4,
+                "firstgid": 1,
+                "image": "../tilesets/tiny-town.png",
+                "imageheight": 64,
+                "imagewidth": 64,
+                "margin": 0,
+                "name": "tiny-town",
+                "spacing": 0,
+                "tilecount": 16,
+                "tileheight": 16,
+                "tilewidth": 16,
+            },
+        ],
+        "tilewidth": 16,
+        "type": "map",
+        "version": "1.10",
+        "width": width,
+    }
+
+    MAP_DIR.mkdir(parents=True, exist_ok=True)
+    (MAP_DIR / "world.json").write_text(json.dumps(tiled_map, indent=2) + "\n")
 
 
 def character(
@@ -167,7 +410,10 @@ def main() -> None:
     }
 
     for filename, pixels in sprites.items():
-        write_png(OUT_DIR / filename, len(pixels[0]), len(pixels), pixels)
+        write_png(CHARACTER_DIR / filename, len(pixels[0]), len(pixels), pixels)
+
+    generate_tileset()
+    generate_world_map()
 
 
 if __name__ == "__main__":

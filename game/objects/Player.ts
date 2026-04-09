@@ -16,7 +16,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   } | null
   private lastInteractPressed = false
   private readonly shadow: Phaser.GameObjects.Ellipse
+  private queuedKeyboardInteract = false
   private walkBobPhase = 0
+  private readonly queueKeyboardInteract = () => {
+    if (!this.controlsLocked) this.queuedKeyboardInteract = true
+  }
 
   constructor(scene: Phaser.Scene, x: number, y: number, private readonly getJoystickInput: GetJoystickInput) {
     super(scene, x, y, "world-player")
@@ -47,6 +51,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
           alternateInteract: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
         }
       : null
+    this.letterKeys?.interact.on("down", this.queueKeyboardInteract)
+    this.letterKeys?.alternateInteract.on("down", this.queueKeyboardInteract)
   }
 
   setControlsLocked(nextLocked: boolean) {
@@ -93,10 +99,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setAngle(0)
     }
 
+    const queuedKeyboardInteract = this.queuedKeyboardInteract
+    this.queuedKeyboardInteract = false
+
     const interactPressed = Boolean(
       joystick.interact
       || this.letterKeys?.interact.isDown
-      || this.letterKeys?.alternateInteract.isDown,
+      || this.letterKeys?.alternateInteract.isDown
+      || queuedKeyboardInteract,
     )
     const justInteracted = interactPressed && !this.lastInteractPressed
     this.lastInteractPressed = interactPressed
@@ -113,6 +123,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   destroy(fromScene?: boolean) {
+    this.letterKeys?.interact.off("down", this.queueKeyboardInteract)
+    this.letterKeys?.alternateInteract.off("down", this.queueKeyboardInteract)
     this.shadow.destroy()
     super.destroy(fromScene)
   }

@@ -11,6 +11,13 @@ const CHARACTER_ASSETS = [
   { key: "world-fire", path: "/game/characters/campfire.png" },
 ] as const
 
+const WORLD_TILESET = {
+  key: "world-tiles",
+  mapKey: "world-map",
+  mapPath: "/game/maps/world.json",
+  path: "/game/tilesets/tiny-town.png",
+} as const
+
 function generateRoundedTexture(
   scene: Phaser.Scene,
   key: string,
@@ -120,10 +127,15 @@ export class BootScene extends Phaser.Scene {
     CHARACTER_ASSETS.forEach((asset) => {
       this.load.image(asset.key, asset.path)
     })
+    this.load.spritesheet(WORLD_TILESET.key, WORLD_TILESET.path, {
+      frameWidth: 16,
+      frameHeight: 16,
+    })
+    this.load.tilemapTiledJSON(WORLD_TILESET.mapKey, WORLD_TILESET.mapPath)
     this.load.on("progress", (progress: number) => {
       gameBridge.emit("load-progress", {
         progress: 0.12 + progress * 0.76,
-        label: "Gathering village sprites",
+        label: "Gathering village assets",
       })
     })
   }

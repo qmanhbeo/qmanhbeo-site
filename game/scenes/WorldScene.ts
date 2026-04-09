@@ -139,6 +139,30 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawWorld() {
+    if (this.drawTilemapWorld()) return
+    this.drawProceduralWorld()
+  }
+
+  private drawTilemapWorld() {
+    if (!this.textures.exists("world-tiles") || !this.cache.tilemap.exists("world-map")) return false
+
+    const map = this.make.tilemap({ key: "world-map" })
+    const tileset = map.addTilesetImage("tiny-town", "world-tiles", 16, 16, 0, 0)
+    if (!tileset) return false
+
+    const groundLayer = map.createLayer("ground", tileset, 0, 0)?.setDepth(0)
+    const pathLayer = map.createLayer("path", tileset, 0, 0)?.setDepth(1)
+    const buildingLayer = map.createLayer("buildings", tileset, 0, 0)?.setDepth(2)
+    const decorLayer = map.createLayer("decor", tileset, 0, 0)?.setDepth(3)
+
+    if (!groundLayer || !pathLayer || !buildingLayer || !decorLayer) return false
+
+    this.drawBuildingOverlays()
+    this.drawCampfire()
+    return true
+  }
+
+  private drawProceduralWorld() {
     const background = this.add.graphics()
     background.fillStyle(0x0a0604, 1)
     background.fillRect(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
@@ -209,7 +233,28 @@ export class WorldScene extends Phaser.Scene {
         .setDepth(4)
     })
 
+    this.drawCampfire()
+  }
+
+  private drawBuildingOverlays() {
+    const overlay = this.add.graphics().setDepth(4)
+    buildingData.forEach((building) => {
+      const top = building.y - building.height / 2
+      const baseTop = top + 14
+      this.drawBuildingMark(overlay, building.id, building.x, baseTop + 26)
+      this.add.text(building.x, building.y + building.height / 2 + 10, building.label, {
+        color: "#f4dcb1",
+        fontFamily: "var(--font-cinzel), serif",
+        fontSize: "15px",
+      })
+        .setOrigin(0.5, 0)
+        .setDepth(4)
+    })
+  }
+
+  private drawCampfire() {
     const glow = this.add.graphics()
+      .setDepth(4)
     glow.fillStyle(0xffad42, 0.2)
     glow.fillCircle(320, 320, 102)
     glow.fillStyle(0xffd27b, 0.16)
