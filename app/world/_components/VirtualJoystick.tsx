@@ -2,6 +2,8 @@
 
 import { type MutableRefObject, useEffect, useRef, useState } from "react"
 import type { JoystickInputState } from "@/game/types"
+import { useWorld } from "@/context/WorldContext"
+import { gameBridge } from "@/game/GameBridge"
 
 interface VirtualJoystickProps {
   joystickRef: MutableRefObject<JoystickInputState>
@@ -15,6 +17,7 @@ const ZERO_INPUT: JoystickInputState = {
 }
 
 export default function VirtualJoystick({ joystickRef, placement = "overlay" }: VirtualJoystickProps) {
+  const { dialogueState } = useWorld()
   const [isCoarsePointer, setIsCoarsePointer] = useState(false)
   const [stickOffset, setStickOffset] = useState({ x: 0, y: 0 })
   const padRef = useRef<HTMLDivElement>(null)
@@ -97,29 +100,33 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
     </div>
   )
 
+  const handleInteract = () => {
+    if (dialogueState.isOpen) {
+      gameBridge.emit("dialogue-interact", undefined)
+      return
+    }
+    joystickRef.current = {
+      ...joystickRef.current,
+      interact: true,
+    }
+  }
+
+  const handleInteractEnd = () => {
+    if (dialogueState.isOpen) return
+    joystickRef.current = {
+      ...joystickRef.current,
+      interact: false,
+    }
+  }
+
   const interactButton = (
     <button
       type="button"
       data-testid="world-interact-button"
       className="h-20 w-20 rounded-full border border-amber-400/30 bg-[#3a2010]/88 font-cinzel text-lg text-amber-50 shadow-[0_10px_35px_rgba(0,0,0,0.35)] backdrop-blur-sm"
-      onPointerDown={() => {
-        joystickRef.current = {
-          ...joystickRef.current,
-          interact: true,
-        }
-      }}
-      onPointerUp={() => {
-        joystickRef.current = {
-          ...joystickRef.current,
-          interact: false,
-        }
-      }}
-      onPointerLeave={() => {
-        joystickRef.current = {
-          ...joystickRef.current,
-          interact: false,
-        }
-      }}
+      onPointerDown={handleInteract}
+      onPointerUp={handleInteractEnd}
+      onPointerLeave={handleInteractEnd}
     >
       E
     </button>

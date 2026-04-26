@@ -154,9 +154,17 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     const newY = this.y + vy * (delta / 1000)
 
     if (newX <= 20 || newX >= 620 || newY <= 20 || newY >= 620) {
-      state.direction = this.getRandomDirection()
-      this.setVelocity(0, 0)
-      this.stopWandering()
+      const blockedDirection = state.direction
+      const validDirections: Direction[] = ["up", "down", "left", "right"].filter((d) => {
+        if (blockedDirection === "up") return d !== "down"
+        if (blockedDirection === "down") return d !== "up"
+        if (blockedDirection === "left") return d !== "right"
+        if (blockedDirection === "right") return d !== "left"
+        return true
+      }) as Direction[]
+      state.direction = Phaser.Math.RND.pick(validDirections)
+      state.timer = Phaser.Math.Between(WALK_DURATION_MIN, WALK_DURATION_MAX)
+      return
     }
   }
 

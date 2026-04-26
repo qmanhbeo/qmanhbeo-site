@@ -6,6 +6,7 @@ export type WorldSfxCue = "dialogue-advance" | "dialogue-open" | "panel-open" | 
 
 type WorldBridgeEventMap = {
   "dialogue-closed": undefined
+  "dialogue-interact": undefined
   "load-progress": { progress: number; label?: string }
   "open-dialogue": WorldDialogueState
   "open-section": { sectionId: WorldSectionId }

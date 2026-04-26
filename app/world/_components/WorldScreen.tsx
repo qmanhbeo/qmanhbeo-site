@@ -65,6 +65,20 @@ export default function WorldScreen() {
     })
   }, [setDialogueState])
 
+  const handleAdvanceDialogue = useCallback(() => {
+    if (!dialogueState.isOpen) return
+    const isLastLine = dialogueState.lineIndex >= dialogueState.lines.length - 1
+    if (isLastLine) {
+      handleCloseDialogue()
+      return
+    }
+    gameBridge.emit("world-sfx", { cue: "dialogue-advance" })
+    setDialogueState({
+      ...dialogueState,
+      lineIndex: dialogueState.lineIndex + 1,
+    })
+  }, [dialogueState, setDialogueState, handleCloseDialogue])
+
   const handleCloseSection = useCallback(() => {
     gameBridge.emit("world-sfx", { cue: "ui-close" })
     gameBridge.emit("section-closed", undefined)
@@ -125,11 +139,26 @@ export default function WorldScreen() {
       setPromptText(prompt)
     })
     const offWorldSfx = gameBridge.on("world-sfx", handleWorldSfx)
+    const offDialogueInteract = gameBridge.on("dialogue-interact", () => {
+      if (dialogueState.isOpen) {
+        handleAdvanceDialogue()
+      }
+    })
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return
-      event.preventDefault()
-      handleEscape()
+      if (event.key === "Escape") {
+        event.preventDefault()
+        handleEscape()
+        return
+      }
+
+      // E key advances dialogue when open, otherwise ignored (interact is handled in Phaser)
+      if (event.key === "e" || event.key === "E") {
+        if (dialogueState.isOpen) {
+          event.preventDefault()
+          handleAdvanceDialogue()
+        }
+      }
     }
 
     window.addEventListener("keydown", handleKeyDown, { capture: true })
@@ -158,6 +187,8 @@ export default function WorldScreen() {
     setActiveSectionId,
     setDialogueState,
     setPlayerPosition,
+    handleAdvanceDialogue,
+    handleCloseDialogue,
   ])
 
   useEffect(() => {
