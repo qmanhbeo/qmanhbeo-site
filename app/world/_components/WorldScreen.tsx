@@ -35,8 +35,9 @@ export default function WorldScreen() {
     setDialogueState,
     setPlayerPosition,
   } = useWorld()
-  const { pauseAllAmbient, playSfx, resumeAllAmbient } = useAudioContext()
+  const { pauseAllAmbient, playSfx, stopSfx, resumeAllAmbient } = useAudioContext()
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
+  const lastSoundCueRef = useRef<string | null>(null)
   const [promptText, setPromptText] = useState("")
   const uiLocked = dialogueState.isOpen || activeSectionId !== null
   const promptState = useWorldPromptState({
@@ -124,9 +125,16 @@ export default function WorldScreen() {
       setDialogueState(nextDialogueState)
       if (nextDialogueState.soundCue) {
         playSfx(nextDialogueState.soundCue as "click" | "transition" | "open" | "flip")
+        lastSoundCueRef.current = nextDialogueState.soundCue
+      } else {
+        lastSoundCueRef.current = null
       }
     })
     const offDialogueClosed = gameBridge.on("dialogue-closed", () => {
+      if (lastSoundCueRef.current) {
+        stopSfx(lastSoundCueRef.current)
+        lastSoundCueRef.current = null
+      }
       setDialogueState({
         isOpen: false,
         npcId: null,

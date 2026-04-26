@@ -16,6 +16,7 @@ interface AudioContextValue {
   ambientVolumes: AmbientVolumes
   setAmbientVolume: (track: keyof AmbientVolumes, value: number) => void
   playSfx: (type: "click" | "transition" | "open" | "flip") => void
+  stopSfx: (type: string) => void
   pauseAllAmbient: () => void
   resumeAllAmbient: () => void
 }
@@ -114,6 +115,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     sfxHowlsRef.current[type]?.play()
   }, [sfxEnabled])
 
+  const stopSfx = useCallback((type: string) => {
+    sfxHowlsRef.current[type]?.stop()
+  }, [])
+
   const pauseAllAmbient = useCallback(() => {
     if (typeof window === "undefined") return
     window.dispatchEvent(new CustomEvent("ambient:pause"))
@@ -134,6 +139,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         ambientVolumes,
         setAmbientVolume,
         playSfx,
+        stopSfx,
         pauseAllAmbient,
         resumeAllAmbient,
       }}
