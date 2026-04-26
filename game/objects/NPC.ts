@@ -118,7 +118,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     state.timer -= delta
 
     if (state.timer <= 0) {
-      this.stopWandering()
+      this.stopWandering(false)
       return
     }
 
@@ -154,7 +154,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     const newY = this.y + vy * (delta / 1000)
 
     if (newX <= 20 || newX >= 620 || newY <= 20 || newY >= 620) {
-      this.stopWandering()
+      this.stopWandering(true)
       return
     }
   }
@@ -172,18 +172,28 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  private stopWandering() {
+  private stopWandering(hitBoundary: boolean = false) {
     const state = this.wanderState
     state.isWandering = false
     this.setVelocity(0, 0)
-    state.pauseRemaining = Phaser.Math.Between(PAUSE_DURATION_MIN, PAUSE_DURATION_MAX)
+    
+    if (hitBoundary) {
+      state.direction = this.getRandomDirection()
+      state.pauseRemaining = Phaser.Math.Between(200, 500)
+    } else {
+      state.pauseRemaining = Phaser.Math.Between(PAUSE_DURATION_MIN, PAUSE_DURATION_MAX)
+    }
 
     const animKey = `world-npc-${this.id}`
     this.play(`${animKey}-idle-${state.direction}`)
   }
 
-  private getRandomDirection(): Direction {
+  private getRandomDirection(currentDirection?: Direction): Direction {
     const directions: Direction[] = ["up", "down", "left", "right"]
+    if (currentDirection) {
+      const filtered = directions.filter((d) => d !== currentDirection)
+      return Phaser.Math.RND.pick(filtered)
+    }
     return Phaser.Math.RND.pick(directions)
   }
 
