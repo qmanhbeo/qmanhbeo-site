@@ -14,7 +14,6 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
   readonly displayName: string
   readonly dialogueLines: string[]
   readonly hasSprite: boolean
-  readonly hasStaticSprite: boolean
   private readonly baseY: number
   private readonly shadow: Phaser.GameObjects.Ellipse
   private wanderState: {
@@ -25,12 +24,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
   }
 
   constructor(scene: Phaser.Scene, data: NpcData) {
-    let textureKey: string
-    if (data.staticSpriteConfig) {
-      textureKey = `world-npc-static-${data.id}`
-    } else {
-      textureKey = scene.textures.exists(`world-npc-${data.id}`) ? `world-npc-${data.id}` : "world-npc"
-    }
+    const textureKey = scene.textures.exists(`world-npc-${data.id}`) ? `world-npc-${data.id}` : "world-npc"
     super(scene, data.x, data.y, textureKey)
 
     this.id = data.id
@@ -38,7 +32,6 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     this.dialogueLines = data.dialogueLines
     this.baseY = data.y
     this.hasSprite = Boolean(data.spriteConfig)
-    this.hasStaticSprite = Boolean(data.staticSpriteConfig)
     this.wanderState = {
       direction: "down",
       isWandering: false,
@@ -87,16 +80,6 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
         this.play(idleDownKey)
         this.setFrame(3)
       }
-    } else if (this.hasStaticSprite) {
-      const staticTextureKey = `world-npc-static-${data.id}`
-      if (scene.textures.exists(staticTextureKey)) {
-        const sourceImage = scene.textures.get(staticTextureKey).getSourceImage() as HTMLImageElement
-        if (sourceImage) {
-          const naturalHeight = sourceImage.naturalHeight || sourceImage.height
-          const targetSize = data.staticSpriteConfig?.targetSize || 48
-          this.setScale(targetSize / naturalHeight)
-        }
-      }
     } else {
       scene.tweens.add({
         targets: this,
@@ -116,10 +99,6 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
 
     if (this.hasSprite) {
       this.updateWandering(delta)
-    } else if (this.hasStaticSprite) {
-      return
-    } else {
-      return
     }
   }
 

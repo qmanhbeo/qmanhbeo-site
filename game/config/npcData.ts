@@ -6,11 +6,6 @@ export interface SpriteConfig {
   targetSize?: number
 }
 
-export interface StaticSpriteConfig {
-  path: string
-  targetSize?: number
-}
-
 export interface NpcData {
   id: string
   name: string
@@ -19,7 +14,6 @@ export interface NpcData {
   tint: number
   dialogueLines: string[]
   spriteConfig?: SpriteConfig
-  staticSpriteConfig?: StaticSpriteConfig
 }
 
 export const npcData: NpcData[] = [
@@ -63,8 +57,10 @@ export const npcData: NpcData[] = [
     y: 69,
     tint: 0xffffff,
     dialogueLines: ["Tung Tung Tung Sahur"],
-    staticSpriteConfig: {
+    spriteConfig: {
       path: "/game/characters/tungtung/tungtung-sprite.png",
+      columns: 1,
+      rows: 1,
       targetSize: 48,
     },
   },

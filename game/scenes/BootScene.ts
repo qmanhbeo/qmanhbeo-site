@@ -181,7 +181,7 @@ export class BootScene extends Phaser.Scene {
     }
     generateRoundedTexture(this, "world-npc", 20, 20, 0xbcc9ff, 0x1c2437)
     npcData.forEach((npc, index) => {
-      if (npc.spriteConfig || npc.staticSpriteConfig) return
+      if (npc.spriteConfig) return
       if (this.textures.exists(`world-npc-${npc.id}`)) return
       const hairColors = [0x24130c, 0x44301d, 0x201a24]
       generateCharacterTexture(this, `world-npc-${npc.id}`, {
@@ -206,7 +206,17 @@ export class BootScene extends Phaser.Scene {
     const promises = npcData.map((npc) => {
       if (npc.spriteConfig) {
         const key = `world-npc-${npc.id}`
-        if (!this.textures.exists(key)) return Promise.resolve()
+        if (!this.textures.exists(key)) {
+          const spritePath = npc.spriteConfig.path
+          this.load.image(key, spritePath)
+          return new Promise<void>((resolve) => {
+            this.load.once('complete', () => resolve())
+            this.load.once('loaderror', () => {
+              console.error(`[BootScene] Failed to load sprite: ${spritePath}`)
+              resolve()
+            })
+          })
+        }
 
         if (npc.spriteConfig.atlasPath) {
           return this.createAtlasNpcAnimations(npc, key)
@@ -214,27 +224,6 @@ export class BootScene extends Phaser.Scene {
           this.createImageNpcAnimations(npc, key)
           return Promise.resolve()
         }
-      }
-      if (npc.staticSpriteConfig) {
-        const textureKey = `world-npc-static-${npc.id}`
-        if (!this.textures.exists(textureKey)) {
-          const spritePath = npc.staticSpriteConfig.path
-          return new Promise<void>((resolve) => {
-            this.load.on('complete', (fileKey: string) => {
-              if (fileKey === textureKey) {
-                this.load.off('complete')
-                resolve()
-              }
-            })
-            this.load.on('loaderror', () => {
-              console.error(`[BootScene] Failed to load static sprite: ${spritePath}`)
-              this.load.off('loaderror')
-              resolve()
-            })
-            this.load.image(textureKey, spritePath)
-          })
-        }
-        return Promise.resolve()
       }
       return Promise.resolve()
     })
@@ -301,7 +290,18 @@ export class BootScene extends Phaser.Scene {
 
     const DEFAULT_TARGET_SIZE = 32
     const targetSize = npc.spriteConfig?.targetSize || DEFAULT_TARGET_SIZE
-    const autoScale = targetSize / trimmedHeight
+
+    if (npc.spriteConfig!.columns === 1 && npc.spriteConfig!.rows === 1) {
+      this.textures.get(key).add(0, 0, trimmed.x, trimmed.y, trimmedWidth, trimmedHeight)
+      this.textures.get(key).add(1, 0, trimmed.x, trimmed.y, trimmedWidth, trimmedHeight)
+      this.textures.get(key).add(2, 0, trimmed.x, trimmed.y, trimmedWidth, trimmedHeight)
+      this.textures.get(key).add(3, 0, trimmed.x, trimmed.y, trimmedWidth, trimmedHeight)
+      this.anims.create({ key: `${key}-idle-down`, frames: [{ key, frame: 0 }], frameRate: 1 })
+      this.anims.create({ key: `${key}-idle-left`, frames: [{ key, frame: 1 }], frameRate: 1 })
+      this.anims.create({ key: `${key}-idle-right`, frames: [{ key, frame: 2 }], frameRate: 1 })
+      this.anims.create({ key: `${key}-idle-up`, frames: [{ key, frame: 3 }], frameRate: 1 })
+      return
+    }
 
     this.textures.get(key).add(0, 0, trimmed.x, trimmed.y, trimmedWidth, trimmedHeight)
     this.textures.get(key).add(1, 0, trimmed.x + cellWidth, trimmed.y, trimmedWidth, trimmedHeight)
