@@ -144,10 +144,10 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     this.setVelocity(vx, vy)
 
     const animKey = `world-npc-${this.id}`
-    const directionKey = state.direction
+    const walkAnimKey = `${animKey}-${state.direction}`
 
-    if (!this.anims.getName()?.includes(directionKey)) {
-      this.play(`${animKey}-${directionKey}`, true)
+    if (this.anims.getName() !== walkAnimKey) {
+      this.play(walkAnimKey, true)
     }
 
     const newX = this.x + vx * (delta / 1000)
@@ -164,6 +164,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
       }) as Direction[]
       state.direction = Phaser.Math.RND.pick(validDirections)
       state.timer = Phaser.Math.Between(WALK_DURATION_MIN, WALK_DURATION_MAX)
+      this.play(`${animKey}-${state.direction}`, true)
       return
     }
   }
