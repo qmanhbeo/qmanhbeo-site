@@ -257,7 +257,7 @@ export default function PublicationsSection({
           onTouchEnd={handleSwipeTouchEnd}
           onTouchCancel={handleSwipeTouchCancel}
         >
-          <div className={`map-ghost-panel flex min-h-0 flex-col ${isWorldPanel ? "overflow-y-auto" : "overflow-hidden"} rounded-[1rem] md:rounded-lg`}>
+          <div className="map-ghost-panel flex min-h-0 flex-col overflow-hidden rounded-[1rem] md:rounded-lg">
             <div className="flex flex-shrink-0 justify-center px-4 pb-1 pt-2 md:hidden">
               <NavPill
                 current={currentManuscript}
@@ -280,7 +280,7 @@ export default function PublicationsSection({
               />
             </div>
 
-            <div className={`flex-1 ${isWorldPanel ? "overflow-y-auto" : "overflow-hidden"}`}>
+            <div className="flex-1 overflow-hidden">
               <div
                 className="flex h-full transition-transform duration-800 ease-in-out"
                 style={{ transform: `translateX(-${currentManuscript * 100}%)` }}
