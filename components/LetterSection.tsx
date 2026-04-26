@@ -74,9 +74,9 @@ export default function LetterSection({
             Write whatever the pages stirred in you.
           </p>
         </div>
-
-        <LetterOverlay isOpen={isComposerOpen} onClose={() => setIsComposerOpen(false)} />
       </div>
+
+      <LetterOverlay isOpen={isComposerOpen} onClose={() => setIsComposerOpen(false)} />
     </section>
   )
 }
