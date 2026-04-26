@@ -102,7 +102,7 @@ export const createWheelHandler = (
 ) => {
   return (e: WheelEvent) => {
     if ((isMapExpanded && isMapScrolling) || (!isMapExpanded && isScrolling)) return
-    if (document.body.dataset.overlayLock !== "section") return
+    if (document.body.dataset.overlayLock === "true") return
 
     // If the cursor is inside a scrollable panel, keep wheel behavior local to that panel.
     const target = e.target as Element
@@ -138,7 +138,7 @@ export const createKeyHandler = (
 ) => {
   return (e: KeyboardEvent) => {
     if ((isMapExpanded && isMapScrolling) || (!isMapExpanded && isScrolling)) return
-    if (document.body.dataset.overlayLock !== "section") return
+    if (document.body.dataset.overlayLock === "true") return
     if (isTypingTarget(e.target)) return
 
     switch (e.key) {
