@@ -18,6 +18,7 @@ export interface WorldDialogueState {
   speaker: string
   lines: string[]
   lineIndex: number
+  soundCue?: string
 }
 
 export interface WorldPlayerPosition {

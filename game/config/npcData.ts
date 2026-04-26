@@ -6,6 +6,11 @@ export interface SpriteConfig {
   targetSize?: number
 }
 
+export interface StaticSpriteConfig {
+  path: string
+  targetSize?: number
+}
+
 export interface NpcData {
   id: string
   name: string
@@ -14,6 +19,7 @@ export interface NpcData {
   tint: number
   dialogueLines: string[]
   spriteConfig?: SpriteConfig
+  staticSpriteConfig?: StaticSpriteConfig
 }
 
 export const npcData: NpcData[] = [
@@ -49,6 +55,18 @@ export const npcData: NpcData[] = [
       "The campfire is still the center of the whole world here.",
       "Walk around first. The village makes more sense once you feel the distances.",
     ],
+  },
+  {
+    id: "tungtung",
+    name: "Tung Tung",
+    x: 420,
+    y: 69,
+    tint: 0xffffff,
+    dialogueLines: ["Tung Tung Tung Sahur"],
+    staticSpriteConfig: {
+      path: "/game/characters/tungtung/tungtung-sprite.png",
+      targetSize: 48,
+    },
   },
   {
     id: "manh",

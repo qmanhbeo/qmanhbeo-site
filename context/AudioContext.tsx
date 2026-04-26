@@ -71,6 +71,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       sfxHowlsRef.current.transition = new Howl({ src: ["/sounds/page-turn.wav"], volume: 0.06, html5: false })
       sfxHowlsRef.current.open = new Howl({ src: ["/sounds/book-open.wav"], volume: 0.15, html5: false })
       sfxHowlsRef.current.flip = new Howl({ src: ["/sounds/page-turn-heavy.mp3"], volume: 0.12, html5: false })
+      sfxHowlsRef.current["tung-tung-sahur"] = new Howl({ src: ["/game/characters/tungtung/tung-tung-sahur.mp3"], volume: 0.5, html5: true })
     })
     return () => {
       cancelled = true

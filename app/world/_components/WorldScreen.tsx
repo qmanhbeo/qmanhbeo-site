@@ -122,6 +122,9 @@ export default function WorldScreen() {
     })
     const offOpenDialogue = gameBridge.on("open-dialogue", (nextDialogueState) => {
       setDialogueState(nextDialogueState)
+      if (nextDialogueState.soundCue) {
+        playSfx(nextDialogueState.soundCue as "click" | "transition" | "open" | "flip")
+      }
     })
     const offDialogueClosed = gameBridge.on("dialogue-closed", () => {
       setDialogueState({
