@@ -74,8 +74,12 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
         }
       }
       const animKey = `world-npc-${data.id}`
-      this.play(`${animKey}-idle-down`)
-      this.setFrame(3)
+      const anims: Phaser.Animations.AnimationManager = (scene as Phaser.Scene).anims
+      const idleDownKey = `${animKey}-idle-down`
+      if (anims.exists(idleDownKey)) {
+        this.play(idleDownKey)
+        this.setFrame(3)
+      }
     } else {
       scene.tweens.add({
         targets: this,

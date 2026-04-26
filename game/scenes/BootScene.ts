@@ -191,65 +191,74 @@ export class BootScene extends Phaser.Scene {
         skin: 0xf1c998,
       })
     })
-    this.createNpcAnimations()
-    generateCircleTexture(this, "world-spark", 2, 0xffe1a3)
-    if (!this.textures.exists("world-fire")) {
-      generateCampfireTexture(this)
-    }
-    gameBridge.emit("load-progress", { progress: 1, label: "World ready" })
-    this.scene.start("WorldScene")
-    this.scene.start("UIScene")
-  }
-
-  private createNpcAnimations() {
-    npcData.forEach((npc) => {
-      if (!npc.spriteConfig) return
-      const key = `world-npc-${npc.id}`
-      if (!this.textures.exists(key)) return
-
-      if (npc.spriteConfig.atlasPath) {
-        this.createAtlasNpcAnimations(npc, key)
-      } else {
-        this.createImageNpcAnimations(npc, key)
+    this.createNpcAnimations().then(() => {
+      generateCircleTexture(this, "world-spark", 2, 0xffe1a3)
+      if (!this.textures.exists("world-fire")) {
+        generateCampfireTexture(this)
       }
+      gameBridge.emit("load-progress", { progress: 1, label: "World ready" })
+      this.scene.start("WorldScene")
+      this.scene.start("UIScene")
     })
   }
 
-  private async createAtlasNpcAnimations(npc: { spriteConfig?: { atlasPath?: string; targetSize?: number } }, key: string) {
-    try {
-      const response = await fetch(npc.spriteConfig!.atlasPath!)
-      const atlasData = await response.json()
+  private createNpcAnimations(): Promise<void> {
+    const promises = npcData.map((npc) => {
+      if (!npc.spriteConfig) return Promise.resolve()
+      const key = `world-npc-${npc.id}`
+      if (!this.textures.exists(key)) return Promise.resolve()
 
-      const frames = atlasData.frames
-      const meta = atlasData.meta
-      const frameHeight = meta.size.h / npc.spriteConfig!.targetSize!
-
-      const DEFAULT_TARGET_SIZE = 64
-      const targetSize = npc.spriteConfig?.targetSize || DEFAULT_TARGET_SIZE
-
-      let frameIndex = 0
-      for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < 4; col++) {
-          const frameKey = `frame_${String(row * 4 + col).padStart(3, "0")}`
-          if (frames[frameKey]) {
-            const frame = frames[frameKey].frame
-            this.textures.get(key).add(frameIndex, 0, frame.x, frame.y, frame.w, frame.h)
-            frameIndex++
-          }
-        }
+      if (npc.spriteConfig.atlasPath) {
+        return this.createAtlasNpcAnimations(npc, key)
+      } else {
+        this.createImageNpcAnimations(npc, key)
+        return Promise.resolve()
       }
+    })
+    return Promise.all(promises) as unknown as Promise<void>
+  }
 
-      this.anims.create({ key: `${key}-down`, frames: [{ key, frame: 0 }, { key, frame: 2 }], frameRate: 6, repeat: -1 })
-      this.anims.create({ key: `${key}-left`, frames: [{ key, frame: 4 }, { key, frame: 6 }], frameRate: 6, repeat: -1 })
-      this.anims.create({ key: `${key}-right`, frames: [{ key, frame: 8 }, { key, frame: 10 }], frameRate: 6, repeat: -1 })
-      this.anims.create({ key: `${key}-up`, frames: [{ key, frame: 12 }, { key, frame: 14 }], frameRate: 6, repeat: -1 })
-      this.anims.create({ key: `${key}-idle-down`, frames: [{ key, frame: 3 }], frameRate: 1 })
-      this.anims.create({ key: `${key}-idle-left`, frames: [{ key, frame: 7 }], frameRate: 1 })
-      this.anims.create({ key: `${key}-idle-right`, frames: [{ key, frame: 11 }], frameRate: 1 })
-      this.anims.create({ key: `${key}-idle-up`, frames: [{ key, frame: 15 }], frameRate: 1 })
-    } catch (error) {
-      console.error(`Failed to load atlas for ${key}:`, error)
-    }
+  private createAtlasNpcAnimations(npc: { spriteConfig?: { atlasPath?: string; targetSize?: number } }, key: string): Promise<void> {
+    return new Promise((resolve) => {
+      fetch(npc.spriteConfig!.atlasPath!)
+        .then(async (res) => {
+          const atlasData = await res.json()
+
+          const frames = atlasData.frames
+          const meta = atlasData.meta
+
+          const DEFAULT_TARGET_SIZE = 64
+          const targetSize = npc.spriteConfig?.targetSize || DEFAULT_TARGET_SIZE
+
+          const texture = this.textures.get(key)
+
+          let frameIndex = 0
+          for (let row = 0; row < 4; row++) {
+            for (let col = 0; col < 4; col++) {
+              const frameKey = `frame_${String(row * 4 + col).padStart(3, "0")}`
+              if (frames[frameKey]) {
+                const frame = frames[frameKey].frame
+                texture.add(frameIndex, 0, frame.x, frame.y, frame.w, frame.h)
+                frameIndex++
+              }
+            }
+          }
+
+          this.anims.create({ key: `${key}-down`, frames: [{ key, frame: 0 }, { key, frame: 2 }], frameRate: 6, repeat: -1 })
+          this.anims.create({ key: `${key}-left`, frames: [{ key, frame: 4 }, { key, frame: 6 }], frameRate: 6, repeat: -1 })
+          this.anims.create({ key: `${key}-right`, frames: [{ key, frame: 8 }, { key, frame: 10 }], frameRate: 6, repeat: -1 })
+          this.anims.create({ key: `${key}-up`, frames: [{ key, frame: 12 }, { key, frame: 14 }], frameRate: 6, repeat: -1 })
+          this.anims.create({ key: `${key}-idle-down`, frames: [{ key, frame: 3 }], frameRate: 1 })
+          this.anims.create({ key: `${key}-idle-left`, frames: [{ key, frame: 7 }], frameRate: 1 })
+          this.anims.create({ key: `${key}-idle-right`, frames: [{ key, frame: 11 }], frameRate: 1 })
+          this.anims.create({ key: `${key}-idle-up`, frames: [{ key, frame: 15 }], frameRate: 1 })
+          resolve()
+        })
+        .catch((err) => {
+          console.error(`[BootScene] Failed to load atlas for ${key}:`, err)
+          resolve()
+        })
+    })
   }
 
   private createImageNpcAnimations(npc: { spriteConfig?: { columns: number; rows: number; targetSize?: number } }, key: string) {
