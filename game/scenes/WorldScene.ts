@@ -62,6 +62,15 @@ export class WorldScene extends Phaser.Scene {
 
     this.buildings = buildingData.map((building) => new BuildingZone(this, building))
     this.npcs = npcData.map((npc) => new NPC(this, npc))
+
+    this.time.delayedCall(2000, () => {
+      this.npcs.forEach((npc) => {
+        if (npc.hasSprite) {
+          npc.startWanderingPublic()
+        }
+      })
+    })
+
     this.buildingHalo = this.add.ellipse(0, 0, 94, 70, 0xffc56f, 0)
       .setDepth(5)
       .setStrokeStyle(2, 0xffd27b, 0.42)

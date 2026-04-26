@@ -2,14 +2,38 @@ import Phaser from "phaser"
 import { gameBridge } from "@/game/GameBridge"
 import { npcData } from "@/game/config/npcData"
 
-const CHARACTER_ASSETS = [
-  { key: "world-player", path: "/game/characters/player.png" },
-  ...npcData.map((npc) => ({
-    key: `world-npc-${npc.id}`,
-    path: `/game/characters/npc-${npc.id}.png`,
-  })),
-  { key: "world-fire", path: "/game/characters/campfire.png" },
-] as const
+const PLAYER_ASSET = { key: "world-player", path: "/game/characters/player.png" }
+const FIRE_ASSET = { key: "world-fire", path: "/game/characters/campfire.png" }
+
+function getNpcAssets() {
+  return npcData.map((npc) => {
+    if (npc.spriteConfig) {
+      if (npc.spriteConfig.atlasPath) {
+        return {
+          key: `world-npc-${npc.id}`,
+          path: npc.spriteConfig.path,
+          atlasPath: npc.spriteConfig.atlasPath,
+          isAtlas: true,
+        }
+      }
+      return {
+        key: `world-npc-${npc.id}`,
+        path: npc.spriteConfig.path,
+        isSpritesheet: true,
+        columns: npc.spriteConfig.columns,
+        rows: npc.spriteConfig.rows,
+        npcId: npc.id,
+      }
+    }
+    return {
+      key: `world-npc-${npc.id}`,
+      path: `/game/characters/npc-${npc.id}.png`,
+      isSpritesheet: false,
+    }
+  })
+}
+
+const NPC_ASSETS = getNpcAssets()
 
 const WORLD_TILESET = {
   key: "world-tiles",
@@ -124,8 +148,14 @@ export class BootScene extends Phaser.Scene {
 
   preload() {
     gameBridge.emit("load-progress", { progress: 0.12, label: "Lighting the hearth" })
-    CHARACTER_ASSETS.forEach((asset) => {
-      this.load.image(asset.key, asset.path)
+    this.load.image(PLAYER_ASSET.key, PLAYER_ASSET.path)
+    this.load.image(FIRE_ASSET.key, FIRE_ASSET.path)
+    NPC_ASSETS.forEach((asset) => {
+      if (asset.isAtlas) {
+        this.load.atlas(asset.key, asset.path, asset.atlasPath)
+      } else {
+        this.load.image(asset.key, asset.path)
+      }
     })
     this.load.spritesheet(WORLD_TILESET.key, WORLD_TILESET.path, {
       frameWidth: 16,
@@ -151,6 +181,7 @@ export class BootScene extends Phaser.Scene {
     }
     generateRoundedTexture(this, "world-npc", 20, 20, 0xbcc9ff, 0x1c2437)
     npcData.forEach((npc, index) => {
+      if (npc.spriteConfig) return
       if (this.textures.exists(`world-npc-${npc.id}`)) return
       const hairColors = [0x24130c, 0x44301d, 0x201a24]
       generateCharacterTexture(this, `world-npc-${npc.id}`, {
@@ -160,6 +191,7 @@ export class BootScene extends Phaser.Scene {
         skin: 0xf1c998,
       })
     })
+    this.createNpcAnimations()
     generateCircleTexture(this, "world-spark", 2, 0xffe1a3)
     if (!this.textures.exists("world-fire")) {
       generateCampfireTexture(this)
@@ -167,5 +199,142 @@ export class BootScene extends Phaser.Scene {
     gameBridge.emit("load-progress", { progress: 1, label: "World ready" })
     this.scene.start("WorldScene")
     this.scene.start("UIScene")
+  }
+
+  private createNpcAnimations() {
+    npcData.forEach((npc) => {
+      if (!npc.spriteConfig) return
+      const key = `world-npc-${npc.id}`
+      if (!this.textures.exists(key)) return
+
+      if (npc.spriteConfig.atlasPath) {
+        this.createAtlasNpcAnimations(npc, key)
+      } else {
+        this.createImageNpcAnimations(npc, key)
+      }
+    })
+  }
+
+  private async createAtlasNpcAnimations(npc: { spriteConfig?: { atlasPath?: string; targetSize?: number } }, key: string) {
+    try {
+      const response = await fetch(npc.spriteConfig!.atlasPath!)
+      const atlasData = await response.json()
+
+      const frames = atlasData.frames
+      const meta = atlasData.meta
+      const frameHeight = meta.size.h / npc.spriteConfig!.targetSize!
+
+      const DEFAULT_TARGET_SIZE = 64
+      const targetSize = npc.spriteConfig?.targetSize || DEFAULT_TARGET_SIZE
+
+      let frameIndex = 0
+      for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 4; col++) {
+          const frameKey = `frame_${String(row * 4 + col).padStart(3, "0")}`
+          if (frames[frameKey]) {
+            const frame = frames[frameKey].frame
+            this.textures.get(key).add(frameIndex, 0, frame.x, frame.y, frame.w, frame.h)
+            frameIndex++
+          }
+        }
+      }
+
+      this.anims.create({ key: `${key}-down`, frames: [{ key, frame: 0 }, { key, frame: 2 }], frameRate: 6, repeat: -1 })
+      this.anims.create({ key: `${key}-left`, frames: [{ key, frame: 4 }, { key, frame: 6 }], frameRate: 6, repeat: -1 })
+      this.anims.create({ key: `${key}-right`, frames: [{ key, frame: 8 }, { key, frame: 10 }], frameRate: 6, repeat: -1 })
+      this.anims.create({ key: `${key}-up`, frames: [{ key, frame: 12 }, { key, frame: 14 }], frameRate: 6, repeat: -1 })
+      this.anims.create({ key: `${key}-idle-down`, frames: [{ key, frame: 3 }], frameRate: 1 })
+      this.anims.create({ key: `${key}-idle-left`, frames: [{ key, frame: 7 }], frameRate: 1 })
+      this.anims.create({ key: `${key}-idle-right`, frames: [{ key, frame: 11 }], frameRate: 1 })
+      this.anims.create({ key: `${key}-idle-up`, frames: [{ key, frame: 15 }], frameRate: 1 })
+    } catch (error) {
+      console.error(`Failed to load atlas for ${key}:`, error)
+    }
+  }
+
+  private createImageNpcAnimations(npc: { spriteConfig?: { columns: number; rows: number; targetSize?: number } }, key: string) {
+    const texture = this.textures.get(key)
+    const sourceImage = texture.getSourceImage() as HTMLImageElement
+    if (!sourceImage) return
+
+    const imageWidth = sourceImage.naturalWidth || sourceImage.width
+    const imageHeight = sourceImage.naturalHeight || sourceImage.height
+
+    const cellWidth = Math.floor(imageWidth / npc.spriteConfig!.columns)
+    const cellHeight = Math.floor(imageHeight / npc.spriteConfig!.rows)
+
+    const trimmed = this.detectTrimBounds(sourceImage, cellWidth, cellHeight)
+    const trimmedWidth = trimmed.width
+    const trimmedHeight = trimmed.height
+
+    const DEFAULT_TARGET_SIZE = 32
+    const targetSize = npc.spriteConfig?.targetSize || DEFAULT_TARGET_SIZE
+    const autoScale = targetSize / trimmedHeight
+
+    this.textures.get(key).add(0, 0, trimmed.x, trimmed.y, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(1, 0, trimmed.x + cellWidth, trimmed.y, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(2, 0, trimmed.x + cellWidth * 2, trimmed.y, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(3, 0, trimmed.x + cellWidth * 3, trimmed.y, trimmedWidth, trimmedHeight)
+
+    this.textures.get(key).add(4, 0, trimmed.x, trimmed.y + cellHeight, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(5, 0, trimmed.x + cellWidth, trimmed.y + cellHeight, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(6, 0, trimmed.x + cellWidth * 2, trimmed.y + cellHeight, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(7, 0, trimmed.x + cellWidth * 3, trimmed.y + cellHeight, trimmedWidth, trimmedHeight)
+
+    this.textures.get(key).add(8, 0, trimmed.x, trimmed.y + cellHeight * 2, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(9, 0, trimmed.x + cellWidth, trimmed.y + cellHeight * 2, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(10, 0, trimmed.x + cellWidth * 2, trimmed.y + cellHeight * 2, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(11, 0, trimmed.x + cellWidth * 3, trimmed.y + cellHeight * 2, trimmedWidth, trimmedHeight)
+
+    this.textures.get(key).add(12, 0, trimmed.x, trimmed.y + cellHeight * 3, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(13, 0, trimmed.x + cellWidth, trimmed.y + cellHeight * 3, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(14, 0, trimmed.x + cellWidth * 2, trimmed.y + cellHeight * 3, trimmedWidth, trimmedHeight)
+    this.textures.get(key).add(15, 0, trimmed.x + cellWidth * 3, trimmed.y + cellHeight * 3, trimmedWidth, trimmedHeight)
+
+    this.anims.create({ key: `${key}-down`, frames: [{ key, frame: 0 }, { key, frame: 2 }], frameRate: 6, repeat: -1 })
+    this.anims.create({ key: `${key}-left`, frames: [{ key, frame: 4 }, { key, frame: 6 }], frameRate: 6, repeat: -1 })
+    this.anims.create({ key: `${key}-right`, frames: [{ key, frame: 8 }, { key, frame: 10 }], frameRate: 6, repeat: -1 })
+    this.anims.create({ key: `${key}-up`, frames: [{ key, frame: 12 }, { key, frame: 14 }], frameRate: 6, repeat: -1 })
+    this.anims.create({ key: `${key}-idle-down`, frames: [{ key, frame: 3 }], frameRate: 1 })
+    this.anims.create({ key: `${key}-idle-left`, frames: [{ key, frame: 7 }], frameRate: 1 })
+    this.anims.create({ key: `${key}-idle-right`, frames: [{ key, frame: 11 }], frameRate: 1 })
+    this.anims.create({ key: `${key}-idle-up`, frames: [{ key, frame: 15 }], frameRate: 1 })
+  }
+
+  private detectTrimBounds(
+    sourceImage: HTMLImageElement,
+    cellWidth: number,
+    cellHeight: number,
+  ): { x: number; y: number; width: number; height: number } {
+    const canvas = document.createElement("canvas")
+    canvas.width = cellWidth
+    canvas.height = cellHeight
+    const ctx = canvas.getContext("2d")!
+    ctx.drawImage(sourceImage, 0, 0, cellWidth, cellHeight)
+    const imageData = ctx.getImageData(0, 0, cellWidth, cellHeight)
+    const data = imageData.data
+
+    let minX = cellWidth,
+      minY = cellHeight,
+      maxX = 0,
+      maxY = 0
+
+    for (let y = 0; y < cellHeight; y++) {
+      for (let x = 0; x < cellWidth; x++) {
+        const alpha = data[(y * cellWidth + x) * 4 + 3]
+        if (alpha > 10) {
+          if (x < minX) minX = x
+          if (x > maxX) maxX = x
+          if (y < minY) minY = y
+          if (y > maxY) maxY = y
+        }
+      }
+    }
+
+    if (maxX < minX || maxY < minY) {
+      return { x: 0, y: 0, width: cellWidth, height: cellHeight }
+    }
+
+    return { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 }
   }
 }

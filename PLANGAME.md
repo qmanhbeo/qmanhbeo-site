@@ -244,6 +244,8 @@ Building → Section mapping:
 - [x] Prompt behavior polish — onboarding hint is transient on mount; contextual prompts are range-based and disappear when irrelevant
 - [x] First repo-owned raster sprite pass — player, NPC, and campfire PNGs load from `public/game/characters/` with procedural fallback
 - [x] Repo-owned tileset/map slice — generated `tiny-town.png` and `world.json` load through Phaser with procedural fallback
+- [x] 4×4 directional spritesheet NPC system — dynamic frame sizing from image dimensions, 4-direction animation (down/left/right/up rows), autonomous random wandering with pause cycles, backward-compatible with existing tint-based NPCs (Alex, Adam, Avery)
+- [x] Added "manh" NPC at position (360, 280) with `/game/characters/npc-manh-4x4.png` spritesheet
 
 ### Phase 4 — Verification
 - [x] Playwright smoke: desktop prompt lifecycle, desktop dialogue plus input lock, home CTA → `/world`, Library → item → `/world` return restore, Post Office → normal letter overlay, mobile joystick drag plus interact dialogue, iPhone 14 Pro Max viewport-fit, docked mobile controls below the game, and iPhone 14 Pro Max publications-panel fit/touch-target

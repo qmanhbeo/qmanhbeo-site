@@ -1,3 +1,11 @@
+export interface SpriteConfig {
+  path: string
+  atlasPath?: string
+  columns: number
+  rows: number
+  targetSize?: number
+}
+
 export interface NpcData {
   id: string
   name: string
@@ -5,6 +13,7 @@ export interface NpcData {
   y: number
   tint: number
   dialogueLines: string[]
+  spriteConfig?: SpriteConfig
 }
 
 export const npcData: NpcData[] = [
@@ -40,5 +49,23 @@ export const npcData: NpcData[] = [
       "The campfire is still the center of the whole world here.",
       "Walk around first. The village makes more sense once you feel the distances.",
     ],
+  },
+  {
+    id: "manh",
+    name: "Manh",
+    x: 360,
+    y: 280,
+    tint: 0xffffff,
+    dialogueLines: [
+      "Welcome to the village!",
+      "The fire keeps us warm.",
+    ],
+    spriteConfig: {
+      path: "/game/characters/manh-sheet/spritesheet.png",
+      atlasPath: "/game/characters/manh-sheet/spritesheet.json",
+      columns: 4,
+      rows: 4,
+      targetSize: 32,
+    },
   },
 ]
