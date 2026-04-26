@@ -27,9 +27,7 @@ export default function WorldSectionPanel() {
     <div className="world-panel-overlay fixed inset-0 z-50 flex items-stretch justify-center bg-[#050302]/74 backdrop-blur-sm md:items-center">
       <div
         data-testid="world-section-panel"
-        className="relative flex h-full min-h-0 w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-amber-500/16 bg-[#0c0806]/95 shadow-[0_24px_80px_rgba(0,0,0,0.55)] md:h-auto md:max-h-[92dvh] md:rounded-[2.2rem]"
-        onWheelCapture={(event) => event.stopPropagation()}
-      >
+        className="relative flex h-full min-h-0 w-full max-w-6xl flex-col overflow-hidden rounded-[2rem] border border-amber-500/16 bg-[#0c0806]/95 shadow-[0_24px_80px_rgba(0,0,0,0.55)] md:h-auto md:max-h-[92dvh] md:rounded-[2.2rem]">
         <div className="flex items-start justify-between gap-4 border-b border-amber-200/8 bg-black/18 px-4 py-4 backdrop-blur-sm sm:px-5">
           <div>
             <p className="font-cinzel text-[0.72rem] uppercase tracking-[0.3em] text-amber-300/70">Inside The World</p>

@@ -7,6 +7,7 @@ import WorldCanvas from "@/app/world/_components/WorldCanvas"
 import WorldDialogueBox from "@/app/world/_components/WorldDialogueBox"
 import WorldPromptOverlay, { useWorldPromptState } from "@/app/world/_components/WorldPromptOverlay"
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
+import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
 import { useAudioContext } from "@/context/AudioContext"
 import { useWorld } from "@/context/WorldContext"
 import { gameBridge, type WorldSfxCue } from "@/game/GameBridge"
@@ -39,6 +40,7 @@ export default function WorldScreen() {
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
   const lastSoundCueRef = useRef<string | null>(null)
   const [promptText, setPromptText] = useState("")
+  const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
   const uiLocked = dialogueState.isOpen || activeSectionId !== null
   const promptState = useWorldPromptState({
     contextualPrompt: promptText,
@@ -116,6 +118,10 @@ export default function WorldScreen() {
     document.body.dataset.overlayLock = "true"
 
     const offOpenSection = gameBridge.on("open-section", ({ sectionId }) => {
+      if (sectionId === "publications") {
+        setIsArchiveOverlayOpen(true)
+        return
+      }
       setActiveSectionId(sectionId)
     })
     const offSectionClosed = gameBridge.on("section-closed", () => {
@@ -203,16 +209,13 @@ export default function WorldScreen() {
   ])
 
   useEffect(() => {
-    if (dialogueState.isOpen) {
-      document.body.dataset.overlayLock = "true"
-    } else if (promptState.isVisible) {
-      document.body.dataset.overlayLock = "true"
-    } else if (activeSectionId) {
+    const shouldLock = dialogueState.isOpen || isArchiveOverlayOpen || activeSectionId || promptState.isVisible
+    if (shouldLock) {
       document.body.dataset.overlayLock = "true"
     } else {
-      document.body.dataset.overlayLock = "true"
+      delete document.body.dataset.overlayLock
     }
-  }, [dialogueState.isOpen, promptState.isVisible, activeSectionId])
+  }, [dialogueState.isOpen, isArchiveOverlayOpen, promptState.isVisible, activeSectionId])
 
   useEffect(() => {
     const renderGameToText = () => JSON.stringify({
@@ -276,6 +279,13 @@ export default function WorldScreen() {
         </section>
 
         <WorldSectionPanel />
+        <ArchiveCodexOverlay
+          isOpen={isArchiveOverlayOpen}
+          onClose={() => {
+            setIsArchiveOverlayOpen(false)
+            gameBridge.emit("section-closed", undefined)
+          }}
+        />
       </div>
     </main>
   )
