@@ -45,35 +45,42 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
         <div className="relative isolate flex flex-col items-center justify-center gap-6">
           {/* Top row - Archive Codex + Letter side by side on md+ */}
           <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:gap-6">
-            <ArchiveCodexButton
-              isOpen={isArchiveOverlayOpen}
-              onOpen={() => { playSfx("open"); setIsArchiveOverlayOpen(true) }}
-            />
+            <div className="w-full max-w-[27rem] shrink-0">
+              <ArchiveCodexButton
+                isOpen={isArchiveOverlayOpen}
+                onOpen={() => { playSfx("open"); setIsArchiveOverlayOpen(true) }}
+                className="max-w-none"
+              />
+            </div>
 
-            <LetterScrollTrigger
-              isOpen={isLetterOverlayOpen}
-              onOpen={() => { playSfx("open"); setIsLetterOverlayOpen(true) }}
-              label="Send a Letter"
-              helperText="Open the scroll and write by firelight."
-              variant="compact"
-            />
+            <div className="w-full max-w-md shrink-0">
+              <LetterScrollTrigger
+                isOpen={isLetterOverlayOpen}
+                onOpen={() => { playSfx("open"); setIsLetterOverlayOpen(true) }}
+                label="Send a Letter"
+                helperText="Open the scroll and write by firelight."
+                variant="compact"
+              />
+            </div>
           </div>
 
           {/* Bottom row - Enter the World centered */}
-          <button
-            type="button"
-            onClick={() => {
-              playSfx("open")
-              openWorld()
-            }}
-            className="group relative overflow-hidden rounded-full border border-amber-500/40 bg-[linear-gradient(155deg,#2b150d_0%,#6d3516_58%,#c06b1f_100%)] px-8 py-4 text-center shadow-[0_22px_55px_rgba(40,17,6,0.32)] transition duration-300 hover:scale-[1.02] hover:border-amber-300/65 hover:shadow-[0_28px_70px_rgba(40,17,6,0.45)]"
-            aria-label="Enter the World"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,214,145,0.28),_transparent_38%)] opacity-80 transition duration-300 group-hover:opacity-100" />
-            <span className="relative font-cinzel text-xl font-semibold text-amber-50 sm:text-2xl">
-              Enter the World
-            </span>
-          </button>
+          <div className="w-full max-w-[27rem] shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                playSfx("open")
+                openWorld()
+              }}
+              className="group relative w-full overflow-hidden rounded-full border border-amber-500/40 bg-[linear-gradient(155deg,#2b150d_0%,#6d3516_58%,#c06b1f_100%)] px-8 py-4 text-center shadow-[0_22px_55px_rgba(40,17,6,0.32)] transition duration-300 hover:scale-[1.02] hover:border-amber-300/65 hover:shadow-[0_28px_70px_rgba(40,17,6,0.45)]"
+              aria-label="Enter the World"
+            >
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,214,145,0.28),_transparent_38%)] opacity-80 transition duration-300 group-hover:opacity-100" />
+              <span className="relative font-cinzel text-xl font-semibold text-amber-50 sm:text-2xl">
+                Enter the World
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 

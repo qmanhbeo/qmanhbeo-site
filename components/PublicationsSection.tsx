@@ -239,7 +239,7 @@ export default function PublicationsSection({
       <div className="firelight absolute inset-0 opacity-45" />
 
       <div
-        className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col px-4 ${isWorldPanel ? "py-5 sm:px-6" : "sm:px-8"}`}
+        className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col justify-center px-4 ${isWorldPanel ? "py-5 sm:px-6" : "sm:px-8"}`}
       >
         <div className="flex-shrink-0 py-2.5 text-center md:py-6">
           <h2 className="map-sky-ink-strong font-cinzel text-[2.15rem] font-bold leading-tight sm:text-4xl md:text-5xl">
@@ -257,7 +257,7 @@ export default function PublicationsSection({
           onTouchEnd={handleSwipeTouchEnd}
           onTouchCancel={handleSwipeTouchCancel}
         >
-          <div className="map-ghost-panel flex h-full min-h-0 flex-col overflow-hidden rounded-[1rem] md:rounded-lg">
+          <div className="map-ghost-panel flex min-h-0 flex-col overflow-hidden rounded-[1rem] md:rounded-lg">
             <div className="flex flex-shrink-0 justify-center px-4 pb-1 pt-2 md:hidden">
               <NavPill
                 current={currentManuscript}
