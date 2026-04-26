@@ -113,7 +113,7 @@ export default function WorldScreen() {
 
     document.body.style.overflow = "hidden"
     document.body.style.overscrollBehavior = "contain"
-    document.body.dataset.overlayLock = "true"
+    document.body.dataset.overlayLock = "game"
 
     const offOpenSection = gameBridge.on("open-section", ({ sectionId }) => {
       setActiveSectionId(sectionId)
@@ -201,6 +201,18 @@ export default function WorldScreen() {
     handleAdvanceDialogue,
     handleCloseDialogue,
   ])
+
+  useEffect(() => {
+    if (dialogueState.isOpen) {
+      document.body.dataset.overlayLock = "dialogue"
+    } else if (promptState.isVisible) {
+      document.body.dataset.overlayLock = "prompt"
+    } else if (activeSectionId) {
+      document.body.dataset.overlayLock = "section"
+    } else {
+      document.body.dataset.overlayLock = "game"
+    }
+  }, [dialogueState.isOpen, promptState.isVisible, activeSectionId])
 
   useEffect(() => {
     const renderGameToText = () => JSON.stringify({
