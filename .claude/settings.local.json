@@ -21,7 +21,8 @@
       "Bash(python3 -c \" import zipfile, io, sys data = sys.stdin.buffer.read\\(\\) z = zipfile.ZipFile\\(io.BytesIO\\(data\\)\\) for name in z.namelist\\(\\): info = z.getinfo\\(name\\) print\\(f'{name} \\({info.file_size} bytes\\)'\\) \")",
       "Bash(curl -sI \"https://raw.githubusercontent.com/Calinou/kenney-interface-sounds/master/addons/kenney_interface_sounds/scroll_001.wav\")",
       "Bash(curl -sI \"https://raw.githubusercontent.com/Calinou/kenney-interface-sounds/master/addons/kenney_interface_sounds/minimize_001.wav\")",
-      "Bash(curl -sI \"https://raw.githubusercontent.com/Calinou/kenney-interface-sounds/master/addons/kenney_interface_sounds/click_001.wav\")"
+      "Bash(curl -sI \"https://raw.githubusercontent.com/Calinou/kenney-interface-sounds/master/addons/kenney_interface_sounds/click_001.wav\")",
+      "Bash(ls:*)"
     ]
   }
 }

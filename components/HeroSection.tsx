@@ -42,7 +42,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
           gets what.
         </p>
 
-        <div className="relative isolate flex w-full flex-col items-center justify-center gap-4 sm:flex-row sm:items-center sm:gap-6">
+        <div className="relative isolate flex w-full flex-col items-center justify-center gap-4 md:flex-row md:items-center md:gap-6">
           <div className="w-full max-w-[27rem] shrink-0">
             <ArchiveCodexButton
               isOpen={isArchiveOverlayOpen}
@@ -51,7 +51,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
             />
           </div>
 
-          <div className="w-full max-w-md shrink-0">
+          <div className="w-full max-w-sm shrink-0">
             <LetterScrollTrigger
               isOpen={isLetterOverlayOpen}
               onOpen={() => { playSfx("open"); setIsLetterOverlayOpen(true) }}
@@ -61,7 +61,7 @@ export default function HeroSection({ revealClassName = "" }: HeroSectionProps) 
             />
           </div>
 
-          <div className="w-full max-w-md shrink-0">
+          <div className="w-full max-w-sm shrink-0">
             <button
               type="button"
               onClick={() => {
