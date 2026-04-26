@@ -1,5 +1,7 @@
 # 🏰 Manh's Cozy Corner - Medieval Personal Website
 
+TEMPORARY TEST MARKER
+
 A horizontally scrolling personal website with a cozy medieval campfire aesthetic, built with Next.js and featuring immersive storytelling elements.
 
 ## 🌟 Overview
