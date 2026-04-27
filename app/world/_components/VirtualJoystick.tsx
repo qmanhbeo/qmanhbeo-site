@@ -87,14 +87,14 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
     <div
       ref={padRef}
       data-testid="world-joystick-pad"
-      className="relative h-28 w-28 rounded-full border border-amber-300/18 bg-[#120a08]/75 shadow-[0_10px_35px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+      className="relative h-32 w-32 rounded-full border border-amber-300/20 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
       onPointerDown={() => {
         isDraggingRef.current = true
       }}
     >
-      <div className="absolute inset-[26px] rounded-full border border-amber-400/12" />
+      <div className="absolute inset-[26px] rounded-full border border-amber-400/10" />
       <div
-        className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-200/30 bg-amber-200/10 transition-transform"
+        className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-200/20 bg-amber-100/5 transition-transform"
         style={{ transform: `translate(calc(-50% + ${stickOffset.x}px), calc(-50% + ${stickOffset.y}px))` }}
       />
     </div>
@@ -123,7 +123,7 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
     <button
       type="button"
       data-testid="world-interact-button"
-      className="h-20 w-20 rounded-full border border-amber-400/30 bg-[#3a2010]/88 font-cinzel text-lg text-amber-50 shadow-[0_10px_35px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+      className="h-32 w-32 rounded-full border border-amber-400/25 bg-transparent font-cinzel text-lg text-amber-200/70 shadow-[0_4px_15px_rgba(0,0,0,0.1)]"
       onPointerDown={handleInteract}
       onPointerUp={handleInteractEnd}
       onPointerLeave={handleInteractEnd}
@@ -136,7 +136,7 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
     return (
       <div
         data-testid="world-mobile-controls"
-        className="flex min-h-[8.5rem] items-center justify-between rounded-[1.75rem] border border-amber-500/18 bg-[#140c08]/88 px-6 py-4 shadow-[0_18px_55px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+        className="flex min-h-[8.5rem] items-center justify-between rounded-[1.75rem] border border-amber-500/18 bg-transparent px-6 py-4 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
       >
         <div className="flex flex-col items-center gap-2">
           {joystickPad}
@@ -152,12 +152,27 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
   }
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-30">
-      <div className="pointer-events-auto absolute bottom-6 left-5">
+    <div
+      className="pointer-events-none absolute inset-0 z-30"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+    >
+      <div
+        className="pointer-events-auto absolute"
+        style={{
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 48px)",
+          left: "48px",
+        }}
+      >
         {joystickPad}
       </div>
 
-      <div className="pointer-events-auto absolute bottom-7 right-5">
+      <div
+        className="pointer-events-auto absolute"
+        style={{
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 48px)",
+          right: "48px",
+        }}
+      >
         {interactButton}
       </div>
     </div>

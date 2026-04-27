@@ -17,11 +17,14 @@ export function createPhaserGame({
   initialPlayerPosition,
   initialUiLocked,
 }: CreatePhaserGameOptions) {
+  const width = container.clientWidth || window.innerWidth || 640
+  const height = container.clientHeight || window.innerHeight || 640
+
   return new Phaser.Game({
     type: Phaser.AUTO,
     parent: container,
-    width: 640,
-    height: 640,
+    width,
+    height,
     backgroundColor: "#0a0604",
     pixelArt: true,
     roundPixels: true,
@@ -32,7 +35,7 @@ export function createPhaserGame({
       },
     },
     scale: {
-      mode: Phaser.Scale.FIT,
+      mode: Phaser.Scale.NONE,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     callbacks: {

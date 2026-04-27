@@ -7,6 +7,7 @@ import WorldCanvas from "@/app/world/_components/WorldCanvas"
 import WorldDialogueBox from "@/app/world/_components/WorldDialogueBox"
 import WorldPromptOverlay, { useWorldPromptState } from "@/app/world/_components/WorldPromptOverlay"
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
+import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
 import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
 import { useAudioContext } from "@/context/AudioContext"
 import { useWorld } from "@/context/WorldContext"
@@ -46,6 +47,7 @@ export default function WorldScreen() {
     contextualPrompt: promptText,
     uiLocked,
   })
+  const overlayLayout = useWorldOverlayLayout()
 
   const handleWorldSfx = useEffectEvent(({ cue }: { cue: WorldSfxCue }) => {
     playSfx(WORLD_SFX_BY_CUE[cue])
@@ -245,48 +247,54 @@ export default function WorldScreen() {
   ])
 
   return (
-    <main className="relative min-h-dvh overflow-x-hidden overflow-y-auto bg-[#0a0604] text-amber-50">
+    <main
+      id="world-route"
+      className="fixed inset-0 z-40 h-[100dvh] w-screen overflow-hidden bg-[#0a0604] text-amber-50"
+      style={{
+        height: "100dvh",
+        minHeight: "-webkit-fill-available",
+      }}
+    >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.2),_transparent_28%),linear-gradient(180deg,_rgba(23,12,8,0.96),_rgba(6,4,3,1))]" />
       <div className="absolute inset-x-0 top-0 h-44 bg-[linear-gradient(180deg,_rgba(248,195,92,0.12),_transparent)]" />
 
-      <div className="relative z-10 flex min-h-dvh flex-col">
-        <header className="flex items-center justify-between px-4 py-4 sm:px-6">
+      <WorldCanvas
+        initialPlayerPosition={playerPosition}
+        initialUiLocked={uiLocked}
+        joystickRef={joystickRef}
+        topBand={overlayLayout?.topBand}
+      />
+
+      <div className="pointer-events-none absolute inset-0 z-10">
+        <header
+          className="pointer-events-auto absolute left-4 right-4 top-4 flex items-center justify-between sm:left-6 sm:top-6"
+          style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+        >
           <div>
             <p className="font-cinzel text-[0.7rem] uppercase tracking-[0.35em] text-amber-300/70">World Route</p>
             <h1 className="font-cinzel text-2xl font-semibold text-amber-50 sm:text-3xl">Village At Night</h1>
           </div>
-
           <ExitButton onClick={handleExitWorld} />
         </header>
 
-        <section className="flex flex-1 items-start justify-center px-4 pb-6 pt-2 sm:px-6 sm:pb-8 xl:items-center">
-          <div className="flex w-full max-w-[43rem] flex-col gap-4">
-            <div
-              data-testid="world-map-card"
-              className="relative aspect-square min-w-0 w-full max-w-full rounded-[2rem] border border-amber-500/20 bg-[#120b08]/85 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:p-4"
-            >
-              <WorldCanvas
-                initialPlayerPosition={playerPosition}
-                initialUiLocked={uiLocked}
-                joystickRef={joystickRef}
-              />
-              <WorldPromptOverlay promptState={promptState} />
-              <WorldDialogueBox />
-            </div>
-
-            <VirtualJoystick joystickRef={joystickRef} placement="docked" />
-          </div>
-        </section>
-
-        <WorldSectionPanel />
-        <ArchiveCodexOverlay
-          isOpen={isArchiveOverlayOpen}
-          onClose={() => {
-            setIsArchiveOverlayOpen(false)
-            gameBridge.emit("section-closed", undefined)
-          }}
+        <WorldPromptOverlay
+          promptState={promptState}
+          bottomBand={overlayLayout?.bottomBand}
         />
+        <WorldDialogueBox
+          bottomBand={overlayLayout?.bottomBand}
+        />
+        <VirtualJoystick joystickRef={joystickRef} placement="overlay" />
       </div>
+
+      <WorldSectionPanel />
+      <ArchiveCodexOverlay
+        isOpen={isArchiveOverlayOpen}
+        onClose={() => {
+          setIsArchiveOverlayOpen(false)
+          gameBridge.emit("section-closed", undefined)
+        }}
+      />
     </main>
   )
 }

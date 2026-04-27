@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useReducer, useRef, useState } from "react"
+import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLayout"
 
 export const WORLD_TUTORIAL_PROMPT = "Use WASD or arrows to walk. Press E near a building or friend."
 export const WORLD_TUTORIAL_PROMPT_HOLD_MS = 2200
@@ -41,6 +42,7 @@ interface UseWorldPromptStateArgs {
 
 interface WorldPromptOverlayProps {
   promptState: WorldPromptState
+  bottomBand?: OverlayLayoutMetrics["bottomBand"]
 }
 
 function promptOverlayReducer(
@@ -161,13 +163,23 @@ export function useWorldPromptState({
   return promptOverlayState
 }
 
-export default function WorldPromptOverlay({ promptState }: WorldPromptOverlayProps) {
+export default function WorldPromptOverlay({ promptState, bottomBand }: WorldPromptOverlayProps) {
   const { isVisible, renderedKind, renderedPrompt } = promptState
 
   if (!renderedPrompt) return null
 
+  const bottomY = bottomBand?.start ?? 200
+  const topY = bottomY - 80
+
   return (
-    <div className="pointer-events-none absolute inset-x-4 bottom-7 z-20 flex justify-center sm:bottom-8">
+    <div
+      className="pointer-events-none absolute z-20 flex justify-center"
+      style={{
+        left: "16px",
+        right: "16px",
+        top: `${topY}px`,
+      }}
+    >
       <div
         data-testid="world-prompt"
         data-prompt-kind={renderedKind ?? undefined}

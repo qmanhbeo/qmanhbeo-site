@@ -54,8 +54,8 @@ const DEFAULT_DIALOGUE_STATE: WorldDialogueState = {
 }
 
 const DEFAULT_PLAYER_POSITION: WorldPlayerPosition = {
-  x: 320,
-  y: 352,
+  x: 1200,
+  y: 900,
 }
 
 function isBrowser() {

@@ -153,7 +153,11 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     const newX = this.x + vx * (delta / 1000)
     const newY = this.y + vy * (delta / 1000)
 
-    if (newX <= 20 || newX >= 620 || newY <= 20 || newY >= 620) {
+    const WORLD_WIDTH = 2400
+    const WORLD_HEIGHT = 1800
+    const MARGIN = 40
+
+    if (newX <= MARGIN || newX >= WORLD_WIDTH - MARGIN || newY <= MARGIN || newY >= WORLD_HEIGHT - MARGIN) {
       this.stopWandering(true)
       return
     }

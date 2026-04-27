@@ -8,9 +8,19 @@ import { Player } from "@/game/objects/Player"
 import type { GetJoystickInput, PlayerPosition } from "@/game/types"
 
 const WORLD_BOUNDS = {
-  width: 640,
-  height: 640,
+  width: 2400,
+  height: 1800,
 }
+
+function getResponsiveCameraZoom(viewportWidth: number, viewportHeight: number): number {
+  const isMobile = viewportWidth < 768 || viewportHeight < 700
+  if (isMobile) return 1
+
+  const baseZoom = Math.min(viewportWidth / 1100, viewportHeight / 720)
+  return Math.min(Math.max(baseZoom, 1), 1.8)
+}
+
+const BUILDING_OFFSET = { x: 880, y: 580 }
 
 type ActiveTarget =
   | {
@@ -44,8 +54,8 @@ export class WorldScene extends Phaser.Scene {
   create() {
     this.getJoystickInput = (this.registry.get("getJoystickInput") as GetJoystickInput | undefined) ?? this.getJoystickInput
     const initialPlayerPosition = (this.registry.get("initialPlayerPosition") as PlayerPosition | undefined) ?? {
-      x: 320,
-      y: 352,
+      x: 1200,
+      y: 900,
     }
 
     this.uiLocked = Boolean(this.registry.get("initialUiLocked"))
@@ -58,7 +68,26 @@ export class WorldScene extends Phaser.Scene {
     this.player = new Player(this, initialPlayerPosition.x, initialPlayerPosition.y, this.getJoystickInput)
     this.player.setControlsLocked(this.uiLocked)
 
-    this.cameras.main.startFollow(this.player, true, 0.14, 0.14)
+    const cam = this.cameras.main
+    cam.startFollow(this.player, false)
+
+    const viewportWidth = cam.width
+    const viewportHeight = cam.height
+    const cameraZoom = getResponsiveCameraZoom(viewportWidth, viewportHeight)
+    cam.setZoom(cameraZoom)
+
+    const deadzoneW = Math.floor(viewportWidth * 0.55)
+    const deadzoneH = Math.floor(viewportHeight * 0.45)
+    cam.setDeadzone(deadzoneW, deadzoneH)
+
+    this.scale.on("resize", (newSize: { width: number; height: number }) => {
+      cam.setViewport(0, 0, newSize.width, newSize.height)
+      cam.setZoom(getResponsiveCameraZoom(newSize.width, newSize.height))
+      cam.setDeadzone(
+        Math.floor(newSize.width * 0.55),
+        Math.floor(newSize.height * 0.45)
+      )
+    })
 
     this.buildings = buildingData.map((building) => new BuildingZone(this, building))
     this.npcs = npcData.map((npc) => new NPC(this, npc))
@@ -98,6 +127,7 @@ export class WorldScene extends Phaser.Scene {
       this.cleanupFns.forEach((cleanup) => cleanup())
       this.cleanupFns.length = 0
       this.persistPlayerPosition()
+      this.scale.off("resize")
     })
   }
 
@@ -150,7 +180,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawWorld() {
-    if (this.drawTilemapWorld()) return
+    // Use procedural rendering for everything - no tilemap
     this.drawProceduralWorld()
   }
 
@@ -174,6 +204,11 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawProceduralWorld() {
+    const centerX = 1200
+    const centerY = 900
+    const offsetX = BUILDING_OFFSET.x
+    const offsetY = BUILDING_OFFSET.y
+
     const background = this.add.graphics()
     background.fillStyle(0x0a0604, 1)
     background.fillRect(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
@@ -196,14 +231,39 @@ export class WorldScene extends Phaser.Scene {
       }
     }
 
+    // Draw village paths centered at the new campfire position
+    const pathWidth = 44
+    const pathLength = 440
+    const pathInnerWidth = 28
+
+    // Vertical path (north-south)
     background.fillStyle(0x4b331d, 1)
-    background.fillRoundedRect(298, 100, 44, 440, 12)
-    background.fillRoundedRect(100, 298, 440, 44, 12)
+    background.fillRoundedRect(centerX - pathWidth / 2, centerY - pathLength / 2, pathWidth, pathLength, 12)
     background.fillStyle(0x7d5730, 0.5)
-    background.fillRoundedRect(306, 108, 28, 424, 8)
-    background.fillRoundedRect(108, 306, 424, 28, 8)
+    background.fillRoundedRect(centerX - pathInnerWidth / 2, centerY - (pathLength - 24) / 2, pathInnerWidth, pathLength - 24, 8)
+
+    // Horizontal path (west-east)
+    background.fillStyle(0x4b331d, 1)
+    background.fillRoundedRect(centerX - pathLength / 2, centerY - pathWidth / 2, pathLength, pathWidth, 12)
+    background.fillStyle(0x7d5730, 0.5)
+    background.fillRoundedRect(centerX - (pathLength - 24) / 2, centerY - pathInnerWidth / 2, pathLength - 24, pathInnerWidth, 8)
 
     buildingData.forEach((building) => {
+      if (building.id === "library" && this.textures.exists("building-library")) {
+        const sprite = this.add.sprite(building.x, building.y + 35, "building-library")
+        sprite.setOrigin(0.5, 1)
+        sprite.setScale(0.08)
+        sprite.setDepth(2)
+        this.add.text(building.x, building.y + building.height / 2 + 20, building.label, {
+          color: "#f4dcb1",
+          fontFamily: "var(--font-cinzel), serif",
+          fontSize: "15px",
+        })
+          .setOrigin(0.5, 0)
+          .setDepth(4)
+        return
+      }
+
       const left = building.x - building.width / 2
       const top = building.y - building.height / 2
       const right = building.x + building.width / 2
@@ -264,19 +324,22 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawCampfire() {
+    const campfireX = 1200
+    const campfireY = 900
+
     const glow = this.add.graphics()
       .setDepth(4)
     glow.fillStyle(0xffad42, 0.2)
-    glow.fillCircle(320, 320, 102)
+    glow.fillCircle(campfireX, campfireY, 102)
     glow.fillStyle(0xffd27b, 0.16)
-    glow.fillCircle(320, 320, 52)
+    glow.fillCircle(campfireX, campfireY, 52)
 
-    const fire = this.add.sprite(320, 320, "world-fire")
+    const fire = this.add.sprite(campfireX, campfireY, "world-fire")
       .setDepth(6)
       .setScale(1.1)
 
     for (let index = 0; index < 7; index += 1) {
-      const spark = this.add.sprite(312 + index * 3, 306 + (index % 3) * 3, "world-spark")
+      const spark = this.add.sprite(campfireX - 8 + index * 3, campfireY - 14 + (index % 3) * 3, "world-spark")
         .setDepth(7)
         .setAlpha(0.35)
       this.tweens.add({
@@ -287,7 +350,7 @@ export class WorldScene extends Phaser.Scene {
         y: spark.y - 18,
         delay: index * 120,
         onRepeat: () => {
-          spark.setPosition(308 + ((index * 11) % 24), 313 + (index % 2) * 3)
+          spark.setPosition(campfireX - 4 + ((index * 11) % 24), campfireY - 9 + (index % 2) * 3)
           spark.setAlpha(0.35)
         },
       })
