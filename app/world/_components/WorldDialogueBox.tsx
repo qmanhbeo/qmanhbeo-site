@@ -63,9 +63,19 @@ export default function WorldDialogueBox({ bottomBand }: WorldDialogueBoxProps) 
         <div className="mt-4 flex justify-end">
           <button
             type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
+            onPointerLeave={(e) => e.stopPropagation()}
             onClick={() => {
+              gameBridge.emit("world-sfx", { cue: "ui-close" })
               if (isLastLine) {
-                handleClose()
+                setDialogueState({
+                  isOpen: false,
+                  npcId: null,
+                  speaker: "",
+                  lines: [],
+                  lineIndex: 0,
+                })
                 return
               }
 
