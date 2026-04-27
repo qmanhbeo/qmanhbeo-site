@@ -8,9 +8,11 @@ import { Player } from "@/game/objects/Player"
 import type { GetJoystickInput, PlayerPosition } from "@/game/types"
 
 const WORLD_BOUNDS = {
-  width: 640,
-  height: 640,
+  width: 2400,
+  height: 1800,
 }
+
+const BUILDING_OFFSET = { x: 880, y: 580 }
 
 type ActiveTarget =
   | {
@@ -44,8 +46,8 @@ export class WorldScene extends Phaser.Scene {
   create() {
     this.getJoystickInput = (this.registry.get("getJoystickInput") as GetJoystickInput | undefined) ?? this.getJoystickInput
     const initialPlayerPosition = (this.registry.get("initialPlayerPosition") as PlayerPosition | undefined) ?? {
-      x: 320,
-      y: 352,
+      x: 1200,
+      y: 1000,
     }
 
     this.uiLocked = Boolean(this.registry.get("initialUiLocked"))
@@ -58,7 +60,15 @@ export class WorldScene extends Phaser.Scene {
     this.player = new Player(this, initialPlayerPosition.x, initialPlayerPosition.y, this.getJoystickInput)
     this.player.setControlsLocked(this.uiLocked)
 
-    this.cameras.main.startFollow(this.player, true, 0.14, 0.14)
+    // Deadzone camera: only scrolls when player pushes past the edge (Pokémon/Stardew style)
+    const cam = this.cameras.main
+    cam.startFollow(this.player, false)
+    const isMobile = this.scale.canvas?.width && this.scale.canvas?.width < 768
+    const deadzoneRatio = isMobile ? 0.35 : 0.45
+    cam.setDeadzone(
+      Math.floor(cam.width * deadzoneRatio),
+      Math.floor(cam.height * deadzoneRatio)
+    )
 
     this.buildings = buildingData.map((building) => new BuildingZone(this, building))
     this.npcs = npcData.map((npc) => new NPC(this, npc))
@@ -174,6 +184,11 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawProceduralWorld() {
+    const centerX = 1200
+    const centerY = 900
+    const offsetX = BUILDING_OFFSET.x
+    const offsetY = BUILDING_OFFSET.y
+
     const background = this.add.graphics()
     background.fillStyle(0x0a0604, 1)
     background.fillRect(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
@@ -196,12 +211,22 @@ export class WorldScene extends Phaser.Scene {
       }
     }
 
+    // Draw village paths centered at the new campfire position
+    const pathWidth = 44
+    const pathLength = 440
+    const pathInnerWidth = 28
+
+    // Vertical path (north-south)
     background.fillStyle(0x4b331d, 1)
-    background.fillRoundedRect(298, 100, 44, 440, 12)
-    background.fillRoundedRect(100, 298, 440, 44, 12)
+    background.fillRoundedRect(centerX - pathWidth / 2, centerY - pathLength / 2, pathWidth, pathLength, 12)
     background.fillStyle(0x7d5730, 0.5)
-    background.fillRoundedRect(306, 108, 28, 424, 8)
-    background.fillRoundedRect(108, 306, 424, 28, 8)
+    background.fillRoundedRect(centerX - pathInnerWidth / 2, centerY - (pathLength - 24) / 2, pathInnerWidth, pathLength - 24, 8)
+
+    // Horizontal path (west-east)
+    background.fillStyle(0x4b331d, 1)
+    background.fillRoundedRect(centerX - pathLength / 2, centerY - pathWidth / 2, pathLength, pathWidth, 12)
+    background.fillStyle(0x7d5730, 0.5)
+    background.fillRoundedRect(centerX - (pathLength - 24) / 2, centerY - pathInnerWidth / 2, pathLength - 24, pathInnerWidth, 8)
 
     buildingData.forEach((building) => {
       const left = building.x - building.width / 2
@@ -264,19 +289,22 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawCampfire() {
+    const campfireX = 1200
+    const campfireY = 900
+
     const glow = this.add.graphics()
       .setDepth(4)
     glow.fillStyle(0xffad42, 0.2)
-    glow.fillCircle(320, 320, 102)
+    glow.fillCircle(campfireX, campfireY, 102)
     glow.fillStyle(0xffd27b, 0.16)
-    glow.fillCircle(320, 320, 52)
+    glow.fillCircle(campfireX, campfireY, 52)
 
-    const fire = this.add.sprite(320, 320, "world-fire")
+    const fire = this.add.sprite(campfireX, campfireY, "world-fire")
       .setDepth(6)
       .setScale(1.1)
 
     for (let index = 0; index < 7; index += 1) {
-      const spark = this.add.sprite(312 + index * 3, 306 + (index % 3) * 3, "world-spark")
+      const spark = this.add.sprite(campfireX - 8 + index * 3, campfireY - 14 + (index % 3) * 3, "world-spark")
         .setDepth(7)
         .setAlpha(0.35)
       this.tweens.add({
@@ -287,7 +315,7 @@ export class WorldScene extends Phaser.Scene {
         y: spark.y - 18,
         delay: index * 120,
         onRepeat: () => {
-          spark.setPosition(308 + ((index * 11) % 24), 313 + (index % 2) * 3)
+          spark.setPosition(campfireX - 4 + ((index * 11) % 24), campfireY - 9 + (index % 2) * 3)
           spark.setAlpha(0.35)
         },
       })

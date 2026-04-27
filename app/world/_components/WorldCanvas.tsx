@@ -50,10 +50,7 @@ export default function WorldCanvas({
   }, [joystickRef])
 
   return (
-    <div
-      data-testid="world-canvas-shell"
-      className="relative h-full w-full overflow-hidden rounded-[2rem] border border-amber-500/16 bg-[#080605]"
-    >
+    <div data-testid="world-canvas-shell" className="absolute inset-0">
       <div ref={containerRef} className="h-full w-full" />
 
       {loadProgress < 1 ? (

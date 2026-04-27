@@ -20,8 +20,8 @@ export const npcData: NpcData[] = [
   {
     id: "alex",
     name: "Alex",
-    x: 148,
-    y: 176,
+    x: 1028,
+    y: 756,
     tint: 0x8bb8ff,
     dialogueLines: [
       "Manh keeps leaving half the village in draft mode.",
@@ -31,8 +31,8 @@ export const npcData: NpcData[] = [
   {
     id: "adam",
     name: "Adam",
-    x: 492,
-    y: 180,
+    x: 1372,
+    y: 760,
     tint: 0x97d78b,
     dialogueLines: [
       "The Workshop is the right door if you want the built things.",
@@ -42,8 +42,8 @@ export const npcData: NpcData[] = [
   {
     id: "avery",
     name: "Avery",
-    x: 320,
-    y: 360,
+    x: 1200,
+    y: 940,
     tint: 0xf7c96b,
     dialogueLines: [
       "The campfire is still the center of the whole world here.",
@@ -53,8 +53,8 @@ export const npcData: NpcData[] = [
   {
     id: "tungtung",
     name: "Tung Tung",
-    x: 420,
-    y: 69,
+    x: 1300,
+    y: 649,
     tint: 0xffffff,
     dialogueLines: ["Tung Tung Tung Sahur"],
     spriteConfig: {
@@ -67,8 +67,8 @@ export const npcData: NpcData[] = [
   {
     id: "manh",
     name: "Manh",
-    x: 360,
-    y: 280,
+    x: 1240,
+    y: 860,
     tint: 0xffffff,
     dialogueLines: [
       "Welcome to the village!",
