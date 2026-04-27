@@ -60,20 +60,22 @@ export class WorldScene extends Phaser.Scene {
     this.player = new Player(this, initialPlayerPosition.x, initialPlayerPosition.y, this.getJoystickInput)
     this.player.setControlsLocked(this.uiLocked)
 
-    // Deadzone camera: only scrolls when player pushes past the edge (Pokémon/Stardew style)
-    // Use smaller vertical deadzone to show more of the world vertically
     const cam = this.cameras.main
     cam.startFollow(this.player, false)
-    const isMobile = this.scale.canvas?.width && this.scale.canvas?.width < 768
 
-    // Desktop: wider horizontal deadzone (45%), much smaller vertical (25%)
-    // Mobile: tighter on both, but especially vertical (15%)
-    const deadzoneX = isMobile ? 0.30 : 0.45
-    const deadzoneY = isMobile ? 0.15 : 0.25
-    cam.setDeadzone(
-      Math.floor(cam.width * deadzoneX),
-      Math.floor(cam.height * deadzoneY)
-    )
+    const viewportWidth = cam.width
+    const viewportHeight = cam.height
+    const deadzoneW = Math.floor(viewportWidth * 0.55)
+    const deadzoneH = Math.floor(viewportHeight * 0.45)
+    cam.setDeadzone(deadzoneW, deadzoneH)
+
+    this.scale.on("resize", (newSize: { width: number; height: number }) => {
+      cam.setViewport(0, 0, newSize.width, newSize.height)
+      cam.setDeadzone(
+        Math.floor(newSize.width * 0.55),
+        Math.floor(newSize.height * 0.45)
+      )
+    })
 
     this.buildings = buildingData.map((building) => new BuildingZone(this, building))
     this.npcs = npcData.map((npc) => new NPC(this, npc))
@@ -113,6 +115,7 @@ export class WorldScene extends Phaser.Scene {
       this.cleanupFns.forEach((cleanup) => cleanup())
       this.cleanupFns.length = 0
       this.persistPlayerPosition()
+      this.scale.off("resize")
     })
   }
 
