@@ -231,7 +231,7 @@ export class BootScene extends Phaser.Scene {
     return Promise.all(promises) as unknown as Promise<void>
   }
 
-  private createAtlasNpcAnimations(npc: { spriteConfig?: { atlasPath?: string; targetSize?: number } }, key: string): Promise<void> {
+  private createAtlasNpcAnimations(npc: { spriteConfig?: { atlasPath?: string; targetSize?: number; columns?: number; rows?: number } }, key: string): Promise<void> {
     return new Promise((resolve) => {
       fetch(npc.spriteConfig!.atlasPath!)
         .then(async (res) => {
@@ -244,6 +244,24 @@ export class BootScene extends Phaser.Scene {
           const targetSize = npc.spriteConfig?.targetSize || DEFAULT_TARGET_SIZE
 
           const texture = this.textures.get(key)
+
+          const columns = npc.spriteConfig?.columns || 4
+          const rows = npc.spriteConfig?.rows || 4
+
+          if (columns === 2 && rows === 1) {
+            const frame0 = frames["frame_000"]?.frame
+            const frame1 = frames["frame_001"]?.frame
+            if (frame0) {
+              texture.add(0, 0, frame0.x, frame0.y, frame0.w, frame0.h)
+            }
+            if (frame1) {
+              texture.add(1, 0, frame1.x, frame1.y, frame1.w, frame1.h)
+            }
+            this.anims.create({ key: `${key}-flip`, frames: [{ key, frame: 0 }, { key, frame: 1 }], frameRate: 6, repeat: -1 })
+            this.anims.create({ key: `${key}-idle-down`, frames: [{ key, frame: 0 }], frameRate: 1 })
+            resolve()
+            return
+          }
 
           let frameIndex = 0
           for (let row = 0; row < 4; row++) {

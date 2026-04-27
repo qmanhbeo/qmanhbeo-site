@@ -23,6 +23,8 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     pauseRemaining: number
   }
 
+  private readonly isFlipCar: boolean
+
   constructor(scene: Phaser.Scene, data: NpcData) {
     const textureKey = scene.textures.exists(`world-npc-${data.id}`) ? `world-npc-${data.id}` : "world-npc"
     super(scene, data.x, data.y, textureKey)
@@ -32,6 +34,10 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     this.dialogueLines = data.dialogueLines
     this.baseY = data.y
     this.hasSprite = Boolean(data.spriteConfig)
+    this.isFlipCar =
+      Boolean(data.spriteConfig?.atlasPath) &&
+      (data.spriteConfig?.columns ?? 4) === 2 &&
+      (data.spriteConfig?.rows ?? 4) === 1
     this.wanderState = {
       direction: "down",
       isWandering: false,
@@ -54,10 +60,31 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     this.setOrigin(0.5, 0.5)
 
     if (this.hasSprite) {
-      if (data.spriteConfig?.atlasPath) {
+      if (this.isFlipCar) {
+        const sourceImage = scene.textures.get(textureKey).getSourceImage() as HTMLImageElement
+        if (sourceImage) {
+          const naturalHeight = sourceImage.naturalHeight || sourceImage.height
+          const targetSize = data.spriteConfig?.targetSize || 32
+          this.setScale(targetSize / naturalHeight)
+        } else {
+          this.setScale(0.2)
+        }
+        const flipKey = `world-npc-${data.id}-flip`
+        const anims = (scene as Phaser.Scene).anims
+        if (anims.exists(flipKey)) {
+          this.play(flipKey)
+        }
+      } else if (data.spriteConfig?.atlasPath) {
         const targetSize = data.spriteConfig.targetSize || 32
         const frameHeight = 250
         this.setScale(targetSize / frameHeight)
+        const animKey = `world-npc-${data.id}`
+        const anims: Phaser.Animations.AnimationManager = (scene as Phaser.Scene).anims
+        const idleDownKey = `${animKey}-idle-down`
+        if (anims.exists(idleDownKey)) {
+          this.play(idleDownKey)
+          this.setFrame(3)
+        }
       } else {
         const sourceImage = scene.textures.get(textureKey).getSourceImage() as HTMLImageElement
         if (sourceImage) {
@@ -72,13 +99,13 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
         } else {
           this.setScale(0.2)
         }
-      }
-      const animKey = `world-npc-${data.id}`
-      const anims: Phaser.Animations.AnimationManager = (scene as Phaser.Scene).anims
-      const idleDownKey = `${animKey}-idle-down`
-      if (anims.exists(idleDownKey)) {
-        this.play(idleDownKey)
-        this.setFrame(3)
+        const animKey = `world-npc-${data.id}`
+        const anims: Phaser.Animations.AnimationManager = (scene as Phaser.Scene).anims
+        const idleDownKey = `${animKey}-idle-down`
+        if (anims.exists(idleDownKey)) {
+          this.play(idleDownKey)
+          this.setFrame(3)
+        }
       }
     } else {
       scene.tweens.add({
@@ -143,11 +170,13 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
 
     this.setVelocity(vx, vy)
 
-    const animKey = `world-npc-${this.id}`
-    const walkAnimKey = `${animKey}-${state.direction}`
+    if (!this.isFlipCar) {
+      const animKey = `world-npc-${this.id}`
+      const walkAnimKey = `${animKey}-${state.direction}`
 
-    if (this.anims.getName() !== walkAnimKey) {
-      this.play(walkAnimKey, true)
+      if (this.anims.getName() !== walkAnimKey) {
+        this.play(walkAnimKey, true)
+      }
     }
 
     const newX = this.x + vx * (delta / 1000)
@@ -180,7 +209,9 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     const state = this.wanderState
     state.isWandering = false
     this.setVelocity(0, 0)
-    
+
+    if (this.isFlipCar) return
+
     if (hitBoundary) {
       state.direction = this.getRandomDirection()
       state.pauseRemaining = Phaser.Math.Between(200, 500)

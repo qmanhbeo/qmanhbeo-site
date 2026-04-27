@@ -73,6 +73,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       sfxHowlsRef.current.open = new Howl({ src: ["/sounds/book-open.wav"], volume: 0.15, html5: false })
       sfxHowlsRef.current.flip = new Howl({ src: ["/sounds/page-turn-heavy.mp3"], volume: 0.12, html5: false })
       sfxHowlsRef.current["tung-tung-sahur"] = new Howl({ src: ["/game/characters/tungtung/tung-tung-sahur.mp3"], volume: 0.5, html5: true })
+      sfxHowlsRef.current.hachimi = new Howl({ src: ["/game/characters/hachimi-sheet/hachimi.mp3"], volume: 0.5, html5: true })
     })
     return () => {
       cancelled = true

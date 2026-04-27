@@ -92,4 +92,19 @@ export const npcData: NpcData[] = [
       targetSize: 32,
     },
   },
+  {
+    id: "hachimi",
+    name: "Hachimi Car",
+    x: CENTER_X - 60,
+    y: CENTER_Y + 80,
+    tint: 0xffffff,
+    dialogueLines: ["hachimichimichi", "ashigagaashi", "mambow", "mambOW", "ma-ambow", "ting ting tung tung ting", "tingting ting tungtung ting"],
+    spriteConfig: {
+      path: "/game/characters/hachimi-sheet/spritesheet.png",
+      atlasPath: "/game/characters/hachimi-sheet/spritesheet.json",
+      columns: 2,
+      rows: 1,
+      targetSize: 24,
+    },
+  },
 ]

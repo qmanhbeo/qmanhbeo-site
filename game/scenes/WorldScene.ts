@@ -161,7 +161,7 @@ export class WorldScene extends Phaser.Scene {
         gameBridge.emit("open-section", { sectionId: activeTarget.sectionId })
       } else {
         gameBridge.emit("world-sfx", { cue: "dialogue-open" })
-        const soundCue = activeTarget.npcId === "tungtung" ? "tung-tung-sahur" : undefined
+        const soundCue = activeTarget.npcId === "tungtung" ? "tung-tung-sahur" : activeTarget.npcId === "hachimi" ? "hachimi" : undefined
         gameBridge.emit("open-dialogue", {
           isOpen: true,
           npcId: activeTarget.npcId,
