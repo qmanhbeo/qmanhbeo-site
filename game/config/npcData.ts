@@ -16,12 +16,21 @@ export interface NpcData {
   spriteConfig?: SpriteConfig
 }
 
+const CENTER_X = 1200
+const CENTER_Y = 900
+
+const OFFSET_X = 280
+const OFFSET_Y = 240
+
+const BUILDING_OFFSET_X = 100
+const BUILDING_OFFSET_Y = 70
+
 export const npcData: NpcData[] = [
   {
     id: "alex",
     name: "Alex",
-    x: 1028,
-    y: 756,
+    x: CENTER_X - OFFSET_X + BUILDING_OFFSET_X,
+    y: CENTER_Y - OFFSET_Y + BUILDING_OFFSET_Y,
     tint: 0x8bb8ff,
     dialogueLines: [
       "Manh keeps leaving half the village in draft mode.",
@@ -31,8 +40,8 @@ export const npcData: NpcData[] = [
   {
     id: "adam",
     name: "Adam",
-    x: 1372,
-    y: 760,
+    x: CENTER_X + OFFSET_X - BUILDING_OFFSET_X,
+    y: CENTER_Y - OFFSET_Y + BUILDING_OFFSET_Y,
     tint: 0x97d78b,
     dialogueLines: [
       "The Workshop is the right door if you want the built things.",
@@ -42,8 +51,8 @@ export const npcData: NpcData[] = [
   {
     id: "avery",
     name: "Avery",
-    x: 1200,
-    y: 940,
+    x: CENTER_X,
+    y: CENTER_Y + 40,
     tint: 0xf7c96b,
     dialogueLines: [
       "The campfire is still the center of the whole world here.",
@@ -53,8 +62,8 @@ export const npcData: NpcData[] = [
   {
     id: "tungtung",
     name: "Tung Tung",
-    x: 1300,
-    y: 649,
+    x: CENTER_X + 80,
+    y: CENTER_Y - 220,
     tint: 0xffffff,
     dialogueLines: ["Tung Tung Tung Sahur"],
     spriteConfig: {
@@ -67,8 +76,8 @@ export const npcData: NpcData[] = [
   {
     id: "manh",
     name: "Manh",
-    x: 1240,
-    y: 860,
+    x: CENTER_X - 40,
+    y: CENTER_Y + 20,
     tint: 0xffffff,
     dialogueLines: [
       "Welcome to the village!",
