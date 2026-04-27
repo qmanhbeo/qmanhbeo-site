@@ -159,8 +159,8 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
       <div
         className="pointer-events-auto absolute"
         style={{
-          bottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
-          left: "36px",
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 48px)",
+          left: "48px",
         }}
       >
         {joystickPad}
@@ -169,8 +169,8 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
       <div
         className="pointer-events-auto absolute"
         style={{
-          bottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
-          right: "36px",
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 48px)",
+          right: "48px",
         }}
       >
         {interactButton}
