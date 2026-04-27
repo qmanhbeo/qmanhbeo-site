@@ -152,7 +152,10 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
   }
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-30">
+    <div
+      className="pointer-events-none absolute inset-0 z-30"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+    >
       <div className="pointer-events-auto absolute bottom-6 left-5">
         {joystickPad}
       </div>

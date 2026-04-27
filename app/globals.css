@@ -115,6 +115,18 @@
   overflow-y: auto;
 }
 
+/* Full-screen game route - prevents all scrolling/bouncing */
+#world-route {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  height: -webkit-fill-available !important;
+  overflow: hidden !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+}
+
 /* Mobile: tighten nav so it consumes less vertical space */
 @media (max-width: 767px) {
   :root {

@@ -245,7 +245,14 @@ export default function WorldScreen() {
   ])
 
   return (
-    <main className="fixed inset-0 overflow-hidden bg-[#0a0604] text-amber-50">
+    <main
+      id="world-route"
+      className="fixed inset-0 z-40 h-[100dvh] w-screen overflow-hidden bg-[#0a0604] text-amber-50"
+      style={{
+        height: "100dvh",
+        minHeight: "-webkit-fill-available",
+      }}
+    >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.2),_transparent_28%),linear-gradient(180deg,_rgba(23,12,8,0.96),_rgba(6,4,3,1))]" />
       <div className="absolute inset-x-0 top-0 h-44 bg-[linear-gradient(180deg,_rgba(248,195,92,0.12),_transparent)]" />
 
@@ -256,14 +263,16 @@ export default function WorldScreen() {
       />
 
       <div className="pointer-events-none absolute inset-0 z-10">
-        <header className="pointer-events-auto absolute left-4 top-4 sm:left-6 sm:top-6">
-          <p className="font-cinzel text-[0.7rem] uppercase tracking-[0.35em] text-amber-300/70">World Route</p>
-          <h1 className="font-cinzel text-2xl font-semibold text-amber-50 sm:text-3xl">Village At Night</h1>
-        </header>
-
-        <div className="pointer-events-auto absolute right-4 top-4 sm:right-6 sm:top-6">
+        <header
+          className="pointer-events-auto absolute left-4 right-4 top-4 flex items-center justify-between sm:left-6 sm:top-6"
+          style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+        >
+          <div>
+            <p className="font-cinzel text-[0.7rem] uppercase tracking-[0.35em] text-amber-300/70">World Route</p>
+            <h1 className="font-cinzel text-2xl font-semibold text-amber-50 sm:text-3xl">Village At Night</h1>
+          </div>
           <ExitButton onClick={handleExitWorld} />
-        </div>
+        </header>
 
         <WorldPromptOverlay promptState={promptState} />
         <WorldDialogueBox />
