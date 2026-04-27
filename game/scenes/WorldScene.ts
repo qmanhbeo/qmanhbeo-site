@@ -237,6 +237,21 @@ export class WorldScene extends Phaser.Scene {
     background.fillRoundedRect(centerX - (pathLength - 24) / 2, centerY - pathInnerWidth / 2, pathLength - 24, pathInnerWidth, 8)
 
     buildingData.forEach((building) => {
+      if (building.id === "library" && this.textures.exists("building-library")) {
+        const sprite = this.add.sprite(building.x, building.y + 10, "building-library")
+        sprite.setOrigin(0.5, 1)
+        sprite.setScale(0.45)
+        sprite.setDepth(2)
+        this.add.text(building.x, building.y + building.height / 2 + 20, building.label, {
+          color: "#f4dcb1",
+          fontFamily: "var(--font-cinzel), serif",
+          fontSize: "15px",
+        })
+          .setOrigin(0.5, 0)
+          .setDepth(4)
+        return
+      }
+
       const left = building.x - building.width / 2
       const top = building.y - building.height / 2
       const right = building.x + building.width / 2
