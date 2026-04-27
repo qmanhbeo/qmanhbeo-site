@@ -123,7 +123,7 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
     <button
       type="button"
       data-testid="world-interact-button"
-      className="h-20 w-20 rounded-full border border-amber-400/25 bg-transparent font-cinzel text-lg text-amber-200/70 shadow-[0_4px_15px_rgba(0,0,0,0.1)]"
+      className="h-28 w-28 rounded-full border border-amber-400/25 bg-transparent font-cinzel text-lg text-amber-200/70 shadow-[0_4px_15px_rgba(0,0,0,0.1)]"
       onPointerDown={handleInteract}
       onPointerUp={handleInteractEnd}
       onPointerLeave={handleInteractEnd}
@@ -156,11 +156,23 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
       className="pointer-events-none absolute inset-0 z-30"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div className="pointer-events-auto absolute bottom-6 left-5">
+      <div
+        className="pointer-events-auto absolute"
+        style={{
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
+          left: "36px",
+        }}
+      >
         {joystickPad}
       </div>
 
-      <div className="pointer-events-auto absolute bottom-7 right-5">
+      <div
+        className="pointer-events-auto absolute"
+        style={{
+          bottom: "calc(env(safe-area-inset-bottom, 0px) + 32px)",
+          right: "36px",
+        }}
+      >
         {interactButton}
       </div>
     </div>
