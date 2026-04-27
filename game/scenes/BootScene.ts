@@ -150,7 +150,7 @@ export class BootScene extends Phaser.Scene {
     gameBridge.emit("load-progress", { progress: 0.12, label: "Lighting the hearth" })
     this.load.image(PLAYER_ASSET.key, PLAYER_ASSET.path)
     this.load.image(FIRE_ASSET.key, FIRE_ASSET.path)
-    this.load.image("building-library", "/game/buildings/library.png")
+    this.load.image("building-library", "/game/buildings/library/spritesheet.png")
     NPC_ASSETS.forEach((asset) => {
       if (asset.isAtlas) {
         this.load.atlas(asset.key, asset.path, asset.atlasPath)

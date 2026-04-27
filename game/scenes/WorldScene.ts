@@ -238,9 +238,9 @@ export class WorldScene extends Phaser.Scene {
 
     buildingData.forEach((building) => {
       if (building.id === "library" && this.textures.exists("building-library")) {
-        const sprite = this.add.sprite(building.x, building.y + 10, "building-library")
+        const sprite = this.add.sprite(building.x, building.y + 35, "building-library")
         sprite.setOrigin(0.5, 1)
-        sprite.setScale(0.45)
+        sprite.setScale(0.08)
         sprite.setDepth(2)
         this.add.text(building.x, building.y + building.height / 2 + 20, building.label, {
           color: "#f4dcb1",

@@ -67,10 +67,11 @@ export const npcData: NpcData[] = [
     tint: 0xffffff,
     dialogueLines: ["Tung Tung Tung Sahur"],
     spriteConfig: {
-      path: "/game/characters/tungtung/tungtung-sprite.png",
-      columns: 1,
-      rows: 1,
-      targetSize: 48,
+      path: "/game/characters/tungtung-sheet/spritesheet.png",
+      atlasPath: "/game/characters/tungtung-sheet/spritesheet.json",
+      columns: 4,
+      rows: 4,
+      targetSize: 32,
     },
   },
   {
