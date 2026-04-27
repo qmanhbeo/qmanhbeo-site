@@ -290,8 +290,8 @@ def generate_world_map() -> None:
                 "type": "tilelayer",
                 "visible": True,
                 "width": width,
-                "x": 0,
-                "y": 0,
+                "x": 55,
+                "y": 36,
             }
             for index, (name, data) in enumerate(layers)
         ],

@@ -47,7 +47,7 @@ export class WorldScene extends Phaser.Scene {
     this.getJoystickInput = (this.registry.get("getJoystickInput") as GetJoystickInput | undefined) ?? this.getJoystickInput
     const initialPlayerPosition = (this.registry.get("initialPlayerPosition") as PlayerPosition | undefined) ?? {
       x: 1200,
-      y: 1000,
+      y: 900,
     }
 
     this.uiLocked = Boolean(this.registry.get("initialUiLocked"))

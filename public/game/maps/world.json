@@ -1613,8 +1613,8 @@
       "type": "tilelayer",
       "visible": true,
       "width": 40,
-      "x": 0,
-      "y": 0
+      "x": 55,
+      "y": 36
     },
     {
       "data": [
@@ -3226,8 +3226,8 @@
       "type": "tilelayer",
       "visible": true,
       "width": 40,
-      "x": 0,
-      "y": 0
+      "x": 55,
+      "y": 36
     },
     {
       "data": [
@@ -4839,8 +4839,8 @@
       "type": "tilelayer",
       "visible": true,
       "width": 40,
-      "x": 0,
-      "y": 0
+      "x": 55,
+      "y": 36
     },
     {
       "data": [
@@ -6452,8 +6452,8 @@
       "type": "tilelayer",
       "visible": true,
       "width": 40,
-      "x": 0,
-      "y": 0
+      "x": 55,
+      "y": 36
     }
   ],
   "nextlayerid": 5,
