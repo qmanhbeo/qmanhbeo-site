@@ -19,11 +19,11 @@ export interface NpcData {
 const CENTER_X = 1200
 const CENTER_Y = 900
 
-const OFFSET_X = 180
-const OFFSET_Y = 150
+const OFFSET_X = 140
+const OFFSET_Y = 110
 
-const BUILDING_OFFSET_X = 80
-const BUILDING_OFFSET_Y = 50
+const BUILDING_OFFSET_X = 60
+const BUILDING_OFFSET_Y = 40
 
 export const npcData: NpcData[] = [
   {
@@ -52,7 +52,7 @@ export const npcData: NpcData[] = [
     id: "avery",
     name: "Avery",
     x: CENTER_X,
-    y: CENTER_Y + 30,
+    y: CENTER_Y + 20,
     tint: 0xf7c96b,
     dialogueLines: [
       "The campfire is still the center of the whole world here.",
@@ -62,8 +62,8 @@ export const npcData: NpcData[] = [
   {
     id: "tungtung",
     name: "Tung Tung",
-    x: CENTER_X + 60,
-    y: CENTER_Y - 130,
+    x: CENTER_X + 40,
+    y: CENTER_Y - 100,
     tint: 0xffffff,
     dialogueLines: ["Tung Tung Tung Sahur"],
     spriteConfig: {
@@ -76,8 +76,8 @@ export const npcData: NpcData[] = [
   {
     id: "manh",
     name: "Manh",
-    x: CENTER_X - 30,
-    y: CENTER_Y + 15,
+    x: CENTER_X - 20,
+    y: CENTER_Y + 10,
     tint: 0xffffff,
     dialogueLines: [
       "Welcome to the village!",

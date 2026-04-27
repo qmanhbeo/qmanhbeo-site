@@ -15,8 +15,8 @@ export interface BuildingData {
 const CENTER_X = 1200
 const CENTER_Y = 900
 
-const OFFSET_X = 180
-const OFFSET_Y = 150
+const OFFSET_X = 140
+const OFFSET_Y = 110
 
 export const buildingData: BuildingData[] = [
   {
