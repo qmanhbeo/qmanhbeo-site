@@ -71,7 +71,7 @@ export const npcData: NpcData[] = [
       atlasPath: "/game/characters/tungtung-sheet/spritesheet.json",
       columns: 4,
       rows: 4,
-      targetSize: 32,
+      targetSize: 48,
     },
   },
   {

@@ -12,6 +12,14 @@ const WORLD_BOUNDS = {
   height: 1800,
 }
 
+function getResponsiveCameraZoom(viewportWidth: number, viewportHeight: number): number {
+  const isMobile = viewportWidth < 768 || viewportHeight < 700
+  if (isMobile) return 1
+
+  const baseZoom = Math.min(viewportWidth / 1100, viewportHeight / 720)
+  return Math.min(Math.max(baseZoom, 1), 1.8)
+}
+
 const BUILDING_OFFSET = { x: 880, y: 580 }
 
 type ActiveTarget =
@@ -65,12 +73,16 @@ export class WorldScene extends Phaser.Scene {
 
     const viewportWidth = cam.width
     const viewportHeight = cam.height
+    const cameraZoom = getResponsiveCameraZoom(viewportWidth, viewportHeight)
+    cam.setZoom(cameraZoom)
+
     const deadzoneW = Math.floor(viewportWidth * 0.55)
     const deadzoneH = Math.floor(viewportHeight * 0.45)
     cam.setDeadzone(deadzoneW, deadzoneH)
 
     this.scale.on("resize", (newSize: { width: number; height: number }) => {
       cam.setViewport(0, 0, newSize.width, newSize.height)
+      cam.setZoom(getResponsiveCameraZoom(newSize.width, newSize.height))
       cam.setDeadzone(
         Math.floor(newSize.width * 0.55),
         Math.floor(newSize.height * 0.45)
