@@ -87,14 +87,14 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
     <div
       ref={padRef}
       data-testid="world-joystick-pad"
-      className="relative h-28 w-28 rounded-full border border-amber-300/20 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
+      className="relative h-32 w-32 rounded-full border border-amber-300/20 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.15)]"
       onPointerDown={() => {
         isDraggingRef.current = true
       }}
     >
       <div className="absolute inset-[26px] rounded-full border border-amber-400/10" />
       <div
-        className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-200/20 bg-amber-100/5 transition-transform"
+        className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-200/20 bg-amber-100/5 transition-transform"
         style={{ transform: `translate(calc(-50% + ${stickOffset.x}px), calc(-50% + ${stickOffset.y}px))` }}
       />
     </div>
@@ -123,7 +123,7 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
     <button
       type="button"
       data-testid="world-interact-button"
-      className="h-28 w-28 rounded-full border border-amber-400/25 bg-transparent font-cinzel text-lg text-amber-200/70 shadow-[0_4px_15px_rgba(0,0,0,0.1)]"
+      className="h-32 w-32 rounded-full border border-amber-400/25 bg-transparent font-cinzel text-lg text-amber-200/70 shadow-[0_4px_15px_rgba(0,0,0,0.1)]"
       onPointerDown={handleInteract}
       onPointerUp={handleInteractEnd}
       onPointerLeave={handleInteractEnd}

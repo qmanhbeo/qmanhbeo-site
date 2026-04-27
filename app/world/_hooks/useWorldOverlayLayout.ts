@@ -28,7 +28,7 @@ export function useWorldOverlayLayout(): OverlayLayoutMetrics | null {
       const headerHeight = 80
       const topOccupiedY = headerHeight
 
-      const bottomControlHeight = 160
+      const bottomControlHeight = 180
       const bottomOccupiedY = vh - bottomControlHeight
 
       const freeStart = topOccupiedY
