@@ -4,8 +4,13 @@ import { useCallback } from "react"
 import { MessageCircle, X } from "lucide-react"
 import { useWorld } from "@/context/WorldContext"
 import { gameBridge } from "@/game/GameBridge"
+import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLayout"
 
-export default function WorldDialogueBox() {
+interface WorldDialogueBoxProps {
+  bottomBand?: OverlayLayoutMetrics["bottomBand"]
+}
+
+export default function WorldDialogueBox({ bottomBand }: WorldDialogueBoxProps) {
   const { dialogueState, setDialogueState } = useWorld()
 
   const handleClose = useCallback(() => {
@@ -25,8 +30,18 @@ export default function WorldDialogueBox() {
   const activeLine = dialogueState.lines[dialogueState.lineIndex] ?? ""
   const isLastLine = dialogueState.lineIndex >= dialogueState.lines.length - 1
 
+  const bottomY = bottomBand?.start ?? 200
+  const topY = bottomY - 280
+
   return (
-    <div className="absolute inset-x-0 bottom-4 z-40 flex justify-center px-4">
+    <div
+      className="absolute z-40 flex justify-center px-4"
+      style={{
+        left: 0,
+        right: 0,
+        top: `${topY}px`,
+      }}
+    >
       <div className="w-full max-w-3xl rounded-[1.8rem] border border-amber-400/18 bg-[#120a08]/92 p-5 shadow-[0_18px_55px_rgba(0,0,0,0.42)] backdrop-blur-sm">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2 text-amber-100">

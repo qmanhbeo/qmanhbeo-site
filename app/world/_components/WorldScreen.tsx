@@ -7,6 +7,7 @@ import WorldCanvas from "@/app/world/_components/WorldCanvas"
 import WorldDialogueBox from "@/app/world/_components/WorldDialogueBox"
 import WorldPromptOverlay, { useWorldPromptState } from "@/app/world/_components/WorldPromptOverlay"
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
+import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
 import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
 import { useAudioContext } from "@/context/AudioContext"
 import { useWorld } from "@/context/WorldContext"
@@ -46,6 +47,7 @@ export default function WorldScreen() {
     contextualPrompt: promptText,
     uiLocked,
   })
+  const overlayLayout = useWorldOverlayLayout()
 
   const handleWorldSfx = useEffectEvent(({ cue }: { cue: WorldSfxCue }) => {
     playSfx(WORLD_SFX_BY_CUE[cue])
@@ -260,6 +262,7 @@ export default function WorldScreen() {
         initialPlayerPosition={playerPosition}
         initialUiLocked={uiLocked}
         joystickRef={joystickRef}
+        topBand={overlayLayout?.topBand}
       />
 
       <div className="pointer-events-none absolute inset-0 z-10">
@@ -274,8 +277,13 @@ export default function WorldScreen() {
           <ExitButton onClick={handleExitWorld} />
         </header>
 
-        <WorldPromptOverlay promptState={promptState} />
-        <WorldDialogueBox />
+        <WorldPromptOverlay
+          promptState={promptState}
+          bottomBand={overlayLayout?.bottomBand}
+        />
+        <WorldDialogueBox
+          bottomBand={overlayLayout?.bottomBand}
+        />
         <VirtualJoystick joystickRef={joystickRef} placement="overlay" />
       </div>
 
