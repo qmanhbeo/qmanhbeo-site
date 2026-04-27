@@ -61,13 +61,18 @@ export class WorldScene extends Phaser.Scene {
     this.player.setControlsLocked(this.uiLocked)
 
     // Deadzone camera: only scrolls when player pushes past the edge (Pokémon/Stardew style)
+    // Use smaller vertical deadzone to show more of the world vertically
     const cam = this.cameras.main
     cam.startFollow(this.player, false)
     const isMobile = this.scale.canvas?.width && this.scale.canvas?.width < 768
-    const deadzoneRatio = isMobile ? 0.35 : 0.45
+
+    // Desktop: wider horizontal deadzone (45%), much smaller vertical (25%)
+    // Mobile: tighter on both, but especially vertical (15%)
+    const deadzoneX = isMobile ? 0.30 : 0.45
+    const deadzoneY = isMobile ? 0.15 : 0.25
     cam.setDeadzone(
-      Math.floor(cam.width * deadzoneRatio),
-      Math.floor(cam.height * deadzoneRatio)
+      Math.floor(cam.width * deadzoneX),
+      Math.floor(cam.height * deadzoneY)
     )
 
     this.buildings = buildingData.map((building) => new BuildingZone(this, building))
