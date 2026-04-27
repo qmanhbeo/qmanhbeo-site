@@ -160,7 +160,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawWorld() {
-    if (this.drawTilemapWorld()) return
+    // Use procedural rendering for everything - no tilemap
     this.drawProceduralWorld()
   }
 
