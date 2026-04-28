@@ -12,7 +12,7 @@ export default function AtmosphereControls() {
   if (isWorldActive) return null
 
   return (
-    <div className="fixed top-3 right-3 z-[80] flex items-center gap-1">
+    <div className="fixed top-3 right-3 z-10 flex items-center gap-1">
       <button
         type="button"
         onClick={toggleTheme}
