@@ -16,11 +16,20 @@ type WorldBridgeEventMap = {
   "world-sfx": { cue: WorldSfxCue }
 }
 
+const IS_DEV = process.env.NODE_ENV === "development"
+
+function logEvent(type: string, direction: "emit" | "on", detail?: unknown) {
+  if (!IS_DEV) return
+  const timestamp = new Date().toISOString().split("T")[1].slice(0, 12)
+  console.log(`[GameBridge:${timestamp}] ${direction} -> ${type}`, detail ?? "")
+}
+
 class WorldBridge extends EventTarget {
   emit<EventName extends keyof WorldBridgeEventMap>(
     type: EventName,
     detail: WorldBridgeEventMap[EventName],
   ) {
+    logEvent(type, "emit", detail)
     this.dispatchEvent(new CustomEvent(type, { detail }))
   }
 
@@ -32,6 +41,7 @@ class WorldBridge extends EventTarget {
       listener((event as CustomEvent<WorldBridgeEventMap[EventName]>).detail)
     }
 
+    logEvent(type, "on")
     this.addEventListener(type, handler)
     return () => this.removeEventListener(type, handler)
   }

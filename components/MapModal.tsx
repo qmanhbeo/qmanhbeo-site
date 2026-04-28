@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import FocusTrap from "focus-trap-react"
 import { ChevronLeft, ChevronRight, Compass, X } from "lucide-react"
 import { arcEntries } from "@/content/entries"
 
@@ -146,7 +147,8 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
         onClick={handleClose}
       />
 
-      <div className={`map-modal-scroll ${isOpen ? "unfurling" : ""}`}>
+      <FocusTrap active={isOpen} focusTrapOptions={{ allowOutsideClick: true, escapeDeactivates: false }}>
+        <div className={`map-modal-scroll ${isOpen ? "unfurling" : ""}`}>
         <div className="map-modal-parchment" />
         <div className="absolute top-8 right-8 h-12 w-12 wax-seal-small opacity-60" />
 
@@ -306,7 +308,8 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
 
         <Compass className="absolute left-4 top-4 h-5 w-5 text-amber-600 opacity-40" />
         <Compass className="absolute bottom-4 right-4 h-5 w-5 text-amber-600 opacity-40" />
-      </div>
+        </div>
+      </FocusTrap>
     </div>
   )
 }

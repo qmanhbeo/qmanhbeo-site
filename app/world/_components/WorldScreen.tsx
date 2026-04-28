@@ -1,9 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from "react"
+import dynamic from "next/dynamic"
 import ExitButton from "@/app/world/_components/ExitButton"
 import VirtualJoystick from "@/app/world/_components/VirtualJoystick"
-import WorldCanvas from "@/app/world/_components/WorldCanvas"
 import WorldDialogueBox from "@/app/world/_components/WorldDialogueBox"
 import WorldPromptOverlay, { useWorldPromptState } from "@/app/world/_components/WorldPromptOverlay"
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
@@ -19,6 +19,8 @@ const INITIAL_JOYSTICK_STATE: JoystickInputState = {
   y: 0,
   interact: false,
 }
+
+const WorldCanvas = dynamic(() => import("@/app/world/_components/WorldCanvas"), { ssr: false })
 
 const WORLD_SFX_BY_CUE = {
   "dialogue-advance": "flip",

@@ -54,6 +54,7 @@ export default function AboutSection({ revealClassName = "" }: AboutSectionProps
               alt="Portrait of Manh"
               width={256}
               height={256}
+              priority
               className="w-full h-full object-cover"
             />
           </div>

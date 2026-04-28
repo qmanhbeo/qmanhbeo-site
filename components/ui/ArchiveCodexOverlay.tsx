@@ -2,6 +2,7 @@
 
 import { type RefObject, type UIEvent, useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import FocusTrap from "focus-trap-react"
 import { useAudioContext } from "@/context/AudioContext"
 import { ArrowLeft, BookOpen, Search, X } from "lucide-react"
 import {
@@ -406,16 +407,17 @@ export default function ArchiveCodexOverlay({
         }`}
       />
 
-      <div
-        className={`relative z-10 w-full max-w-6xl ${
-          isClosing ? "animate-out fade-out duration-500 fill-mode-both" : "animate-in fade-in duration-300"
-        }`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="archive-codex-title"
-        onClick={(event) => event.stopPropagation()}
-        onWheelCapture={(event) => event.stopPropagation()}
-      >
+      <FocusTrap active={isVisible} focusTrapOptions={{ allowOutsideClick: true, escapeDeactivates: false }}>
+        <div
+          className={`relative z-10 w-full max-w-6xl ${
+            isClosing ? "animate-out fade-out duration-500 fill-mode-both" : "animate-in fade-in duration-300"
+          }`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="archive-codex-title"
+          onClick={(event) => event.stopPropagation()}
+          onWheelCapture={(event) => event.stopPropagation()}
+        >
         <button
           type="button"
           onClick={handleClose}
@@ -594,6 +596,7 @@ export default function ArchiveCodexOverlay({
           </div>
         </div>
       </div>
+      </FocusTrap>
     </div>
   )
 }
