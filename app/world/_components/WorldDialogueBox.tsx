@@ -64,15 +64,20 @@ export default function WorldDialogueBox({ bottomBand }: WorldDialogueBoxProps) 
           <button
             type="button"
             onClick={() => {
-              if (isLastLine) {
-                handleClose()
-                return
-              }
+              setDialogueState((prev) => {
+                const isLast = prev.lineIndex >= prev.lines.length - 1
 
-              gameBridge.emit("world-sfx", { cue: "dialogue-advance" })
-              setDialogueState({
-                ...dialogueState,
-                lineIndex: dialogueState.lineIndex + 1,
+                if (isLast) {
+                  handleClose()
+                  return { isOpen: false, npcId: null, speaker: "", lines: [], lineIndex: 0 }
+                }
+
+                gameBridge.emit("world-sfx", { cue: "dialogue-advance" })
+
+                return {
+                  ...prev,
+                  lineIndex: prev.lineIndex + 1,
+                }
               })
             }}
             className="rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-2 font-cinzel text-sm text-amber-50 transition hover:border-amber-300/55 hover:bg-amber-400/14"

@@ -39,7 +39,7 @@ interface WorldContextValue extends WorldSessionState {
   closeActiveWorldUi: () => boolean
   clearWorldUi: () => void
   setActiveSectionId: (sectionId: WorldSectionId | null) => void
-  setDialogueState: (state: WorldDialogueState) => void
+  setDialogueState: (state: WorldDialogueState | ((prev: WorldDialogueState) => WorldDialogueState)) => void
   setPlayerPosition: (position: WorldPlayerPosition) => void
 }
 
