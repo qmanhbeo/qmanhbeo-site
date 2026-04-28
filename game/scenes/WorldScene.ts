@@ -2,6 +2,14 @@ import Phaser from "phaser"
 import { gameBridge } from "@/game/GameBridge"
 import { buildingData } from "@/game/config/buildingData"
 import { npcData } from "@/game/config/npcData"
+import {
+  WORLD_DECORATION_FRAMES,
+  WORLD_DECORATION_TEXTURE_KEY,
+  WORLD_DEPTHS,
+  WORLD_GROUND_TEXTURES,
+  WORLD_GROUND_TILE_SIZE,
+  WORLD_VISUAL_DEBUG,
+} from "@/game/config/worldVisualAssets"
 import { BuildingZone } from "@/game/objects/BuildingZone"
 import { NPC } from "@/game/objects/NPC"
 import { Player } from "@/game/objects/Player"
@@ -20,7 +28,27 @@ function getResponsiveCameraZoom(viewportWidth: number, viewportHeight: number):
   return Math.min(Math.max(baseZoom, 1), 1.8)
 }
 
-const BUILDING_OFFSET = { x: 880, y: 580 }
+const WORLD_CENTER = { x: 1200, y: 900 } as const
+const PATH_TILE_LENGTH = WORLD_GROUND_TILE_SIZE * 14
+const PATH_TILE_WIDTH = WORLD_GROUND_TILE_SIZE * 2
+const DECORATION_SCALE = 0.5
+const DECORATION_CANDIDATE_STEP = WORLD_GROUND_TILE_SIZE
+const DECORATION_PLACEMENT_THRESHOLD = 45
+
+type WorldRect = {
+  height: number
+  left: number
+  top: number
+  width: number
+}
+
+type PathOrientation = "horizontal" | "vertical"
+type DecorationRejectReason = "building" | "campfire" | "npcSpawn" | "path" | "playerSpawn"
+type DecorationSpec = {
+  frame: number
+  x: number
+  y: number
+}
 
 type ActiveTarget =
   | {
@@ -35,6 +63,49 @@ type ActiveTarget =
       prompt: string
       speaker: string
     }
+
+function logWorldVisualDebug(message: string, payload?: Record<string, unknown>) {
+  if (!WORLD_VISUAL_DEBUG) return
+  console.info(`[WorldScene] ${message}`, payload ?? "")
+}
+
+function getVillagePathRects() {
+  return {
+    horizontal: {
+      left: WORLD_CENTER.x - PATH_TILE_LENGTH / 2,
+      top: WORLD_CENTER.y - PATH_TILE_WIDTH / 2,
+      width: PATH_TILE_LENGTH,
+      height: PATH_TILE_WIDTH,
+    },
+    vertical: {
+      left: WORLD_CENTER.x - PATH_TILE_WIDTH / 2,
+      top: WORLD_CENTER.y - PATH_TILE_LENGTH / 2,
+      width: PATH_TILE_WIDTH,
+      height: PATH_TILE_LENGTH,
+    },
+  } satisfies Record<PathOrientation, WorldRect>
+}
+
+function containsPoint(rect: WorldRect, x: number, y: number, padding = 0) {
+  return (
+    x >= rect.left - padding
+    && x <= rect.left + rect.width + padding
+    && y >= rect.top - padding
+    && y <= rect.top + rect.height + padding
+  )
+}
+
+function distanceSquared(x1: number, y1: number, x2: number, y2: number) {
+  const dx = x1 - x2
+  const dy = y1 - y2
+  return dx * dx + dy * dy
+}
+
+function stableTileHash(tileX: number, tileY: number, salt = 0) {
+  let hash = Math.imul(tileX + salt * 101, 374761393) ^ Math.imul(tileY - salt * 53, 668265263)
+  hash = Math.imul(hash ^ (hash >>> 13), 1274126177)
+  return (hash ^ (hash >>> 16)) >>> 0
+}
 
 export class WorldScene extends Phaser.Scene {
   private readonly cleanupFns: Array<() => void> = []
@@ -180,8 +251,16 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawWorld() {
-    // Use procedural rendering for everything - no tilemap
+    if (this.hasNormalizedGroundTextures()) {
+      this.drawTiledVillageWorld()
+      return
+    }
+
     this.drawProceduralWorld()
+  }
+
+  private hasNormalizedGroundTextures() {
+    return Object.values(WORLD_GROUND_TEXTURES).every((textureKey) => this.textures.exists(textureKey))
   }
 
   private drawTilemapWorld() {
@@ -203,11 +282,237 @@ export class WorldScene extends Phaser.Scene {
     return true
   }
 
+  private drawTiledVillageWorld() {
+    const groundLayer = this.add.renderTexture(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
+      .setOrigin(0, 0)
+      .setDepth(WORLD_DEPTHS.ground)
+
+    const grassTiles = this.drawGrassTiles(groundLayer)
+    const pathTiles = this.drawPathTiles(groundLayer)
+    const decorationStats = this.drawGroundDecorations()
+
+    this.drawVillageBuildings()
+    this.drawCampfire()
+
+    logWorldVisualDebug("tiled village rendered", {
+      grassTiles,
+      pathTiles,
+      decorationStats,
+    })
+  }
+
+  private drawGrassTiles(groundLayer: Phaser.GameObjects.RenderTexture) {
+    let placed = 0
+
+    for (let x = 0; x < WORLD_BOUNDS.width; x += WORLD_GROUND_TILE_SIZE) {
+      for (let y = 0; y < WORLD_BOUNDS.height; y += WORLD_GROUND_TILE_SIZE) {
+        const tileX = Math.floor(x / WORLD_GROUND_TILE_SIZE)
+        const tileY = Math.floor(y / WORLD_GROUND_TILE_SIZE)
+        const variant = stableTileHash(tileX, tileY, 17) % 11
+        const textureKey = variant < 6 ? WORLD_GROUND_TEXTURES.grass1 : WORLD_GROUND_TEXTURES.grass2
+        groundLayer.drawFrame(textureKey, undefined, x, y)
+        placed += 1
+      }
+    }
+
+    return placed
+  }
+
+  private drawPathTiles(groundLayer: Phaser.GameObjects.RenderTexture) {
+    const pathRects = getVillagePathRects()
+
+    return (
+      this.drawPathRectangle(groundLayer, pathRects.vertical, "vertical")
+      + this.drawPathRectangle(groundLayer, pathRects.horizontal, "horizontal")
+    )
+  }
+
+  private drawPathRectangle(
+    groundLayer: Phaser.GameObjects.RenderTexture,
+    rect: WorldRect,
+    orientation: PathOrientation,
+  ) {
+    const columns = Math.round(rect.width / WORLD_GROUND_TILE_SIZE)
+    const rows = Math.round(rect.height / WORLD_GROUND_TILE_SIZE)
+    let placed = 0
+
+    for (let column = 0; column < columns; column += 1) {
+      for (let row = 0; row < rows; row += 1) {
+        const textureKey = this.getPathTextureForCell(column, row, columns, rows, orientation)
+        groundLayer.drawFrame(
+          textureKey,
+          undefined,
+          rect.left + column * WORLD_GROUND_TILE_SIZE,
+          rect.top + row * WORLD_GROUND_TILE_SIZE,
+        )
+        placed += 1
+      }
+    }
+
+    return placed
+  }
+
+  private getPathTextureForCell(
+    column: number,
+    row: number,
+    columns: number,
+    rows: number,
+    orientation: PathOrientation,
+  ) {
+    const isLeft = column === 0
+    const isRight = column === columns - 1
+    const isTop = row === 0
+    const isBottom = row === rows - 1
+
+    if (isTop && isLeft) return WORLD_GROUND_TEXTURES.pathCornerTl
+    if (isTop && isRight) return WORLD_GROUND_TEXTURES.pathCornerTr
+    if (isBottom && isLeft) return WORLD_GROUND_TEXTURES.pathCornerBl
+    if (isBottom && isRight) return WORLD_GROUND_TEXTURES.pathCornerBr
+
+    return orientation === "horizontal"
+      ? WORLD_GROUND_TEXTURES.pathHorizontal
+      : WORLD_GROUND_TEXTURES.pathVertical
+  }
+
+  private drawGroundDecorations() {
+    if (!this.textures.exists(WORLD_DECORATION_TEXTURE_KEY)) {
+      return {
+        placed: 0,
+        rejected: {
+          building: 0,
+          campfire: 0,
+          npcSpawn: 0,
+          path: 0,
+          playerSpawn: 0,
+        },
+      }
+    }
+
+    const decorationLayer = this.add.layer()
+      .setDepth(WORLD_DEPTHS.decorations)
+    const rejected: Record<DecorationRejectReason, number> = {
+      building: 0,
+      campfire: 0,
+      npcSpawn: 0,
+      path: 0,
+      playerSpawn: 0,
+    }
+    let placed = 0
+
+    for (let x = WORLD_GROUND_TILE_SIZE / 2; x < WORLD_BOUNDS.width; x += DECORATION_CANDIDATE_STEP) {
+      for (let y = WORLD_GROUND_TILE_SIZE / 2; y < WORLD_BOUNDS.height; y += DECORATION_CANDIDATE_STEP) {
+        const tileX = Math.floor(x / WORLD_GROUND_TILE_SIZE)
+        const tileY = Math.floor(y / WORLD_GROUND_TILE_SIZE)
+        const placementHash = stableTileHash(tileX, tileY, 41)
+        if (placementHash % 1000 >= DECORATION_PLACEMENT_THRESHOLD) continue
+
+        const offsetHash = stableTileHash(tileX, tileY, 73)
+        const decorationX = x + (offsetHash % 13) - 6
+        const decorationY = y + (Math.floor(offsetHash / 13) % 13) - 6
+        const rejectReason = this.getDecorationRejectReason(decorationX, decorationY)
+
+        if (rejectReason) {
+          rejected[rejectReason] += 1
+          continue
+        }
+
+        const frame = this.getDecorationFrame(placementHash)
+        this.addDecorationSprite(decorationLayer, {
+          frame,
+          x: decorationX,
+          y: decorationY,
+        })
+        placed += 1
+      }
+    }
+
+    for (const decoration of this.getFixedVillageDecorations()) {
+      const rejectReason = this.getDecorationRejectReason(decoration.x, decoration.y)
+      if (rejectReason) {
+        rejected[rejectReason] += 1
+        continue
+      }
+      this.addDecorationSprite(decorationLayer, decoration)
+      placed += 1
+    }
+
+    return {
+      placed,
+      rejected,
+    }
+  }
+
+  private addDecorationSprite(layer: Phaser.GameObjects.Layer, decoration: DecorationSpec) {
+    const sprite = this.add.sprite(decoration.x, decoration.y, WORLD_DECORATION_TEXTURE_KEY, decoration.frame)
+      .setOrigin(0.5, 0.5)
+      .setScale(DECORATION_SCALE)
+      .setDepth(WORLD_DEPTHS.decorations)
+    layer.add(sprite)
+  }
+
+  private getFixedVillageDecorations(): DecorationSpec[] {
+    return [
+      { x: 950, y: 820, frame: WORLD_DECORATION_FRAMES.grassTuft },
+      { x: 928, y: 1040, frame: WORLD_DECORATION_FRAMES.pebbles },
+      { x: 1452, y: 820, frame: WORLD_DECORATION_FRAMES.grassTuft },
+      { x: 1470, y: 1042, frame: WORLD_DECORATION_FRAMES.flowersSmall },
+      { x: 1080, y: 682, frame: WORLD_DECORATION_FRAMES.pebbles },
+      { x: 1320, y: 682, frame: WORLD_DECORATION_FRAMES.flowersCluster },
+      { x: 1078, y: 1120, frame: WORLD_DECORATION_FRAMES.flowersSmall },
+      { x: 1322, y: 1120, frame: WORLD_DECORATION_FRAMES.smallRocks },
+      { x: 900, y: 900, frame: WORLD_DECORATION_FRAMES.grassTuft },
+      { x: 1500, y: 900, frame: WORLD_DECORATION_FRAMES.pebbles },
+    ]
+  }
+
+  private getDecorationFrame(hash: number) {
+    const roll = hash % 100
+
+    if (roll < 44) return WORLD_DECORATION_FRAMES.grassTuft
+    if (roll < 70) return WORLD_DECORATION_FRAMES.pebbles
+    if (roll < 84) return WORLD_DECORATION_FRAMES.flowersSmall
+    if (roll < 92) return WORLD_DECORATION_FRAMES.smallRocks
+    return WORLD_DECORATION_FRAMES.flowersCluster
+  }
+
+  private getDecorationRejectReason(x: number, y: number): DecorationRejectReason | null {
+    const pathRects = getVillagePathRects()
+    if (containsPoint(pathRects.horizontal, x, y, 20) || containsPoint(pathRects.vertical, x, y, 20)) {
+      return "path"
+    }
+
+    if (distanceSquared(x, y, WORLD_CENTER.x, WORLD_CENTER.y) <= 76 * 76) {
+      return "playerSpawn"
+    }
+
+    if (distanceSquared(x, y, WORLD_CENTER.x, WORLD_CENTER.y) <= 124 * 124) {
+      return "campfire"
+    }
+
+    for (const building of buildingData) {
+      const buildingRect = {
+        left: building.x - building.width / 2,
+        top: building.y - building.height / 2,
+        width: building.width,
+        height: building.height,
+      }
+      if (containsPoint(buildingRect, x, y, 34)) {
+        return "building"
+      }
+    }
+
+    for (const npc of npcData) {
+      if (distanceSquared(x, y, npc.x, npc.y) <= 58 * 58) {
+        return "npcSpawn"
+      }
+    }
+
+    return null
+  }
+
   private drawProceduralWorld() {
     const centerX = 1200
     const centerY = 900
-    const offsetX = BUILDING_OFFSET.x
-    const offsetY = BUILDING_OFFSET.y
 
     const background = this.add.graphics()
     background.fillStyle(0x0a0604, 1)
@@ -248,19 +553,27 @@ export class WorldScene extends Phaser.Scene {
     background.fillStyle(0x7d5730, 0.5)
     background.fillRoundedRect(centerX - (pathLength - 24) / 2, centerY - pathInnerWidth / 2, pathLength - 24, pathInnerWidth, 8)
 
+    this.drawVillageBuildings(background)
+
+    this.drawCampfire()
+  }
+
+  private drawVillageBuildings(graphics?: Phaser.GameObjects.Graphics) {
+    const buildingGraphics = graphics ?? this.add.graphics().setDepth(WORLD_DEPTHS.buildings)
+
     buildingData.forEach((building) => {
       if (building.id === "library" && this.textures.exists("building-library")) {
         const sprite = this.add.sprite(building.x, building.y + 35, "building-library")
         sprite.setOrigin(0.5, 1)
         sprite.setScale(0.08)
-        sprite.setDepth(2)
+        sprite.setDepth(WORLD_DEPTHS.buildings)
         this.add.text(building.x, building.y + building.height / 2 + 20, building.label, {
           color: "#f4dcb1",
           fontFamily: "var(--font-cinzel), serif",
           fontSize: "15px",
         })
           .setOrigin(0.5, 0)
-          .setDepth(4)
+          .setDepth(WORLD_DEPTHS.buildings)
         return
       }
 
@@ -269,42 +582,40 @@ export class WorldScene extends Phaser.Scene {
       const right = building.x + building.width / 2
       const baseTop = top + 14
 
-      background.fillStyle(0x080403, 0.28)
-      background.fillRoundedRect(left - 4, baseTop + 6, building.width + 8, building.height - 8, 14)
-      background.fillStyle(0x2a150d, 1)
-      background.fillTriangle(left - 8, baseTop + 8, building.x, top - 16, right + 8, baseTop + 8)
-      background.fillStyle(building.color, 1)
-      background.fillRoundedRect(
+      buildingGraphics.fillStyle(0x080403, 0.28)
+      buildingGraphics.fillRoundedRect(left - 4, baseTop + 6, building.width + 8, building.height - 8, 14)
+      buildingGraphics.fillStyle(0x2a150d, 1)
+      buildingGraphics.fillTriangle(left - 8, baseTop + 8, building.x, top - 16, right + 8, baseTop + 8)
+      buildingGraphics.fillStyle(building.color, 1)
+      buildingGraphics.fillRoundedRect(
         left,
         baseTop,
         building.width,
         building.height - 12,
         12,
       )
-      background.fillStyle(0x120907, 0.34)
-      background.fillRoundedRect(left + 8, baseTop + 8, building.width - 16, 10, 5)
-      background.lineStyle(3, 0x28140c, 0.9)
-      background.strokeRoundedRect(left, baseTop, building.width, building.height - 12, 12)
-      background.fillStyle(0xf4c46d, 0.88)
-      background.fillRoundedRect(left + 16, baseTop + 18, 13, 15, 3)
-      background.fillRoundedRect(right - 29, baseTop + 18, 13, 15, 3)
-      background.fillStyle(0x21110b, 1)
-      background.fillRoundedRect(building.x - 9, baseTop + 34, 18, 26, 5)
-      background.fillStyle(0xffc56f, 0.72)
-      background.fillCircle(building.x + 5, baseTop + 46, 2)
-      background.fillStyle(0xffbd65, 0.18)
-      background.fillCircle(building.x, baseTop + 46, 24)
-      this.drawBuildingMark(background, building.id, building.x, baseTop + 26)
+      buildingGraphics.fillStyle(0x120907, 0.34)
+      buildingGraphics.fillRoundedRect(left + 8, baseTop + 8, building.width - 16, 10, 5)
+      buildingGraphics.lineStyle(3, 0x28140c, 0.9)
+      buildingGraphics.strokeRoundedRect(left, baseTop, building.width, building.height - 12, 12)
+      buildingGraphics.fillStyle(0xf4c46d, 0.88)
+      buildingGraphics.fillRoundedRect(left + 16, baseTop + 18, 13, 15, 3)
+      buildingGraphics.fillRoundedRect(right - 29, baseTop + 18, 13, 15, 3)
+      buildingGraphics.fillStyle(0x21110b, 1)
+      buildingGraphics.fillRoundedRect(building.x - 9, baseTop + 34, 18, 26, 5)
+      buildingGraphics.fillStyle(0xffc56f, 0.72)
+      buildingGraphics.fillCircle(building.x + 5, baseTop + 46, 2)
+      buildingGraphics.fillStyle(0xffbd65, 0.18)
+      buildingGraphics.fillCircle(building.x, baseTop + 46, 24)
+      this.drawBuildingMark(buildingGraphics, building.id, building.x, baseTop + 26)
       this.add.text(building.x, building.y + building.height / 2 + 10, building.label, {
         color: "#f4dcb1",
         fontFamily: "var(--font-cinzel), serif",
         fontSize: "15px",
       })
         .setOrigin(0.5, 0)
-        .setDepth(4)
+        .setDepth(WORLD_DEPTHS.buildings)
     })
-
-    this.drawCampfire()
   }
 
   private drawBuildingOverlays() {
@@ -328,19 +639,19 @@ export class WorldScene extends Phaser.Scene {
     const campfireY = 900
 
     const glow = this.add.graphics()
-      .setDepth(4)
+      .setDepth(WORLD_DEPTHS.campfireGlow)
     glow.fillStyle(0xffad42, 0.2)
     glow.fillCircle(campfireX, campfireY, 102)
     glow.fillStyle(0xffd27b, 0.16)
     glow.fillCircle(campfireX, campfireY, 52)
 
     const fire = this.add.sprite(campfireX, campfireY, "world-fire")
-      .setDepth(6)
+      .setDepth(WORLD_DEPTHS.campfireFire)
       .setScale(1.1)
 
     for (let index = 0; index < 7; index += 1) {
       const spark = this.add.sprite(campfireX - 8 + index * 3, campfireY - 14 + (index % 3) * 3, "world-spark")
-        .setDepth(7)
+        .setDepth(WORLD_DEPTHS.campfireSpark)
         .setAlpha(0.35)
       this.tweens.add({
         targets: spark,

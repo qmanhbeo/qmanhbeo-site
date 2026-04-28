@@ -22,9 +22,11 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 ## Handoff / Session State
 
-**Last updated:** 2026-04-09
+**Last updated:** 2026-04-28
 
 **Status:** `/world` is live as the canonical route. The old `/game` route and `FunMode` scaffolding have been removed. Route-local UI now lives under `app/world/_components`, Phaser/domain code now lives under `game/`, shared sections support `surface="world-panel"`, and the first playable procedural world builds successfully. The world layout now constrains the map card responsively on phone viewports instead of allowing the fixed 640px Phaser surface to force horizontal overflow, and section panels now render as route-level overlays rather than being trapped inside the square map card on mobile. Mobile panel chrome now accounts for safe-area insets and uses a 44px close touch target. Mobile controls now dock below the game viewport instead of overlaying the canvas, and the old route/coordinate/active-panel debug sidebar has been removed from the user-facing UI on all viewports. The mobile docked controls, panel behavior, and overall phone feel have also been manually confirmed on an iPhone 14 Pro Max. The prompt system now separates a one-time React onboarding hint from contextual interaction CTAs: the tutorial copy fades out after initial load, while building/NPC prompts appear only while the player stays in interaction range. The post office no longer uses a custom inline world composer; it now reuses the normal `LetterOverlay` flow inside the shared world panel, and nested modal Escape handling closes the letter overlay before closing the panel. SpellScroll rune/tag chips now keep the same dark parchment ink on home and world-panel surfaces instead of inheriting the world panel's light text. Repo-owned world assets now include generated player, Alex, Adam, Avery, campfire, `tiny-town.png` tileset, and `world.json` map files documented in `public/game/ASSET_SOURCES.md`. `BootScene` preloads the raster assets, and `WorldScene` now prefers the generated Tiled map/tileset render path while keeping the old procedural world renderer as a fallback if tiles or map data are missing. The tilemap slice has been verified by the existing `/world` Playwright smoke suite, desktop and iPhone 14 Pro Max resource/screenshot checks, and production build. A queued keyboard interaction fix is also in place so short E/Space taps are not missed between Phaser update frames. The procedural fallback art pass still covers ground/path tiles, building facades, door/window lighting, building-specific signs, interaction halos, NPC idle bob, player walk bob, campfire sparks, and a readable React prompt plaque driven by Phaser prompt events. World interaction polish now reuses the site's existing Howler SFX via semantic `world-sfx` bridge cues for panel open, dialogue open, dialogue advance, and close/exit actions. Playwright smoke coverage now includes desktop prompt onboarding plus contextual CTA dismissal, desktop dialogue plus input lock, home CTA entry into `/world`, full home-to-Library-to-item-return restoration, post-office letter-overlay behavior, mobile joystick drag plus interact dialogue, an iPhone 14 Pro Max viewport-fit assertion for the map canvas, iPhone 14 Pro Max docked-control placement, and an iPhone 14 Pro Max publications-panel fit/touch-target assertion. Repo-wide lint is still blocked by pre-existing unrelated issues outside the world work.
+
+**Current session note - 2026-04-28:** The active village visual pass now uses the supplied `ground-path-tiles` and `ground-items` spritesheets. `BootScene` normalizes the four source ground/path frames into 32x32 textures and derives the missing path variants with canvas transforms. `WorldScene` renders deterministic grass/path tiles plus sparse deterministic decorations on a non-colliding decoration layer below characters. No camera, zoom, spawn, wandering, dialogue, overlay, control, building-position, or interaction-zone logic was intentionally changed.
 
 **Start here next session:**
 1. Decide and implement the dedicated world audio slice: BGM, footsteps, door-enter, and dialogue blip, while preserving mobile-safe gesture gating and silent fallback
@@ -78,6 +80,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-09: Fixed a keyboard interaction reliability issue exposed during tilemap verification by queueing E/Space keydown events in `Player`, so short interaction taps are not missed between Phaser update frames.
 - [x] 2026-04-09: Verified the tileset/map slice with targeted ESLint, Python syntax check, production build, the full `/world` Playwright smoke suite, a web-game text-state capture, and desktop/iPhone 14 Pro Max full-page screenshot/resource checks showing all `/game/` assets loaded with no console errors.
 - [x] 2026-04-09: Wrapped the day with documentation cleanup: README now reflects the dedicated `/world` route and generated asset pipeline, `ASSET_SOURCES.md` documents regeneration and pending audio assets, and this handoff calls out the next audio slice plus known unrelated local workspace entries.
+- [x] 2026-04-28: Integrated the supplied ground/path tileset and ground decoration sprites into the active village scene as a visual-only pass. `BootScene` now loads the supplied spritesheets and creates normalized 32x32 grass/path textures, including transformed vertical/corner variants. `WorldScene` now renders deterministic grass/path tiles and sparse non-colliding decorations below characters while preserving camera, zoom, spawn, wandering, dialogue, overlays, controls, building positions, and interaction zones.
 
 ---
 
@@ -194,6 +197,8 @@ Building → Section mapping:
 ## Assets Needed (can be added after wiring)
 
 - [x] **Tileset** — `public/game/tilesets/tiny-town.png`
+- [x] **Ground/path spritesheet** — `public/game/tilesets/ground-path-tiles/spritesheet.png`
+- [x] **Ground decoration spritesheet** — `public/game/tilesets/ground-items/spritesheet.png`
 - [x] **Player sprite** — `public/game/characters/player.png`
 - [x] **NPC sprites** — `public/game/characters/npc-alex.png`, `npc-adam.png`, `npc-avery.png`
 - [x] **Campfire sprite** — `public/game/characters/campfire.png`
@@ -244,6 +249,7 @@ Building → Section mapping:
 - [x] Prompt behavior polish — onboarding hint is transient on mount; contextual prompts are range-based and disappear when irrelevant
 - [x] First repo-owned raster sprite pass — player, NPC, and campfire PNGs load from `public/game/characters/` with procedural fallback
 - [x] Repo-owned tileset/map slice — generated `tiny-town.png` and `world.json` load through Phaser with procedural fallback
+- [x] Supplied ground/path/decor visual slice — runtime-normalized 32x32 ground/path textures, transformed vertical/corner variants, deterministic grass variation, and sparse no-collision grass decorations
 - [x] 4×4 directional spritesheet NPC system — dynamic frame sizing from image dimensions, 4-direction animation (down/left/right/up rows), autonomous random wandering with pause cycles, backward-compatible with existing tint-based NPCs (Alex, Adam, Avery)
 - [x] Added "manh" NPC at position (360, 280) with `/game/characters/npc-manh-4x4.png` spritesheet
 
@@ -253,6 +259,8 @@ Building → Section mapping:
 - [x] Test full cycle: home → `/world` → move → enter building → open section panel → open item → return to `/world` → restore state
 - [x] Test dialogue and input lock behavior
 - [x] Test mobile joystick movement
+- [x] Test supplied ground/path/decor render on desktop and iPhone 14 Pro Max viewport screenshots
+- [x] Test desktop movement/dialogue and mobile joystick/interact after the visual layer change
 - [x] Test mobile viewport fit on an iPhone-class viewport
 - [x] Test mobile panel fit on an iPhone-class viewport
 - [x] Test mobile panel behavior on a real touch device

@@ -21,6 +21,14 @@ Generated files:
 - `tilesets/tiny-town.png`
 - `maps/world.json`
 
+Supplied runtime spritesheets:
+- `tilesets/ground-path-tiles/spritesheet.png`
+- `tilesets/ground-path-tiles/spritesheet.json`
+- `tilesets/ground-items/spritesheet.png`
+- `tilesets/ground-items/spritesheet.json`
+
+These supplied spritesheets are consumed directly by `BootScene`/`WorldScene`. The ground/path frames are normalized into 32x32 in-memory Phaser textures at runtime and are not rewritten by `scripts/generate_world_assets.py`.
+
 Pending assets:
 - `sounds/medieval-bgm.mp3`
 - `sounds/footstep.wav`

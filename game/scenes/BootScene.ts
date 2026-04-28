@@ -1,6 +1,16 @@
 import Phaser from "phaser"
 import { gameBridge } from "@/game/GameBridge"
 import { npcData } from "@/game/config/npcData"
+import {
+  WORLD_DECORATION_FRAME_SIZE,
+  WORLD_DECORATION_TEXTURE_KEY,
+  WORLD_GROUND_SOURCE_FRAMES,
+  WORLD_GROUND_SOURCE_TEXTURE_KEY,
+  WORLD_GROUND_SOURCE_TILE_SIZE,
+  WORLD_GROUND_TEXTURES,
+  WORLD_GROUND_TILE_SIZE,
+  WORLD_VISUAL_DEBUG,
+} from "@/game/config/worldVisualAssets"
 
 const PLAYER_ASSET = { key: "world-player", path: "/game/characters/player.png" }
 const FIRE_ASSET = { key: "world-fire", path: "/game/characters/campfire.png" }
@@ -40,6 +50,16 @@ const WORLD_TILESET = {
   mapKey: "world-map",
   mapPath: "/game/maps/world.json",
   path: "/game/tilesets/tiny-town.png",
+} as const
+
+const GROUND_PATH_ASSET = {
+  key: WORLD_GROUND_SOURCE_TEXTURE_KEY,
+  path: "/game/tilesets/ground-path-tiles/spritesheet.png",
+} as const
+
+const GROUND_DECORATION_ASSET = {
+  key: WORLD_DECORATION_TEXTURE_KEY,
+  path: "/game/tilesets/ground-items/spritesheet.png",
 } as const
 
 function generateRoundedTexture(
@@ -141,6 +161,123 @@ function generateCircleTexture(scene: Phaser.Scene, key: string, radius: number,
   graphics.destroy()
 }
 
+function logWorldVisualDebug(message: string, payload?: Record<string, unknown>) {
+  if (!WORLD_VISUAL_DEBUG) return
+  console.info(`[WorldVisualAssets] ${message}`, payload ?? "")
+}
+
+function createCanvasTexture(
+  scene: Phaser.Scene,
+  key: string,
+  draw: (context: CanvasRenderingContext2D) => void,
+) {
+  if (scene.textures.exists(key)) return true
+
+  const texture = scene.textures.createCanvas(key, WORLD_GROUND_TILE_SIZE, WORLD_GROUND_TILE_SIZE)
+  if (!texture) return false
+
+  const context = texture.getContext()
+  context.imageSmoothingEnabled = false
+  context.clearRect(0, 0, WORLD_GROUND_TILE_SIZE, WORLD_GROUND_TILE_SIZE)
+  draw(context)
+  texture.refresh()
+  scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST)
+  return true
+}
+
+function createNormalizedGroundTexture(
+  scene: Phaser.Scene,
+  key: string,
+  sourceFrameIndex: number,
+) {
+  const sourceFrame = scene.textures.getFrame(WORLD_GROUND_SOURCE_TEXTURE_KEY, sourceFrameIndex)
+  if (!sourceFrame) return false
+
+  return createCanvasTexture(scene, key, (context) => {
+    context.drawImage(
+      sourceFrame.source.image as CanvasImageSource,
+      sourceFrame.cutX,
+      sourceFrame.cutY,
+      sourceFrame.cutWidth,
+      sourceFrame.cutHeight,
+      0,
+      0,
+      WORLD_GROUND_TILE_SIZE,
+      WORLD_GROUND_TILE_SIZE,
+    )
+  })
+}
+
+function createTransformedGroundTexture(
+  scene: Phaser.Scene,
+  key: string,
+  sourceKey: string,
+  transform: {
+    flipX?: boolean
+    flipY?: boolean
+    rotateQuarterTurns?: number
+  },
+) {
+  const sourceFrame = scene.textures.getFrame(sourceKey)
+  if (!sourceFrame) return false
+
+  return createCanvasTexture(scene, key, (context) => {
+    context.save()
+    context.translate(WORLD_GROUND_TILE_SIZE / 2, WORLD_GROUND_TILE_SIZE / 2)
+    context.rotate((transform.rotateQuarterTurns ?? 0) * Math.PI / 2)
+    context.scale(transform.flipX ? -1 : 1, transform.flipY ? -1 : 1)
+    context.drawImage(
+      sourceFrame.source.image as CanvasImageSource,
+      sourceFrame.cutX,
+      sourceFrame.cutY,
+      sourceFrame.cutWidth,
+      sourceFrame.cutHeight,
+      -WORLD_GROUND_TILE_SIZE / 2,
+      -WORLD_GROUND_TILE_SIZE / 2,
+      WORLD_GROUND_TILE_SIZE,
+      WORLD_GROUND_TILE_SIZE,
+    )
+    context.restore()
+  })
+}
+
+function createNormalizedGroundTextures(scene: Phaser.Scene) {
+  if (!scene.textures.exists(WORLD_GROUND_SOURCE_TEXTURE_KEY)) return false
+
+  const sourceTexture = scene.textures.get(WORLD_GROUND_SOURCE_TEXTURE_KEY)
+  const sourceImage = sourceTexture.getSourceImage() as HTMLImageElement | HTMLCanvasElement
+
+  const created = [
+    createNormalizedGroundTexture(scene, WORLD_GROUND_TEXTURES.pathCornerTl, WORLD_GROUND_SOURCE_FRAMES.pathCornerTl),
+    createNormalizedGroundTexture(scene, WORLD_GROUND_TEXTURES.pathHorizontal, WORLD_GROUND_SOURCE_FRAMES.pathHorizontal),
+    createNormalizedGroundTexture(scene, WORLD_GROUND_TEXTURES.grass1, WORLD_GROUND_SOURCE_FRAMES.grass1),
+    createNormalizedGroundTexture(scene, WORLD_GROUND_TEXTURES.grass2, WORLD_GROUND_SOURCE_FRAMES.grass2),
+    createTransformedGroundTexture(scene, WORLD_GROUND_TEXTURES.pathVertical, WORLD_GROUND_TEXTURES.pathHorizontal, {
+      rotateQuarterTurns: 1,
+    }),
+    createTransformedGroundTexture(scene, WORLD_GROUND_TEXTURES.pathCornerTr, WORLD_GROUND_TEXTURES.pathCornerTl, {
+      flipX: true,
+    }),
+    createTransformedGroundTexture(scene, WORLD_GROUND_TEXTURES.pathCornerBl, WORLD_GROUND_TEXTURES.pathCornerTl, {
+      flipY: true,
+    }),
+    createTransformedGroundTexture(scene, WORLD_GROUND_TEXTURES.pathCornerBr, WORLD_GROUND_TEXTURES.pathCornerTl, {
+      flipX: true,
+      flipY: true,
+    }),
+  ]
+
+  const allCreated = created.every(Boolean)
+  logWorldVisualDebug("ground textures normalized", {
+    sourceWidth: sourceImage.width,
+    sourceHeight: sourceImage.height,
+    tileSize: WORLD_GROUND_TILE_SIZE,
+    generatedKeys: Object.values(WORLD_GROUND_TEXTURES),
+    allCreated,
+  })
+  return allCreated
+}
+
 export class BootScene extends Phaser.Scene {
   constructor() {
     super("BootScene")
@@ -161,6 +298,14 @@ export class BootScene extends Phaser.Scene {
     this.load.spritesheet(WORLD_TILESET.key, WORLD_TILESET.path, {
       frameWidth: 16,
       frameHeight: 16,
+    })
+    this.load.spritesheet(GROUND_PATH_ASSET.key, GROUND_PATH_ASSET.path, {
+      frameWidth: WORLD_GROUND_SOURCE_TILE_SIZE,
+      frameHeight: WORLD_GROUND_SOURCE_TILE_SIZE,
+    })
+    this.load.spritesheet(GROUND_DECORATION_ASSET.key, GROUND_DECORATION_ASSET.path, {
+      frameWidth: WORLD_DECORATION_FRAME_SIZE,
+      frameHeight: WORLD_DECORATION_FRAME_SIZE,
     })
     this.load.tilemapTiledJSON(WORLD_TILESET.mapKey, WORLD_TILESET.mapPath)
     this.load.on("progress", (progress: number) => {
@@ -197,6 +342,7 @@ export class BootScene extends Phaser.Scene {
       if (!this.textures.exists("world-fire")) {
         generateCampfireTexture(this)
       }
+      createNormalizedGroundTextures(this)
       gameBridge.emit("load-progress", { progress: 1, label: "World ready" })
       this.scene.start("WorldScene")
       this.scene.start("UIScene")
@@ -238,10 +384,6 @@ export class BootScene extends Phaser.Scene {
           const atlasData = await res.json()
 
           const frames = atlasData.frames
-          const meta = atlasData.meta
-
-          const DEFAULT_TARGET_SIZE = 64
-          const targetSize = npc.spriteConfig?.targetSize || DEFAULT_TARGET_SIZE
 
           const texture = this.textures.get(key)
 
@@ -306,9 +448,6 @@ export class BootScene extends Phaser.Scene {
     const trimmed = this.detectTrimBounds(sourceImage, cellWidth, cellHeight)
     const trimmedWidth = trimmed.width
     const trimmedHeight = trimmed.height
-
-    const DEFAULT_TARGET_SIZE = 32
-    const targetSize = npc.spriteConfig?.targetSize || DEFAULT_TARGET_SIZE
 
     if (npc.spriteConfig!.columns === 1 && npc.spriteConfig!.rows === 1) {
       this.textures.get(key).add(0, 0, trimmed.x, trimmed.y, trimmedWidth, trimmedHeight)
