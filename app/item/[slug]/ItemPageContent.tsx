@@ -205,6 +205,12 @@ function PublicationBody({ entry }: { entry: Extract<ContentEntry, { type: "publ
         <ManuscriptParagraph>{entry.implications}</ManuscriptParagraph>
       </ManuscriptSection>
 
+      {entry.fullPaper ? (
+        <ManuscriptSection title="Full Paper">
+          <ManuscriptParagraph>{entry.fullPaper}</ManuscriptParagraph>
+        </ManuscriptSection>
+      ) : null}
+
       {entry.link ? (
         <ManuscriptSection title="Resources">
           <ResourceLinks links={[entry.link]} />

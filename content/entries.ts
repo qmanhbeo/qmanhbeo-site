@@ -68,6 +68,7 @@ export interface PublicationEntry extends BaseEntry {
   methodology: string
   findings: string
   implications: string
+  fullPaper?: string
   link?: EntryLink
 }
 
