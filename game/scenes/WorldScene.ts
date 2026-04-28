@@ -360,15 +360,12 @@ export class WorldScene extends Phaser.Scene {
     rows: number,
     orientation: PathOrientation,
   ) {
-    const isLeft = column === 0
-    const isRight = column === columns - 1
-    const isTop = row === 0
-    const isBottom = row === rows - 1
-
-    if (isTop && isLeft) return WORLD_GROUND_TEXTURES.pathCornerTl
-    if (isTop && isRight) return WORLD_GROUND_TEXTURES.pathCornerTr
-    if (isBottom && isLeft) return WORLD_GROUND_TEXTURES.pathCornerBl
-    if (isBottom && isRight) return WORLD_GROUND_TEXTURES.pathCornerBr
+    const isEdge = column === 0 || column === columns - 1 || row === 0 || row === rows - 1
+    if (isEdge) {
+      return stableTileHash(column, row, 17) < 6
+        ? WORLD_GROUND_TEXTURES.grass1
+        : WORLD_GROUND_TEXTURES.grass2
+    }
 
     return orientation === "horizontal"
       ? WORLD_GROUND_TEXTURES.pathHorizontal
