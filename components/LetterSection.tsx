@@ -47,9 +47,6 @@ export default function LetterSection({
         className={`${revealClassName} relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col justify-center px-4 ${isWorldPanel ? "py-5 sm:px-6" : "content-container sm:px-8"}`}
       >
         <div className={`text-center ${isWorldPanel ? "mb-5" : "mb-6 md:mb-16"}`}>
-          <h2 className="mb-3 font-cinzel text-[2.55rem] font-bold leading-tight tracking-[-0.015em] text-orange-100 sm:text-5xl md:mb-4 md:text-6xl md:tracking-normal">
-            Write Him a Letter
-          </h2>
           <p className="mx-auto max-w-xl font-garamond text-[1rem] italic leading-snug text-orange-200 sm:text-lg md:max-w-2xl md:text-xl md:leading-normal">
             If something in these pages speaks to your own work, send word across the night and He shall write back
           </p>
@@ -62,6 +59,7 @@ export default function LetterSection({
               playSfx("open")
               setIsComposerOpen(true)
             }}
+            label="Write Leo a Letter"
             variant={isWorldPanel ? "compact" : "full"}
           />
         </div>
