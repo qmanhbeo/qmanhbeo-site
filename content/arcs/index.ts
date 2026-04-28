@@ -6,9 +6,9 @@ import arcIberiaFirstLoop from "./arc-iberia-first-loop"
 import arcXianDesignLens from "./arc-xian-design-lens"
 
 export const arcEntries = [
-  arcIberiaFirstLoop,
   arcHoChiMinhCityFoundations,
   arcEepseaEnergyPolicy,
   arcXianDesignLens,
+  arcIberiaFirstLoop,
   arcBirminghamAiSustainability,
 ] satisfies ArcEntry[]
