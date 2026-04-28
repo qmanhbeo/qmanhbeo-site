@@ -292,8 +292,7 @@ export default function WorldScreen() {
           style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
         >
           <div>
-            <p className="font-cinzel text-[0.7rem] uppercase tracking-[0.35em] text-amber-300/70">World Route</p>
-            <h1 className="font-cinzel text-2xl font-semibold text-amber-50 sm:text-3xl">Village At Night</h1>
+            <h1 className="font-cinzel text-2xl font-semibold text-amber-50 sm:text-3xl">By the Hearth</h1>
           </div>
           <ExitButton onClick={handleExitWorld} />
         </header>

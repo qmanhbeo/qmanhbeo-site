@@ -91,6 +91,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-28: Fixed the mobile E/Hachimi dialogue regression by proving one mobile tap emitted one button event but hit leaked stale `dialogue-interact` listeners, then adding the missing listener cleanup in `WorldScreen`. Verified a seeded iPhone 13 second-Hachimi interaction advances once and does not emit `dialogue-closed`.
 - [x] 2026-04-28: Hardened world listener hygiene after the mobile dialogue fix: `WorldScreen` bridge/key handlers now use effect events for current dialogue and SFX state, and `WorldScene` removes only its own Phaser resize handler on shutdown.
 - [x] 2026-04-28: Removed visible X and Next/Close controls from the world dialogue box so dialogue advances and closes only through existing keyboard E or mobile action input.
+- [x] 2026-04-28: Removed the visible `World Route` label and renamed the world title to `By the Hearth`.
 
 ---
 
