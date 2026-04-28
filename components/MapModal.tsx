@@ -275,7 +275,7 @@ export default function MapModal({ isOpen, onClose }: MapModalProps) {
                       <p className="font-garamond text-lg text-amber-700">{journey.location}</p>
                     </div>
 
-                      <p className="mb-8 font-garamond text-xl italic leading-relaxed text-amber-800">{journey.chapter}</p>
+                      <p className="mb-8 font-garamond text-xl italic leading-relaxed text-amber-800">{journey.summary}</p>
 
                       <div className="grid grid-cols-3 gap-4">
                         {journey.images.map((image) => (
