@@ -30,6 +30,8 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 **Current session note - 2026-04-28 mobile dialogue fix:** Confirmed the mobile E/Hachimi break was caused by `WorldScreen` leaking `dialogue-interact` GameBridge listeners on every dialogue state change. A second mobile interaction could fire stale final-line listeners, emit `dialogue-closed`, and stop Hachimi audio before the current first-line listener advanced. The fix is the minimal missing `offDialogueInteract()` cleanup in the `WorldScreen` effect; no NPC movement, audio lifecycle wiring, dialogue state logic, GameBridge architecture, or layout was changed.
 
+**Current session note - 2026-04-28 listener hygiene:** Hardened the same lifecycle surface by moving world dialogue/audio bridge callbacks and world key/dialogue-interact handlers behind React effect events, so `WorldScreen` keeps current dialogue and SFX state without re-subscribing on every line change. Also changed `WorldScene` resize cleanup to remove only its own named resize handler instead of clearing all scale resize listeners.
+
 **Start here next session:**
 1. Decide and implement the dedicated world audio slice: BGM, footsteps, door-enter, and dialogue blip, while preserving mobile-safe gesture gating and silent fallback
 2. Keep the existing site SFX bridge for UI cues unless a dedicated game-only sound clearly replaces one of those cues
@@ -87,6 +89,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-28: Added the minimal world performance/loading safety pass: the route canvas uses `next/dynamic(..., { ssr: false })`, `GameBridge` logs bridge events only in development, and the Phaser asset load emits progress into a small `WorldCanvas` loading bar without changing gameplay logic.
 - [x] 2026-04-28: Added a tiny dynamic-import fallback for the world canvas chunk and a local `/world` error boundary with retry/home recovery, without changing Phaser or world state architecture.
 - [x] 2026-04-28: Fixed the mobile E/Hachimi dialogue regression by proving one mobile tap emitted one button event but hit leaked stale `dialogue-interact` listeners, then adding the missing listener cleanup in `WorldScreen`. Verified a seeded iPhone 13 second-Hachimi interaction advances once and does not emit `dialogue-closed`.
+- [x] 2026-04-28: Hardened world listener hygiene after the mobile dialogue fix: `WorldScreen` bridge/key handlers now use effect events for current dialogue and SFX state, and `WorldScene` removes only its own Phaser resize handler on shutdown.
 
 ---
 

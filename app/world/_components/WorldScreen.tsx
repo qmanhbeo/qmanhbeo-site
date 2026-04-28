@@ -10,7 +10,7 @@ import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
 import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
 import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
 import { useAudioContext } from "@/context/AudioContext"
-import { useWorld } from "@/context/WorldContext"
+import { useWorld, type WorldDialogueState } from "@/context/WorldContext"
 import { gameBridge, type WorldSfxCue } from "@/game/GameBridge"
 import type { JoystickInputState } from "@/game/types"
 
@@ -64,6 +64,30 @@ export default function WorldScreen() {
 
   const handleWorldSfx = useEffectEvent(({ cue }: { cue: WorldSfxCue }) => {
     playSfx(WORLD_SFX_BY_CUE[cue])
+  })
+
+  const handleOpenDialogue = useEffectEvent((nextDialogueState: WorldDialogueState) => {
+    setDialogueState(nextDialogueState)
+    if (nextDialogueState.soundCue) {
+      playSfx(nextDialogueState.soundCue as "click" | "transition" | "open" | "flip")
+      lastSoundCueRef.current = nextDialogueState.soundCue
+    } else {
+      lastSoundCueRef.current = null
+    }
+  })
+
+  const handleDialogueClosed = useEffectEvent(() => {
+    if (lastSoundCueRef.current) {
+      stopSfx(lastSoundCueRef.current)
+      lastSoundCueRef.current = null
+    }
+    setDialogueState({
+      isOpen: false,
+      npcId: null,
+      speaker: "",
+      lines: [],
+      lineIndex: 0,
+    })
   })
 
   const handleExitWorld = useCallback(() => {
@@ -121,6 +145,28 @@ export default function WorldScreen() {
     handleExitWorld()
   })
 
+  const handleDialogueInteract = useEffectEvent(() => {
+    if (dialogueState.isOpen) {
+      handleAdvanceDialogue()
+    }
+  })
+
+  const handleWorldKeyDown = useEffectEvent((event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      event.preventDefault()
+      handleEscape()
+      return
+    }
+
+    // E key advances dialogue when open, otherwise ignored (interact is handled in Phaser)
+    if (event.key === "e" || event.key === "E") {
+      if (dialogueState.isOpen) {
+        event.preventDefault()
+        handleAdvanceDialogue()
+      }
+    }
+  })
+
   useEffect(() => {
     pauseAllAmbient()
 
@@ -142,28 +188,8 @@ export default function WorldScreen() {
     const offSectionClosed = gameBridge.on("section-closed", () => {
       setActiveSectionId(null)
     })
-    const offOpenDialogue = gameBridge.on("open-dialogue", (nextDialogueState) => {
-      setDialogueState(nextDialogueState)
-      if (nextDialogueState.soundCue) {
-        playSfx(nextDialogueState.soundCue as "click" | "transition" | "open" | "flip")
-        lastSoundCueRef.current = nextDialogueState.soundCue
-      } else {
-        lastSoundCueRef.current = null
-      }
-    })
-    const offDialogueClosed = gameBridge.on("dialogue-closed", () => {
-      if (lastSoundCueRef.current) {
-        stopSfx(lastSoundCueRef.current)
-        lastSoundCueRef.current = null
-      }
-      setDialogueState({
-        isOpen: false,
-        npcId: null,
-        speaker: "",
-        lines: [],
-        lineIndex: 0,
-      })
-    })
+    const offOpenDialogue = gameBridge.on("open-dialogue", handleOpenDialogue)
+    const offDialogueClosed = gameBridge.on("dialogue-closed", handleDialogueClosed)
     const offPlayerPosition = gameBridge.on("player-position", (nextPosition) => {
       setPlayerPosition(nextPosition)
     })
@@ -171,26 +197,10 @@ export default function WorldScreen() {
       setPromptText(prompt)
     })
     const offWorldSfx = gameBridge.on("world-sfx", handleWorldSfx)
-    const offDialogueInteract = gameBridge.on("dialogue-interact", () => {
-      if (dialogueState.isOpen) {
-        handleAdvanceDialogue()
-      }
-    })
+    const offDialogueInteract = gameBridge.on("dialogue-interact", handleDialogueInteract)
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault()
-        handleEscape()
-        return
-      }
-
-      // E key advances dialogue when open, otherwise ignored (interact is handled in Phaser)
-      if (event.key === "e" || event.key === "E") {
-        if (dialogueState.isOpen) {
-          event.preventDefault()
-          handleAdvanceDialogue()
-        }
-      }
+      handleWorldKeyDown(event)
     }
 
     window.addEventListener("keydown", handleKeyDown, { capture: true })
@@ -218,10 +228,7 @@ export default function WorldScreen() {
     pauseAllAmbient,
     resumeAllAmbient,
     setActiveSectionId,
-    setDialogueState,
     setPlayerPosition,
-    handleAdvanceDialogue,
-    handleCloseDialogue,
   ])
 
   useEffect(() => {

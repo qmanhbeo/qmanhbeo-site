@@ -150,14 +150,16 @@ export class WorldScene extends Phaser.Scene {
     const deadzoneH = Math.floor(viewportHeight * 0.45)
     cam.setDeadzone(deadzoneW, deadzoneH)
 
-    this.scale.on("resize", (newSize: { width: number; height: number }) => {
+    const handleResize = (newSize: { width: number; height: number }) => {
       cam.setViewport(0, 0, newSize.width, newSize.height)
       cam.setZoom(getResponsiveCameraZoom(newSize.width, newSize.height))
       cam.setDeadzone(
         Math.floor(newSize.width * 0.55),
         Math.floor(newSize.height * 0.45)
       )
-    })
+    }
+
+    this.scale.on("resize", handleResize)
 
     this.buildings = buildingData.map((building) => new BuildingZone(this, building))
     this.npcs = npcData.map((npc) => new NPC(this, npc))
@@ -197,7 +199,7 @@ export class WorldScene extends Phaser.Scene {
       this.cleanupFns.forEach((cleanup) => cleanup())
       this.cleanupFns.length = 0
       this.persistPlayerPosition()
-      this.scale.off("resize")
+      this.scale.off("resize", handleResize)
     })
   }
 

@@ -32,3 +32,10 @@ Original prompt: Integrate the new ground/path tileset and ground decoration spr
 - Root cause: `WorldScreen` registered `offDialogueInteract = gameBridge.on("dialogue-interact", ...)` inside the state-dependent effect but never called `offDialogueInteract()` in cleanup, so old dialogue listeners survived every line change and close.
 - Fix: added only the missing `offDialogueInteract()` cleanup. No NPC movement, audio lifecycle wiring, dialogue state logic, GameBridge architecture, or visual layout changes.
 - Verification: seeded iPhone 13 Playwright probe reproduced the stale close before the fix; after the fix, one mobile tap on the second Hachimi first line emitted `dialogue-interact` plus `dialogue-advance`, did not emit `dialogue-closed`, and the visible line advanced to `ashigagaashi`.
+
+## 2026-04-28 Listener Hygiene Pass
+
+- Patched the safe follow-up items from the listener sweep.
+- `WorldScreen` now routes `open-dialogue`, `dialogue-closed`, `dialogue-interact`, and world keydown work through React effect events so the bridge subscriptions stay current without re-registering on each dialogue state change.
+- `WorldScene` now stores its Phaser scale resize handler and removes that exact handler during shutdown instead of calling `this.scale.off("resize")` globally.
+- Left the mobile E latch theory and BootScene loader-progress listener alone because they were not proven current user-facing bugs.
