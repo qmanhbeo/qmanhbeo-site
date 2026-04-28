@@ -119,10 +119,20 @@ function ResourceLinks({ links }: { links: EntryLink[] }) {
 function ArcBody({ entry }: { entry: Extract<ContentEntry, { type: "arc" }> }) {
   return (
     <div className="space-y-8">
-      <ManuscriptSection title="Chapter">
-        <p className="whitespace-pre-line font-serif text-xl leading-[1.85] text-amber-900">
-          {entry.chapter}
-        </p>
+      <ManuscriptSection title="What I Did">
+        <ManuscriptList items={entry.whatIDid} />
+      </ManuscriptSection>
+
+      <ManuscriptSection title="Whom I Met">
+        <ManuscriptList items={entry.whomIMet} />
+      </ManuscriptSection>
+
+      <ManuscriptSection title="What I Learned">
+        <ManuscriptList items={entry.whatILearned} />
+      </ManuscriptSection>
+
+      <ManuscriptSection title="What I Achieved">
+        <ManuscriptList items={entry.whatIAchieved} />
       </ManuscriptSection>
 
       {entry.images.length > 0 ? (
@@ -143,20 +153,10 @@ function ArcBody({ entry }: { entry: Extract<ContentEntry, { type: "arc" }> }) {
         </ManuscriptSection>
       ) : null}
 
-      <ManuscriptSection title="What I Did">
-        <ManuscriptList items={entry.whatIDid} />
-      </ManuscriptSection>
-
-      <ManuscriptSection title="Whom I Met">
-        <ManuscriptList items={entry.whomIMet} />
-      </ManuscriptSection>
-
-      <ManuscriptSection title="What I Learned">
-        <ManuscriptList items={entry.whatILearned} />
-      </ManuscriptSection>
-
-      <ManuscriptSection title="What I Achieved">
-        <ManuscriptList items={entry.whatIAchieved} />
+      <ManuscriptSection title="Chapter">
+        <p className="whitespace-pre-line font-serif text-xl leading-[1.85] text-amber-900">
+          {entry.chapter}
+        </p>
       </ManuscriptSection>
     </div>
   )
