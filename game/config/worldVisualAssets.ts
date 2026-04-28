@@ -9,9 +9,7 @@ export const WORLD_DEPTHS = {
   campfireSpark: 7,
 } as const
 
-export const GROUND_TILE_SIZE = 64
-export const WORLD_GROUND_TILE_SIZE = GROUND_TILE_SIZE
-export const WORLD_GROUND_SOURCE_TILE_SIZE = 514
+export const WORLD_GROUND_TILE_SIZE = 64
 export const WORLD_DECORATION_FRAME_SIZE = 64
 
 export const WORLD_GROUND_SOURCE_TEXTURE_KEY = "ground-path-source"

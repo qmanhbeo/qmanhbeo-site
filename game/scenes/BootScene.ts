@@ -6,7 +6,6 @@ import {
   WORLD_DECORATION_TEXTURE_KEY,
   WORLD_GROUND_SOURCE_FRAMES,
   WORLD_GROUND_SOURCE_TEXTURE_KEY,
-  WORLD_GROUND_SOURCE_TILE_SIZE,
   WORLD_GROUND_TEXTURES,
   WORLD_GROUND_TILE_SIZE,
   WORLD_VISUAL_DEBUG,
@@ -202,8 +201,8 @@ function createNormalizedGroundTexture(
       sourceFrame.cutHeight,
       0,
       0,
-      WORLD_GROUND_TILE_SIZE,
-      WORLD_GROUND_TILE_SIZE,
+      sourceFrame.cutWidth,
+      sourceFrame.cutHeight,
     )
   })
 }
@@ -300,8 +299,8 @@ export class BootScene extends Phaser.Scene {
       frameHeight: 16,
     })
     this.load.spritesheet(GROUND_PATH_ASSET.key, GROUND_PATH_ASSET.path, {
-      frameWidth: WORLD_GROUND_SOURCE_TILE_SIZE,
-      frameHeight: WORLD_GROUND_SOURCE_TILE_SIZE,
+      frameWidth: 64,
+      frameHeight: 64,
     })
     this.load.spritesheet(GROUND_DECORATION_ASSET.key, GROUND_DECORATION_ASSET.path, {
       frameWidth: WORLD_DECORATION_FRAME_SIZE,
