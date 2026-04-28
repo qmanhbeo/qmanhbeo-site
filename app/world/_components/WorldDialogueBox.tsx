@@ -1,9 +1,7 @@
 "use client"
 
-import { useCallback } from "react"
-import { MessageCircle, X } from "lucide-react"
+import { MessageCircle } from "lucide-react"
 import { useWorld } from "@/context/WorldContext"
-import { gameBridge } from "@/game/GameBridge"
 import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLayout"
 
 interface WorldDialogueBoxProps {
@@ -11,24 +9,11 @@ interface WorldDialogueBoxProps {
 }
 
 export default function WorldDialogueBox({ bottomBand }: WorldDialogueBoxProps) {
-  const { dialogueState, setDialogueState } = useWorld()
-
-  const handleClose = useCallback(() => {
-    gameBridge.emit("world-sfx", { cue: "ui-close" })
-    gameBridge.emit("dialogue-closed", undefined)
-    setDialogueState({
-      isOpen: false,
-      npcId: null,
-      speaker: "",
-      lines: [],
-      lineIndex: 0,
-    })
-  }, [setDialogueState])
+  const { dialogueState } = useWorld()
 
   if (!dialogueState.isOpen) return null
 
   const activeLine = dialogueState.lines[dialogueState.lineIndex] ?? ""
-  const isLastLine = dialogueState.lineIndex >= dialogueState.lines.length - 1
 
   const bottomY = bottomBand?.start ?? 200
   const topY = bottomY - 280
@@ -48,43 +33,9 @@ export default function WorldDialogueBox({ bottomBand }: WorldDialogueBoxProps) 
             <MessageCircle className="h-4 w-4" />
             <span className="font-cinzel text-sm uppercase tracking-[0.24em]">{dialogueState.speaker}</span>
           </div>
-          <button
-            type="button"
-            onClick={handleClose}
-            className="rounded-full p-1.5 text-amber-200/70 transition hover:text-amber-50"
-            aria-label="Close dialogue"
-          >
-            <X className="h-4 w-4" />
-          </button>
         </div>
 
         <p className="font-garamond text-lg leading-8 text-amber-50/92">{activeLine}</p>
-
-        <div className="mt-4 flex justify-end">
-          <button
-            type="button"
-            onClick={() => {
-              setDialogueState((prev) => {
-                const isLast = prev.lineIndex >= prev.lines.length - 1
-
-                if (isLast) {
-                  handleClose()
-                  return { isOpen: false, npcId: null, speaker: "", lines: [], lineIndex: 0 }
-                }
-
-                gameBridge.emit("world-sfx", { cue: "dialogue-advance" })
-
-                return {
-                  ...prev,
-                  lineIndex: prev.lineIndex + 1,
-                }
-              })
-            }}
-            className="rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-2 font-cinzel text-sm text-amber-50 transition hover:border-amber-300/55 hover:bg-amber-400/14"
-          >
-            {isLastLine ? "Close" : "Next"}
-          </button>
-        </div>
       </div>
     </div>
   )

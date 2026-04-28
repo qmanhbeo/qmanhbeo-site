@@ -39,3 +39,7 @@ Original prompt: Integrate the new ground/path tileset and ground decoration spr
 - `WorldScreen` now routes `open-dialogue`, `dialogue-closed`, `dialogue-interact`, and world keydown work through React effect events so the bridge subscriptions stay current without re-registering on each dialogue state change.
 - `WorldScene` now stores its Phaser scale resize handler and removes that exact handler during shutdown instead of calling `this.scale.off("resize")` globally.
 - Left the mobile E latch theory and BootScene loader-progress listener alone because they were not proven current user-facing bugs.
+
+## 2026-04-28 Dialogue UI Button Removal
+
+- Removed the visible X and Next/Close buttons from `WorldDialogueBox`; dialogue now remains display-only and uses the existing keyboard E/mobile action paths.
