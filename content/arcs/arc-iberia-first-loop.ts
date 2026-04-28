@@ -13,7 +13,7 @@ const arcIberiaFirstLoop: ArcEntry = {
   summary:
     "A spontaneous loop through Portugal and Spain. Not a checklist. Not productivity. A temporary return to being human.",
 
-  chapter: `**Faro — Arrival and Soft Landing**
+  chapter: `Faro — Arrival and Soft Landing
 
 The trip didn't start clean. Flight delayed. Smoke in Birmingham Airport. Evacuation. What was supposed to be a smooth 16:05 departure turned into a late-night arrival.
 
@@ -29,9 +29,8 @@ Dinner that night was a vending machine burger. And honestly—given how hungry 
 
 The room: €30/night. Private. Shared bathroom. Expectation: low. Reality: clean, cozy, almost… better than Birmingham.
 
----
 
-**Lagos — Failure, Then Mastery**
+Lagos — Failure, Then Mastery
 
 First sunset attempt at Ponta da Piedade: Wind. Clouds. Nothing. Complete failure.
 
@@ -39,9 +38,8 @@ I walked back slightly pissed, slightly amused. But the next day—same route, s
 
 That's when it clicked: Travel rewards iteration. Not luck.
 
----
 
-**Lisbon — Letting Go**
+Lisbon — Letting Go
 
 Lisbon was… different. Something turned off. No laptop. No Tailscale. No SSH. For the first time in months—no work.
 
@@ -51,33 +49,30 @@ I even remembered my dream—my first crush from secondary school. That hasn't h
 
 There was this strange clarity the entire day. No urgency. No chasing. Just presence.
 
----
 
-**On Living Simply**
+On Living Simply
 
 There's a pattern I noticed about myself: Even when I *can* spend more, I don't.
 
-* Cheap flights. €30 rooms. One "local experience," then back to kebab. Walking instead of Uber. No unnecessary upgrades.
+- Cheap flights. €30 rooms. One "local experience," then back to kebab. Walking instead of Uber. No unnecessary upgrades.
 
 It's not restriction. It's intentional.
 
 20% of the cost gives 80% of the experience. And honestly—it feels cleaner this way.
 
----
 
-**Madrid — Learning "Siesta"**
+Madrid — Learning "Siesta"
 
-Madrid taught me something simple but powerful: **Siesta isn't laziness. It's rhythm.**
+Madrid taught me something simple but powerful: Siesta isn't laziness. It's rhythm.
 
 The day bends. The city pauses. Then it comes alive again later. There's no guilt attached to rest.
 
 That alone says a lot about how a society thinks.
 
----
 
-**Barcelona — Human Scale**
+Barcelona — Human Scale
 
-Barcelona felt… human. Not in a tourist way. In a *living* way.
+Barcelona felt… human. Not in a tourist way. In a living way.
 
 People don't just move through the city. They exist in it.
 
@@ -85,9 +80,8 @@ You see it in small moments: People bump into each other and sit down together. 
 
 It made me question something: What would a city feel like if it was built for connection first?
 
----
 
-**Portugal — The Sunset Culture**
+Portugal — The Sunset Culture
 
 Portugal might secretly be the best place in Europe for sunsets. Not just visually—but culturally.
 
@@ -97,9 +91,8 @@ It's almost ritualistic. A daily closing ceremony for the day.
 
 And because the coastline faces west—the cities are literally built for it.
 
----
 
-**Internal Notes — The Honest Part**
+Internal Notes — The Honest Part
 
 There are things I'm still figuring out.
 
@@ -111,9 +104,8 @@ I notice it clearly: I'm easily pulled by attraction. By beauty. By lust.
 
 It's not hidden. It's just… there. And I'm not fighting it perfectly. Just observing it—for now.
 
----
 
-**Closing Thought**
+Closing Thought
 
 If this life is just one round of a larger game—Then this trip wasn't about "seeing Europe."
 

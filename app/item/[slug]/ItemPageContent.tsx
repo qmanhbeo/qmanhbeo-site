@@ -120,7 +120,9 @@ function ArcBody({ entry }: { entry: Extract<ContentEntry, { type: "arc" }> }) {
   return (
     <div className="space-y-8">
       <ManuscriptSection title="Chapter">
-        <ManuscriptParagraph>{entry.chapter}</ManuscriptParagraph>
+        <p className="whitespace-pre-line font-serif text-xl leading-[1.85] text-amber-900">
+          {entry.chapter}
+        </p>
       </ManuscriptSection>
 
       {entry.images.length > 0 ? (
