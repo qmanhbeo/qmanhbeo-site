@@ -308,11 +308,8 @@ export default function MapSection({ revealClassName = "" }: MapSectionProps) {
 
                         {/* Summary card */}
                         <div className="rounded-lg border border-amber-300 bg-amber-50/90 p-3 md:p-4">
-                          <h4 className="mb-1.5 font-cinzel text-[0.68rem] font-bold uppercase tracking-[0.18em] text-amber-600 md:text-xs md:tracking-widest">
-                            Chapter
-                          </h4>
-                          <p className="font-garamond text-[0.98rem] italic leading-relaxed text-amber-950 md:text-base">
-                            {journey.chapter}
+                          <p className="font-garamond text-[0.98rem] italic leading-relaxed text-amber-950 md:text-base line-clamp-5">
+                            {journey.summary ?? ""}
                           </p>
                         </div>
 
