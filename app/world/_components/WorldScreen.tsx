@@ -20,7 +20,18 @@ const INITIAL_JOYSTICK_STATE: JoystickInputState = {
   interact: false,
 }
 
-const WorldCanvas = dynamic(() => import("@/app/world/_components/WorldCanvas"), { ssr: false })
+function WorldCanvasFallback() {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center font-cinzel text-sm uppercase tracking-[0.28em] text-amber-200/70">
+      Loading world...
+    </div>
+  )
+}
+
+const WorldCanvas = dynamic(() => import("@/app/world/_components/WorldCanvas"), {
+  ssr: false,
+  loading: WorldCanvasFallback,
+})
 
 const WORLD_SFX_BY_CUE = {
   "dialogue-advance": "flip",

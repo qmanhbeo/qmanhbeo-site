@@ -11,20 +11,17 @@ interface WandererTrailProps {
 
 export default function WandererTrail({ currentSection, isMapExpanded, onSectionClick }: WandererTrailProps) {
   const [hoveredSection, setHoveredSection] = useState<number | null>(null)
-  const [pendingSection, setPendingSection] = useState<number | null>(null)
+  const [pendingSectionState, setPendingSectionState] = useState<{ section: number; currentSection: number } | null>(null)
   const touchedRef = useRef(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  // Clear pending tooltip whenever navigation happens (e.g. via swipe)
-  useEffect(() => {
-    setPendingSection(null)
-  }, [currentSection])
+  const pendingSection = pendingSectionState?.currentSection === currentSection ? pendingSectionState.section : null
 
   // Dismiss pending tooltip on outside tap
   useEffect(() => {
     const handleOutsideTouch = (event: TouchEvent) => {
       if (pendingSection === null) return
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setPendingSection(null)
+        setPendingSectionState(null)
       }
     }
     document.addEventListener("touchstart", handleOutsideTouch, { passive: true })
@@ -51,11 +48,11 @@ export default function WandererTrail({ currentSection, isMapExpanded, onSection
       touchedRef.current = false
       if (pendingSection === index) {
         // Second tap — navigate and dismiss
-        setPendingSection(null)
+        setPendingSectionState(null)
         onSectionClick(index)
       } else {
         // First tap — show tooltip
-        setPendingSection(index)
+        setPendingSectionState({ section: index, currentSection })
       }
     } else {
       // Mouse click on desktop — navigate immediately
