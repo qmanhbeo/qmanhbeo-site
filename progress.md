@@ -17,3 +17,10 @@ Original prompt: Integrate the new ground/path tileset and ground decoration spr
 - Dev server is running at http://localhost:3000 from this session.
 - The normal web-game client was run once, but its WebGL canvas capture came back black in headless Chromium. A canvas-renderer Playwright probe using `--disable-gpu --disable-software-rasterizer` produced inspectable desktop and mobile screenshots.
 - No remaining TODO for the ground/path/decor integration.
+
+## 2026-04-28 Tile Resize Pass
+
+- Changed the normalized ground/path tile size from 32x32 to 64x64 through the shared ground tile constant.
+- Changed the active path grid from 14 tiles long by 2 tiles thick to 7 tiles long by 1 tile thick. Pixel path thickness remains 64px, but it is now a single tile row/column rather than two parallel 32px rows.
+- Updated grass coverage to use `ceil(world / tileSize)` grid dimensions so the full 2400x1800 world remains covered with 64px tiles.
+- Replaced the single 0.5 decoration scale with per-frame scales: flowers 0.9, rocks/pebbles 0.85, grass tuft 1.0.

@@ -4,80 +4,80 @@
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       },
       "sourceSize": {
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       }
     },
     "frame_001": {
       "frame": {
-        "x": 514,
+        "x": 64,
         "y": 0,
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       },
       "sourceSize": {
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       }
     },
     "frame_002": {
       "frame": {
-        "x": 1028,
+        "x": 128,
         "y": 0,
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       },
       "sourceSize": {
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       }
     },
     "frame_003": {
       "frame": {
-        "x": 1542,
+        "x": 192,
         "y": 0,
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       },
       "sourceSize": {
-        "w": 514,
-        "h": 514
+        "w": 64,
+        "h": 64
       }
     }
   },
@@ -86,8 +86,8 @@
     "image": "spritesheet.png",
     "format": "RGBA8888",
     "size": {
-      "w": 2056,
-      "h": 514
+      "w": 256,
+      "h": 64
     },
     "scale": "1"
   }

@@ -29,9 +29,8 @@ function getResponsiveCameraZoom(viewportWidth: number, viewportHeight: number):
 }
 
 const WORLD_CENTER = { x: 1200, y: 900 } as const
-const PATH_TILE_LENGTH = WORLD_GROUND_TILE_SIZE * 14
-const PATH_TILE_WIDTH = WORLD_GROUND_TILE_SIZE * 2
-const DECORATION_SCALE = 0.5
+const PATH_TILE_LENGTH = WORLD_GROUND_TILE_SIZE * 7
+const PATH_TILE_WIDTH = WORLD_GROUND_TILE_SIZE
 const DECORATION_CANDIDATE_STEP = WORLD_GROUND_TILE_SIZE
 const DECORATION_PLACEMENT_THRESHOLD = 45
 
@@ -302,12 +301,14 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private drawGrassTiles(groundLayer: Phaser.GameObjects.RenderTexture) {
+    const columns = Math.ceil(WORLD_BOUNDS.width / WORLD_GROUND_TILE_SIZE)
+    const rows = Math.ceil(WORLD_BOUNDS.height / WORLD_GROUND_TILE_SIZE)
     let placed = 0
 
-    for (let x = 0; x < WORLD_BOUNDS.width; x += WORLD_GROUND_TILE_SIZE) {
-      for (let y = 0; y < WORLD_BOUNDS.height; y += WORLD_GROUND_TILE_SIZE) {
-        const tileX = Math.floor(x / WORLD_GROUND_TILE_SIZE)
-        const tileY = Math.floor(y / WORLD_GROUND_TILE_SIZE)
+    for (let tileX = 0; tileX < columns; tileX += 1) {
+      for (let tileY = 0; tileY < rows; tileY += 1) {
+        const x = tileX * WORLD_GROUND_TILE_SIZE
+        const y = tileY * WORLD_GROUND_TILE_SIZE
         const variant = stableTileHash(tileX, tileY, 17) % 11
         const textureKey = variant < 6 ? WORLD_GROUND_TEXTURES.grass1 : WORLD_GROUND_TEXTURES.grass2
         groundLayer.drawFrame(textureKey, undefined, x, y)
@@ -445,9 +446,15 @@ export class WorldScene extends Phaser.Scene {
   private addDecorationSprite(layer: Phaser.GameObjects.Layer, decoration: DecorationSpec) {
     const sprite = this.add.sprite(decoration.x, decoration.y, WORLD_DECORATION_TEXTURE_KEY, decoration.frame)
       .setOrigin(0.5, 0.5)
-      .setScale(DECORATION_SCALE)
+      .setScale(this.getDecorationScale(decoration.frame))
       .setDepth(WORLD_DEPTHS.decorations)
     layer.add(sprite)
+  }
+
+  private getDecorationScale(frame: number) {
+    if (frame === WORLD_DECORATION_FRAMES.grassTuft) return 1
+    if (frame === WORLD_DECORATION_FRAMES.smallRocks || frame === WORLD_DECORATION_FRAMES.pebbles) return 0.85
+    return 0.9
   }
 
   private getFixedVillageDecorations(): DecorationSpec[] {
