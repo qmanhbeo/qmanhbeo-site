@@ -232,6 +232,7 @@ export class WorldScene extends Phaser.Scene {
       } else {
         gameBridge.emit("world-sfx", { cue: "dialogue-open" })
         const soundCue = activeTarget.npcId === "tungtung" ? "tung-tung-sahur" : activeTarget.npcId === "hachimi" ? "hachimi" : undefined
+        const isMusic = activeTarget.npcId === "hachimi"
         gameBridge.emit("open-dialogue", {
           isOpen: true,
           npcId: activeTarget.npcId,
@@ -239,6 +240,7 @@ export class WorldScene extends Phaser.Scene {
           lines: activeTarget.lines,
           lineIndex: 0,
           soundCue,
+          isMusic,
         })
       }
     }
@@ -786,5 +788,10 @@ export class WorldScene extends Phaser.Scene {
   private unlockWorldUi() {
     this.uiLocked = false
     this.player?.setControlsLocked(false)
+    this.npcs.forEach((npc) => {
+      if (npc.hasSprite) {
+        npc.startWanderingPublic()
+      }
+    })
   }
 }
