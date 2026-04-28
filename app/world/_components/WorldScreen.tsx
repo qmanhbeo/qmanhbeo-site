@@ -152,7 +152,7 @@ export default function WorldScreen() {
       }
     })
     const offDialogueClosed = gameBridge.on("dialogue-closed", () => {
-      if (lastSoundCueRef.current && !dialogueState.isMusic) {
+      if (lastSoundCueRef.current) {
         stopSfx(lastSoundCueRef.current)
         lastSoundCueRef.current = null
       }

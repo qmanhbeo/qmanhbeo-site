@@ -210,14 +210,14 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     state.isWandering = false
     this.setVelocity(0, 0)
 
-    if (this.isFlipCar) return
-
     if (hitBoundary) {
       state.direction = this.getRandomDirection()
       state.pauseRemaining = Phaser.Math.Between(200, 500)
     } else {
       state.pauseRemaining = Phaser.Math.Between(PAUSE_DURATION_MIN, PAUSE_DURATION_MAX)
     }
+
+    if (this.isFlipCar) return
 
     const animKey = `world-npc-${this.id}`
     this.play(`${animKey}-idle-${state.direction}`)

@@ -19,7 +19,6 @@ export interface WorldDialogueState {
   lines: string[]
   lineIndex: number
   soundCue?: string
-  isMusic?: boolean
 }
 
 export interface WorldPlayerPosition {
