@@ -28,6 +28,8 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 **Current session note - 2026-04-28:** The active village visual pass now uses the supplied `ground-path-tiles` and `ground-items` spritesheets. `BootScene` normalizes the four source ground/path frames into 64x64 textures and derives the missing path variants with canvas transforms. `WorldScene` renders deterministic grass/path tiles plus sparse deterministic decorations on a non-colliding decoration layer below characters. The cross path is now one 64px tile thick instead of two 32px rows/columns. The route canvas now loads through `next/dynamic(..., { ssr: false })`, has a small JS-chunk fallback before Phaser starts, and `WorldCanvas` shows a minimal loading progress bar fed by `BootScene`. `/world` also has a local route error boundary for world-load failures. `GameBridge` has development-only event logging. No camera, zoom, spawn, wandering, dialogue, overlay, control, building-position, or interaction-zone logic was intentionally changed.
 
+**Current session note - 2026-04-28 mobile dialogue fix:** Confirmed the mobile E/Hachimi break was caused by `WorldScreen` leaking `dialogue-interact` GameBridge listeners on every dialogue state change. A second mobile interaction could fire stale final-line listeners, emit `dialogue-closed`, and stop Hachimi audio before the current first-line listener advanced. The fix is the minimal missing `offDialogueInteract()` cleanup in the `WorldScreen` effect; no NPC movement, audio lifecycle wiring, dialogue state logic, GameBridge architecture, or layout was changed.
+
 **Start here next session:**
 1. Decide and implement the dedicated world audio slice: BGM, footsteps, door-enter, and dialogue blip, while preserving mobile-safe gesture gating and silent fallback
 2. Keep the existing site SFX bridge for UI cues unless a dedicated game-only sound clearly replaces one of those cues
@@ -84,6 +86,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-28: Resized the normalized ground/path textures from 32x32 to 64x64, changed the cross path to one tile row/column thick, updated grass coverage to a ceil-based 64px grid, and scaled decorations per frame so they remain visible without touching camera, zoom, spawn, wandering, dialogue, overlays, controls, building positions, or interaction zones.
 - [x] 2026-04-28: Added the minimal world performance/loading safety pass: the route canvas uses `next/dynamic(..., { ssr: false })`, `GameBridge` logs bridge events only in development, and the Phaser asset load emits progress into a small `WorldCanvas` loading bar without changing gameplay logic.
 - [x] 2026-04-28: Added a tiny dynamic-import fallback for the world canvas chunk and a local `/world` error boundary with retry/home recovery, without changing Phaser or world state architecture.
+- [x] 2026-04-28: Fixed the mobile E/Hachimi dialogue regression by proving one mobile tap emitted one button event but hit leaked stale `dialogue-interact` listeners, then adding the missing listener cleanup in `WorldScreen`. Verified a seeded iPhone 13 second-Hachimi interaction advances once and does not emit `dialogue-closed`.
 
 ---
 

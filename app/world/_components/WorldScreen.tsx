@@ -204,6 +204,7 @@ export default function WorldScreen() {
       offPlayerPosition()
       offPromptChanged()
       offWorldSfx()
+      offDialogueInteract()
       document.body.style.overflow = originalOverflow
       document.body.style.overscrollBehavior = originalOverscrollBehavior
       if (originalOverlayLock) {
