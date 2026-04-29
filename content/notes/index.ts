@@ -3,5 +3,7 @@ import noteManhMemorySystemFrustrationStocks from "./note-manh-memory-system-fru
 import noteRemoteWslVivaLaVida from "./note-remote-wsl-viva-la-vida"
 import noteSagradaFamiliaGaia from "./note-sagrada-familia-gaia"
 import noteLightHardtLion from "./note-light-hardt-lion"
+import notePicnicBirmingham from "./note-picnic-birmingham"
+import noteBuddhismValencia from "./note-buddhism-valencia"
 
-export const noteEntries = [noteManhMemorySystemFrustrationStocks, noteRemoteWslVivaLaVida, noteSagradaFamiliaGaia, noteLightHardtLion] satisfies NoteEntry[]
+export const noteEntries = [noteLightHardtLion, noteManhMemorySystemFrustrationStocks, noteRemoteWslVivaLaVida, notePicnicBirmingham, noteSagradaFamiliaGaia, noteBuddhismValencia] satisfies NoteEntry[]

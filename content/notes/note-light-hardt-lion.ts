@@ -3,7 +3,7 @@ import type { NoteEntry } from "@/content/entries"
 const noteLightHardtLion: NoteEntry = {
   slug: "note-light-hardt-lion",
   type: "note",
-  order: 4,
+  order: 1,
   title: "Light-Hardt Lion: A Reflection on Name and Nature",
   subtitle: "The sudden realization that the name Leonardo has always meant Quang Mạnh",
   dateLabel: "16 Apr 2026 - Madrid",
