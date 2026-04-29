@@ -6,7 +6,7 @@ const noteManhMemorySystemFrustrationStocks: NoteEntry = {
   order: 9,
   title: "manh-memory-system and the frustration of stocks",
   subtitle: "The protocol is sound, the beast is ruthless",
-  dateLabel: "Apr 2026",
+  dateLabel: "22:43 29 Apr 2026",
   noteLabel: "Reflection",
   summary:
     "200 sessions into Vietnam stock market research with my memory system protocol — no profitable signal yet, but maybe the real output is the protocol itself.",
