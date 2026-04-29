@@ -6,7 +6,7 @@ const noteRemoteWslVivaLaVida: NoteEntry = {
   order: 2,
   title: "Remote WSL broke down and 'Viva la Vida'",
   subtitle: "Bunch of cool shit learned, can't articulate it yet",
-  dateLabel: "Apr 2026",
+  dateLabel: "28 Apr 2026",
   noteLabel: "Untethered",
   summary:
     "WSL crashed, I learned a bunch — upgraded remote workflow, name duality (Quang Mạnh = Light Strong, Leo-nardo), Spanish vibes like siesta and viva la vida, city navigation. Just letting it sit for now.",

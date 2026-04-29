@@ -6,7 +6,7 @@ const noteSagradaFamiliaGaia: NoteEntry = {
   order: 3,
   title: "Sagrada Familia and GAIA",
   subtitle: "A conversation with Gemini about architecture, nature, and economics",
-  dateLabel: "2026",
+  dateLabel: "21 Apr 2026 - Barcelona",
   noteLabel: "Conversation",
   summary:
     "A profound conversation about Sagrada Familia's biomimicry, my organic sketching style mirroring Gaudi's philosophy, and the connection to my GAIA economic simulation work.",
