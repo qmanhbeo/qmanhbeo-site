@@ -223,12 +223,28 @@ function PublicationBody({ entry }: { entry: Extract<ContentEntry, { type: "publ
 }
 
 function NoteBody({ entry }: { entry: Extract<ContentEntry, { type: "note" }> }) {
+  const renderParagraph = (paragraph: string) => {
+    if (paragraph === "") {
+      return <div key={paragraph} className="h-4" />
+    }
+    const imageMatch = paragraph.match(/^!\[([^\]]*)\]\(([^)]+)\)$/)
+    if (imageMatch) {
+      return (
+        <img
+          key={paragraph}
+          src={imageMatch[2]}
+          alt={imageMatch[1]}
+          className="mx-auto max-w-full rounded-lg shadow-lg"
+        />
+      )
+    }
+    return <ManuscriptParagraph key={paragraph}>{paragraph}</ManuscriptParagraph>
+  }
+
   return (
     <div className="space-y-8">
       <ManuscriptSection title="Full Entry">
-        {entry.body.map((paragraph) => (
-          <ManuscriptParagraph key={paragraph}>{paragraph}</ManuscriptParagraph>
-        ))}
+        {entry.body.map(renderParagraph)}
       </ManuscriptSection>
     </div>
   )
