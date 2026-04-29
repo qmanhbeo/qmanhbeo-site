@@ -9,8 +9,6 @@ const noteMarketSandbox: NoteEntry = {
   dateLabel: "Jan 2026 - Present",
   noteLabel: "Project note",
   summary:
-    "Building a market world for reinforcement learning meant designing delay, friction, taxes, and other consequences back into the system.",
-  excerpt:
     "Building a market world for reinforcement learning meant teaching agents to live with delay, friction, transaction costs, taxes, and the ordinary consequences of acting too early or too late.",
   body: [
     "The market sandbox became interesting only when it stopped behaving like a laboratory vacuum. Delay, taxes, settlement, and imperfect execution turned out to be the parts that gave the environment moral and strategic texture.",

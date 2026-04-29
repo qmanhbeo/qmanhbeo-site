@@ -9,8 +9,6 @@ const noteHousingListingsTaughtMe: NoteEntry = {
   dateLabel: "Mar 2025 - Sep 2025",
   noteLabel: "Data note",
   summary:
-    "A large dataset is rarely just scale. It is error handling, strange formats, missing values, and the discipline to keep cleaning until the picture stops lying.",
-  excerpt:
     "A large dataset is never just a large dataset. It is error handling, missing values, checkpoints, strange formats, and the discipline to keep cleaning until the picture stops lying.",
   body: [
     "The housing pipeline reinforced a simple lesson: size does not create clarity. It amplifies every weakness in the collection and cleaning process until the errors begin to look like patterns.",

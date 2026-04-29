@@ -226,7 +226,7 @@ function NoteBody({ entry }: { entry: Extract<ContentEntry, { type: "note" }> })
   return (
     <div className="space-y-8">
       <ManuscriptSection title="Opening Note">
-        <ManuscriptParagraph>{entry.excerpt}</ManuscriptParagraph>
+        <ManuscriptParagraph>{entry.summary}</ManuscriptParagraph>
       </ManuscriptSection>
 
       <ManuscriptSection title="Full Entry">

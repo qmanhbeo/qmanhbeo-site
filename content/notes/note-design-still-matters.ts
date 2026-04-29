@@ -9,8 +9,6 @@ const noteDesignStillMatters: NoteEntry = {
   dateLabel: "May 2025",
   noteLabel: "Field note",
   summary:
-    "Xi'an was a reminder that even the most technical systems live or die by whether people can feel their shape, understand their rhythm, and meet them without friction.",
-  excerpt:
     "Xi'an was a useful reminder that even the most technical systems live or die by whether people can feel their shape, understand their rhythm, and meet them without friction.",
   body: [
     "The exchange in Xi'an sharpened something I had been circling for a while: correct systems still fail when they remain unreadable to the people who need to use them.",

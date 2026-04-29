@@ -9,8 +9,6 @@ const noteProcurementRecordsWhisper: NoteEntry = {
   dateLabel: "Nov 2025",
   noteLabel: "Project note",
   summary:
-    "Procurement records rarely arrive analysis-ready; the real work is gathering fragments, tracking provenance, and persuading them into coherence.",
-  excerpt:
     "Public procurement data rarely arrives in the shape analysis wants. This was the slow work of following raw links, gathering fragments, and persuading them into something coherent.",
   body: [
     "Public data is often treated as if availability were the same thing as usability. Procurement records taught me the opposite. The documents existed, but the structure needed for analysis had to be built by hand.",

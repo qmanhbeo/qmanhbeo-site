@@ -9,8 +9,6 @@ const noteStoriesThatRememberYou: NoteEntry = {
   dateLabel: "Mar 2025 - Jul 2025",
   noteLabel: "Build note",
   summary:
-    "Paths Untold explored how generated stories change once memory, emotional state, and continuity are allowed to linger between scenes.",
-  excerpt:
     "Paths Untold was an experiment in making generated stories feel less disposable by giving them memory, emotional weather, and enough persistence for choices to leave a trace.",
   body: [
     "The problem with many generated stories is not their imagination but their forgetfulness. Every scene can sound fresh while still making the last one feel irrelevant.",

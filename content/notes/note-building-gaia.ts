@@ -9,8 +9,6 @@ const noteBuildingGaia: NoteEntry = {
   dateLabel: "Apr 2025 - Present",
   noteLabel: "Research note",
   summary:
-    "GAIA begins not with an algorithm, but with a world where households, labor, food, and water all push back on neat policy dreams.",
-  excerpt:
     "GAIA begins not with an algorithm, but with a world: households, labour, food, water, and constraints that push back when policy dreams get too simple.",
   body: [
     "I wanted a simulation where policy ideas had to answer to households, scarcity, and the possibility of unintended consequences. That meant starting with a world and its constraints before worrying about any optimizing agent.",

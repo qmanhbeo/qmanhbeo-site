@@ -9,8 +9,6 @@ const noteWhatBirminghamChanged: NoteEntry = {
   dateLabel: "Sep 2025 - Present",
   noteLabel: "Study note",
   summary:
-    "The MSc in AI and Sustainable Development brought AI, allocation, and institutional responsibility into the same frame.",
-  excerpt:
     "The MSc in AI and Sustainable Development gave the work a clearer center of gravity: not AI for spectacle, but AI for allocation, trade-offs, and institutions that have to answer to the world.",
   body: [
     "Birmingham clarified the kind of AI work I want to keep doing. Not systems built for display, but systems asked to reason under constraints that have social and environmental consequences.",

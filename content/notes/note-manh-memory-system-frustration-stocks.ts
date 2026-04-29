@@ -10,8 +10,6 @@ const noteManhMemorySystemFrustrationStocks: NoteEntry = {
   noteLabel: "Reflection",
   summary:
     "200 sessions into Vietnam stock market research with my memory system protocol — no profitable signal yet, but maybe the real output is the protocol itself.",
-  excerpt:
-    "I have not found a profitable signal from it yet. 200 sessions have passed. I'm starting to feel like I'm not actually doing anything. Just wasting tokens and time and effort on something without future.",
   body: [
     "In the past few months I've been working with them and came up with what I call manh-memory-system that is for any project. It spins up notes/ with enforcement for writing a detailed session note every session, a 30-chunked findings file to store durable findings that point to the corresponding session, similar for 30-chunked dead-ends, a compact finding index with brief description of each findings, similar for compact deadends, and a live state file to just keep note of what is currently going on and immediate next steps.",
     "I've been using that in what I call the alpha-research-lab, where agents follow that protocol and just come up with hypotheses and perform experiments for Vietnam stock market and keep notes like what I think is how a real scientist should do it. Some findings deserve to be written, some are not, negative findings (deadends) are worth written to avoid falling through it again, and that all sessions are recorded in depth.",

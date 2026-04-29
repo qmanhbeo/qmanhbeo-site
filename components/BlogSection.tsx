@@ -106,7 +106,7 @@ export default function BlogSection({
                 renderItem={(note, index) => (
                   <SpellScroll
                     title={note.title}
-                    description={note.excerpt}
+                    description={note.summary}
                     runes={[note.dateLabel, note.noteLabel].filter((value): value is string => Boolean(value))}
                     presentation="mobile"
                     className="w-full"
@@ -129,7 +129,7 @@ export default function BlogSection({
                 renderItem={(note, index) => (
                   <TavernTale
                     title={note.title}
-                    excerpt={note.excerpt}
+                    excerpt={note.summary}
                     date={note.dateLabel ?? ""}
                     readTime={note.noteLabel}
                     className="w-full"

@@ -9,8 +9,6 @@ const noteEnergyPovertyTransition: NoteEntry = {
   dateLabel: "Oct 2024 - Present",
   noteLabel: "Research note",
   summary:
-    "EEPSEA sharpened a long-standing concern: transitions arrive unevenly, and someone always carries more of the burden than policy language admits.",
-  excerpt:
     "EEPSEA sharpened a long-standing concern: transitions are never purely technical. They arrive unevenly, and someone always carries more of the burden than the policy memo admits.",
   body: [
     "The deeper I worked on energy questions, the harder it became to treat transition as an engineering timeline alone. Every delay and every affordability gap had a distribution behind it.",

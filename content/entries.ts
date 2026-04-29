@@ -74,7 +74,6 @@ export interface PublicationEntry extends BaseEntry {
 
 export interface NoteEntry extends BaseEntry {
   type: "note"
-  excerpt: string
   noteLabel: string
   body: string[]
 }
@@ -189,7 +188,7 @@ export function getEntryPreviewText(entry: ContentEntry) {
     case "publication":
       return entry.abstract
     case "note":
-      return entry.excerpt
+      return entry.summary
   }
 }
 
@@ -250,7 +249,6 @@ function getEntrySearchText(entry: ContentEntry) {
         entry.title,
         entry.subtitle,
         entry.summary,
-        entry.excerpt,
         entry.noteLabel,
         entry.dateLabel,
         entry.tags.join(" "),
