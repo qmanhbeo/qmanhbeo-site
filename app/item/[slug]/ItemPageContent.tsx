@@ -225,10 +225,6 @@ function PublicationBody({ entry }: { entry: Extract<ContentEntry, { type: "publ
 function NoteBody({ entry }: { entry: Extract<ContentEntry, { type: "note" }> }) {
   return (
     <div className="space-y-8">
-      <ManuscriptSection title="Opening Note">
-        <ManuscriptParagraph>{entry.summary}</ManuscriptParagraph>
-      </ManuscriptSection>
-
       <ManuscriptSection title="Full Entry">
         {entry.body.map((paragraph) => (
           <ManuscriptParagraph key={paragraph}>{paragraph}</ManuscriptParagraph>
