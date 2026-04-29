@@ -2,6 +2,7 @@ import type { NoteEntry } from "@/content/entries"
 import noteBuildingGaia from "./note-building-gaia"
 import noteDesignStillMatters from "./note-design-still-matters"
 import noteEnergyPovertyTransition from "./note-energy-poverty-transition"
+import noteManhMemorySystemFrustrationStocks from "./note-manh-memory-system-frustration-stocks"
 import noteHousingListingsTaughtMe from "./note-housing-listings-taught-me"
 import noteMarketSandbox from "./note-market-sandbox"
 import noteProcurementRecordsWhisper from "./note-procurement-records-whisper"
@@ -17,4 +18,5 @@ export const noteEntries = [
   noteEnergyPovertyTransition,
   noteWhatBirminghamChanged,
   noteDesignStillMatters,
+  noteManhMemorySystemFrustrationStocks,
 ] satisfies NoteEntry[]
