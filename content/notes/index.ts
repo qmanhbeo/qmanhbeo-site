@@ -10,8 +10,9 @@ import noteBuddhismValencia from "./note-buddhism-valencia"
 import noteThoOiMassPsychosisis from "./note-tho-oi-mass-psychosisis"
 
 const NOTE_ORDER: Record<string, number> = {
-  "note-tho-oi-mass-psychosisis": 1,
-  "note-light-hardt-lion": 2,
+  // Pinned: Light-Hardt Lion always first
+  "note-light-hardt-lion": 1,
+  "note-tho-oi-mass-psychosisis": 2,
   "note-worm-veg-line": 3,
   "note-oup-books": 4,
   "note-manh-memory-system-frustration-stocks": 5,
@@ -22,8 +23,8 @@ const NOTE_ORDER: Record<string, number> = {
 }
 
 const allNotes = [
-  noteThoOiMassPsychosisis,
   noteLightHardtLion,
+  noteThoOiMassPsychosisis,
   noteWormVegLine,
   noteOupBooks,
   noteManhMemorySystemFrustrationStocks,
