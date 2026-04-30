@@ -1,9 +1,9 @@
 import type { NoteEntry } from "@/content/entries"
 
 const noteThoOiMassPsychosisis: NoteEntry = {
-  slug: "note-tho-oi-mass-psychosisis",
+  slug: "note-tho-oi-inside-outside-perception",
   type: "note",
-  title: "Thỏ Ơi: On Vietnamese Mass Psychosis and Greatness of the Artist",
+  title: "Thỏ Ơi: How Art is Perceived from Inside vs Outside",
   subtitle: "Why distance reveals the artistry that insiders dismiss as 'chợ búa'",
   dateLabel: "16:09 30 Apr 2026",
   noteLabel: "Reflection",
