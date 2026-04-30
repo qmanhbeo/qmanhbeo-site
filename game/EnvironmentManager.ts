@@ -116,6 +116,8 @@ export class EnvironmentManager {
   }
 
   create() {
+    console.log("[ENV] === EnvironmentManager.create() called ===")
+
     this.graphics = this.scene.add.graphics()
       .setScrollFactor(0)
       .setDepth(3)
@@ -127,9 +129,15 @@ export class EnvironmentManager {
     this.createStars()
     this.createMoon()
     this.initialized = true
-    this.cachedHour = new Date().getHours()
+    const hour = new Date().getHours()
+    this.cachedHour = hour
+
+    const debugLocked = this.debugLockedState
+    const debugRegistry = this.scene.registry.get("debugTimeState") as TimeState | undefined
+    console.log("[ENV] create() - hour:", hour, "debugLockedState:", debugLocked, "registry debugState:", debugRegistry)
 
     const state = this.getStateFromTime()
+    console.log("[ENV] create() - resolved state:", state)
     this.applySkyGradient(state)
     this.applyDarkness(state)
   }
@@ -149,10 +157,15 @@ export class EnvironmentManager {
       return
     }
 
-    if (this.debugLockedState) return
+    const debugLocked = this.debugLockedState
+    if (debugLocked) {
+      console.log("[ENV] update() - returning early due to debugLockedState:", debugLocked)
+      return
+    }
 
     const debugState = this.scene.registry.get("debugTimeState") as TimeState | undefined
     if (debugState && SKY_CONFIGS[debugState]) {
+      console.log("[ENV] update() - using registry debugState:", debugState)
       if (debugState !== this.cachedRegistryState) {
         this.cachedRegistryState = debugState
         this.currentState = debugState
@@ -164,10 +177,14 @@ export class EnvironmentManager {
     this.cachedRegistryState = undefined
 
     const currentHour = new Date().getHours()
-    if (currentHour === this.cachedHour) return
+    if (currentHour === this.cachedHour) {
+      console.log("[ENV] update() - hour unchanged:", currentHour, "currentState:", this.currentState)
+      return
+    }
     this.cachedHour = currentHour
 
     const newState = getTimeOfDayState(currentHour)
+    console.log("[ENV] update() - hour changed to:", currentHour, "newState:", newState, "prevState:", this.currentState)
     if (newState !== this.currentState) {
       this.currentState = newState
       this.applySkyGradient()
@@ -449,5 +466,9 @@ export class EnvironmentManager {
       return { alphaMultiplier: 1.5, radiusMultiplier: 1.2 }
     }
     return { alphaMultiplier: 1, radiusMultiplier: 1 }
+  }
+
+  getCurrentState(): TimeState {
+    return this.currentState
   }
 }
