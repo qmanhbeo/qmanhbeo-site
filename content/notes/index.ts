@@ -7,19 +7,22 @@ import noteWormVegLine from "./note-worm-veg-line"
 import noteOupBooks from "./note-oup-books"
 import notePicnicBirmingham from "./note-picnic-birmingham"
 import noteBuddhismValencia from "./note-buddhism-valencia"
+import noteThoOiMassPsychosisis from "./note-tho-oi-mass-psychosisis"
 
 const NOTE_ORDER: Record<string, number> = {
-  "note-light-hardt-lion": 1,
-  "note-worm-veg-line": 2,
-  "note-oup-books": 3,
-  "note-manh-memory-system-frustration-stocks": 4,
-  "note-remote-wsl-viva-la-vida": 5,
-  "note-picnic-birmingham": 6,
-  "note-sagrada-familia-gaia": 7,
-  "note-buddhism-valencia": 8,
+  "note-tho-oi-mass-psychosisis": 1,
+  "note-light-hardt-lion": 2,
+  "note-worm-veg-line": 3,
+  "note-oup-books": 4,
+  "note-manh-memory-system-frustration-stocks": 5,
+  "note-remote-wsl-viva-la-vida": 6,
+  "note-picnic-birmingham": 7,
+  "note-sagrada-familia-gaia": 8,
+  "note-buddhism-valencia": 9,
 }
 
 const allNotes = [
+  noteThoOiMassPsychosisis,
   noteLightHardtLion,
   noteWormVegLine,
   noteOupBooks,
