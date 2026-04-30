@@ -659,12 +659,15 @@ export class WorldScene extends Phaser.Scene {
     const campfireX = 1200
     const campfireY = 900
 
+    const boost = this.environment?.getCampfireBoost() ?? { alphaMultiplier: 1, radiusMultiplier: 1 }
+    const sparkAlpha = 0.35 * boost.alphaMultiplier
+
     const glow = this.add.graphics()
       .setDepth(WORLD_DEPTHS.campfireGlow)
-    glow.fillStyle(0xffad42, 0.2)
-    glow.fillCircle(campfireX, campfireY, 102)
-    glow.fillStyle(0xffd27b, 0.16)
-    glow.fillCircle(campfireX, campfireY, 52)
+    glow.fillStyle(0xffad42, 0.2 * boost.alphaMultiplier)
+    glow.fillCircle(campfireX, campfireY, 102 * boost.radiusMultiplier)
+    glow.fillStyle(0xffd27b, 0.16 * boost.alphaMultiplier)
+    glow.fillCircle(campfireX, campfireY, 52 * boost.radiusMultiplier)
 
     const fire = this.add.sprite(campfireX, campfireY, "world-fire")
       .setDepth(WORLD_DEPTHS.campfireFire)
@@ -673,17 +676,17 @@ export class WorldScene extends Phaser.Scene {
     for (let index = 0; index < 7; index += 1) {
       const spark = this.add.sprite(campfireX - 8 + index * 3, campfireY - 14 + (index % 3) * 3, "world-spark")
         .setDepth(WORLD_DEPTHS.campfireSpark)
-        .setAlpha(0.35)
+        .setAlpha(sparkAlpha)
       this.tweens.add({
         targets: spark,
-        alpha: { from: 0.35, to: 0 },
+        alpha: { from: sparkAlpha, to: 0 },
         duration: 850 + index * 120,
         repeat: -1,
         y: spark.y - 18,
         delay: index * 120,
         onRepeat: () => {
           spark.setPosition(campfireX - 4 + ((index * 11) % 24), campfireY - 9 + (index % 2) * 3)
-          spark.setAlpha(0.35)
+          spark.setAlpha(sparkAlpha)
         },
       })
     }

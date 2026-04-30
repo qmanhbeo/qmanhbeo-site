@@ -29,11 +29,11 @@ const SKY_CONFIGS: Record<TimeState, SkyConfig> = {
     starVisible: false,
   },
   NIGHT: {
-    topColor: 0x0a1228,
+    topColor: 0x050a18,
     bottomColor: 0x1a2040,
-    topAlpha: 0.4,
+    topAlpha: 0.7,
     bottomAlpha: 0,
-    gradientHeightRatio: 0.55,
+    gradientHeightRatio: 0.45,
     starVisible: true,
   },
   DAWN: {
@@ -49,16 +49,23 @@ const SKY_CONFIGS: Record<TimeState, SkyConfig> = {
 const GRADIENT_STRIPS = 96
 const STARS_COUNT = 16
 
+const SYNODIC_MONTH = 29.530588853
+const KNOWN_NEW_MOON = Date.UTC(2024, 3, 8, 18, 21)
+
+function getLunarPhaseFrame(date = new Date()) {
+  const now = date.getTime()
+  const daysSinceNewMoon = (now - KNOWN_NEW_MOON) / (1000 * 60 * 60 * 24)
+  const lunarAge = ((daysSinceNewMoon % SYNODIC_MONTH) + SYNODIC_MONTH) % SYNODIC_MONTH
+  const phaseIndex = Math.round((lunarAge / SYNODIC_MONTH) * 8) % 8
+  return phaseIndex
+}
+
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t
 }
 
 function easeOutSine(t: number): number {
   return Math.sin((t * Math.PI) / 2)
-}
-
-function easeOutQuad(t: number): number {
-  return t * (2 - t)
 }
 
 function getTimeOfDayState(hour: number): TimeState {
@@ -87,8 +94,15 @@ function lerpColor(colorA: number, colorB: number, t: number): number {
 export class EnvironmentManager {
   private scene: Phaser.Scene
   private graphics?: Phaser.GameObjects.Graphics
+  private skyImage?: Phaser.GameObjects.Image
   private stars: Phaser.GameObjects.Arc[] = []
   private starTweens: Phaser.Tweens.Tween[] = []
+  private moon?: Phaser.GameObjects.Sprite
+  private moonLuma?: Phaser.GameObjects.Sprite
+  private moonContrast?: Phaser.GameObjects.Sprite
+  private moonGlow1?: Phaser.GameObjects.Sprite
+  private moonGlow2?: Phaser.GameObjects.Sprite
+  private darkness?: Phaser.GameObjects.Graphics
   private currentState: TimeState = "DAY"
   private cachedHour = -1
   private cachedViewportWidth = 0
@@ -106,12 +120,18 @@ export class EnvironmentManager {
       .setScrollFactor(0)
       .setDepth(3)
 
+    this.darkness = this.scene.add.graphics()
+      .setScrollFactor(0)
+      .setDepth(3.8)
+
     this.createStars()
+    this.createMoon()
     this.initialized = true
     this.cachedHour = new Date().getHours()
 
     const state = this.getStateFromTime()
     this.applySkyGradient(state)
+    this.applyDarkness(state)
   }
 
   update(_time: number) {
@@ -125,6 +145,7 @@ export class EnvironmentManager {
       this.cachedViewportWidth = viewportWidth
       this.cachedViewportHeight = viewportHeight
       this.applySkyGradient()
+      this.applyDarkness()
       return
     }
 
@@ -136,6 +157,7 @@ export class EnvironmentManager {
         this.cachedRegistryState = debugState
         this.currentState = debugState
         this.applySkyGradient()
+        this.applyDarkness()
       }
       return
     }
@@ -149,6 +171,7 @@ export class EnvironmentManager {
     if (newState !== this.currentState) {
       this.currentState = newState
       this.applySkyGradient()
+      this.applyDarkness()
     }
   }
 
@@ -169,12 +192,11 @@ export class EnvironmentManager {
     if (state && SKY_CONFIGS[state]) {
       this.currentState = state
       this.applySkyGradient()
+      this.applyDarkness()
     }
   }
 
   private applySkyGradient(state?: TimeState) {
-    if (!this.graphics) return
-
     const targetState = state ?? this.currentState
     const config = SKY_CONFIGS[targetState]
     const camera = this.scene.cameras.main
@@ -182,25 +204,91 @@ export class EnvironmentManager {
     const viewportHeight = camera.height / camera.zoom
     const gradientHeight = Math.round(viewportHeight * config.gradientHeightRatio)
 
-    this.graphics.clear()
+    const textureKey = `sky-gradient-${targetState}`
+    if (!this.scene.textures.exists(textureKey)) {
+      const canvas = document.createElement("canvas")
+      canvas.width = 1
+      canvas.height = 512
+      const ctx = canvas.getContext("2d")!
 
-    const stripHeight = gradientHeight / GRADIENT_STRIPS
+      const topR = ((config.topColor >> 16) & 0xff) / 255
+      const topG = ((config.topColor >> 8) & 0xff) / 255
+      const topB = (config.topColor & 0xff) / 255
 
-    for (let i = 0; i < GRADIENT_STRIPS; i++) {
-      const y = i * stripHeight
-      const t = easeOutSine(i / (GRADIENT_STRIPS - 1))
+      const bottomR = ((config.bottomColor >> 16) & 0xff) / 255
+      const bottomG = ((config.bottomColor >> 8) & 0xff) / 255
+      const bottomB = (config.bottomColor & 0xff) / 255
 
-      const alpha = lerp(config.topAlpha, config.bottomAlpha, t)
-      const color = lerpColor(config.topColor, config.bottomColor, t)
+      const gradient = ctx.createLinearGradient(0, 0, 0, 512)
+      gradient.addColorStop(0, `rgba(${Math.round(topR * 255)}, ${Math.round(topG * 255)}, ${Math.round(topB * 255)}, ${config.topAlpha})`)
+      gradient.addColorStop(1, `rgba(${Math.round(bottomR * 255)}, ${Math.round(bottomG * 255)}, ${Math.round(bottomB * 255)}, 0)`)
 
-      this.graphics.fillStyle(color, alpha)
-      this.graphics.fillRect(0, y, viewportWidth, stripHeight + 1)
+      ctx.fillStyle = gradient
+      ctx.fillRect(0, 0, 1, 512)
+
+      this.scene.textures.addCanvas(textureKey, canvas)
     }
+
+    if (!this.skyImage) {
+      this.skyImage = this.scene.add.image(0, 0, textureKey)
+        .setOrigin(0, 0)
+        .setScrollFactor(0)
+        .setDepth(3)
+    }
+
+    this.skyImage
+      .setTexture(textureKey)
+      .setDisplaySize(viewportWidth, gradientHeight)
+      .setVisible(true)
 
     const starsVisible = config.starVisible
     for (const star of this.stars) {
       star.setVisible(starsVisible)
     }
+  }
+
+  private applyDarkness(state?: TimeState) {
+    if (!this.darkness) return
+
+    const targetState = state ?? this.currentState
+    const camera = this.scene.cameras.main
+    const viewportWidth = camera.width / camera.zoom
+    const viewportHeight = camera.height / camera.zoom
+
+    this.darkness.clear()
+
+    const isNight = targetState === "NIGHT"
+
+    if (this.moon) {
+      this.moon.setVisible(isNight)
+      this.moonLuma?.setVisible(isNight)
+      this.moonContrast?.setVisible(isNight)
+      this.moonGlow1?.setVisible(isNight)
+      this.moonGlow2?.setVisible(isNight)
+      if (isNight) {
+        const moonPhase = getLunarPhaseFrame()
+        this.moon.setFrame(moonPhase)
+        this.moonLuma?.setFrame(moonPhase)
+        this.moonContrast?.setFrame(moonPhase)
+        this.moonGlow1?.setFrame(moonPhase)
+        this.moonGlow2?.setFrame(moonPhase)
+
+        const isFullMoon = moonPhase === 4
+        const lumaBoost = isFullMoon ? 0.52 : 0.42
+        const glow1Boost = isFullMoon ? 0.25 : 0.2
+        this.moonLuma?.setAlpha(lumaBoost)
+        this.moonGlow1?.setAlpha(glow1Boost)
+      }
+    }
+
+    if (!isNight) {
+      this.darkness.setVisible(false)
+      return
+    }
+
+    this.darkness.setVisible(true)
+    this.darkness.fillStyle(0x0a1228, 0.5)
+    this.darkness.fillRect(0, 0, viewportWidth, viewportHeight)
   }
 
   private createStars() {
@@ -244,6 +332,73 @@ export class EnvironmentManager {
     }
   }
 
+  private createMoon() {
+    if (!this.scene.textures.exists("lunar-phases")) {
+      console.warn("lunar-phases texture not loaded")
+      return
+    }
+
+    const camera = this.scene.cameras.main
+    const viewportWidth = camera.width / camera.zoom
+    const isMobile = viewportWidth < 768
+    const x = isMobile ? viewportWidth - 48 : viewportWidth - 180
+    const y = isMobile ? 88 : 80
+
+    const moonGlow2 = this.scene.add.sprite(x, y, "lunar-phases", 0)
+      .setScrollFactor(0)
+      .setDepth(3.3)
+      .setScale(1.6)
+      .setAlpha(0.08)
+      .setTint(0xeef4ff)
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setVisible(this.currentState === "NIGHT")
+
+    const moonGlow1 = this.scene.add.sprite(x, y, "lunar-phases", 0)
+      .setScrollFactor(0)
+      .setDepth(3.32)
+      .setScale(1.25)
+      .setAlpha(0.2)
+      .setTint(0xeef4ff)
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setVisible(this.currentState === "NIGHT")
+
+    const moonContrast = this.scene.add.sprite(x, y, "lunar-phases", 0)
+      .setScrollFactor(0)
+      .setDepth(3.48)
+      .setScale(1.0)
+      .setAlpha(0.1)
+      .setTint(0x000000)
+      .setBlendMode(Phaser.BlendModes.MULTIPLY)
+      .setVisible(this.currentState === "NIGHT")
+
+    const moonLuma = this.scene.add.sprite(x, y, "lunar-phases", 0)
+      .setScrollFactor(0)
+      .setDepth(3.49)
+      .setScale(1.04)
+      .setAlpha(0.42)
+      .setTint(0xffffff)
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setVisible(this.currentState === "NIGHT")
+
+    this.moon = this.scene.add.sprite(x, y, "lunar-phases", 0)
+      .setScrollFactor(0)
+      .setDepth(3.5)
+      .setAlpha(1.0)
+      .setTint(0xffffff)
+      .setVisible(this.currentState === "NIGHT")
+
+    const moonPhase = getLunarPhaseFrame()
+    this.moon.setFrame(moonPhase)
+    this.moonLuma = moonLuma
+    this.moonLuma.setFrame(moonPhase)
+    this.moonContrast = moonContrast
+    this.moonContrast.setFrame(moonPhase)
+    this.moonGlow1 = moonGlow1
+    this.moonGlow1.setFrame(moonPhase)
+    this.moonGlow2 = moonGlow2
+    this.moonGlow2.setFrame(moonPhase)
+  }
+
   handleKeyDown(key: string) {
     switch (key) {
       case "1":
@@ -272,8 +427,27 @@ export class EnvironmentManager {
     }
     this.stars.length = 0
 
+    this.moon?.destroy()
+    this.moon = undefined
+    this.moonLuma?.destroy()
+    this.moonLuma = undefined
+    this.moonContrast?.destroy()
+    this.moonContrast = undefined
+    this.moonGlow1?.destroy()
+    this.moonGlow1 = undefined
+    this.moonGlow2?.destroy()
+    this.moonGlow2 = undefined
+    this.darkness?.destroy()
+    this.darkness = undefined
     this.graphics?.destroy()
     this.graphics = undefined
     this.initialized = false
+  }
+
+  getCampfireBoost(): { alphaMultiplier: number; radiusMultiplier: number } {
+    if (this.currentState === "NIGHT") {
+      return { alphaMultiplier: 1.5, radiusMultiplier: 1.2 }
+    }
+    return { alphaMultiplier: 1, radiusMultiplier: 1 }
   }
 }
