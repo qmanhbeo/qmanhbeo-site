@@ -1,5 +1,6 @@
 import Phaser from "phaser"
 import { gameBridge } from "@/game/GameBridge"
+import { EnvironmentManager } from "@/game/EnvironmentManager"
 import { buildingData } from "@/game/config/buildingData"
 import { npcData } from "@/game/config/npcData"
 import {
@@ -110,6 +111,7 @@ export class WorldScene extends Phaser.Scene {
   private readonly cleanupFns: Array<() => void> = []
   private buildingHalo?: Phaser.GameObjects.Ellipse
   private buildings: BuildingZone[] = []
+  private environment?: EnvironmentManager
   private getJoystickInput: GetJoystickInput = () => ({ x: 0, y: 0, interact: false })
   private lastPersistAt = 0
   private npcHalo?: Phaser.GameObjects.Ellipse
@@ -134,6 +136,9 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
     this.cameras.main.setBackgroundColor("#0a0604")
     this.drawWorld()
+
+    this.environment = new EnvironmentManager(this)
+    this.environment.create()
 
     this.player = new Player(this, initialPlayerPosition.x, initialPlayerPosition.y, this.getJoystickInput)
     this.player.setControlsLocked(this.uiLocked)
@@ -195,16 +200,26 @@ export class WorldScene extends Phaser.Scene {
 
     this.registry.set("promptText", "")
 
+    if (this.input.keyboard) {
+      this.input.keyboard.on("keydown-ONE", () => this.environment?.handleKeyDown("1"))
+      this.input.keyboard.on("keydown-TWO", () => this.environment?.handleKeyDown("2"))
+      this.input.keyboard.on("keydown-THREE", () => this.environment?.handleKeyDown("3"))
+      this.input.keyboard.on("keydown-FOUR", () => this.environment?.handleKeyDown("4"))
+    }
+
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.cleanupFns.forEach((cleanup) => cleanup())
       this.cleanupFns.length = 0
       this.persistPlayerPosition()
       this.scale.off("resize", handleResize)
+      this.environment?.destroy()
     })
   }
 
   update(time: number) {
     if (!this.player) return
+
+    this.environment?.update(time)
 
     const { justInteracted } = this.player.updatePlayer()
 
