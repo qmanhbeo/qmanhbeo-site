@@ -19,3 +19,7 @@
 - Seeded deterministic generation (useful for reproducible test outputs)
 - Two-circle mask model is conceptually correct — just needs tighter math
 - Can iterate without touching the working asset
+
+---
+
+Last sync: 2026-04-30 — main ahead of time-sky by 2 commits (73d7d98, 25908bb)
