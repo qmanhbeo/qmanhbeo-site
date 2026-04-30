@@ -117,6 +117,7 @@ export class WorldScene extends Phaser.Scene {
   private npcHalo?: Phaser.GameObjects.Ellipse
   private npcs: NPC[] = []
   private player?: Player
+  private timeStateLabel?: Phaser.GameObjects.Text
   private uiLocked = false
 
   constructor() {
@@ -207,6 +208,19 @@ export class WorldScene extends Phaser.Scene {
       this.input.keyboard.on("keydown-FOUR", () => this.environment?.handleKeyDown("4"))
     }
 
+    const viewportWidth = cam.width / cam.zoom
+    const isMobile = viewportWidth < 768
+    const labelX = isMobile ? 16 : 20
+    const labelY = isMobile ? 110 : 100
+    this.timeStateLabel = this.add.text(labelX, labelY, "", {
+      color: "#b8d4f0",
+      fontFamily: "monospace",
+      fontSize: "11px",
+    })
+      .setScrollFactor(0)
+      .setDepth(100)
+      .setAlpha(0.65)
+
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.cleanupFns.forEach((cleanup) => cleanup())
       this.cleanupFns.length = 0
@@ -220,6 +234,12 @@ export class WorldScene extends Phaser.Scene {
     if (!this.player) return
 
     this.environment?.update(time)
+
+    if (this.timeStateLabel && this.environment) {
+      const state = this.environment.getCurrentState()
+      const hour = new Date().getHours()
+      this.timeStateLabel.setText(`${state} | ${hour}:00 local`)
+    }
 
     const { justInteracted } = this.player.updatePlayer()
 

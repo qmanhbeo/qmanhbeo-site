@@ -450,4 +450,8 @@ export class EnvironmentManager {
     }
     return { alphaMultiplier: 1, radiusMultiplier: 1 }
   }
+
+  getCurrentState(): TimeState {
+    return this.currentState
+  }
 }
