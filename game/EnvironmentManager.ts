@@ -138,6 +138,7 @@ export class EnvironmentManager {
 
     const state = this.getStateFromTime()
     console.log("[ENV] create() - resolved state:", state)
+    this.currentState = state
     this.applySkyGradient(state)
     this.applyDarkness(state)
   }
