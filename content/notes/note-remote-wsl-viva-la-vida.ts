@@ -3,7 +3,6 @@ import type { NoteEntry } from "@/content/entries"
 const noteRemoteWslVivaLaVida: NoteEntry = {
   slug: "note-remote-wsl-viva-la-vida",
   type: "note",
-  order: 6,
   title: "Remote WSL broke down and 'Viva la Vida'",
   subtitle: "Bunch of cool shit learned, can't articulate it yet",
   dateLabel: "28 Apr 2026",

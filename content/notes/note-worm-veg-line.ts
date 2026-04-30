@@ -3,7 +3,6 @@ import type { NoteEntry } from "@/content/entries"
 const noteWormVegLine: NoteEntry = {
   slug: "note-worm-veg-line",
   type: "note",
-  order: 2,
   title: "Worm in vegs: Where do we draw the line?",
   subtitle: "My sister saw a worm in her salad. I reflect on my ecological mindset.",
   dateLabel: "09:28 30 Apr 2026",

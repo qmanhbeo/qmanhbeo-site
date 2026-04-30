@@ -3,7 +3,6 @@ import type { NoteEntry } from "@/content/entries"
 const notePicnicBirmingham: NoteEntry = {
   slug: "note-picnic-birmingham",
   type: "note",
-  order: 7,
   title: "Random picnic thoughts",
   subtitle: "Just random thoughts at the park",
   dateLabel: "24-30-and-ongoing Apr 2026 - Birmingham",

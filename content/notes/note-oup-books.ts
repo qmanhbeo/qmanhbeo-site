@@ -3,7 +3,6 @@ import type { NoteEntry } from "@/content/entries"
 const noteOupBooks: NoteEntry = {
   slug: "note-oup-books",
   type: "note",
-  order: 3,
   title: "Books from OUP and what they say about me",
   subtitle: "My prizes from OUP SHAPE AI Challenge",
   dateLabel: "15:14 30 Apr 2026",

@@ -29,7 +29,7 @@ interface BaseEntry {
   status?: string
   dateLabel?: string
   mood?: string
-  order: number
+  order?: number
 }
 
 export interface ArcEntry extends BaseEntry {
@@ -97,7 +97,7 @@ const archiveTypeOrder: Record<EntryType, number> = {
 const allEntries = [...publicationEntries, ...projectEntries, ...noteEntries, ...arcEntries].sort((left, right) => {
   const typeDelta = archiveTypeOrder[left.type] - archiveTypeOrder[right.type]
   if (typeDelta !== 0) return typeDelta
-  return left.order - right.order
+  return (left.order ?? 999) - (right.order ?? 999)
 })
 
 const entriesBySlug = new Map(allEntries.map((entry) => [entry.slug, entry]))

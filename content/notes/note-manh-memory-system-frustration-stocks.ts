@@ -3,7 +3,6 @@ import type { NoteEntry } from "@/content/entries"
 const noteManhMemorySystemFrustrationStocks: NoteEntry = {
   slug: "note-manh-memory-system-frustration-stocks",
   type: "note",
-  order: 5,
   title: "manh-memory-system and the frustration of stocks",
   subtitle: "The protocol is sound, the beast is ruthless",
   dateLabel: "22:43 29 Apr 2026",
