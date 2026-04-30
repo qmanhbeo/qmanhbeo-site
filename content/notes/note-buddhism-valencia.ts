@@ -3,7 +3,7 @@ import type { NoteEntry } from "@/content/entries"
 const noteBuddhismValencia: NoteEntry = {
   slug: "note-buddhism-valencia",
   type: "note",
-  order: 6,
+  order: 9,
   title: "Buddhism in València",
   subtitle: "The Doubt & The Straying",
   dateLabel: "20 Apr 2026 - València",

@@ -3,7 +3,7 @@ import type { NoteEntry } from "@/content/entries"
 const noteSagradaFamiliaGaia: NoteEntry = {
   slug: "note-sagrada-familia-gaia",
   type: "note",
-  order: 5,
+  order: 8,
   title: "Sagrada Familia and GAIA",
   subtitle: "A conversation with Gemini about architecture, nature, and economics",
   dateLabel: "21 Apr 2026 - Barcelona",
