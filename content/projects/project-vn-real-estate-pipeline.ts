@@ -3,7 +3,6 @@ import type { ProjectEntry } from "@/content/entries"
 const projectVnRealEstatePipeline: ProjectEntry = {
   slug: "project-vn-real-estate-pipeline",
   type: "project",
-  order: 3,
   title: "Vietnamese Real Estate Data Pipeline",
   subtitle: "Cleaning scattered listings into something analysis can trust",
   dateLabel: "Mar 2025 - Sep 2025",

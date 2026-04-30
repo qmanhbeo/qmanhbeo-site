@@ -3,7 +3,6 @@ import type { ProjectEntry } from "@/content/entries"
 const projectUkProcurementPipeline: ProjectEntry = {
   slug: "project-uk-procurement-pipeline",
   type: "project",
-  order: 4,
   title: "UK Public Procurement Data Collection and Analysis Pipeline",
   subtitle: "Following public records until they become policy-ready evidence",
   dateLabel: "Nov 2025",

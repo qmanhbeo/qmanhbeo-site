@@ -3,7 +3,6 @@ import type { ProjectEntry } from "@/content/entries"
 const projectArduinoEnvironmentRobot: ProjectEntry = {
   slug: "project-arduino-environment-robot",
   type: "project",
-  order: 6,
   title: "Arduino Robot for Environment Sensing and Learning",
   subtitle: "A small embodied system that learns by touching the world",
   status: "Early Experiment",

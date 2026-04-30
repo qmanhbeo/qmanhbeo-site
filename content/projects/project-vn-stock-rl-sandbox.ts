@@ -3,7 +3,6 @@ import type { ProjectEntry } from "@/content/entries"
 const projectVnStockRlSandbox: ProjectEntry = {
   slug: "project-vn-stock-rl-sandbox",
   type: "project",
-  order: 1,
   title: "Vietnam Stock Reinforcement Learning Sandbox",
   subtitle: "A market world where agents must live with friction and timing",
   dateLabel: "Jan 2026 - Present",

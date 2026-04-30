@@ -3,7 +3,6 @@ import type { ProjectEntry } from "@/content/entries"
 const projectPathsUntold: ProjectEntry = {
   slug: "project-paths-untold",
   type: "project",
-  order: 5,
   title: "Paths Untold: AI-Generated Interactive Story Game",
   subtitle: "Generated scenes with memory, persistence, and emotional weather",
   dateLabel: "Mar 2025 - Jul 2025",

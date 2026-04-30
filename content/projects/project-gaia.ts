@@ -3,7 +3,6 @@ import type { ProjectEntry } from "@/content/entries"
 const projectGaia: ProjectEntry = {
   slug: "project-gaia",
   type: "project",
-  order: 2,
   title: "GAIA: Agent-based Economic Simulation for Reinforcement Learning Decision Making",
   subtitle: "Households, labor, food, water, and policy in one living system",
   dateLabel: "Apr 2025 - Present",
