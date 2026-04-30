@@ -18,6 +18,7 @@ const noteOupBooks: NoteEntry = {
     "Genius.",
     "Love.",
     "and Polygamy.",
+    "![OUP books](/images/oup-books/IMG_2339.jpg)",
     "I feel like they really connect with each other somehow and reflect who I am and what I want to learn/do.",
     "I think the most general theme is my refusal to accept modern society as I was born into, and I seek the meaning, the truth, that I can build upon for a better world.",
     "Anthropology because civilization hasn't always been like this. There must be, or have been even, better alternatives that allow better alignment with the human nature.",
