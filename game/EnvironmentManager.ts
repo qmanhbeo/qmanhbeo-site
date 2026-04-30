@@ -190,8 +190,8 @@ export class EnvironmentManager {
       const y = i * stripHeight
       const t = easeOutSine(i / (GRADIENT_STRIPS - 1))
 
-      const alpha = lerp(config.bottomAlpha, config.topAlpha, t)
-      const color = lerpColor(config.bottomColor, config.topColor, t)
+      const alpha = lerp(config.topAlpha, config.bottomAlpha, t)
+      const color = lerpColor(config.topColor, config.bottomColor, t)
 
       this.graphics.fillStyle(color, alpha)
       this.graphics.fillRect(0, y, viewportWidth, stripHeight + 1)
