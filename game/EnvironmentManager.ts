@@ -150,6 +150,7 @@ export class EnvironmentManager {
       this.cachedViewportHeight = viewportHeight
       this.applySkyGradient()
       this.applyDarkness()
+      this.repositionMoon()
       return
     }
 
@@ -304,6 +305,8 @@ export class EnvironmentManager {
     const camera = this.scene.cameras.main
     const viewportWidth = camera.width / camera.zoom
     const viewportHeight = camera.height / camera.zoom
+    const camX = camera.scrollX
+    const camY = camera.scrollY
 
     const starZoneHeight = Math.min(viewportHeight * 0.3, 250)
 
@@ -317,13 +320,16 @@ export class EnvironmentManager {
     }
 
     for (let i = 0; i < STARS_COUNT; i++) {
-      const x = Math.round(random(i) * viewportWidth * 0.8) + viewportWidth * 0.1
+      const xOffset = Math.round(random(i) * viewportWidth * 0.8) + viewportWidth * 0.1
       const yNormalized = random(i + 1000)
-      const y = Math.round(yNormalized * starZoneHeight)
+      const yOffset = Math.round(yNormalized * starZoneHeight)
       const size = 0.6 + random(i + 2000) * 0.8
 
+      const x = camX + xOffset
+      const y = camY + yOffset
+
       const star = this.scene.add.circle(x, y, size, 0xffffff)
-        .setScrollFactor(0)
+        .setScrollFactor(0.05)
         .setDepth(3.5)
         .setAlpha(0)
         .setVisible(this.currentState === "NIGHT")
@@ -349,12 +355,14 @@ export class EnvironmentManager {
 
     const camera = this.scene.cameras.main
     const viewportWidth = camera.width / camera.zoom
+    const camX = camera.scrollX
+    const camY = camera.scrollY
     const isMobile = viewportWidth < 768
-    const x = isMobile ? viewportWidth - 48 : viewportWidth - 180
-    const y = isMobile ? 88 : 80
+    const x = camX + (isMobile ? viewportWidth - 48 : viewportWidth - 180)
+    const y = camY + (isMobile ? 88 : 80)
 
     const moonGlow2 = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0)
+      .setScrollFactor(0.08)
       .setDepth(3.3)
       .setScale(1.6)
       .setAlpha(0.08)
@@ -363,7 +371,7 @@ export class EnvironmentManager {
       .setVisible(this.currentState === "NIGHT")
 
     const moonGlow1 = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0)
+      .setScrollFactor(0.08)
       .setDepth(3.32)
       .setScale(1.25)
       .setAlpha(0.2)
@@ -372,7 +380,7 @@ export class EnvironmentManager {
       .setVisible(this.currentState === "NIGHT")
 
     const moonContrast = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0)
+      .setScrollFactor(0.08)
       .setDepth(3.48)
       .setScale(1.0)
       .setAlpha(0.1)
@@ -381,7 +389,7 @@ export class EnvironmentManager {
       .setVisible(this.currentState === "NIGHT")
 
     const moonLuma = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0)
+      .setScrollFactor(0.08)
       .setDepth(3.49)
       .setScale(1.04)
       .setAlpha(0.42)
@@ -390,7 +398,7 @@ export class EnvironmentManager {
       .setVisible(this.currentState === "NIGHT")
 
     this.moon = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0)
+      .setScrollFactor(0.08)
       .setDepth(3.5)
       .setAlpha(1.0)
       .setTint(0xffffff)
@@ -406,6 +414,24 @@ export class EnvironmentManager {
     this.moonGlow1.setFrame(moonPhase)
     this.moonGlow2 = moonGlow2
     this.moonGlow2.setFrame(moonPhase)
+  }
+
+  private repositionMoon() {
+    if (!this.moon) return
+
+    const camera = this.scene.cameras.main
+    const viewportWidth = camera.width / camera.zoom
+    const camX = camera.scrollX
+    const camY = camera.scrollY
+    const isMobile = viewportWidth < 768
+    const x = camX + (isMobile ? viewportWidth - 48 : viewportWidth - 180)
+    const y = camY + (isMobile ? 88 : 80)
+
+    this.moon.setPosition(x, y)
+    this.moonLuma?.setPosition(x, y)
+    this.moonContrast?.setPosition(x, y)
+    this.moonGlow1?.setPosition(x, y)
+    this.moonGlow2?.setPosition(x, y)
   }
 
   handleKeyDown(key: string) {
