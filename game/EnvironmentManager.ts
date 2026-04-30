@@ -353,16 +353,27 @@ export class EnvironmentManager {
       return
     }
 
+    this.createMoonLayers()
+  }
+
+  private createMoonLayers() {
     const camera = this.scene.cameras.main
     const viewportWidth = camera.width / camera.zoom
+    const isMobile = viewportWidth < 768
+
+    const desiredScreenX = isMobile ? viewportWidth - 64 : viewportWidth - 160
+    const desiredScreenY = isMobile ? 95 : 85
+    const scrollFactor = 0.08
+
     const camX = camera.scrollX
     const camY = camera.scrollY
-    const isMobile = viewportWidth < 768
-    const x = camX + (isMobile ? viewportWidth - 48 : viewportWidth - 180)
-    const y = camY + (isMobile ? 88 : 80)
+    const worldX = camX * scrollFactor + desiredScreenX
+    const worldY = camY * scrollFactor + desiredScreenY
 
-    const moonGlow2 = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0.08)
+    const moonPhase = getLunarPhaseFrame()
+
+    const moonGlow2 = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
+      .setScrollFactor(scrollFactor)
       .setDepth(3.3)
       .setScale(1.6)
       .setAlpha(0.08)
@@ -370,8 +381,8 @@ export class EnvironmentManager {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setVisible(this.currentState === "NIGHT")
 
-    const moonGlow1 = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0.08)
+    const moonGlow1 = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
+      .setScrollFactor(scrollFactor)
       .setDepth(3.32)
       .setScale(1.25)
       .setAlpha(0.2)
@@ -379,8 +390,8 @@ export class EnvironmentManager {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setVisible(this.currentState === "NIGHT")
 
-    const moonContrast = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0.08)
+    const moonContrast = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
+      .setScrollFactor(scrollFactor)
       .setDepth(3.48)
       .setScale(1.0)
       .setAlpha(0.1)
@@ -388,8 +399,8 @@ export class EnvironmentManager {
       .setBlendMode(Phaser.BlendModes.MULTIPLY)
       .setVisible(this.currentState === "NIGHT")
 
-    const moonLuma = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0.08)
+    const moonLuma = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
+      .setScrollFactor(scrollFactor)
       .setDepth(3.49)
       .setScale(1.04)
       .setAlpha(0.42)
@@ -397,23 +408,17 @@ export class EnvironmentManager {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setVisible(this.currentState === "NIGHT")
 
-    this.moon = this.scene.add.sprite(x, y, "lunar-phases", 0)
-      .setScrollFactor(0.08)
+    this.moon = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
+      .setScrollFactor(scrollFactor)
       .setDepth(3.5)
       .setAlpha(1.0)
       .setTint(0xffffff)
       .setVisible(this.currentState === "NIGHT")
 
-    const moonPhase = getLunarPhaseFrame()
-    this.moon.setFrame(moonPhase)
     this.moonLuma = moonLuma
-    this.moonLuma.setFrame(moonPhase)
     this.moonContrast = moonContrast
-    this.moonContrast.setFrame(moonPhase)
     this.moonGlow1 = moonGlow1
-    this.moonGlow1.setFrame(moonPhase)
     this.moonGlow2 = moonGlow2
-    this.moonGlow2.setFrame(moonPhase)
   }
 
   private repositionMoon() {
@@ -421,17 +426,22 @@ export class EnvironmentManager {
 
     const camera = this.scene.cameras.main
     const viewportWidth = camera.width / camera.zoom
+    const isMobile = viewportWidth < 768
+
+    const desiredScreenX = isMobile ? viewportWidth - 64 : viewportWidth - 160
+    const desiredScreenY = isMobile ? 95 : 85
+    const scrollFactor = 0.08
+
     const camX = camera.scrollX
     const camY = camera.scrollY
-    const isMobile = viewportWidth < 768
-    const x = camX + (isMobile ? viewportWidth - 48 : viewportWidth - 180)
-    const y = camY + (isMobile ? 88 : 80)
+    const worldX = camX * scrollFactor + desiredScreenX
+    const worldY = camY * scrollFactor + desiredScreenY
 
-    this.moon.setPosition(x, y)
-    this.moonLuma?.setPosition(x, y)
-    this.moonContrast?.setPosition(x, y)
-    this.moonGlow1?.setPosition(x, y)
-    this.moonGlow2?.setPosition(x, y)
+    this.moon.setPosition(worldX, worldY)
+    this.moonLuma?.setPosition(worldX, worldY)
+    this.moonContrast?.setPosition(worldX, worldY)
+    this.moonGlow1?.setPosition(worldX, worldY)
+    this.moonGlow2?.setPosition(worldX, worldY)
   }
 
   handleKeyDown(key: string) {
