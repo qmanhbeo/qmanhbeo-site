@@ -15,42 +15,46 @@ const SKY_CONFIGS: Record<TimeState, SkyConfig> = {
   DAY: {
     topColor: 0x87ceeb,
     bottomColor: 0xe0f4ff,
-    topAlpha: 0.15,
+    topAlpha: 0.12,
     bottomAlpha: 0,
-    gradientHeightRatio: 0.55,
+    gradientHeightRatio: 0.45,
     starVisible: false,
   },
   DUSK: {
     topColor: 0xff6b4a,
     bottomColor: 0xffa5c0,
-    topAlpha: 0.35,
+    topAlpha: 0.28,
     bottomAlpha: 0,
-    gradientHeightRatio: 0.6,
+    gradientHeightRatio: 0.5,
     starVisible: false,
   },
   NIGHT: {
     topColor: 0x0a1228,
     bottomColor: 0x1a2040,
-    topAlpha: 0.6,
+    topAlpha: 0.4,
     bottomAlpha: 0,
-    gradientHeightRatio: 0.65,
+    gradientHeightRatio: 0.55,
     starVisible: true,
   },
   DAWN: {
     topColor: 0x6b4a8a,
     bottomColor: 0xf4c46a,
-    topAlpha: 0.3,
+    topAlpha: 0.25,
     bottomAlpha: 0,
-    gradientHeightRatio: 0.55,
+    gradientHeightRatio: 0.45,
     starVisible: false,
   },
 }
 
-const GRADIENT_STRIPS = 64
+const GRADIENT_STRIPS = 96
 const STARS_COUNT = 16
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t
+}
+
+function easeOutSine(t: number): number {
+  return Math.sin((t * Math.PI) / 2)
 }
 
 function easeOutQuad(t: number): number {
@@ -184,7 +188,7 @@ export class EnvironmentManager {
 
     for (let i = 0; i < GRADIENT_STRIPS; i++) {
       const y = i * stripHeight
-      const t = easeOutQuad(i / (GRADIENT_STRIPS - 1))
+      const t = easeOutSine(i / (GRADIENT_STRIPS - 1))
 
       const alpha = lerp(config.bottomAlpha, config.topAlpha, t)
       const color = lerpColor(config.bottomColor, config.topColor, t)
@@ -204,7 +208,7 @@ export class EnvironmentManager {
     const viewportWidth = camera.width / camera.zoom
     const viewportHeight = camera.height / camera.zoom
 
-    const starZoneHeight = viewportHeight * 0.4
+    const starZoneHeight = Math.min(viewportHeight * 0.3, 250)
 
     this.stars = []
     this.starTweens.length = 0
@@ -219,7 +223,7 @@ export class EnvironmentManager {
       const x = Math.round(random(i) * viewportWidth * 0.8) + viewportWidth * 0.1
       const yNormalized = random(i + 1000)
       const y = Math.round(yNormalized * starZoneHeight)
-      const size = 0.8 + random(i + 2000) * 1.2
+      const size = 0.6 + random(i + 2000) * 0.8
 
       const star = this.scene.add.circle(x, y, size, 0xffffff)
         .setScrollFactor(0)
