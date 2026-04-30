@@ -66,7 +66,7 @@ const noteThoOiMassPsychosisis: NoteEntry = {
     "You get enlightened, and you do the laundry.",
     "And what you said is actually just so well, so I'm gonna end this rambling on that note:",
     "By refusing to \"sanitize\" Vietnam for the screen, Trấn Thành is showing a form of respect for the reality of the people.",
-    "(Picasso wasn't great in his lifetime)",
+    "(Van Gogh sold only one painting in his lifetime)",
   ],
   tags: ["Vietnam", "Cinema", "Art", "Trấn Thành", "Culture", "Reflection"],
 }
