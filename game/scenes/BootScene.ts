@@ -290,7 +290,8 @@ export class BootScene extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 64,
     })
-    this.load.image("building-library", "/game/buildings/library/spritesheet.png")
+    this.load.atlas("building-library", "/game/buildings/library-128/spritesheet.png", "/game/buildings/library-128/spritesheet.json")
+    this.load.atlas("building-workshop", "/game/buildings/workshop/spritesheet.png", "/game/buildings/workshop/spritesheet.json")
     NPC_ASSETS.forEach((asset) => {
       if (asset.isAtlas) {
         this.load.atlas(asset.key, asset.path, asset.atlasPath)
