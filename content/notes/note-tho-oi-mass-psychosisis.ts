@@ -3,7 +3,7 @@ import type { NoteEntry } from "@/content/entries"
 const noteThoOiMassPsychosisis: NoteEntry = {
   slug: "note-tho-oi-within-outside-perception",
   type: "note",
-  title: "Thỏ Ơi: How Art is Perceived from Within vs Outside",
+  title: "Movie Commentary: How Art is Perceived from Within vs Outside",
   subtitle: "Why distance reveals the artistry that insiders dismiss as 'chợ búa'",
   dateLabel: "16:09 30 Apr 2026",
   noteLabel: "Reflection",
