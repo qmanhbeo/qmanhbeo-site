@@ -35,7 +35,7 @@ export function createPhaserGame({
       },
     },
     scale: {
-      mode: Phaser.Scale.NONE,
+      mode: Phaser.Scale.RESIZE,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     callbacks: {

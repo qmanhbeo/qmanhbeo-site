@@ -126,6 +126,8 @@ export class EnvironmentManager {
       .setScrollFactor(0)
       .setDepth(3.8)
 
+    this.createDebugOverlay()
+
     this.createStars()
     this.createMoon()
     this.initialized = true
@@ -138,12 +140,55 @@ export class EnvironmentManager {
     this.applyDarkness(state)
   }
 
+  private debugRect?: Phaser.GameObjects.Graphics
+
+  private createDebugOverlay() {
+    if (typeof window === "undefined" || (window as unknown as Record<string, unknown>)["__PHASER_DEBUG"] !== true) return
+
+    this.debugRect = this.scene.add.graphics()
+      .setScrollFactor(0)
+      .setDepth(9999)
+
+    this.scene.events.on("update", () => {
+      if (!this.debugRect) return
+      this.debugRect.clear()
+
+      const camera = this.scene.cameras.main
+      const viewportWidth = camera.width
+      const viewportHeight = camera.height
+
+      this.debugRect.lineStyle(2, 0xff0000, 1)
+      this.debugRect.strokeRect(0, 0, this.scene.scale.width, this.scene.scale.height)
+
+      this.debugRect.lineStyle(2, 0x0000ff, 1)
+      this.debugRect.strokeRect(0, 0, viewportWidth, viewportHeight)
+
+      this.debugRect.lineStyle(2, 0xffff00, 1)
+      this.debugRect.strokeRect(0, 0, 2400, 1800)
+
+      if (this.skyImage) {
+        this.debugRect.lineStyle(2, 0xff00ff, 1)
+        this.debugRect.strokeRect(
+          this.skyImage.x,
+          this.skyImage.y,
+          this.skyImage.displayWidth,
+          this.skyImage.displayHeight
+        )
+      }
+
+      if (this.darkness) {
+        this.debugRect.lineStyle(2, 0x00ffff, 1)
+        this.debugRect.strokeRect(0, 0, viewportWidth, viewportHeight)
+      }
+    })
+  }
+
   update(_time: number) {
     if (!this.initialized) return
 
     const camera = this.scene.cameras.main
-    const viewportWidth = camera.width / camera.zoom
-    const viewportHeight = camera.height / camera.zoom
+    const viewportWidth = camera.width
+    const viewportHeight = camera.height
 
     if (viewportWidth !== this.cachedViewportWidth || viewportHeight !== this.cachedViewportHeight) {
       this.cachedViewportWidth = viewportWidth
@@ -210,8 +255,8 @@ export class EnvironmentManager {
     const targetState = state ?? this.currentState
     const config = SKY_CONFIGS[targetState]
     const camera = this.scene.cameras.main
-    const viewportWidth = camera.width / camera.zoom
-    const viewportHeight = camera.height / camera.zoom
+    const viewportWidth = camera.width
+    const viewportHeight = camera.height
     const gradientHeight = Math.round(viewportHeight * config.gradientHeightRatio)
 
     const textureKey = `sky-gradient-${targetState}`
@@ -262,8 +307,8 @@ export class EnvironmentManager {
 
     const targetState = state ?? this.currentState
     const camera = this.scene.cameras.main
-    const viewportWidth = camera.width / camera.zoom
-    const viewportHeight = camera.height / camera.zoom
+    const viewportWidth = camera.width
+    const viewportHeight = camera.height
 
     this.darkness.clear()
 
