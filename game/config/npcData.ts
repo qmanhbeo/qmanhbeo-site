@@ -15,6 +15,7 @@ export interface NpcData {
   dialogueLines: string[]
   spriteConfig?: SpriteConfig
   shadowOffsetY?: number
+  visualOffsetY?: number
 }
 
 const CENTER_X = 1200
@@ -118,6 +119,6 @@ export const npcData: NpcData[] = [
       "Care for a tune?",
       "The fire keeps time for us all.",
     ],
-    shadowOffsetY: -10,
+    visualOffsetY: 50,
   },
 ]

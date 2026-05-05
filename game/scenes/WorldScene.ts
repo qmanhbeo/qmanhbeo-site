@@ -866,13 +866,12 @@ export class WorldScene extends Phaser.Scene {
 
   private setupBardBehavior(bard: NPC) {
     const BARDSCALE = 0.14
-    const BARD_VISUAL_OFFSET_Y = 45
     bard.setTexture("bard")
     bard.setOrigin(0.5, 1)
     bard.setScale(BARDSCALE)
     bard.setFrame("frame_000")
     bard.setDepth(8)
-    bard.y += BARD_VISUAL_OFFSET_Y
+    bard.y += (bard as unknown as { visualOffsetY?: number }).visualOffsetY ?? 50
 
     let isResting = false
 
