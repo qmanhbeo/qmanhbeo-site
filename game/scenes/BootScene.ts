@@ -539,7 +539,7 @@ export class BootScene extends Phaser.Scene {
   private createBardAnimations() {
     const key = "bard"
 
-    this.anims.create({ key: "bard-checking", frames: [{ key, frame: "frame_005" }, { key, frame: "frame_006" }, { key, frame: "frame_000" }], frameRate: 3 })
+    this.anims.create({ key: "bard-checking", frames: [{ key, frame: "frame_005" }, { key, frame: "frame_006" }, { key, frame: "frame_000" }], frameRate: 0.5 })
 
     this.anims.create({ key: "bard-sit-down", frames: [{ key, frame: "frame_010" }, { key, frame: "frame_011" }, { key, frame: "frame_012" }], frameRate: 4 })
 
