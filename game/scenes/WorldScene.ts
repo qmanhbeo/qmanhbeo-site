@@ -178,10 +178,9 @@ export class WorldScene extends Phaser.Scene {
       })
     })
 
-    const bard = this.npcs.find((n) => n.id === "bard")
-    if (bard) {
-      this.setupBardBehavior(bard)
-    }
+    const BARD_X = 1060
+    const BARD_Y = 1010
+    this.setupBardSceneObject(BARD_X, BARD_Y)
 
     this.buildingHalo = this.add.ellipse(0, 0, 94, 70, 0xffc56f, 0)
       .setDepth(5)
@@ -265,8 +264,7 @@ export class WorldScene extends Phaser.Scene {
         })
 
         if (activeTarget.npcId === "bard") {
-          const bard = this.npcs.find((n) => n.id === "bard")
-          if (bard) this.time.delayedCall(300, () => bard.setFrame("frame_007"))
+          if (this.bardInteractZone) this.time.delayedCall(300, () => this.bardSprite?.setFrame("frame_007"))
         }
       }
     }
@@ -864,25 +862,42 @@ export class WorldScene extends Phaser.Scene {
     this.player?.setControlsLocked(false)
   }
 
-  private setupBardBehavior(bard: NPC) {
+  private bardInteractZone?: Phaser.GameObjects.Zone
+  private bardSprite?: Phaser.GameObjects.Sprite
+
+  private setupBardSceneObject(bardX: number, bardY: number) {
     const BARDSCALE = 0.14
     const BARD_OFFSET_Y = 40
-    bard.setTexture("bard")
-    bard.setOrigin(0.5, 1)
-    bard.setScale(BARDSCALE)
-    bard.setFrame("frame_000")
-    bard.setDepth(8)
-    bard.setPosition(bard.x, bard.y + BARD_OFFSET_Y)
+    const BARD_INTERACT_WIDTH = 48
+    const BARD_INTERACT_HEIGHT = 48
 
-    let isResting = false
+    this.bardSprite = this.add.sprite(bardX, bardY + BARD_OFFSET_Y, "bard", "frame_000")
+    this.bardSprite.setOrigin(0.5, 1)
+    this.bardSprite.setScale(BARDSCALE)
+    this.bardSprite.setDepth(8)
+
+    const bardShadow = this.add.ellipse(bardX, bardY + 11, 17, 6, 0x000000, 0.28)
+    bardShadow.setDepth(7)
+
+    this.bardInteractZone = this.add.zone(bardX, bardY, BARD_INTERACT_WIDTH, BARD_INTERACT_HEIGHT)
+    this.bardInteractZone.setDepth(0)
+    this.physics.add.existing(this.bardInteractZone)
+
+    this.events.on("update", () => {
+      if (this.bardSprite?.active) {
+        bardShadow.setPosition(this.bardSprite.x, this.bardSprite.y + 11)
+        bardShadow.setScale(1, 1 + Math.abs(this.bardSprite.y - (bardY + BARD_OFFSET_Y)) * 0.03)
+      }
+    })
+
+    this.npcs.push(this.bardSprite as unknown as NPC)
 
     const startIdleCheck = () => {
-      if (isResting) return
       this.time.delayedCall(8000 + Math.random() * 7000, () => {
-        if (!isResting) {
-          bard.play("bard-checking")
+        if (this.bardSprite?.active) {
+          this.bardSprite.play("bard-checking")
           this.time.delayedCall(1000, () => {
-            if (bard.active) bard.setFrame("frame_000")
+            if (this.bardSprite?.active) this.bardSprite.setFrame("frame_000")
           })
         }
         startIdleCheck()
@@ -891,7 +906,7 @@ export class WorldScene extends Phaser.Scene {
     startIdleCheck()
   }
 
-  private handleBardDialogue(bard: NPC) {
-    bard.setFrame("frame_007")
+  private handleBardDialogue(bardSprite: Phaser.GameObjects.Sprite) {
+    bardSprite.setFrame("frame_007")
   }
 }
