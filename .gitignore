@@ -50,3 +50,6 @@ coverage/
 
 # Brainstorm mockups
 .superpowers/
+
+# Playwright screenshot
+tmp_screenshots

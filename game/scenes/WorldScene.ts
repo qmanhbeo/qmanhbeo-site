@@ -613,6 +613,21 @@ export class WorldScene extends Phaser.Scene {
         return
       }
 
+      if (building.id === "tavern" && this.textures.exists("building-tavern")) {
+        const sprite = this.add.sprite(building.x, building.y + 70, "building-tavern", "frame_000")
+        sprite.setOrigin(0.5, 1)
+        sprite.setScale(1)
+        sprite.setDepth(WORLD_DEPTHS.buildings)
+        this.add.text(building.x, building.y + building.height / 2 + 20, building.label, {
+          color: "#f4dcb1",
+          fontFamily: "var(--font-cinzel), serif",
+          fontSize: "15px",
+        })
+          .setOrigin(0.5, 0)
+          .setDepth(WORLD_DEPTHS.buildings)
+        return
+      }
+
       const left = building.x - building.width / 2
       const top = building.y - building.height / 2
       const right = building.x + building.width / 2
