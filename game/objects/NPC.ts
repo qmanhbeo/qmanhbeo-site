@@ -16,6 +16,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
   readonly hasSprite: boolean
   private readonly baseY: number
   private readonly shadow: Phaser.GameObjects.Ellipse
+  private readonly shadowOffsetY: number
   private wanderState: {
     direction: Direction
     isWandering: boolean
@@ -44,7 +45,8 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
       timer: 0,
       pauseRemaining: 0,
     }
-    this.shadow = scene.add.ellipse(data.x, data.y + 11, 17, 6, 0x000000, 0.28)
+    this.shadowOffsetY = data.shadowOffsetY ?? 11
+    this.shadow = scene.add.ellipse(data.x, data.y + this.shadowOffsetY, 17, 6, 0x000000, 0.28)
       .setDepth(7)
 
     scene.add.existing(this)
@@ -121,7 +123,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
 
   preUpdate(time: number, delta: number) {
     super.preUpdate(time, delta)
-    this.shadow.setPosition(this.x, this.y + 11)
+    this.shadow.setPosition(this.x, this.y + this.shadowOffsetY)
     this.shadow.setScale(1, 1 + Math.abs(this.y - this.baseY) * 0.03)
 
     if (this.hasSprite) {
