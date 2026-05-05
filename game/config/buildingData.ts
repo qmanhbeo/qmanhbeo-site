@@ -54,8 +54,8 @@ export const buildingData: BuildingData[] = [
   },
   {
     id: "post-office",
-    label: "Post Office",
-    prompt: "Press E to enter the Post Office",
+    label: "Post",
+    prompt: "Press E to enter the Post",
     sectionId: "letter",
     x: CENTER_X + OFFSET_X,
     y: CENTER_Y + OFFSET_Y,
