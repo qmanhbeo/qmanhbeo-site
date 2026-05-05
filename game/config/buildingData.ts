@@ -43,8 +43,8 @@ export const buildingData: BuildingData[] = [
   },
   {
     id: "tavern",
-    label: "Tavern",
-    prompt: "Press E to enter the Tavern",
+    label: "Yard",
+    prompt: "Press E to enter the Yard",
     sectionId: "blog",
     x: CENTER_X - OFFSET_X,
     y: CENTER_Y + OFFSET_Y,
