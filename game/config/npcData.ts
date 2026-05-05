@@ -107,4 +107,15 @@ export const npcData: NpcData[] = [
       targetSize: 24,
     },
   },
+  {
+    id: "bard",
+    name: "Bard",
+    x: CENTER_X - OFFSET_X + 100,
+    y: CENTER_Y + OFFSET_Y + 10,
+    tint: 0xffffff,
+    dialogueLines: [
+      "Care for a tune?",
+      "The fire keeps time for us all.",
+    ],
+  },
 ]
