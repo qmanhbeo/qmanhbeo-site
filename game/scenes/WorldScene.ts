@@ -875,6 +875,15 @@ export class WorldScene extends Phaser.Scene {
     this.bardSprite.setFrame("frame_000")
     this.bardSprite.setDepth(8)
 
+    this.tweens.add({
+      targets: this.bardSprite,
+      y: this.bardSprite.y - 2,
+      duration: 1300 + (bard.x % 4) * 120,
+      ease: "Sine.inOut",
+      yoyo: true,
+      repeat: -1,
+    })
+
     bard.setVisible(false)
 
     let isResting = false
