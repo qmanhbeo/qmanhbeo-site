@@ -294,6 +294,7 @@ export class BootScene extends Phaser.Scene {
     this.load.atlas("building-tavern", "/game/buildings/tavern-yard/spritesheet.png", "/game/buildings/tavern-yard/spritesheet.json")
     this.load.atlas("building-post-office", "/game/buildings/post-office/spritesheet.png", "/game/buildings/post-office/spritesheet.json")
     this.load.atlas("building-workshop", "/game/buildings/workshop/spritesheet.png", "/game/buildings/workshop/spritesheet.json")
+    this.load.atlas("bard", "/game/characters/bard-sheet/spritesheet.png", "/game/characters/bard-sheet/spritesheet.json")
     NPC_ASSETS.forEach((asset) => {
       if (asset.isAtlas) {
         this.load.atlas(asset.key, asset.path, asset.atlasPath)
@@ -344,6 +345,7 @@ export class BootScene extends Phaser.Scene {
       })
     })
     this.createNpcAnimations().then(() => {
+      this.createBardAnimations()
       generateCircleTexture(this, "world-spark", 2, 0xffe1a3)
       if (!this.textures.exists("world-fire")) {
         generateCampfireTexture(this)
@@ -532,5 +534,28 @@ export class BootScene extends Phaser.Scene {
     }
 
     return { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 }
+  }
+
+  private createBardAnimations() {
+    const key = "bard"
+
+    this.anims.create({ key: "bard-checking", frames: [{ key, frame: "frame_005" }, { key, frame: "frame_006" }, { key, frame: "frame_000" }], frameRate: 3 })
+
+    this.anims.create({ key: "bard-sit-down", frames: [{ key, frame: "frame_010" }, { key, frame: "frame_011" }, { key, frame: "frame_012" }], frameRate: 4 })
+
+    this.anims.create({
+      key: "bard-playing",
+      frames: [
+        { key, frame: "frame_012" },
+        { key, frame: "frame_013" },
+        { key, frame: "frame_014" },
+        { key, frame: "frame_015" },
+        { key, frame: "frame_016" },
+      ],
+      frameRate: 6,
+      repeat: -1,
+    })
+
+    this.anims.create({ key: "bard-resting", frames: [{ key, frame: "frame_017" }, { key, frame: "frame_018" }, { key, frame: "frame_019" }], frameRate: 2, repeat: -1 })
   }
 }

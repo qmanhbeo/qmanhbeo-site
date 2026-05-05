@@ -171,11 +171,17 @@ export class WorldScene extends Phaser.Scene {
 
     this.time.delayedCall(2000, () => {
       this.npcs.forEach((npc) => {
+        if (npc.id === "bard") return
         if (npc.hasSprite) {
           npc.startWanderingPublic()
         }
       })
     })
+
+    const bard = this.npcs.find((n) => n.id === "bard")
+    if (bard) {
+      this.setupBardBehavior(bard)
+    }
 
     this.buildingHalo = this.add.ellipse(0, 0, 94, 70, 0xffc56f, 0)
       .setDepth(5)
@@ -257,6 +263,11 @@ export class WorldScene extends Phaser.Scene {
           lineIndex: 0,
           soundCue,
         })
+
+        if (activeTarget.npcId === "bard") {
+          const bard = this.npcs.find((n) => n.id === "bard")
+          if (bard) this.time.delayedCall(300, () => bard.setFrame("frame_007"))
+        }
       }
     }
 
@@ -851,5 +862,34 @@ export class WorldScene extends Phaser.Scene {
   private unlockWorldUi() {
     this.uiLocked = false
     this.player?.setControlsLocked(false)
+  }
+
+  private setupBardBehavior(bard: NPC) {
+    const BARDSCALE = 0.14
+    bard.setTexture("bard")
+    bard.setOrigin(0.5, 1)
+    bard.setScale(BARDSCALE)
+    bard.setFrame("frame_000")
+    bard.setDepth(8)
+
+    let isResting = false
+
+    const startIdleCheck = () => {
+      if (isResting) return
+      this.time.delayedCall(8000 + Math.random() * 7000, () => {
+        if (!isResting) {
+          bard.play("bard-checking")
+          this.time.delayedCall(1000, () => {
+            if (bard.active) bard.setFrame("frame_000")
+          })
+        }
+        startIdleCheck()
+      })
+    }
+    startIdleCheck()
+  }
+
+  private handleBardDialogue(bard: NPC) {
+    bard.setFrame("frame_007")
   }
 }
