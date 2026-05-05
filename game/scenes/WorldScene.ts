@@ -867,7 +867,7 @@ export class WorldScene extends Phaser.Scene {
 
   private setupBardBehavior(bard: NPC) {
     const BARDSCALE = 0.14
-    const Y_OFFSET = 8
+    const Y_OFFSET = 16
     this.bardSprite = this.add.sprite(bard.x, bard.y + Y_OFFSET, "bard")
     this.bardSprite.setOrigin(0.5, 1)
     this.bardSprite.setScale(BARDSCALE)
