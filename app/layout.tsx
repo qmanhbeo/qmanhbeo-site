@@ -6,6 +6,7 @@ import tabIcon from "@/img/tab-icon.png"
 import { AudioProvider } from "@/context/AudioContext"
 import { WorldProvider } from "@/context/WorldContext"
 import AtmosphereControls from "@/components/ui/AtmosphereControls"
+import { SITE_URL } from "@/lib/seo"
 import "./globals.css"
 
 const ebGaramond = EB_Garamond({
@@ -27,8 +28,30 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: "Manh's Cozy Corner",
-  description: "A medieval-inspired personal website",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Manh | AI, Sustainability, Research & Stories",
+    template: "%s | Manh's Cozy Corner",
+  },
+  description:
+    "Personal website of Manh: AI and sustainability research, economic systems, simulations, travel notes, creative projects, and essays by the hearth.",
+  alternates: {
+    canonical: SITE_URL,
+  },
+  openGraph: {
+    title: "Manh | AI, Sustainability, Research & Stories",
+    description:
+      "Personal website of Manh: AI and sustainability research, economic systems, simulations, travel notes, creative projects, and essays by the hearth.",
+    url: SITE_URL,
+    siteName: "By the Hearth",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Manh | AI, Sustainability, Research & Stories",
+    description:
+      "Personal website of Manh: AI and sustainability research, economic systems, simulations, travel notes, creative projects, and essays by the hearth.",
+  },
   icons: {
     icon: tabIcon.src,
     shortcut: tabIcon.src,
