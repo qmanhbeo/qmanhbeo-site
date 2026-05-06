@@ -2,6 +2,7 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { EB_Garamond, Cinzel } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
 import tabIcon from "@/img/tab-icon.png"
 import { AudioProvider } from "@/context/AudioContext"
 import { WorldProvider } from "@/context/WorldContext"
@@ -82,6 +83,7 @@ export default function RootLayout({
             {modal}
           </WorldProvider>
         </AudioProvider>
+        <Analytics />
       </body>
     </html>
   )
