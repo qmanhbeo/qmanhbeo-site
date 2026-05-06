@@ -1,30 +1,41 @@
-# Repository Guidelines
+# AGENTS.md
 
-## Project Structure & Module Organization
-This repository is a Next.js 16 App Router site. Route entry points live in `app/`, including `app/page.tsx`, feature routes such as `app/map/`, and the mail handler in `app/api/send-letter/route.ts`. Reusable UI lives in `components/`, with shared primitives under `components/ui/`. Keep hooks in `hooks/` and content/data modules in `utils/` such as `utils/content.ts` and `utils/sections.ts`. Static assets served by Next.js belong in `public/`; source imagery and working files also appear in `img/`, `tmp/`, and `tmp_screenshots/` and should stay out of normal feature PRs. The LaTeX resume lives in `resume/`.
+## Build & Test Commands
+- `npm install` — install dependencies (do NOT run `npm audit fix --force`)
+- `npm run dev` — start dev server (localhost:3000)
+- `npm run lint` — ESLint (fails on pre-existing issues in `components/WandererTrail.tsx`, `components/ui/InfiniteCarousel.tsx`, etc.)
+- `npm run build` — production build
+- `npm run start` — serve production build
 
-## Build, Test, and Development Commands
-- `npm install`: install dependencies from `package-lock.json`.
-- `npm run dev`: start the local dev server.
-- `npm run lint`: run ESLint across the repository.
-- `npm run build`: create a production build and catch route/runtime issues.
-- `npm run start`: serve the production build locally.
-- `powershell -ExecutionPolicy Bypass -File .\resume\scripts\build.ps1`: rebuild the resume PDF when editing `resume/resume.tex`.
+## Project Structure
+- Next.js 16 App Router with horizontal-scroll site
+- Entry: `app/page.tsx` → horizontal scroll container with 8 sections
+- Routes: `/`, `/item/[id]`, `/map`, `/world` (Game view)
+- Shared UI: `components/*`, `components/ui/*`, `hooks/*`, `utils/*`
+- World Mode: `app/world/_components/*` + `game/*`
 
-## Coding Style & Naming Conventions
-Use TypeScript and TSX with 2-space indentation and the repo's existing semicolon-light style. Prefer functional React components, App Router patterns, and Tailwind utilities in JSX. Name components in PascalCase (`HeroSection.tsx`), hooks in camelCase with a `use` prefix (`useBoundaryPagedScroll.ts`), and route folders in lowercase. Section-oriented components typically use the `*Section.tsx` pattern; keep that convention for new horizontal-scroll panels.
+## World Mode (Game View)
+- Route: `/world` (not `/game`)
+- Source of truth: `PLANGAME.md` — update on every meaningful change
+- Ownership: `app/world/_components/*` (React), `game/*` (Phaser)
+- Must verify desktop + mobile viewport on changes
+- Playwright tests: `tests/playwright/world.smoke.mjs`
 
-## Testing Guidelines
-There is no dedicated automated test suite or coverage gate yet. Every change should pass `npm run lint` and `npm run build`. For UI work, manually smoke test the main routes (`/`, `/item/[id]`, `/map`) and verify desktop plus mobile behavior. For letter-form changes, validate the API path and error handling without committing credentials.
+## Coding Conventions
+- TypeScript + TSX, 2-space indent, Tailwind
+- Components: PascalCase (`HeroSection.tsx`)
+- Hooks: `use*` prefix (`useBoundaryPagedScroll.ts`)
+- Sections: `*Section.tsx` pattern
 
-## Cross-Device Compatibility Rule
-Cross-device compatibility is a hard rule in this repo. Any UI or layout change is incomplete until it is verified against both desktop and mobile viewport behavior. Do not rely on post-hoc viewport patches after shipping a desktop-first layout. For route-level or immersive surfaces such as `/world`, update automated viewport coverage where practical and treat mobile clipping, overflow, or inaccessible controls as blocking regressions.
+## Cross-Device Rule (Hard)
+Desktop + mobile verification required. No desktop-first layouts. Mobile clipping/overflow = blocking regression.
 
-## Commit & Pull Request Guidelines
-Recent commits use short, imperative subjects such as `Fix map cards contrast` and `Add sections to manuscripts`. Keep commits focused, present tense, and under roughly 72 characters. PRs should include a concise description, note affected routes/components, link the related task if one exists, and attach screenshots for visual changes.
+## UI/UX Work
+For browser-based UI/UX tasks (visual verification, screenshots, interaction testing):
+- Tests: `tests/playwright/world.smoke.mjs`
+- Run with dev server: `npm run dev` (port 3000)
+- Run tests: `node tests/playwright/world.smoke.mjs` (requires dev server running)
+- Uses cached Chromium at `/home/manh/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome`
 
-## Security & Configuration Tips
-Keep secrets in `.env.local` only. The current app expects `RESEND_API_KEY` and `LETTER_TO_EMAIL` for the letter API. Never hard-code keys, commit real credentials, or include temporary audit artifacts in a review branch.
-
-## Game View Tracking Rule
-Any work on the dedicated Game view / Fun Mode flow must update `PLANGAME.md` in the same change. Treat `PLANGAME.md` as the source of truth for Game view architecture, checklist state, current session handoff, and step-by-step progress notes.
+## Secrets
+- `RESEND_API_KEY`, `LETTER_TO_EMAIL` → `.env.local` only
