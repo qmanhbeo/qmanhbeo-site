@@ -8,6 +8,7 @@ import noteWormVegLine from "./note-worm-veg-line"
 import noteOupBooks from "./note-oup-books"
 import notePicnicBirmingham from "./note-picnic-birmingham"
 import noteBuddhismValencia from "./note-buddhism-valencia"
+import noteAutonomousResearchLabScience from "./note-autonomous-research-lab-science"
 import noteThoOiMassPsychosisis from "./note-tho-oi-mass-psychosisis"
 
 const NOTE_ORDER: Record<string, number> = {
@@ -22,6 +23,7 @@ const NOTE_ORDER: Record<string, number> = {
   "note-picnic-birmingham": 8,
   "note-sagrada-familia-gaia": 9,
   "note-buddhism-valencia": 10,
+  "note-autonomous-research-lab-science": 11,
 }
 
 const allNotes = [
@@ -35,6 +37,7 @@ const allNotes = [
   notePicnicBirmingham,
   noteSagradaFamiliaGaia,
   noteBuddhismValencia,
+  noteAutonomousResearchLabScience,
 ]
 
 export const noteEntries = [...allNotes].sort((a, b) => {
