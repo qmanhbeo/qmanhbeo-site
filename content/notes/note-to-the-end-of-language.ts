@@ -5,7 +5,7 @@ const noteToTheEndOfLanguage: NoteEntry = {
   type: "note",
   title: "To the End of Language",
   subtitle: "When Words Run Out",
-  dateLabel: "9 May 2026, 15:00",
+  dateLabel: "15:00 9 May 2026",
   noteLabel: "Reflection",
   summary:
     "A conversation with Ross about reaching the limits of language, thinking in English vs Vietnamese, and how language shapes worldview.",
@@ -35,7 +35,7 @@ const noteToTheEndOfLanguage: NoteEntry = {
     "In fact just the other day I just told you about a lot of people telling me I speak good Chinese haha.",
     "That's pretty cool I guess.",
   ],
-  tags: ["Language", "Philosophy", "Ross", "English", "Vietnamese", "Learning"],
+  tags: ["Language", "Philosophy", "Ross", "English", "Vietnamese", "Learning", "Identity"],
 }
 
 export default noteToTheEndOfLanguage

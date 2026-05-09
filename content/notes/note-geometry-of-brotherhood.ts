@@ -5,7 +5,7 @@ const noteGeometryOfBrotherhood: NoteEntry = {
   type: "note",
   title: "Greater Good and Sportsmanship",
   subtitle: "From Illuminati to Sportsmanship",
-  dateLabel: "8 May 2026, 22:52",
+  dateLabel: "22:52 8 May 2026",
   noteLabel: "Reflection",
   summary:
     "A train of thoughts spanning Illuminati, AI, privacy, greed, religion, and the beautiful balance between competition and sportsmanship.",
@@ -45,7 +45,7 @@ const noteGeometryOfBrotherhood: NoteEntry = {
     "Because, honestly, who doesn't love a famous jacked genius that makes filthy money, and still stay humble?",
     "That has always been what I wanted to be. Balancing study, intellectual exploration, cutting-edge tools, while still trying to stay in shape and read,... all that.",
   ],
-  tags: ["Illuminati", "AI", "Privacy", "Greed", "Religion", "Competition", "Sportsmanship", "Philosophy"],
+  tags: ["Illuminati", "AI", "Privacy", "Greed", "Religion", "Competition", "Sportsmanship", "Philosophy", "Identity", "Language"],
 }
 
 export default noteGeometryOfBrotherhood

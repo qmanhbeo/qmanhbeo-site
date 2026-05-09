@@ -6,7 +6,7 @@ const noteAutonomousResearchLabScience: NoteEntry = {
   title: "Autonomous research lab: Reflection on Science",
   subtitle: "Today felt weirdly important.",
   dateLabel: "17:00 08 May 2026",
-  noteLabel: "Campfire",
+  noteLabel: "Reflection",
   tags: ["research", "science", "reflection", "autonomy"],
   summary:
     "Building the evergreen research loop and reflecting on what science really is: not perfection, not certainty, just trying very hard to reduce self-deception.",
