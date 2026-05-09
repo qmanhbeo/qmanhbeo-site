@@ -35,7 +35,7 @@ const noteToTheEndOfLanguage: NoteEntry = {
     "In fact just the other day I just told you about a lot of people telling me I speak good Chinese haha.",
     "That's pretty cool I guess.",
   ],
-  tags: ["Language", "Philosophy", "Ross", "English", "Vietnamese", "Learning", "Identity"],
+  tags: ["Language", "Philosophy", "Ross", "English", "Vietnamese", "Learning"],
 }
 
 export default noteToTheEndOfLanguage

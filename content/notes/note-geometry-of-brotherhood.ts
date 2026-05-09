@@ -45,7 +45,7 @@ const noteGeometryOfBrotherhood: NoteEntry = {
     "Because, honestly, who doesn't love a famous jacked genius that makes filthy money, and still stay humble?",
     "That has always been what I wanted to be. Balancing study, intellectual exploration, cutting-edge tools, while still trying to stay in shape and read,... all that.",
   ],
-  tags: ["Illuminati", "AI", "Privacy", "Greed", "Religion", "Competition", "Sportsmanship", "Philosophy", "Identity", "Language"],
+  tags: ["Illuminati", "AI", "Privacy", "Greed", "Religion", "Competition", "Sportsmanship", "Philosophy", "Identity"],
 }
 
 export default noteGeometryOfBrotherhood
