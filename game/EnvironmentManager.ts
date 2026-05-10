@@ -52,6 +52,17 @@ const STARS_COUNT = 16
 const SYNODIC_MONTH = 29.530588853
 const KNOWN_NEW_MOON = Date.UTC(2024, 3, 8, 18, 21)
 
+/**
+ * TEMPORARY ART DIRECTION LOCK:
+ * Daytime building sprites/assets are still unfinished, so we force the world
+ * to render in NIGHT state to preserve visual coherence for now.
+ *
+ * Revert path:
+ * - Set WORLD_TIME_LOCK to undefined to restore normal time-of-day behavior.
+ * - No other code changes are required because day/night infrastructure remains intact.
+ */
+const WORLD_TIME_LOCK: TimeState | undefined = "NIGHT"
+
 function getLunarPhaseFrame(date = new Date()) {
   const now = date.getTime()
   const daysSinceNewMoon = (now - KNOWN_NEW_MOON) / (1000 * 60 * 60 * 24)
@@ -199,6 +210,16 @@ export class EnvironmentManager {
       return
     }
 
+    const worldTimeLock = WORLD_TIME_LOCK
+    if (worldTimeLock) {
+      if (this.currentState !== worldTimeLock) {
+        this.currentState = worldTimeLock
+        this.applySkyGradient()
+        this.applyDarkness()
+      }
+      return
+    }
+
     const debugLocked = this.debugLockedState
     if (debugLocked) {
       return
@@ -231,6 +252,8 @@ export class EnvironmentManager {
   }
 
   private getStateFromTime(): TimeState {
+    if (WORLD_TIME_LOCK) return WORLD_TIME_LOCK
+
     if (this.debugLockedState) return this.debugLockedState
 
     const debugState = this.scene.registry.get("debugTimeState") as TimeState | undefined
@@ -244,6 +267,12 @@ export class EnvironmentManager {
 
   setDebugState(state: TimeState | undefined) {
     this.debugLockedState = state
+    if (WORLD_TIME_LOCK) {
+      this.currentState = WORLD_TIME_LOCK
+      this.applySkyGradient()
+      this.applyDarkness()
+      return
+    }
     if (state && SKY_CONFIGS[state]) {
       this.currentState = state
       this.applySkyGradient()
