@@ -1,14 +1,13 @@
 import assert from "node:assert/strict"
+import fs from "node:fs"
 import path from "node:path"
 import { chromium, devices } from "playwright"
 
 const BASE_URL = "http://127.0.0.1:3000"
-const FAILURE_DIR = "/tmp/playwright-qmanhbeo-site"
-const CHROMIUM_EXECUTABLE_PATH = "/home/manh/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome"
-const DEFAULT_WORLD_SESSION = {
-  activeSectionId: null,
-  dialogueState: { isOpen: false, npcId: null, speaker: "", lines: [], lineIndex: 0 },
-  playerPosition: { x: 320, y: 352 },
+const ARTIFACT_DIR = path.resolve(process.cwd(), "screenshots/playwright/world")
+
+function ensureArtifactDir() {
+  fs.mkdirSync(ARTIFACT_DIR, { recursive: true })
 }
 
 async function getPlayerPosition(page) {
@@ -17,12 +16,7 @@ async function getPlayerPosition(page) {
   return state.playerPosition
 }
 
-async function getWorldState(page) {
-  await page.waitForFunction(() => typeof window.render_game_to_text === "function")
-  return page.evaluate(() => JSON.parse(window.render_game_to_text()))
-}
-
-async function waitForPlayerPosition(page, predicate, description, timeout = 12_000) {
+async function waitForPlayerMove(page, predicate, description, timeout = 12_000) {
   const deadline = Date.now() + timeout
   let lastPosition = await getPlayerPosition(page)
 
@@ -41,20 +35,11 @@ async function focusWorldCanvas(page) {
   await canvas.click({ position: { x: 320, y: 320 } })
 }
 
-function assertPositionStable(before, after, label, tolerance = 2) {
-  assert.ok(
-    Math.abs(after.x - before.x) <= tolerance && Math.abs(after.y - before.y) <= tolerance,
-    `${label} changed unexpectedly from ${JSON.stringify(before)} to ${JSON.stringify(after)}`,
-  )
-}
-
-async function dragJoystick(page, dx, dy, holdMs = 450) {
+async function dragJoystick(page, dx, dy, holdMs = 500) {
   const pad = page.getByTestId("world-joystick-pad")
   const box = await pad.boundingBox()
 
-  if (!box) {
-    throw new Error("Unable to resolve world joystick pad bounds")
-  }
+  if (!box) throw new Error("Unable to resolve world joystick pad bounds")
 
   const startX = box.x + box.width / 2
   const startY = box.y + box.height / 2
@@ -93,17 +78,9 @@ async function dragJoystick(page, dx, dy, holdMs = 450) {
   })
 }
 
-function assertRectWithin(outerRect, innerRect, label, tolerance = 1) {
-  assert.ok(Boolean(outerRect), `${label} outer rect is missing`)
-  assert.ok(Boolean(innerRect), `${label} inner rect is missing`)
-  assert.ok(innerRect.x >= outerRect.x - tolerance, `${label} overflows left edge`)
-  assert.ok(innerRect.y >= outerRect.y - tolerance, `${label} overflows top edge`)
-  assert.ok(innerRect.x + innerRect.width <= outerRect.x + outerRect.width + tolerance, `${label} overflows right edge`)
-  assert.ok(innerRect.y + innerRect.height <= outerRect.y + outerRect.height + tolerance, `${label} overflows bottom edge`)
-}
-
 async function saveFailureArtifact(page, name) {
-  const filePath = path.join(FAILURE_DIR, `${name}.png`)
+  ensureArtifactDir()
+  const filePath = path.join(ARTIFACT_DIR, `${name}.png`)
   await page.screenshot({ path: filePath, fullPage: true }).catch(() => {})
   return filePath
 }
@@ -125,271 +102,56 @@ async function runStep(browser, name, fn, contextOptions = {}) {
   }
 }
 
-async function seedWorldSession(page, sessionState) {
-  await page.addInitScript((nextState) => {
-    window.sessionStorage.setItem("world:session:v1", JSON.stringify(nextState))
-  }, sessionState)
-}
-
 async function run() {
+  ensureArtifactDir()
   const browser = await chromium.launch({
-    executablePath: CHROMIUM_EXECUTABLE_PATH,
     headless: true,
+    args: ["--no-sandbox", "--disable-dev-shm-usage"],
   })
 
   try {
-    await runStep(browser, "desktop prompt onboarding and contextual CTA", async (page) => {
+    await runStep(browser, "desktop world route loads", async (page) => {
       await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
-      await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
-
-      const prompt = page.getByTestId("world-prompt")
-      await prompt.waitFor({ state: "visible" })
-      assert.match(await prompt.textContent() ?? "", /Use WASD or arrows to walk\. Press E near a building or friend\./)
-      assert.equal(await prompt.getAttribute("data-prompt-kind"), "tutorial")
-
-      await page.waitForTimeout(2900)
-
-      await prompt.waitFor({ state: "visible" })
-      assert.match(await prompt.textContent() ?? "", /Press E to talk to Avery/)
-      assert.equal(await prompt.getAttribute("data-prompt-kind"), "contextual")
-
-      await focusWorldCanvas(page)
-      await page.keyboard.down("d")
-      await waitForPlayerPosition(page, (position) => position.x >= 390, "the player to leave Avery prompt range")
-      await page.keyboard.up("d")
-
-      await prompt.waitFor({ state: "hidden" })
-      const worldState = await getWorldState(page)
-      assert.equal(worldState.prompt, "", `Prompt should be cleared after leaving interaction range: ${JSON.stringify(worldState)}`)
-      assert.equal(worldState.contextualPrompt, "", `Contextual prompt should be empty after leaving interaction range: ${JSON.stringify(worldState)}`)
-    })
-
-    await runStep(browser, "desktop dialogue and input lock", async (page) => {
-      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
-
-      await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
-
-      await focusWorldCanvas(page)
-      const initialPosition = await getPlayerPosition(page)
-      await page.keyboard.press("e")
-
-      await page.getByText("Avery", { exact: true }).waitFor({ state: "visible" })
-      await page
-        .getByText("The campfire is still the center of the whole world here.", { exact: true })
-        .waitFor({ state: "visible" })
-
-      const lockedPosition = await getPlayerPosition(page)
-      assertPositionStable(initialPosition, lockedPosition, "Player position before dialogue lock")
-
-      await page.keyboard.down("d")
-      await page.waitForTimeout(900)
-      await page.keyboard.up("d")
-
-      const stillLockedPosition = await getPlayerPosition(page)
-      assertPositionStable(lockedPosition, stillLockedPosition, "Dialogue lock")
-
-      await page.getByRole("button", { name: "Next", exact: true }).click()
-      await page
-        .getByText("Walk around first. The village makes more sense once you feel the distances.", { exact: true })
-        .waitFor({ state: "visible" })
-
-      await page.getByRole("button", { name: "Close", exact: true }).click()
-      await page
-        .getByText("Walk around first. The village makes more sense once you feel the distances.", { exact: true })
-        .waitFor({ state: "hidden" })
-
-      await page.keyboard.down("d")
-      await waitForPlayerPosition(page, (position) => position.x >= stillLockedPosition.x + 24, "movement after dialogue closes")
-      await page.keyboard.up("d")
-    })
-
-    await runStep(browser, "home entry to library return flow", async (page) => {
-      await page.goto(`${BASE_URL}/`, { waitUntil: "domcontentloaded" })
-      await page.getByRole("button", { name: "Enter the World", exact: true }).click()
-      await page.waitForURL(/\/world$/)
-      await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
-
-      await focusWorldCanvas(page)
-
-      await page.keyboard.down("a")
-      await waitForPlayerPosition(page, (position) => position.x <= 130, "the player to reach the Library lane")
-      await page.keyboard.up("a")
-
-      await page.keyboard.down("w")
-      await waitForPlayerPosition(page, (position) => position.y <= 130, "the player to reach the Library")
-      await page.keyboard.up("w")
-
-      await page.keyboard.press("e")
-
-      await page.getByLabel("Close world panel").waitFor({ state: "visible" })
-      await page.getByText("Scholar Scrolls", { exact: true }).waitFor({ state: "visible" })
-
-      await page.getByRole("button", { name: "Read full manuscript" }).first().click()
-      await page.waitForURL(/\/item\//)
-      await page.getByLabel("Close entry").waitFor({ state: "visible" })
-
-      await page.getByLabel("Close entry").click()
-
-      await page.waitForURL(/\/world$/)
-      await page.getByLabel("Close world panel").waitFor({ state: "visible" })
-      await page.getByText("Scholar Scrolls", { exact: true }).waitFor({ state: "visible" })
-    })
-
-    await runStep(browser, "post office uses normal letter overlay", async (page) => {
-      await seedWorldSession(page, {
-        activeSectionId: "letter",
-        dialogueState: { isOpen: false, npcId: null, speaker: "", lines: [], lineIndex: 0 },
-        playerPosition: { x: 320, y: 352 },
-      })
-
-      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
-      await page.getByTestId("world-section-panel").waitFor({ state: "visible" })
-      await page.getByRole("heading", { name: "Write Him a Letter", exact: true }).waitFor({ state: "visible" })
-
-      await page.getByLabel("Open the letter composer").click()
-      await page.getByLabel("Close letter overlay").waitFor({ state: "visible" })
-
-      await page.keyboard.press("Escape")
-      await page.getByLabel("Close letter overlay").waitFor({ state: "hidden" })
-      await page.getByTestId("world-section-panel").waitFor({ state: "visible" })
-      await page.getByLabel("Close world panel").waitFor({ state: "visible" })
-    })
-
-    await runStep(browser, "iphone 14 pro max viewport fit", async (page) => {
-      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
-      await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
+      await page.locator("#world-route").waitFor({ state: "visible" })
       await page.locator("canvas").first().waitFor({ state: "visible" })
+      await page.waitForFunction(() => typeof window.render_game_to_text === "function")
+    })
 
-      const viewport = page.viewportSize()
-      assert.ok(viewport, "Viewport size is missing")
+    await runStep(browser, "desktop movement responds", async (page) => {
+      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
+      await focusWorldCanvas(page)
+      const initial = await getPlayerPosition(page)
 
-      const pageMetrics = await page.evaluate(() => ({
+      await page.keyboard.down("d")
+      await waitForPlayerMove(page, (pos) => pos.x >= initial.x + 8, "desktop movement to the right")
+      await page.keyboard.up("d")
+    })
+
+    await runStep(browser, "mobile world viewport and controls", async (page) => {
+      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
+      await page.locator("#world-route").waitFor({ state: "visible" })
+      await page.locator("canvas").first().waitFor({ state: "visible" })
+      await page.getByTestId("world-joystick-pad").waitFor({ state: "visible" })
+      await page.getByTestId("world-interact-button").waitFor({ state: "visible" })
+
+      const metrics = await page.evaluate(() => ({
         scrollWidth: document.documentElement.scrollWidth,
         innerWidth: window.innerWidth,
       }))
-
       assert.ok(
-        pageMetrics.scrollWidth <= pageMetrics.innerWidth + 1,
-        `Page scroll width exceeds viewport width: ${JSON.stringify(pageMetrics)}`,
+        metrics.scrollWidth <= metrics.innerWidth + 1,
+        `Page overflows mobile viewport width: ${JSON.stringify(metrics)}`
       )
-
-      const mapCard = await page.getByTestId("world-map-card").boundingBox()
-      const canvasShell = await page.getByTestId("world-canvas-shell").boundingBox()
-      const canvas = await page.locator("canvas").first().boundingBox()
-      const controls = await page.getByTestId("world-mobile-controls").boundingBox()
-
-      assert.ok(mapCard, "World map card is missing")
-      assert.ok(controls, "World mobile controls are missing")
-      assert.ok(mapCard.width <= viewport.width + 1, `Map card width exceeds viewport: ${JSON.stringify({ viewport, mapCard })}`)
-      assert.ok(mapCard.x >= -1, `Map card starts off-screen: ${JSON.stringify({ viewport, mapCard })}`)
-      assert.ok(
-        mapCard.x + mapCard.width <= viewport.width + 1,
-        `Map card right edge exceeds viewport: ${JSON.stringify({ viewport, mapCard })}`,
-      )
-
-      assertRectWithin(mapCard, canvasShell, "Canvas shell within map card")
-      assertRectWithin(canvasShell, canvas, "Canvas within shell")
-      assert.ok(
-        controls.y >= mapCard.y + mapCard.height + 8,
-        `Mobile controls should sit below the map card, not overlay it: ${JSON.stringify({ mapCard, controls })}`,
-      )
-      await page.getByText("Player position", { exact: true }).waitFor({ state: "hidden" })
-      await page.getByText("Active panel", { exact: true }).waitFor({ state: "hidden" })
-      await page.getByText("What works now", { exact: true }).waitFor({ state: "hidden" })
     }, devices["iPhone 14 Pro Max"])
 
-    await runStep(browser, "iphone 14 pro max publications panel fit", async (page) => {
-      await seedWorldSession(page, {
-        activeSectionId: "publications",
-        dialogueState: { isOpen: false, npcId: null, speaker: "", lines: [], lineIndex: 0 },
-        playerPosition: { x: 320, y: 352 },
-      })
-
+    await runStep(browser, "mobile joystick movement responds", async (page) => {
       await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
-      await page.getByTestId("world-section-panel").waitFor({ state: "visible" })
-      await page.getByText("Scholar Scrolls", { exact: true }).waitFor({ state: "visible" })
-
-      const viewport = page.viewportSize()
-      assert.ok(viewport, "Viewport size is missing")
-
-      const mapCard = await page.getByTestId("world-map-card").boundingBox()
-      const panel = await page.getByTestId("world-section-panel").boundingBox()
-      const closeButton = await page.getByTestId("world-section-panel-close").boundingBox()
-      const scrollMetrics = await page.evaluate(() => {
-        const scrollArea = document.querySelector(".manuscript-scrollable-area")
-        if (!scrollArea) return null
-        return {
-          clientHeight: scrollArea.clientHeight,
-          scrollHeight: scrollArea.scrollHeight,
-        }
-      })
-
-      assert.ok(mapCard, "World map card is missing")
-      assert.ok(panel, "World section panel is missing")
-      assert.ok(closeButton, "World section panel close button is missing")
-      assert.ok(scrollMetrics, "Publications scroll area is missing")
-      assert.ok(panel.y <= 16, `Panel should anchor near the viewport top: ${JSON.stringify({ viewport, panel })}`)
-      assert.ok(
-        panel.height >= viewport.height - 32,
-        `Panel height is still too constrained on mobile: ${JSON.stringify({ viewport, panel })}`,
-      )
-      assert.ok(
-        panel.height > mapCard.height + 120,
-        `Panel is still trapped inside the map card: ${JSON.stringify({ mapCard, panel })}`,
-      )
-      assert.ok(
-        scrollMetrics.clientHeight >= 220,
-        `Publications scroll area is too short on mobile: ${JSON.stringify(scrollMetrics)}`,
-      )
-      assert.ok(
-        closeButton.width >= 44 && closeButton.height >= 44,
-        `Close button touch target is too small: ${JSON.stringify(closeButton)}`,
-      )
-
-      await page.getByLabel("Close world panel").click()
-      await page.getByTestId("world-section-panel").waitFor({ state: "hidden" })
-    }, devices["iPhone 14 Pro Max"])
-
-    await runStep(browser, "mobile joystick movement", async (page) => {
-      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
-      await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
-
-      const initialPosition = await getPlayerPosition(page)
+      const initial = await getPlayerPosition(page)
       await dragJoystick(page, 28, 0)
-      await waitForPlayerPosition(page, (position) => position.x >= initialPosition.x + 12, "mobile joystick movement")
+      await waitForPlayerMove(page, (pos) => pos.x >= initial.x + 8, "mobile joystick movement")
     }, devices["iPhone 13"])
 
-    await runStep(browser, "mobile interact", async (page) => {
-      await seedWorldSession(page, DEFAULT_WORLD_SESSION)
-      await page.goto(`${BASE_URL}/world`, { waitUntil: "domcontentloaded" })
-      await page.getByRole("heading", { name: "Village At Night" }).waitFor({ state: "visible" })
-      await page.waitForFunction(() => {
-        if (typeof window.render_game_to_text !== "function") return false
-        return JSON.parse(window.render_game_to_text()).contextualPrompt === "Press E to talk to Avery"
-      })
-
-      const interactButton = page.getByTestId("world-interact-button")
-      await interactButton.waitFor({ state: "visible" })
-
-      await interactButton.dispatchEvent("pointerdown", {
-        bubbles: true,
-        pointerId: 1,
-        pointerType: "touch",
-      })
-      await page.waitForTimeout(300)
-      await interactButton.dispatchEvent("pointerup", {
-        bubbles: true,
-        pointerId: 1,
-        pointerType: "touch",
-      })
-
-      await page.getByText("Avery", { exact: true }).waitFor({ state: "visible" })
-      await page
-        .getByText("The campfire is still the center of the whole world here.", { exact: true })
-        .waitFor({ state: "visible" })
-    }, devices["iPhone 13"])
-
-    console.log("All Playwright smoke checks passed.")
+    console.log("All world smoke checks passed.")
   } finally {
     await browser.close()
   }

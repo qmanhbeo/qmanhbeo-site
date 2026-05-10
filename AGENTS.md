@@ -32,10 +32,13 @@ Desktop + mobile verification required. No desktop-first layouts. Mobile clippin
 
 ## UI/UX Work
 For browser-based UI/UX tasks (visual verification, screenshots, interaction testing):
-- Tests: `tests/playwright/world.smoke.mjs`
-- Run with dev server: `npm run dev` (port 3000)
-- Run tests: `node tests/playwright/world.smoke.mjs` (requires dev server running)
-- Uses cached Chromium at `/home/manh/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome`
+- Canonical doctrine: `/home/manh/manh-skills/skills/playwright/SKILL.md`
+- Preflight first: `node /home/manh/manh-skills/skills/playwright/preflight/playwright_preflight.js`
+- Start dev server: `npm run dev` (port 3000)
+- Run reusable smoke: `npm run test:world`
+- Reusable screenshots: `screenshots/playwright/world/`
+- Use `/tmp` only for disposable scratch/debug captures
+- Shut down temporary dev servers after verification
 
 ## Secrets
 - `RESEND_API_KEY`, `LETTER_TO_EMAIL` → `.env.local` only

@@ -53,3 +53,5 @@ coverage/
 
 # Playwright screenshot
 tmp_screenshots
+screenshots/playwright/world/*.png
+!screenshots/playwright/world/.gitkeep
