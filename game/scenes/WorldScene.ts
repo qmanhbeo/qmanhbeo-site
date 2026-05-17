@@ -137,9 +137,6 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#0a0604")
     this.drawWorld()
 
-    this.environment = new EnvironmentManager(this)
-    this.environment.create()
-
     this.player = new Player(this, initialPlayerPosition.x, initialPlayerPosition.y, this.getJoystickInput)
     this.player.setControlsLocked(this.uiLocked)
 
@@ -154,6 +151,9 @@ export class WorldScene extends Phaser.Scene {
     const deadzoneW = Math.floor(viewportWidth * 0.55)
     const deadzoneH = Math.floor(viewportHeight * 0.45)
     cam.setDeadzone(deadzoneW, deadzoneH)
+
+    this.environment = new EnvironmentManager(this)
+    this.environment.create()
 
     const handleResize = (newSize: { width: number; height: number }) => {
       cam.setViewport(0, 0, newSize.width, newSize.height)

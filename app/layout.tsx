@@ -75,7 +75,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${ebGaramond.variable} ${cinzel.variable} antialiased`}>
+      <body suppressHydrationWarning className={`${ebGaramond.variable} ${cinzel.variable} antialiased`}>
         <AudioProvider>
           <WorldProvider>
             <AtmosphereControls />

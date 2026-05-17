@@ -48,6 +48,15 @@ const SKY_CONFIGS: Record<TimeState, SkyConfig> = {
 
 const GRADIENT_STRIPS = 96
 const STARS_COUNT = 16
+const SKY_PARALLAX_DRIFT_X = 0.08
+const SKY_PARALLAX_DRIFT_Y = 0.04
+const MOON_VIEWPORT_X_DESKTOP = 0.86
+const MOON_VIEWPORT_X_MOBILE = 0.84
+const MOON_VIEWPORT_Y_DESKTOP = 0.16
+const MOON_VIEWPORT_Y_MOBILE = 0.18
+const MOON_SAFE_MARGIN = 56
+const STAR_BAND_RATIO = 0.3
+const STAR_BAND_MAX_HEIGHT = 250
 
 const SYNODIC_MONTH = 29.530588853
 const KNOWN_NEW_MOON = Date.UTC(2024, 3, 8, 18, 21)
@@ -119,6 +128,7 @@ export class EnvironmentManager {
   private cachedViewportWidth = 0
   private cachedViewportHeight = 0
   private cachedRegistryState?: TimeState
+  private starLayout: Array<{ xNorm: number; yNorm: number; size: number }> = []
   private debugLockedState?: TimeState
   private initialized = false
 
@@ -141,6 +151,7 @@ export class EnvironmentManager {
 
     this.createStars()
     this.createMoon()
+    this.repositionSkyLayer()
     this.initialized = true
     const hour = new Date().getHours()
     this.cachedHour = hour
@@ -206,9 +217,11 @@ export class EnvironmentManager {
       this.cachedViewportHeight = viewportHeight
       this.applySkyGradient()
       this.applyDarkness()
-      this.repositionMoon()
+      this.repositionSkyLayer()
       return
     }
+
+    this.repositionSkyLayer()
 
     const worldTimeLock = WORLD_TIME_LOCK
     if (worldTimeLock) {
@@ -376,16 +389,9 @@ export class EnvironmentManager {
   }
 
   private createStars() {
-    const camera = this.scene.cameras.main
-    const viewportWidth = camera.width / camera.zoom
-    const viewportHeight = camera.height / camera.zoom
-    const camX = camera.scrollX
-    const camY = camera.scrollY
-
-    const starZoneHeight = Math.min(viewportHeight * 0.3, 250)
-
     this.stars = []
     this.starTweens.length = 0
+    this.starLayout = []
 
     const seed = 12345
     const random = (i: number) => {
@@ -394,16 +400,14 @@ export class EnvironmentManager {
     }
 
     for (let i = 0; i < STARS_COUNT; i++) {
-      const xOffset = Math.round(random(i) * viewportWidth * 0.8) + viewportWidth * 0.1
-      const yNormalized = random(i + 1000)
-      const yOffset = Math.round(yNormalized * starZoneHeight)
+      const xNorm = 0.1 + random(i) * 0.8
+      const yNorm = random(i + 1000)
       const size = 0.6 + random(i + 2000) * 0.8
 
-      const x = camX + xOffset
-      const y = camY + yOffset
+      this.starLayout.push({ xNorm, yNorm, size })
 
-      const star = this.scene.add.circle(x, y, size, 0xffffff)
-        .setScrollFactor(0.05)
+      const star = this.scene.add.circle(0, 0, size, 0xffffff)
+        .setScrollFactor(1)
         .setDepth(3.5)
         .setAlpha(0)
         .setVisible(this.currentState === "NIGHT")
@@ -431,23 +435,10 @@ export class EnvironmentManager {
   }
 
   private createMoonLayers() {
-    const camera = this.scene.cameras.main
-    const viewportWidth = camera.width / camera.zoom
-    const isMobile = viewportWidth < 768
-
-    const desiredScreenX = isMobile ? viewportWidth - 64 : viewportWidth - 160
-    const desiredScreenY = isMobile ? 95 : 85
-    const scrollFactor = 0.08
-
-    const camX = camera.scrollX
-    const camY = camera.scrollY
-    const worldX = camX * scrollFactor + desiredScreenX
-    const worldY = camY * scrollFactor + desiredScreenY
-
     const moonPhase = getLunarPhaseFrame()
 
-    const moonGlow2 = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
-      .setScrollFactor(scrollFactor)
+    const moonGlow2 = this.scene.add.sprite(0, 0, "lunar-phases", moonPhase)
+      .setScrollFactor(1)
       .setDepth(3.3)
       .setScale(1.6)
       .setAlpha(0.08)
@@ -455,8 +446,8 @@ export class EnvironmentManager {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setVisible(this.currentState === "NIGHT")
 
-    const moonGlow1 = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
-      .setScrollFactor(scrollFactor)
+    const moonGlow1 = this.scene.add.sprite(0, 0, "lunar-phases", moonPhase)
+      .setScrollFactor(1)
       .setDepth(3.32)
       .setScale(1.25)
       .setAlpha(0.2)
@@ -464,8 +455,8 @@ export class EnvironmentManager {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setVisible(this.currentState === "NIGHT")
 
-    const moonContrast = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
-      .setScrollFactor(scrollFactor)
+    const moonContrast = this.scene.add.sprite(0, 0, "lunar-phases", moonPhase)
+      .setScrollFactor(1)
       .setDepth(3.48)
       .setScale(1.0)
       .setAlpha(0.1)
@@ -473,8 +464,8 @@ export class EnvironmentManager {
       .setBlendMode(Phaser.BlendModes.MULTIPLY)
       .setVisible(this.currentState === "NIGHT")
 
-    const moonLuma = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
-      .setScrollFactor(scrollFactor)
+    const moonLuma = this.scene.add.sprite(0, 0, "lunar-phases", moonPhase)
+      .setScrollFactor(1)
       .setDepth(3.49)
       .setScale(1.04)
       .setAlpha(0.42)
@@ -482,8 +473,8 @@ export class EnvironmentManager {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setVisible(this.currentState === "NIGHT")
 
-    this.moon = this.scene.add.sprite(worldX, worldY, "lunar-phases", moonPhase)
-      .setScrollFactor(scrollFactor)
+    this.moon = this.scene.add.sprite(0, 0, "lunar-phases", moonPhase)
+      .setScrollFactor(1)
       .setDepth(3.5)
       .setAlpha(1.0)
       .setTint(0xffffff)
@@ -495,27 +486,46 @@ export class EnvironmentManager {
     this.moonGlow2 = moonGlow2
   }
 
-  private repositionMoon() {
+  private repositionSkyLayer() {
     if (!this.moon) return
 
     const camera = this.scene.cameras.main
-    const viewportWidth = camera.width / camera.zoom
-    const isMobile = viewportWidth < 768
-
-    const desiredScreenX = isMobile ? viewportWidth - 64 : viewportWidth - 160
-    const desiredScreenY = isMobile ? 95 : 85
-    const scrollFactor = 0.08
-
-    const camX = camera.scrollX
-    const camY = camera.scrollY
-    const worldX = camX * scrollFactor + desiredScreenX
-    const worldY = camY * scrollFactor + desiredScreenY
+    const worldView = camera.worldView
+    const bounds = camera.getBounds()
+    const boundsCenterX = bounds.x + bounds.width / 2
+    const boundsCenterY = bounds.y + bounds.height / 2
+    const normalizedCamX = bounds.width > 0 ? Phaser.Math.Clamp((worldView.centerX - boundsCenterX) / (bounds.width / 2), -1, 1) : 0
+    const normalizedCamY = bounds.height > 0 ? Phaser.Math.Clamp((worldView.centerY - boundsCenterY) / (bounds.height / 2), -1, 1) : 0
+    const driftX = normalizedCamX * worldView.width * SKY_PARALLAX_DRIFT_X
+    const driftY = normalizedCamY * worldView.height * SKY_PARALLAX_DRIFT_Y
+    const isMobile = camera.width < 768 || camera.height < 700
+    const anchorX = isMobile ? MOON_VIEWPORT_X_MOBILE : MOON_VIEWPORT_X_DESKTOP
+    const anchorY = isMobile ? MOON_VIEWPORT_Y_MOBILE : MOON_VIEWPORT_Y_DESKTOP
+    const baseX = worldView.x + worldView.width * anchorX
+    const baseY = worldView.y + worldView.height * anchorY
+    const minX = worldView.x + MOON_SAFE_MARGIN
+    const maxX = worldView.right - MOON_SAFE_MARGIN
+    const minY = worldView.y + MOON_SAFE_MARGIN
+    const maxY = worldView.bottom - MOON_SAFE_MARGIN
+    const worldX = Phaser.Math.Clamp(baseX + driftX, minX, maxX)
+    const worldY = Phaser.Math.Clamp(baseY + driftY, minY, maxY)
 
     this.moon.setPosition(worldX, worldY)
     this.moonLuma?.setPosition(worldX, worldY)
     this.moonContrast?.setPosition(worldX, worldY)
     this.moonGlow1?.setPosition(worldX, worldY)
     this.moonGlow2?.setPosition(worldX, worldY)
+
+    const starBandHeight = Math.min(worldView.height * STAR_BAND_RATIO, STAR_BAND_MAX_HEIGHT)
+    for (let i = 0; i < this.stars.length; i++) {
+      const layout = this.starLayout[i]
+      const star = this.stars[i]
+      if (!layout || !star) continue
+      const starX = worldView.x + worldView.width * layout.xNorm + driftX * 0.7
+      const starY = worldView.y + starBandHeight * layout.yNorm + driftY * 0.7
+      star.setPosition(starX, starY)
+      star.setRadius(layout.size)
+    }
   }
 
   handleKeyDown(key: string) {
