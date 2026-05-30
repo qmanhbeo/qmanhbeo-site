@@ -5,7 +5,7 @@ import { ArrowLeft, Download } from "lucide-react"
 import Link from "next/link"
 import type { ArcEntry, ProjectEntry, PublicationEntry } from "@/content/entries"
 
-const EDUCATION: { period: string; institution: string; degree: string; details?: string[] }[] = [
+const EDUCATION: { period: string; institution: string; degree: string; details?: string[]; cert?: string }[] = [
   {
     period: "Sep 2025 - Sep 2026",
     institution: "University of Birmingham",
@@ -16,6 +16,7 @@ const EDUCATION: { period: string; institution: string; degree: string; details?
     period: "May 2025",
     institution: "Xi'an Academy of Fine Arts",
     degree: "Summer Exchange Programme in Interactive Media Design",
+    cert: "XAFA.jpg",
   },
   {
     period: "2021 - 2024",
@@ -186,6 +187,18 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                   <span className="font-sans text-xs text-slate-500">{edu.period}</span>
                 </div>
                 <p className="font-sans text-sm text-slate-700">{edu.degree}</p>
+                {edu.cert && (
+                  <p className="font-sans text-xs text-slate-500">
+                    <a
+                      href={`/resume/certs/${edu.cert}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-slate-700"
+                    >
+                      View certificate
+                    </a>
+                  </p>
+                )}
                 {edu.details && (
                   <ul className="ml-4 mt-0.5 list-disc font-sans text-xs text-slate-600">
                     {edu.details.map((d, j) => (
