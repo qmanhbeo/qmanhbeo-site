@@ -174,7 +174,7 @@ export default function InfiniteCarousel<T>({
       event.stopPropagation()
 
       if (Math.abs(primaryDelta) > MOUSE_WHEEL_THRESHOLD) {
-        appliedDelta = -Math.sign(primaryDelta) * span
+        appliedDelta = -primaryDelta * 0.2
         velocityRef.current = 0
       }
 
