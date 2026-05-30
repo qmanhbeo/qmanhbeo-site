@@ -5,7 +5,7 @@ import { ArrowLeft, Download } from "lucide-react"
 import Link from "next/link"
 import type { ArcEntry, ProjectEntry, PublicationEntry } from "@/content/entries"
 
-const EDUCATION: { period: string; institution: string; degree: string; details?: string[]; cert?: string }[] = [
+const EDUCATION: { period: string; institution: string; degree: string; details?: string[]; cert?: string; certs?: string[] }[] = [
   {
     period: "Sep 2025 - Sep 2026",
     institution: "University of Birmingham",
@@ -23,6 +23,7 @@ const EDUCATION: { period: string; institution: string; degree: string; details?
     institution: "University of Economics Ho Chi Minh City",
     degree: "BA Applied Economics",
     details: ["Grade: 3.90/4.0 | 9.15/10 | High Distinction | Top 1%"],
+    certs: ["UEH-en.png", "UEH-en-2.png"],
   },
   {
     period: "Aug 2018 - Jun 2021",
@@ -183,18 +184,32 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
             {EDUCATION.map((edu, i) => (
               <div key={i} className="mb-3 print:mb-2">
                 <div className="flex items-baseline justify-between">
-                  {edu.cert ? (
-                    <a
-                      href={`/certs/${edu.cert}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-sans text-sm font-semibold text-slate-900 underline hover:text-slate-700"
-                    >
-                      {edu.institution}
-                    </a>
-                  ) : (
-                    <span className="font-sans text-sm font-semibold text-slate-900">{edu.institution}</span>
-                  )}
+                  {(() => {
+                    if (edu.certs) {
+                      return (
+                        <a
+                          href="#"
+                          onClick={(e) => { e.preventDefault(); edu.certs!.forEach((f) => window.open(`/certs/${f}`, "_blank")) }}
+                          className="font-sans text-sm font-semibold text-slate-900 underline hover:text-slate-700"
+                        >
+                          {edu.institution}
+                        </a>
+                      )
+                    }
+                    if (edu.cert) {
+                      return (
+                        <a
+                          href={`/certs/${edu.cert}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-sans text-sm font-semibold text-slate-900 underline hover:text-slate-700"
+                        >
+                          {edu.institution}
+                        </a>
+                      )
+                    }
+                    return <span className="font-sans text-sm font-semibold text-slate-900">{edu.institution}</span>
+                  })()}
                   <span className="font-sans text-xs text-slate-500">{edu.period}</span>
                 </div>
                 <p className="font-sans text-sm text-slate-700">{edu.degree}</p>
