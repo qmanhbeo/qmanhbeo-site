@@ -4,6 +4,8 @@ import type { ReactNode } from "react"
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react"
 import { useAudioContext } from "@/context/AudioContext"
 
+const MOUSE_WHEEL_THRESHOLD = 60
+
 type InfiniteCarouselProps<T> = {
   items: T[]
   renderItem: (item: T, index: number) => ReactNode
@@ -166,10 +168,15 @@ export default function InfiniteCarousel<T>({
 
     const handleWheel = (event: WheelEvent) => {
       const primaryDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY
-      const appliedDelta = -primaryDelta
+      let appliedDelta = -primaryDelta
 
       event.preventDefault()
       event.stopPropagation()
+
+      if (Math.abs(primaryDelta) > MOUSE_WHEEL_THRESHOLD) {
+        appliedDelta = -Math.sign(primaryDelta) * span
+        velocityRef.current = 0
+      }
 
       xRef.current += appliedDelta
       velocityRef.current = appliedDelta
