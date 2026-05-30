@@ -1,15 +1,17 @@
 "use client"
 
+import { usePathname } from "next/navigation"
 import { useTheme } from "@/hooks/useTheme"
 import { useAudioContext } from "@/context/AudioContext"
 import { useWorld } from "@/context/WorldContext"
 
 export default function AtmosphereControls() {
+  const pathname = usePathname()
   const { theme, toggleTheme } = useTheme()
   const { sfxEnabled, toggleSfx } = useAudioContext()
   const { isWorldActive } = useWorld()
 
-  if (isWorldActive) return null
+  if (isWorldActive || pathname === "/resume") return null
 
   return (
     <div className="fixed top-3 right-3 z-10 flex items-center gap-1">
