@@ -30,6 +30,7 @@ const EDUCATION: { period: string; institution: string; degree: string; details?
     institution: "Gia Dinh High School for the Gifted",
     degree: "Natural Sciences (Math & Physics)",
     details: ["Grade: 9.3/10"],
+    cert: "H12.jpg",
   },
 ]
 
