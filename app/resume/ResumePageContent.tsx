@@ -49,7 +49,7 @@ const CERTIFICATIONS: { period: string; title: string; issuer: string; id?: stri
   { period: "Mar 2025", title: "Competency in Neural Networks and Deep Learning", issuer: "Coursera" },
 ]
 
-const EXPERIENCE: { period: string; role: string; organization: string; details: string[] }[] = [
+const EXPERIENCE: { period: string; role: string; organization: string; details: string[]; cert?: string }[] = [
   {
     period: "Oct 2025 - Present",
     role: "Student Representative",
@@ -69,6 +69,7 @@ const EXPERIENCE: { period: string; role: string; organization: string; details:
       "Collaborate on ongoing research in energy economics and policy analysis.",
       "Presented work at the International Conference of Economics, Law, and Governance 2025.",
     ],
+    cert: "ELG2025.png",
   },
   {
     period: "Aug 2024 - Oct 2024",
@@ -230,9 +231,20 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
             <h2 className="mb-3 font-sans text-base font-bold uppercase tracking-wider text-slate-800 print:mb-2">Experience</h2>
             {EXPERIENCE.map((exp, i) => (
               <div key={i} className="mb-3 print:mb-2">
-                <div className="flex items-baseline justify-between">
-                  <span className="font-sans text-sm font-semibold text-slate-900">{exp.role}</span>
-                  <span className="font-sans text-xs text-slate-500">{exp.period}</span>
+                  <div className="flex items-baseline justify-between">
+                    {exp.cert ? (
+                      <a
+                        href={`/certs/${exp.cert}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-sans text-sm font-semibold text-slate-900 underline hover:text-slate-700"
+                      >
+                        {exp.role}
+                      </a>
+                    ) : (
+                      <span className="font-sans text-sm font-semibold text-slate-900">{exp.role}</span>
+                    )}
+                    <span className="font-sans text-xs text-slate-500">{exp.period}</span>
                 </div>
                 <p className="font-sans text-sm text-slate-600 italic">{exp.organization}</p>
                 {exp.details.length > 0 && (
