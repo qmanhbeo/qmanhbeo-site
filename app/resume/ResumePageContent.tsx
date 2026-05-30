@@ -238,7 +238,7 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                         rel="noopener noreferrer"
                         className="font-sans text-xs text-blue-700 hover:underline"
                       >
-                        {link.label}
+                        {link.kind === "repository" ? "Repository" : link.kind === "demo" ? "Demo" : "Paper"}
                       </a>
                     ))}
                   </div>
