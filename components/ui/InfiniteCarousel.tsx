@@ -4,6 +4,8 @@ import type { ReactNode } from "react"
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react"
 import { useAudioContext } from "@/context/AudioContext"
 
+const MOUSE_WHEEL_THRESHOLD = 60
+
 type InfiniteCarouselProps<T> = {
   items: T[]
   renderItem: (item: T, index: number) => ReactNode
@@ -171,25 +173,37 @@ export default function InfiniteCarousel<T>({
       event.preventDefault()
       event.stopPropagation()
 
-      xRef.current += appliedDelta
-      velocityRef.current = appliedDelta
-      wrapIfNeeded()
-      setTransform(xRef.current)
+      if (Math.abs(primaryDelta) <= MOUSE_WHEEL_THRESHOLD) {
+        // Touchpad — smooth pixel-scroll + idle snap
+        xRef.current += appliedDelta
+        velocityRef.current = appliedDelta
+        wrapIfNeeded()
+        setTransform(xRef.current)
 
-      if (wheelIdleTimerRef.current !== null) {
-        window.clearTimeout(wheelIdleTimerRef.current)
+        if (wheelIdleTimerRef.current !== null) {
+          window.clearTimeout(wheelIdleTimerRef.current)
+        }
+
+        wheelIdleTimerRef.current = window.setTimeout(() => {
+          startRaf()
+        }, 60)
+      } else {
+        // Mouse wheel — snap exactly one card per notch
+        if (wheelIdleTimerRef.current !== null) {
+          window.clearTimeout(wheelIdleTimerRef.current)
+          wheelIdleTimerRef.current = null
+        }
+        stopRaf()
+        const direction = Math.sign(appliedDelta)
+        animateTo(xRef.current + direction * span)
       }
-
-      wheelIdleTimerRef.current = window.setTimeout(() => {
-        startRaf()
-      }, 60)
     }
 
     viewport.addEventListener("wheel", handleWheel, { passive: false })
     return () => {
       viewport.removeEventListener("wheel", handleWheel)
     }
-  }, [setTransform, startRaf, wrapIfNeeded])
+  }, [animateTo, setTransform, span, startRaf, stopRaf, wrapIfNeeded])
 
   useEffect(() => {
     const viewport = viewportRef.current
