@@ -41,11 +41,11 @@ const LANGUAGES: { language: string; proficiency: string }[] = [
   { language: "French", proficiency: "Elementary proficiency" },
 ]
 
-const CERTIFICATIONS: { period: string; title: string; issuer: string; id?: string }[] = [
-  { period: "Oct 2025", title: "Competency in Generative AI with Diffusion Models", issuer: "NVIDIA", id: "TauXuWfURMOBYNutOVkopw" },
-  { period: "Jun 2024", title: "IC3 Digital Literacy Master Certification - GS6", issuer: "Certiport - A Pearson VUE Business", id: "SQar-uScD" },
-  { period: "Mar 2025", title: "GRE (Q 165, V 154, W 3.5)", issuer: "ETS", id: "3343302" },
-  { period: "Nov 2024", title: "IELTS (Overall Band Score: 8.0)", issuer: "IELTS Official", id: "24VN521370NGUQ101A" },
+const CERTIFICATIONS: { period: string; title: string; issuer: string; id?: string; cert?: string; certs?: string[] }[] = [
+  { period: "Oct 2025", title: "Competency in Generative AI with Diffusion Models", issuer: "NVIDIA", id: "TauXuWfURMOBYNutOVkopw", cert: "NVIDIA-DDPM.png" },
+  { period: "Jun 2024", title: "IC3 Digital Literacy Master Certification - GS6", issuer: "Certiport - A Pearson VUE Business", id: "SQar-uScD", cert: "IC3-GS6.jpg" },
+  { period: "Mar 2025", title: "GRE (Q 165, V 154, W 3.5)", issuer: "ETS", id: "3343302", certs: ["GRE-1.jpg", "GRE-2.png"] },
+  { period: "Nov 2024", title: "IELTS (Overall Band Score: 8.0)", issuer: "IELTS Official", id: "24VN521370NGUQ101A", cert: "IELTS.jpg" },
   { period: "Mar 2025", title: "Competency in Neural Networks and Deep Learning", issuer: "Coursera" },
 ]
 
@@ -86,12 +86,14 @@ const EXPERIENCE: { period: string; role: string; organization: string; details:
       "Worked in a small international team to strengthen benchmark validity.",
       "Contribution will be acknowledged in the method paper.",
     ],
+    cert: "PGTShapeAI.png",
   },
   {
     period: "Jul 2024",
     role: "Student Representative - Programme Accreditation",
     organization: "University of Economics Ho Chi Minh City",
     details: ["Contributed student perspectives during FIBAA standards accreditation process."],
+    cert: "FIBAA.jpg",
   },
 ]
 
@@ -324,8 +326,33 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
             <h2 className="mb-3 font-sans text-base font-bold uppercase tracking-wider text-slate-800 print:mb-2">Licenses & Certifications</h2>
             {CERTIFICATIONS.map((cert, i) => (
               <div key={i} className="mb-2 print:mb-1">
-                <div className="flex items-baseline justify-between">
-                  <span className="font-sans text-sm font-semibold text-slate-900">{cert.title}</span>
+                  <div className="flex items-baseline justify-between">
+                    {(() => {
+                      if (cert.certs) {
+                        return (
+                          <a
+                            href="#"
+                            onClick={(e) => { e.preventDefault(); cert.certs!.forEach((f) => window.open(`/certs/${f}`, "_blank")) }}
+                            className="font-sans text-sm font-semibold text-slate-900 underline hover:text-slate-700"
+                          >
+                            {cert.title}
+                          </a>
+                        )
+                      }
+                      if (cert.cert) {
+                        return (
+                          <a
+                            href={`/certs/${cert.cert}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-sans text-sm font-semibold text-slate-900 underline hover:text-slate-700"
+                          >
+                            {cert.title}
+                          </a>
+                        )
+                      }
+                      return <span className="font-sans text-sm font-semibold text-slate-900">{cert.title}</span>
+                    })()}
                   <span className="font-sans text-xs text-slate-500">{cert.period}</span>
                 </div>
                 <p className="font-sans text-xs text-slate-600">{cert.issuer}{cert.id ? ` - ${cert.id}` : ""}</p>
