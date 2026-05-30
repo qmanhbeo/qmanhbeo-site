@@ -183,22 +183,21 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
             {EDUCATION.map((edu, i) => (
               <div key={i} className="mb-3 print:mb-2">
                 <div className="flex items-baseline justify-between">
-                  <span className="font-sans text-sm font-semibold text-slate-900">{edu.institution}</span>
-                  <span className="font-sans text-xs text-slate-500">{edu.period}</span>
-                </div>
-                <p className="font-sans text-sm text-slate-700">{edu.degree}</p>
-                {edu.cert && (
-                  <p className="font-sans text-xs text-slate-500">
+                  {edu.cert ? (
                     <a
                       href={`/certs/${edu.cert}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline hover:text-slate-700"
+                      className="font-sans text-sm font-semibold text-slate-900 underline hover:text-slate-700"
                     >
-                      View certificate
+                      {edu.institution}
                     </a>
-                  </p>
-                )}
+                  ) : (
+                    <span className="font-sans text-sm font-semibold text-slate-900">{edu.institution}</span>
+                  )}
+                  <span className="font-sans text-xs text-slate-500">{edu.period}</span>
+                </div>
+                <p className="font-sans text-sm text-slate-700">{edu.degree}</p>
                 {edu.details && (
                   <ul className="ml-4 mt-0.5 list-disc font-sans text-xs text-slate-600">
                     {edu.details.map((d, j) => (
