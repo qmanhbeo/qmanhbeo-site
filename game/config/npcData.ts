@@ -51,8 +51,8 @@ export const npcData: NpcData[] = [
   {
     id: "avery",
     name: "Avery",
-    x: CENTER_X,
-    y: CENTER_Y + 20,
+    x: CENTER_X + OFFSET_X - 15,
+    y: CENTER_Y + OFFSET_Y - 55,
     tint: 0xf7c96b,
     dialogueLines: [
       "The campfire is still the center of the whole world here.",
@@ -77,8 +77,8 @@ export const npcData: NpcData[] = [
   {
     id: "manh",
     name: "Manh",
-    x: CENTER_X - 20,
-    y: CENTER_Y + 10,
+    x: CENTER_X - 160,
+    y: CENTER_Y + 30,
     tint: 0xffffff,
     dialogueLines: [
       "Welcome to the village!",

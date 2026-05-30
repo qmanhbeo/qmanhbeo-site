@@ -55,3 +55,4 @@ coverage/
 tmp_screenshots
 screenshots/playwright/world/*.png
 !screenshots/playwright/world/.gitkeep
+screenshots/playwright/archive-codex/
