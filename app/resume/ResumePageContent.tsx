@@ -190,7 +190,7 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                 {edu.cert && (
                   <p className="font-sans text-xs text-slate-500">
                     <a
-                      href={`/resume/certs/${edu.cert}`}
+                      href={`/certs/${edu.cert}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="underline hover:text-slate-700"
