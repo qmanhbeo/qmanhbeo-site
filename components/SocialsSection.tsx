@@ -1,6 +1,6 @@
 "use client"
 
-import { Facebook, Github, Instagram, Linkedin } from "lucide-react"
+import { Facebook, FileText, Github, Instagram, Linkedin } from "lucide-react"
 import { useAudioContext } from "@/context/AudioContext"
 import WoodenMedallion from "./ui/WoodenMedallion"
 import QuoteScroll from "./ui/QuoteScroll"
@@ -25,7 +25,7 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
           Connect with Him across the digital realms, where stories continue and friendships are forged
         </p>
 
-        <div className="mx-auto mb-5 grid max-w-[20rem] grid-cols-2 gap-4 sm:max-w-md sm:gap-5 md:mb-12 md:max-w-2xl md:grid-cols-4 md:gap-8">
+        <div className="mx-auto mb-5 grid max-w-[20rem] grid-cols-2 gap-4 sm:max-w-md sm:gap-5 md:mb-12 md:max-w-2xl md:grid-cols-5 md:gap-6">
           <WoodenMedallion
             icon={<Github className="h-6 w-6 md:h-8 md:w-8" />}
             label="GitHub"
@@ -56,6 +56,12 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
             href="https://www.instagram.com/qmanhbeo/"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => playSfx("click")}
+          />
+          <WoodenMedallion
+            icon={<FileText className="h-6 w-6 md:h-8 md:w-8" />}
+            label="Resume"
+            href="/resume"
             onClick={() => playSfx("click")}
           />
         </div>

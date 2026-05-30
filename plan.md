@@ -12,9 +12,9 @@
  - Change <title> to something more evocative than the default (e.g. "Manh's Cozy Corner")
  - Files: app/layout.tsx
 
- 2. Fellowship hover lights bug
+  2. ✅ Fellowship hover lights bug — Fixed
 
- - The WoodenMedallion buttons in SocialsSection have broken hover glow effects
+ - The WoodenMedallion buttons in SocialsSection have broken hover glow effects (now fixed)
  - Files: components/ui/WoodenMedallion.tsx, app/globals.css
 
  3. Letter overlay viewport fix (still open)
