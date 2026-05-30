@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import FocusTrap from "focus-trap-react"
 import { X } from "lucide-react"
 import LetterComposer from "./LetterComposer"
@@ -77,7 +78,7 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
 
   if (!isVisible) return null
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[70] flex items-center justify-center p-4 md:p-6"
       onClick={onClose}
@@ -118,6 +119,7 @@ export default function LetterOverlay({ isOpen, onClose }: LetterOverlayProps) {
           </div>
         </FocusTrap>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

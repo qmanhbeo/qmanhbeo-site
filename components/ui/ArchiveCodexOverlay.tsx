@@ -1,6 +1,7 @@
 "use client"
 
 import { type RefObject, type UIEvent, useCallback, useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
 import FocusTrap from "focus-trap-react"
 import { useAudioContext } from "@/context/AudioContext"
@@ -31,6 +32,15 @@ const pageSurfaceStyle = {
     "radial-gradient(circle at 18% 14%, rgba(255,255,255,0.48) 0%, transparent 28%), radial-gradient(circle at 82% 76%, rgba(160,82,45,0.1) 0%, transparent 30%), linear-gradient(135deg, #f7ead2 0%, #efddb8 58%, #e3c48e 100%)",
   boxShadow: "inset 0 1px 0 rgba(255,248,232,0.65), inset 0 0 0 1px rgba(130,76,29,0.12)",
 }
+
+const ARCHIVE_CODEX_LAYOUT = {
+  // Keep spread mode tied to real usable space, not viewport breakpoints.
+  // This makes mode-switching resilient to desktop zoom, split-screen, and dynamic browser chrome.
+  spreadMinPageWidthPx: 368,
+  spreadPageGapPx: 16,
+  spreadSpineAndInsetPx: 56,
+  minimumUsefulContentHeightPx: 460,
+} as const
 
 const allEntries = getAllEntries()
 
@@ -186,7 +196,14 @@ export default function ArchiveCodexOverlay({
   const [isAnimatingOpen, setIsAnimatingOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
+  const [layoutMetrics, setLayoutMetrics] = useState({
+    containerWidth: 0,
+    containerHeight: 0,
+    headerHeight: 0,
+  })
   const closeTimerRef = useRef<number | null>(null)
+  const codexContainerRef = useRef<HTMLDivElement | null>(null)
+  const codexHeaderRef = useRef<HTMLDivElement | null>(null)
   const leftPaneRef = useRef<HTMLDivElement | null>(null)
   const mobileListPaneRef = useRef<HTMLDivElement | null>(null)
   const rightPaneRef = useRef<HTMLDivElement | null>(null)
@@ -199,6 +216,16 @@ export default function ArchiveCodexOverlay({
   const activeEntrySlug = selectedEntry?.slug ?? selectedEntrySlug
   const selectedEntrySlugToOpen = selectedEntry?.slug ?? ""
   const visibleMobileView: ArchiveCodexMobileView = mobileView === "detail" && filteredEntries.length > 0 ? "detail" : "list"
+  const requiredSpreadWidth =
+    ARCHIVE_CODEX_LAYOUT.spreadMinPageWidthPx * 2 +
+    ARCHIVE_CODEX_LAYOUT.spreadPageGapPx +
+    ARCHIVE_CODEX_LAYOUT.spreadSpineAndInsetPx
+  const availableContentHeight = Math.max(0, layoutMetrics.containerHeight - layoutMetrics.headerHeight)
+  const hasMeasuredLayout = layoutMetrics.containerWidth > 0 && layoutMetrics.containerHeight > 0
+  const isSpreadMode =
+    !hasMeasuredLayout ||
+    (layoutMetrics.containerWidth >= requiredSpreadWidth &&
+      availableContentHeight >= ARCHIVE_CODEX_LAYOUT.minimumUsefulContentHeightPx)
 
   const persistCodexState = useCallback(
     (nextIsOpen = isOpen) => {
@@ -393,9 +420,51 @@ export default function ArchiveCodexOverlay({
     }
   }, [isVisible, selectedEntrySlug, visibleMobileView])
 
+  useEffect(() => {
+    if (!isVisible) return
+
+    const container = codexContainerRef.current
+    const header = codexHeaderRef.current
+    if (!container || !header) return
+
+    const measureLayout = () => {
+      const nextMetrics = {
+        containerWidth: container.clientWidth,
+        containerHeight: container.clientHeight,
+        headerHeight: header.offsetHeight,
+      }
+
+      setLayoutMetrics((current) => {
+        if (
+          current.containerWidth === nextMetrics.containerWidth &&
+          current.containerHeight === nextMetrics.containerHeight &&
+          current.headerHeight === nextMetrics.headerHeight
+        ) {
+          return current
+        }
+
+        return nextMetrics
+      })
+    }
+
+    measureLayout()
+
+    const resizeObserver = new ResizeObserver(measureLayout)
+    resizeObserver.observe(container)
+    resizeObserver.observe(header)
+
+    const visualViewport = window.visualViewport
+    visualViewport?.addEventListener("resize", measureLayout)
+
+    return () => {
+      resizeObserver.disconnect()
+      visualViewport?.removeEventListener("resize", measureLayout)
+    }
+  }, [isVisible])
+
   if (!isVisible) return null
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[70] flex items-center justify-center p-4 md:p-6"
       onClick={handleClose}
@@ -428,46 +497,53 @@ export default function ArchiveCodexOverlay({
         </button>
 
         <div
+          ref={codexContainerRef}
+          data-codex-container="true"
           className="relative flex h-[calc(100dvh-1.5rem)] max-h-[calc(100dvh-1.5rem)] flex-col overflow-x-hidden overflow-y-auto rounded-[2.2rem] border border-amber-200/10 bg-gradient-to-br from-[#58290f]/95 via-[#30150b]/98 to-[#170c08]/98 p-3 shadow-[0_30px_80px_rgba(0,0,0,0.55)] md:h-[calc(100dvh-3rem)] md:max-h-[calc(100dvh-3rem)] md:overflow-hidden md:rounded-[2.6rem] md:p-5"
           style={{ perspective: "2200px" }}
         >
           <div className="absolute inset-x-6 top-3 h-10 rounded-full bg-amber-100/6 blur-2xl md:inset-x-8 md:top-4 md:h-12" />
           <div className="absolute inset-y-6 left-1/2 z-20 hidden w-8 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#1a0d08] via-[#704324]/75 to-[#1a0d08] shadow-[0_0_24px_rgba(0,0,0,0.35)] md:block" />
 
-          <div className="relative z-30 px-4 pb-2 pt-4 text-center md:px-10 md:pb-4 md:pt-8">
-            <h3
-              id="archive-codex-title"
-              className="map-sky-ink-strong font-cinzel text-2xl font-bold leading-tight md:text-5xl md:leading-none"
-            >
-              The Archive Codex
-            </h3>
-            <p className="map-sky-ink mx-auto mt-2 line-clamp-2 max-w-3xl font-garamond text-sm italic leading-snug opacity-85 md:mt-3 md:line-clamp-none md:text-lg md:leading-normal md:opacity-100">
-              Search the gathered shelves from the hearth. Journeys, manuscripts, spell scrolls, and campfire notes
-              now rest in one codex.
-            </p>
-          </div>
+          <div ref={codexHeaderRef} data-codex-header="true">
+            <div className="relative z-30 px-4 pb-2 pt-4 text-center md:px-10 md:pb-4 md:pt-8">
+              <h3
+                id="archive-codex-title"
+                className="map-sky-ink-strong font-cinzel text-2xl font-bold leading-tight md:text-5xl md:leading-none"
+              >
+                The Archive Codex
+              </h3>
+              <p className="map-sky-ink mx-auto mt-2 line-clamp-2 max-w-3xl font-garamond text-sm italic leading-snug opacity-85 md:mt-3 md:line-clamp-none md:text-lg md:leading-normal md:opacity-100">
+                Search the gathered shelves from the hearth. Journeys, manuscripts, spell scrolls, and campfire notes
+                now rest in one codex.
+              </p>
+            </div>
 
-          <div className="relative z-30 px-4 pb-3 md:px-10 md:pb-4">
-            <div className="mx-auto max-w-3xl rounded-[1.2rem] border border-amber-100/15 bg-amber-50/70 p-3 shadow-[0_12px_28px_rgba(34,19,11,0.18)] md:rounded-[1.6rem] md:p-4">
-              <label htmlFor="archive-codex-search" className="sr-only">
-                Search the archive codex
-              </label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-amber-700 md:left-4 md:h-5 md:w-5" />
-                <input
-                  id="archive-codex-search"
-                  type="text"
-                  placeholder="Search all scrolls, from journeys to notes..."
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  className="w-full rounded-[0.95rem] border border-amber-700/20 bg-white/50 py-2.5 pl-10 pr-3 font-garamond text-base text-amber-950 outline-none transition-colors duration-200 placeholder:text-sm placeholder:text-amber-700/70 focus:border-amber-700/45 focus:bg-white/70 md:rounded-[1.2rem] md:py-3 md:pl-12 md:pr-4 md:text-lg md:placeholder:text-base"
-                />
+            <div className="relative z-30 px-4 pb-3 md:px-10 md:pb-4">
+              <div className="mx-auto max-w-3xl rounded-[1.2rem] border border-amber-100/15 bg-amber-50/70 p-3 shadow-[0_12px_28px_rgba(34,19,11,0.18)] md:rounded-[1.6rem] md:p-4">
+                <label htmlFor="archive-codex-search" className="sr-only">
+                  Search the archive codex
+                </label>
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-amber-700 md:left-4 md:h-5 md:w-5" />
+                  <input
+                    id="archive-codex-search"
+                    type="text"
+                    placeholder="Search all scrolls, from journeys to notes..."
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    className="w-full rounded-[0.95rem] border border-amber-700/20 bg-white/50 py-2.5 pl-10 pr-3 font-garamond text-base text-amber-950 outline-none transition-colors duration-200 placeholder:text-sm placeholder:text-amber-700/70 focus:border-amber-700/45 focus:bg-white/70 md:rounded-[1.2rem] md:py-3 md:pl-12 md:pr-4 md:text-lg md:placeholder:text-base"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="relative z-10 min-h-0 flex-1 md:overflow-hidden">
-            <div className="md:hidden h-full min-h-0">
+          <div
+            className="relative z-10 min-h-0 flex-1 md:overflow-hidden"
+            data-layout-mode={isSpreadMode ? "spread" : "single"}
+          >
+            <div className={`h-full min-h-0 ${isSpreadMode ? "md:hidden" : "md:flex md:flex-col"}`}>
               {visibleMobileView === "list" ? (
                 <section
                   className={`relative flex h-full min-h-0 flex-col overflow-hidden rounded-[2rem] border border-amber-900/15 p-6 transition-all duration-300 ${
@@ -532,7 +608,7 @@ export default function ArchiveCodexOverlay({
               )}
             </div>
 
-            <div className="hidden flex-col gap-4 md:flex md:h-full md:min-h-0 md:flex-row">
+            <div className={`hidden flex-col gap-4 md:h-full md:min-h-0 md:flex-row ${isSpreadMode ? "md:flex" : "md:hidden"}`}>
               <section
                 className="relative min-h-[22rem] overflow-hidden rounded-[2rem] border border-amber-900/15 p-6 transition-all duration-500 md:min-h-0 md:flex-1 md:basis-0 md:p-8"
                 style={{
@@ -597,6 +673,7 @@ export default function ArchiveCodexOverlay({
         </div>
       </div>
       </FocusTrap>
-    </div>
+    </div>,
+    document.body
   )
 }
