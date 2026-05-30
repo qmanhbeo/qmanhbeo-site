@@ -514,8 +514,7 @@ export default function ArchiveCodexOverlay({
                 The Archive Codex
               </h3>
               <p className="map-sky-ink mx-auto mt-2 line-clamp-2 max-w-3xl font-garamond text-sm italic leading-snug opacity-85 md:mt-3 md:line-clamp-none md:text-lg md:leading-normal md:opacity-100">
-                Search the gathered shelves from the hearth. Journeys, manuscripts, spell scrolls, and campfire notes
-                now rest in one codex.
+                Search the gathered shelves from the hearth—journeys, manuscripts, spell scrolls, and campfire notes
               </p>
             </div>
 
