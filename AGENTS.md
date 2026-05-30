@@ -16,7 +16,7 @@
 
 ## World Mode (Game View)
 - Route: `/world` (not `/game`)
-- Source of truth: `PLANGAME.md` — update on every meaningful change
+- Source of truth: `README_World.md` — update on every meaningful change
 - Ownership: `app/world/_components/*` (React), `game/*` (Phaser)
 - Must verify desktop + mobile viewport on changes
 - Playwright tests: `tests/playwright/world.smoke.mjs`

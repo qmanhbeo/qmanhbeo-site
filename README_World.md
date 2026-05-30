@@ -8,7 +8,7 @@
 
 ## Hard Rule
 
-For this repo, `PLANGAME.md` is the source of truth for the dedicated world route.
+For this repo, `README_World.md` is the source of truth for the dedicated world route.
 
 Every meaningful World Mode step must update all relevant parts of this file:
 - `Handoff / Session State`
@@ -85,7 +85,7 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-09: Removed the experimental inline world letter desk; the post office now reuses the normal `LetterOverlay` flow inside the world panel, Escape closes the nested letter modal before the panel, and the behavior is covered by smoke plus mobile visual verification.
 - [x] 2026-04-09: Fixed SpellScroll rune/tag chip ink so Workshop and mobile Tavern cards keep dark parchment text inside `/world` instead of inheriting the light world-panel text color.
 - [x] 2026-04-09: Added the first repo-owned raster asset slice: generated player/NPC/campfire PNGs under `public/game/characters/`, documented provenance in `public/game/ASSET_SOURCES.md`, and wired `BootScene` to preload them with procedural fallback.
-- [x] 2026-04-09: Recorded the user-confirmed real-device iPhone 14 Pro Max pass for mobile docked controls and panels, then started the tileset/map asset slice using `PLANGAME.md` as the repo-specific progress tracker.
+- [x] 2026-04-09: Recorded the user-confirmed real-device iPhone 14 Pro Max pass for mobile docked controls and panels, then started the tileset/map asset slice using `README_World.md` as the repo-specific progress tracker.
 - [x] 2026-04-09: Generated the repo-owned `tiny-town.png` tileset and `world.json` Tiled map from `scripts/generate_world_assets.py`, documented provenance, and wired `BootScene`/`WorldScene` to prefer the tilemap render path with procedural fallback.
 - [x] 2026-04-09: Fixed a keyboard interaction reliability issue exposed during tilemap verification by queueing E/Space keydown events in `Player`, so short interaction taps are not missed between Phaser update frames.
 - [x] 2026-04-09: Verified the tileset/map slice with targeted ESLint, Python syntax check, production build, the full `/world` Playwright smoke suite, a web-game text-state capture, and desktop/iPhone 14 Pro Max full-page screenshot/resource checks showing all `/game/` assets loaded with no console errors.

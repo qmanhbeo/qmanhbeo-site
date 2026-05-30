@@ -38,7 +38,7 @@ Next todos:
 
 ## World Mode / Game View
 - Current route: `/world`. It is a dedicated screen, not an overlay on the home page and not the removed `/game` route.
-- Source of truth: [PLANGAME.md](./PLANGAME.md). Any Game view / World Mode change must update that file in the same change.
+- Source of truth: [README_World.md](./README_World.md). Any Game view / World Mode change must update that file in the same change.
 - Ownership: route UI lives in `app/world/_components`, Phaser/domain logic lives in `game/`, shared content sections stay in `components/*` with `surface="world-panel"` adaptations.
 - Current map: a 40x40, 16px-tile night village with Library, Workshop, Tavern, Post Office, central campfire, docked mobile controls, transient prompts, contextual interaction CTAs, route-level panels, and no user-facing debug chrome.
 - Current assets: generated repo-owned player/NPC/campfire sprites, `public/game/tilesets/tiny-town.png`, and `public/game/maps/world.json`. See `public/game/ASSET_SOURCES.md` before adding or replacing game assets.
