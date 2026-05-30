@@ -68,9 +68,7 @@ export default function SocialsSection({ revealClassName = "" }: SocialsSectionP
 
         <QuoteScroll
           className="mt-2 md:mt-0"
-          quote={`Let me help
-because it's the right thing to do.
-- Manh`}
+          quote={`Story is the highest form of expressing art`}
         />
       </div>
     </section>
