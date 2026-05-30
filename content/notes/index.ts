@@ -14,6 +14,7 @@ import noteGeometryOfBrotherhood from "./note-geometry-of-brotherhood"
 import noteToTheEndOfLanguage from "./note-to-the-end-of-language"
 import noteEarlyInternetVibes from "./note-early-internet-vibes"
 import noteSockSystemAutism from "./note-sock-system-autism"
+import noteManchester20260526 from "./note-manchester-2026-05-26"
 
 const NOTE_ORDER: Record<string, number> = {
   // Pinned: Light-Hardt Lion always first
@@ -32,6 +33,7 @@ const NOTE_ORDER: Record<string, number> = {
   "note-to-the-end-of-language": 13,
   "note-early-internet-vibes": 14,
   "note-sock-system-autism": 15,
+  "note-manchester-2026-05-26": 16,
 }
 
 const allNotes = [
@@ -50,6 +52,7 @@ const allNotes = [
   noteToTheEndOfLanguage,
   noteEarlyInternetVibes,
   noteSockSystemAutism,
+  noteManchester20260526,
 ]
 
 export const noteEntries = [...allNotes].sort((a, b) => {
