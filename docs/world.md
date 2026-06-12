@@ -8,7 +8,7 @@
 
 ## Hard Rule
 
-For this repo, `README_World.md` is the source of truth for the dedicated world route.
+For this repo, `docs/world.md` is the source of truth for the dedicated world route.
 
 Every meaningful World Mode step must update all relevant parts of this file:
 - `Handoff / Session State`
