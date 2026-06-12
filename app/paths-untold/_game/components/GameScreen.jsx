@@ -1,0 +1,782 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { generateScene } from '../utils/AI-chat';
+import { createDebugLogger } from '../utils/debugLog';
+import { saveGameToSlot } from '../utils/saveSystem';
+import { buildScenePrompt } from '../utils/buildUnifiedPrompt';
+import { buildNarrativeEvaluatorPrompt } from '../utils/buildNarrativeEvaluatorPrompt';
+import { getCurrentSceneWaveRole } from '../utils/storyBlueprintPlanner';
+import { planStoryBlueprint } from '../utils/storyBlueprintPlanner';
+import { planChapter } from '../utils/chapterPlanner';
+import { updateFromAIPacket } from '../state/updateFromAIPacket';
+import { extractAndNormalizeAiResponse } from '../utils/storyParser';
+import { NarrativeRuntimeInspector } from './dev/NarrativeRuntimeInspector';
+import {
+  buildSceneSegments,
+  createEmptyNarrativeGraph,
+  createGraphFromResumeState,
+  createMemorySnapshot,
+  createNarrativeNode,
+  findChildNodeId,
+  getNarrativeDisplayTitle,
+  getNarrativeNode,
+  insertNarrativeNode,
+  normalizeNarrativeGraph,
+  setActiveNarrativeNode
+} from '../state/narrativeGraph';
+
+import CharacterLog from './characterLog';
+import QuestLog from './QuestLog';
+import ItemsPanel from './ItemsPanel';
+import NarrativeBranchView from './NarrativeBranchView';
+import { HeaderBar, ChoiceGrid, NameInputOverlay, FreeTextInput } from './GameScreenComponents';
+
+import './styles.css';
+const backgroundImage = '/paths-untold/images/background-black.jpg';
+
+const debug = createDebugLogger('GameScreen');
+
+const DEBUG_FULL_PROMPTS = false;  // Set to true to dump full prompts (verbose)
+
+const createFreshMemory = () => ({
+  summary: [],
+  paths: [],
+  companions: [],
+  prose: [],
+  sceneLog: [],
+  sceneIndex: 0,
+  world: {
+    clock: { day: 1, time: 'day' },
+    location: { name: 'Unknown Place', tags: [] },
+    sceneTags: [],
+    objectives: [],
+    flags: {}
+  },
+  arc: { chapter: 1, beat: 0, tension: 3, coreQuestion: '', activeThreads: [], arcPlan: null, chapterPlan: null, storyBlueprint: null }
+});
+
+const ensureWorldArc = (mem) => ({
+  ...mem,
+  sceneLog: mem?.sceneLog ?? [],
+  world: mem?.world ?? {
+    clock: { day: 1, time: 'day' },
+    location: { name: 'Unknown Place', tags: [] },
+    sceneTags: [],
+    objectives: [],
+    flags: {}
+  },
+  arc: mem?.arc
+    ? { coreQuestion: '', activeThreads: [], arcPlan: null, chapterPlan: null, storyBlueprint: null, ...mem.arc }
+    : { chapter: 1, beat: 0, tension: 3, coreQuestion: '', activeThreads: [], arcPlan: null, chapterPlan: null, storyBlueprint: null }
+});
+
+const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
+  const [displayedTitle, setDisplayedTitle] = useState('Your Adventure Awaits...');
+  const [fadeInTitle, setFadeInTitle] = useState(true);
+  const [segments, setSegments] = useState([]);
+  const [displayedPaths, setDisplayedPaths] = useState([]);
+  const [displayedChoiceDirector, setDisplayedChoiceDirector] = useState(null);
+  const [rawOutput, setRawOutput] = useState('');
+  const [showCharacterPanel, setShowCharacterPanel] = useState(false);
+  const [showQuestPanel, setShowQuestPanel] = useState(false);
+  const [showItemsPanel, setShowItemsPanel] = useState(false);
+  const [showNarrativeMap, setShowNarrativeMap] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+  const [selectedSlot, setSelectedSlot] = useState('slot1');
+  const [showSaveOptions, setShowSaveOptions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [stickToBottom, setStickToBottom] = useState(true);
+  const [playerName, setPlayerName] = useState(storyOptions?.playerName || '');
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [namePromptText, setNamePromptText] = useState('');
+
+  const storyBoxRef = useRef(null);
+  const sceneGenerated = useRef(false);
+  const playerNameRef = useRef(storyOptions?.playerName || '');
+  const plannerRanRef = useRef(false);  // Prevent duplicate background planner calls
+
+  const [gameMemory, setGameMemory] = useState(() => {
+    if (storyOptions?.resumeFromSave && storyOptions.memory) {
+      return ensureWorldArc(storyOptions.memory);
+    }
+    sessionStorage.removeItem('gameMemory');
+    return createFreshMemory();
+  });
+
+  const [narrativeGraph, setNarrativeGraph] = useState(() => {
+    if (storyOptions?.resumeFromSave && storyOptions?.ui?.narrativeGraph?.nodes) {
+      return normalizeNarrativeGraph(storyOptions.ui.narrativeGraph);
+    }
+    if (storyOptions?.resumeFromSave && storyOptions.memory) {
+      return createGraphFromResumeState(ensureWorldArc(storyOptions.memory), storyOptions.ui);
+    }
+    return createEmptyNarrativeGraph();
+  });
+
+  const memoryRef = useRef(gameMemory);
+  const graphRef = useRef(narrativeGraph);
+
+  useEffect(() => {
+    memoryRef.current = gameMemory;
+  }, [gameMemory]);
+
+  useEffect(() => {
+    graphRef.current = narrativeGraph;
+  }, [narrativeGraph]);
+
+  useEffect(() => {
+    playerNameRef.current = playerName;
+  }, [playerName]);
+
+  const smoothScrollToBottom = (el) => {
+    if (!el) return;
+    setTimeout(() => el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }), 60);
+  };
+
+  const restoreNode = (graph, nodeId, options = {}) => {
+    const node = getNarrativeNode(graph, nodeId);
+    if (!node) return;
+
+    const nextGraph =
+      graph.activeNodeId === nodeId ? graph : setActiveNarrativeNode(graph, nodeId);
+    const nextTitle = getNarrativeDisplayTitle(nextGraph, nodeId);
+
+    setNarrativeGraph(nextGraph);
+    setGameMemory(ensureWorldArc(createMemorySnapshot(node.memorySnapshot)));
+    setDisplayedTitle(nextTitle);
+    setFadeInTitle(true);
+    setRawOutput(node.rawOutput || '');
+    setDisplayedPaths(node.paths || []);
+    setDisplayedChoiceDirector(node.choiceDirector ?? null);
+    setSegments(
+      buildSceneSegments(nextGraph, nodeId, options.animateNodeId ?? null)
+    );
+    setIsLoading(false);
+    sceneGenerated.current = true;
+  };
+
+  useEffect(() => {
+    if (storyOptions?.resumeFromSave && storyOptions.memory) {
+      const graph = graphRef.current;
+      const nodeId = graph.activeNodeId || graph.rootNodeIds[0];
+      if (nodeId) {
+        restoreNode(graph, nodeId);
+      }
+      return;
+    }
+
+    if (!sceneGenerated.current && !storyOptions?.resumeFromSave && prompt) {
+      const initialMemory = createFreshMemory();
+      setGameMemory(initialMemory);
+      memoryRef.current = initialMemory;
+      setIsLoading(true);
+      sceneGenerated.current = true;
+
+      (async () => {
+        const { system: openingSys, user: openingUser } = buildScenePrompt(
+          initialMemory,
+          '',
+          { ...storyOptions, playerName }
+        );
+        const openingMessages = [
+          { role: 'system', content: openingSys },
+          { role: 'user', content: openingUser },
+        ];
+        if (DEBUG_FULL_PROMPTS) {
+          debug.log('[PROMPT 0]', openingUser);
+        }
+        debug.log('[scene] opening', {
+          genres: storyOptions?.selectedGenres?.slice(0, 2),
+          wave: storyOptions?.selectedTone
+        });
+
+        const rawAI0 = await generateScene(openingMessages);
+        await handleSceneResponse(rawAI0, {
+          choice: '',
+          parentId: null,
+          promptForNode: openingUser,
+          baseMemory: initialMemory,
+        });
+        setIsLoading(false);
+
+        runBackgroundPlanner(storyOptions);
+      })();
+    }
+
+    async function runBackgroundPlanner(options) {
+      // Prevent duplicate planner launches from React StrictMode/rerenders.
+      if (plannerRanRef.current) {
+        debug.log('[planner] duplicate launch prevented');
+        return;
+      }
+      plannerRanRef.current = true;
+
+      const startTime = performance.now();
+      try {
+        debug.log('[planner] background blueprint started');
+        const blueprint = await planStoryBlueprint(options, generateScene);
+
+        if (blueprint) {
+          const currentMem = memoryRef.current;
+          if (currentMem) {
+            const updated = {
+              ...currentMem,
+              arc: { ...currentMem.arc, storyBlueprint: blueprint },
+            };
+            setGameMemory(updated);
+            memoryRef.current = updated;
+            const duration = ((performance.now() - startTime) / 1000).toFixed(1);
+            debug.log('[planner] background blueprint attached in', duration + 's');
+          }
+        }
+      } catch (e) {
+        const isAbort = e.name === 'AbortError' || String(e).includes('AbortError');
+        const duration = ((performance.now() - startTime) / 1000).toFixed(1);
+        if (isAbort) {
+          debug.error('[planner] aborted after', duration + 's', e);
+        } else {
+          debug.error('[planner] failed after', duration + 's', e);
+        }
+      }
+    }
+  }, [prompt]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Narrative Evaluator - runs after scene generation, non-blocking
+  // Receives pre-captured evaluationContext to evaluate against the wave that was actually used for generation
+  const runNarrativeEvaluator = async (memState, scenePacket, choice, evaluationContext) => {
+    if (process.env.NODE_ENV !== 'development') return;
+
+    // Guard: skip if no blueprint context was captured
+    if (!evaluationContext?.sceneWaveRole || !evaluationContext?.blueprintChapterNode) {
+      debug.log('[evaluator] skipped: no blueprint context');
+      return;
+    }
+
+    debug.log('[evaluator] invoked');
+    debug.log('[evaluator] using captured wave:', evaluationContext.sceneWaveRole);
+
+    // Use pre-captured context instead of recomputing from mutated memory
+    const waveRole = evaluationContext.sceneWaveRole;
+    const currentChapter = evaluationContext.blueprintChapterNode;
+
+    const evaluatorPrompt = buildNarrativeEvaluatorPrompt({
+      memory: memState,
+      generatedScene: scenePacket,
+      sceneWaveRole: waveRole,
+      blueprintChapterNode: currentChapter,
+      latestChoice: choice
+    });
+
+    // Build messages array for generateScene
+    const evaluatorMessages = [
+      { role: 'system', content: evaluatorPrompt.system },
+      { role: 'user', content: evaluatorPrompt.user }
+    ];
+
+    debug.log('[evaluator] dev mode: true, wave:', waveRole);
+
+    const startTime = performance.now();
+    try {
+      debug.log('[evaluator] calling generateScene');
+      const rawResult = await generateScene(evaluatorMessages, null, { isEvaluator: true });
+      const duration = ((performance.now() - startTime) / 1000).toFixed(2);
+
+      // Extract content from provider-shaped response
+      const content =
+        rawResult?.choices?.[0]?.message?.content ??
+        rawResult?.message?.content ??
+        rawResult?.content ??
+        (typeof rawResult === 'string' ? rawResult : null);
+
+      // Parse evaluator result
+      let evalResult = null;
+      try {
+        if (content) {
+          const parsed = JSON.parse(content);
+          // Check for expected shape
+          if (parsed && typeof parsed.waveMatch === 'number') {
+            evalResult = parsed;
+          } else {
+            debug.log('[evaluator] unexpected shape:', parsed);
+          }
+        }
+      } catch {
+        debug.warn('[evaluator] failed parse');
+      }
+
+      if (evalResult) {
+        debug.log('[evaluator] parsed scores:', {
+          waveMatch: evalResult.waveMatch,
+          continuity: evalResult.continuity,
+          stakesProgression: evalResult.stakesProgression,
+          choiceFit: evalResult.choiceFit,
+          mysteryControl: evalResult.mysteryControl,
+          notes: evalResult.notes
+        });
+        // Store evaluation in game memory for inspector display
+        setGameMemory(prev => ({
+          ...prev,
+          _lastEvaluation: evalResult
+        }));
+      } else {
+        debug.log('[evaluator] unexpected shape keys:', Object.keys(parsed || {}));
+        debug.log('[evaluator] unexpected shape:', JSON.stringify(parsed).slice(0, 300));
+      }
+    } catch (e) {
+      const isAbort = e.name === 'AbortError' || String(e).includes('AbortError');
+      const duration = ((performance.now() - startTime) / 1000).toFixed(2);
+      if (isAbort) {
+        debug.log('[evaluator] aborted after', duration + 's');
+      } else {
+        debug.log('[evaluator] failed after', duration + 's', e.message || e);
+      }
+    }
+  };
+
+  useEffect(() => {
+    sessionStorage.setItem('gameMemory', JSON.stringify(gameMemory));
+  }, [gameMemory]);
+
+  useEffect(() => {
+    const el = storyBoxRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 16;
+      setStickToBottom(atBottom);
+    };
+
+    el.addEventListener('scroll', onScroll);
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    const el = storyBoxRef.current;
+    if (!el) return;
+
+    // Only auto-scroll if the player is already near the bottom
+    const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    if (!isAtBottom) return;
+
+    const timer = setTimeout(() => {
+      const choiceStrongs = el.querySelectorAll('[data-segment-type="choice"] strong');
+      if (choiceStrongs.length > 0) {
+        const target = choiceStrongs[choiceStrongs.length - 1];
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+      }
+    }, 60);
+
+    return () => clearTimeout(timer);
+  }, [segments.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSceneResponse = async (rawAIX, options = {}) => {
+    const {
+      choice = '',
+      retry = false,
+      parentId = null,
+      choiceIndexFromParent = null,
+      promptForNode = '',
+      baseMemory = memoryRef.current
+    } = options;
+
+    const sceneIdx = Array.isArray(baseMemory?.prose) ? baseMemory.prose.length : 0;
+    const rawOutputText =
+      typeof rawAIX === 'string' ? rawAIX : JSON.stringify(rawAIX, null, 2);
+
+    if (DEBUG_FULL_PROMPTS) {
+      debug.log(`[RAW AI OUTPUT - Scene ${sceneIdx}]`, rawAIX);
+    }
+    debug.log('[scene] raw', { scene: sceneIdx, chars: rawOutputText?.length });
+    setDisplayedPaths([]);
+    setRawOutput(rawOutputText);
+
+    try {
+      const obj = extractAndNormalizeAiResponse(rawAIX);
+      if (!obj) throw new Error('Could not extract JSON payload from model output');
+
+      const nextMem = updateFromAIPacket(baseMemory, obj, choice);
+      const currentGraph = graphRef.current;
+      const newNode = createNarrativeNode(currentGraph, {
+        parentId,
+        choiceFromParent: choice,
+        choiceIndexFromParent,
+        prompt: promptForNode,
+        rawOutput: rawOutputText,
+        packet: obj,
+        memorySnapshot: nextMem
+      });
+      const nextGraph = insertNarrativeNode(currentGraph, newNode);
+
+      restoreNode(nextGraph, newNode.id, { animateNodeId: newNode.id });
+
+      // Deferred identity: show name input only when the story earns it
+      if (!playerNameRef.current && obj.identityRequirement?.required === true) {
+        setNamePromptText(obj.identityRequirement.promptText || '');
+        setShowNameInput(true);
+      }
+
+      // Capture evaluator context BEFORE memory mutation / blueprint advancement
+      const evaluationContext = {
+        sceneWaveRole: getCurrentSceneWaveRole(baseMemory?.arc?.storyBlueprint) ?? null,
+        blueprintChapterNode: (() => {
+          const bp = baseMemory?.arc?.storyBlueprint;
+          if (!bp) return null;
+          const arcIdx = bp.currentArcIndex ?? 0;
+          const chIdx = bp.arcs?.[arcIdx]?.currentChapterIndex ?? 0;
+          return bp.arcs?.[arcIdx]?.chapters?.[chIdx] ?? null;
+        })()
+      };
+
+      // Run evaluator in background (non-blocking)
+      // Pass pre-captured context to evaluate against the wave that was actually used
+      runNarrativeEvaluator(nextMem, obj, choice, evaluationContext).catch(() => {});
+
+      return {
+        prose: obj.prose,
+        sceneIndex: nextMem.sceneIndex,
+        paths: newNode.paths
+      };
+    } catch (e) {
+      debug.error('Parse/update failed:', e);
+
+      if (!retry) {
+        debug.warn('Retrying generation due to malformed output...');
+        setSegments((prev) => [
+          ...prev,
+          { html: '<i class="text-amber-300/70">The story hesitates for a moment\u2026</i>', animate: true, type: 'retry' }
+        ]);
+        const { system: retrySys, user: retryUser } = buildScenePrompt(baseMemory, choice, { ...storyOptions, playerName: playerNameRef.current });
+        const retryMessages = [{ role: 'system', content: retrySys }, { role: 'user', content: retryUser }];
+        return new Promise((resolve) => {
+          generateScene(retryMessages, async (newResponse) => {
+            const result = await handleSceneResponse(newResponse, {
+              choice,
+              retry: true,
+              parentId,
+              choiceIndexFromParent,
+              promptForNode: retryUser,
+              baseMemory
+            });
+            resolve(result);
+          });
+        });
+      }
+
+      setDisplayedPaths([]);
+      setSegments((prev) => [
+        ...prev,
+        {
+          html: '<i class="text-red-300">Failed to load story after retry. Please choose again or reload.</i>',
+          animate: true,
+          type: 'error'
+        }
+      ]);
+
+      return {
+        prose: '',
+        sceneIndex: baseMemory.sceneIndex ?? 0,
+        paths: []
+      };
+    }
+  };
+
+  const handleChoiceClick = async (choice, choiceIndex = null) => {
+    if (isLoading) return;
+
+    const currentGraph = graphRef.current;
+    const activeNodeId = currentGraph.activeNodeId;
+
+    if (activeNodeId) {
+      const existingChildId = findChildNodeId(
+        currentGraph,
+        activeNodeId,
+        choice,
+        choiceIndex
+      );
+      if (existingChildId) {
+        restoreNode(currentGraph, existingChildId);
+        return;
+      }
+    }
+
+    setIsLoading(true);
+
+    let baseMemory = createMemorySnapshot(memoryRef.current);
+    const sceneIdx = baseMemory.sceneIndex ?? 0;
+
+    const hasBlueprint = !!baseMemory.arc?.storyBlueprint;
+    const hasChapterPlan = !!baseMemory.arc?.chapterPlan;
+    const isEarlyScene = sceneIdx < 3;
+
+    const shouldReplan = !hasBlueprint && !hasChapterPlan && !isEarlyScene;
+
+    if (!baseMemory.arc?.storyBlueprint && baseMemory.arc?.chapterPlan === null) {
+      if (isEarlyScene) {
+        debug.log('[chapterPlanner] skipped: early scene', { sceneIdx });
+      } else {
+        debug.log('[chapterPlanner] called: no blueprint, no chapterPlan', { sceneIdx });
+        const newChapterPlan = await planChapter(storyOptions, baseMemory.arc, generateScene);
+        if (newChapterPlan) {
+          baseMemory = { ...baseMemory, arc: { ...baseMemory.arc, chapterPlan: newChapterPlan } };
+          setGameMemory(baseMemory);
+          memoryRef.current = baseMemory;
+        }
+      }
+    } else if (hasBlueprint) {
+      debug.log('[chapterPlanner] skipped: using blueprint', { sceneIdx });
+    } else if (hasChapterPlan) {
+      debug.log('[chapterPlanner] skipped: existing chapterPlan', { sceneIdx });
+    }
+
+    const nextSceneIndex = (baseMemory.sceneIndex ?? 0) + 1;
+    const { system: branchSys, user: branchUser } = buildScenePrompt(baseMemory, choice, { ...storyOptions, playerName });
+    const branchMessages = [{ role: 'system', content: branchSys }, { role: 'user', content: branchUser }];
+
+    if (DEBUG_FULL_PROMPTS) {
+      debug.log(`[PROMPT FOR SCENE ${nextSceneIndex}]`, branchUser);
+    }
+    debug.log('[scene] next', {
+      scene: nextSceneIndex,
+      location: baseMemory?.world?.location?.name,
+      choice: choice?.slice(0, 40)
+    });
+
+    await generateScene(branchMessages, async (nextScene) => {
+      await handleSceneResponse(nextScene, {
+        choice,
+        parentId: activeNodeId,
+        choiceIndexFromParent: choiceIndex,
+        promptForNode: branchUser,
+        baseMemory
+      });
+      setIsLoading(false);
+    });
+  };
+
+  const handleSave = () => {
+    if (isLoading) return;
+    setShowSaveOptions(true);
+  };
+
+  const handleJumpToNode = (nodeId) => {
+    restoreNode(graphRef.current, nodeId);
+    setShowNarrativeMap(false);
+  };
+
+  const confirmSave = () => {
+    const normalizedGraph = normalizeNarrativeGraph(narrativeGraph);
+
+    saveGameToSlot(selectedSlot, {
+      options: { ...storyOptions, prompt, resumeFromSave: true, playerName },
+      memory: gameMemory,
+      ui: {
+        displayedStory: segments.map((segment) => segment.html).join(''),
+        displayedPaths,
+        displayedTitle,
+        rawOutput,
+        prompt: getNarrativeNode(normalizedGraph, normalizedGraph.activeNodeId)?.prompt ?? '',
+        narrativeGraph: normalizedGraph
+      }
+    });
+    setSaveMessage(`Game saved to ${selectedSlot}`);
+    setTimeout(() => setSaveMessage(''), 2000);
+    setShowSaveOptions(false);
+  };
+
+  return (
+    <div
+      className="relative flex h-screen flex-row overflow-hidden bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
+      {showCharacterPanel && (
+        <CharacterLog
+          companions={gameMemory.companions || []}
+          sceneIndex={gameMemory.sceneIndex}
+          onClose={() => setShowCharacterPanel(false)}
+        />
+      )}
+
+      {showQuestPanel && (
+        <QuestLog
+          objectives={gameMemory.world?.objectives || []}
+          onClose={() => setShowQuestPanel(false)}
+        />
+      )}
+
+      {showItemsPanel && (
+        <ItemsPanel
+          items={gameMemory.world?.items || []}
+          onClose={() => setShowItemsPanel(false)}
+        />
+      )}
+
+      {showNarrativeMap && (
+        <NarrativeBranchView
+          graph={narrativeGraph}
+          onJumpToNode={handleJumpToNode}
+          onClose={() => setShowNarrativeMap(false)}
+        />
+      )}
+
+      <div className={`flex flex-grow flex-col p-4 sm:p-10 animate-fade-in-slow transition-[filter] duration-300 overflow-hidden ${showCharacterPanel || showQuestPanel || showItemsPanel || showNarrativeMap ? 'blur-sm' : 'blur-none'}`}>
+        <h1
+          className={`mb-4 font-berkshire text-2xl font-bold text-white transition-opacity duration-1000 ${
+            fadeInTitle ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          {displayedTitle}
+        </h1>
+
+        <HeaderBar mem={gameMemory} />
+
+        <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 animate-fade-in-slow">
+          <button
+            onClick={() => setShowNarrativeMap(true)}
+            className="font-cardo rounded border border-cyan-300/60 px-2 py-1 text-xs sm:text-sm text-white/90 hover:bg-cyan-900/40 transition-colors"
+          >
+            Narrative Map
+          </button>
+          <button
+            onClick={() => setShowQuestPanel(!showQuestPanel)}
+            className="font-cardo rounded border border-amber-300/40 px-2 py-1 text-xs sm:text-sm text-white/70 hover:bg-amber-900/30 transition-colors"
+          >
+            Quests
+          </button>
+          <button
+            onClick={() => setShowItemsPanel(!showItemsPanel)}
+            className="font-cardo rounded border border-white/20 px-2 py-1 text-xs sm:text-sm text-white/60 hover:bg-white/10 transition-colors"
+          >
+            Items
+          </button>
+          {(gameMemory.companions?.length ?? 0) > 0 && (
+            <button
+              onClick={() => setShowCharacterPanel(!showCharacterPanel)}
+              className="font-cardo rounded border border-white/25 px-2 py-1 text-xs sm:text-sm text-white/70 hover:bg-white/10 transition-colors"
+            >
+              Characters
+            </button>
+          )}
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              disabled={isLoading}
+              onClick={handleSave}
+              className="font-cardo rounded border border-yellow-300/50 px-2 py-1 text-xs sm:text-sm text-white/80 hover:bg-yellow-800/40 disabled:opacity-30 transition-colors"
+            >
+              Save
+            </button>
+            <button
+              onClick={onBackToMenu}
+              className="font-cardo rounded border border-white/15 px-2 py-1 text-xs text-white/40 hover:text-white/70 hover:border-white/30 transition-colors"
+            >
+              ← Menu
+            </button>
+          </div>
+        </div>
+
+        {showSaveOptions && (
+          <div className="mb-4 w-fit rounded bg-yellow-800 bg-opacity-90 p-4 text-white shadow-lg animate-fade-in-slow">
+            <label htmlFor="slot" className="mr-2 text-sm">
+              Choose Save Slot:
+            </label>
+            <select
+              id="slot"
+              value={selectedSlot}
+              onChange={(e) => setSelectedSlot(e.target.value)}
+              className="mr-4 rounded px-2 py-1 text-black"
+            >
+              <option value="slot1">Slot 1</option>
+              <option value="slot2">Slot 2</option>
+              <option value="slot3">Slot 3</option>
+            </select>
+            <button
+              onClick={confirmSave}
+              className="rounded bg-green-600 px-4 py-1 text-sm hover:bg-green-700"
+            >
+              Confirm Save
+            </button>
+          </div>
+        )}
+
+        {saveMessage && (
+          <div className="mb-2 text-sm text-green-400 animate-fade-in-slow">
+            {saveMessage}
+          </div>
+        )}
+
+        <div
+          className="mb-4 flex-grow overflow-y-auto rounded-lg p-4 scroll-smooth"
+          ref={storyBoxRef}
+        >
+          <div className="h-full w-full resize-none border-none outline-none">
+            {segments.length === 0 ? (
+              <p className="font-cardo italic text-white opacity-80 mix-blend-difference animate-pulse-slow">
+                Almost There... Your World is Forming...
+              </p>
+            ) : (
+              segments.map((segment, index) => (
+                <p
+                  key={`${segment.nodeId ?? 'segment'}-${index}`}
+                  data-segment-type={segment.type}
+                  className={`font-cardo text-white mix-blend-difference ${
+                    segment.animate ? 'animate-blur-in' : ''
+                  }`}
+                  dangerouslySetInnerHTML={{ __html: segment.html }}
+                />
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="flex-shrink-0 animate-fade-in-slow">
+          {!isLoading && displayedChoiceDirector?.type === 'freetext' ? (
+            <FreeTextInput
+              prompt={displayedChoiceDirector.prompt}
+              onSubmit={(text) => handleChoiceClick(text, null)}
+            />
+          ) : (
+            <ChoiceGrid
+              choices={displayedPaths}
+              onChoice={handleChoiceClick}
+              onContinue={!isLoading && displayedPaths.length === 0 ? () => handleChoiceClick('') : undefined}
+              disabled={isLoading}
+              variant={displayedChoiceDirector?.type === 'threshold' ? 'threshold' : 'default'}
+            />
+          )}
+        </div>
+      </div>
+
+      {!stickToBottom && (
+        <button
+          className="fixed bottom-6 right-6 rounded bg-black/60 px-3 py-1 text-white hover:bg-black/80"
+          onClick={() => {
+            const el = storyBoxRef.current;
+            smoothScrollToBottom(el);
+            setStickToBottom(true);
+          }}
+        >
+          Jump to latest
+        </button>
+      )}
+
+      {showNameInput && (
+        <NameInputOverlay
+          promptText={namePromptText}
+          onSubmit={(name) => {
+            setPlayerName(name);
+            playerNameRef.current = name;
+            setShowNameInput(false);
+          }}
+        />
+      )}
+
+      <NarrativeRuntimeInspector
+        memory={gameMemory}
+        sceneIndex={gameMemory.sceneIndex}
+        storyOptions={storyOptions}
+      />
+    </div>
+  );
+};
+
+export default GameScreen;

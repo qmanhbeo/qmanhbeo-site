@@ -11,7 +11,7 @@ export default function AtmosphereControls() {
   const { sfxEnabled, toggleSfx } = useAudioContext()
   const { isWorldActive } = useWorld()
 
-  if (isWorldActive || pathname === "/resume") return null
+  if (isWorldActive || pathname === "/resume" || pathname.startsWith("/paths-untold")) return null
 
   return (
     <div className="fixed top-3 right-3 z-10 flex items-center gap-1">
