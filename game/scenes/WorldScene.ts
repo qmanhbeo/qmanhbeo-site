@@ -11,6 +11,7 @@ import {
   WORLD_GROUND_TILE_SIZE,
   WORLD_VISUAL_DEBUG,
 } from "@/game/config/worldVisualAssets"
+import { getBuildingLabelStyle } from "@/game/labelUtils"
 import { BuildingZone } from "@/game/objects/BuildingZone"
 import { NPC } from "@/game/objects/NPC"
 import { Player } from "@/game/objects/Player"
@@ -118,20 +119,14 @@ export class WorldScene extends Phaser.Scene {
   private npcs: NPC[] = []
   private player?: Player
   private uiLocked = false
-  private lastCamX = -1
-  private lastCamY = -1
-  private lastCamZoom = -1
-  private hasEmittedLabels = false
+  private buildingLabelStyle!: Phaser.Types.GameObjects.Text.TextStyle
+  private buildingLabels: Phaser.GameObjects.Text[] = []
 
   constructor() {
     super("WorldScene")
   }
 
   create() {
-    this.lastCamX = -1
-    this.lastCamY = -1
-    this.lastCamZoom = -1
-    this.hasEmittedLabels = false
     this.getJoystickInput = (this.registry.get("getJoystickInput") as GetJoystickInput | undefined) ?? this.getJoystickInput
     const initialPlayerPosition = (this.registry.get("initialPlayerPosition") as PlayerPosition | undefined) ?? {
       x: 1200,
@@ -143,6 +138,10 @@ export class WorldScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
     this.cameras.main.setBounds(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
     this.cameras.main.setBackgroundColor("#0a0604")
+
+    // Resolve font before drawWorld (which creates building labels).
+    this.buildingLabelStyle = getBuildingLabelStyle()
+    this.buildingLabels = []
 
     this.drawWorld()
 
@@ -222,6 +221,15 @@ export class WorldScene extends Phaser.Scene {
       this.input.keyboard.on("keydown-FOUR", () => this.environment?.handleKeyDown("4"))
     }
 
+    // Re-render building labels once the font file is loaded.
+    if (typeof document !== "undefined" && document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        for (const label of this.buildingLabels) {
+          label.updateText()
+        }
+      })
+    }
+
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.cleanupFns.forEach((cleanup) => cleanup())
       this.cleanupFns.length = 0
@@ -282,40 +290,6 @@ export class WorldScene extends Phaser.Scene {
     if (time - this.lastPersistAt > 250) {
       this.lastPersistAt = time
       this.persistPlayerPosition()
-    }
-
-    // Project building world positions to screen space for the React DOM overlay
-    const cam = this.cameras.main
-    if (
-      !this.hasEmittedLabels ||
-      cam.scrollX !== this.lastCamX ||
-      cam.scrollY !== this.lastCamY ||
-      cam.zoom !== this.lastCamZoom
-    ) {
-      this.hasEmittedLabels = true
-      this.lastCamX = cam.scrollX
-      this.lastCamY = cam.scrollY
-      this.lastCamZoom = cam.zoom
-
-      const wv = cam.worldView
-      const padding = 60
-      const screenPos = new Phaser.Math.Vector2()
-      const labelStates = buildingData.map((b) => {
-        const labelWorldY = b.y + b.height / 2 + 20
-        ;(cam as unknown as { matrix: { transformPoint: (x: number, y: number, out: Phaser.Math.Vector2) => void } }).matrix.transformPoint(b.x, labelWorldY, screenPos)
-        return {
-          id: b.id,
-          label: b.label,
-          screenX: Math.round(screenPos.x),
-          screenY: Math.round(screenPos.y),
-          visible:
-            b.x >= wv.left - padding &&
-            b.x <= wv.right + padding &&
-            b.y - b.height / 2 >= wv.top - padding &&
-            b.y <= wv.bottom + padding,
-        }
-      })
-      gameBridge.emit("building-labels", labelStates)
     }
   }
 
@@ -632,6 +606,18 @@ export class WorldScene extends Phaser.Scene {
     this.drawCampfire()
   }
 
+  private addBuildingLabel(
+    x: number,
+    y: number,
+    text: string,
+  ): Phaser.GameObjects.Text {
+    const label = this.add.text(x, y, text, this.buildingLabelStyle)
+      .setOrigin(0.5, 0)
+      .setDepth(WORLD_DEPTHS.buildings)
+    this.buildingLabels.push(label)
+    return label
+  }
+
   private drawVillageBuildings(graphics?: Phaser.GameObjects.Graphics) {
     const buildingGraphics = graphics ?? this.add.graphics().setDepth(WORLD_DEPTHS.buildings)
 
@@ -641,6 +627,7 @@ export class WorldScene extends Phaser.Scene {
         sprite.setOrigin(0.5, 1)
         sprite.setScale(1)
         sprite.setDepth(WORLD_DEPTHS.buildings)
+        this.addBuildingLabel(building.x, building.y + building.height / 2 + 20, building.label)
         return
       }
 
@@ -649,6 +636,7 @@ export class WorldScene extends Phaser.Scene {
         sprite.setOrigin(0.5, 1)
         sprite.setScale(1)
         sprite.setDepth(WORLD_DEPTHS.buildings)
+        this.addBuildingLabel(building.x, building.y + building.height / 2 + 20, building.label)
         return
       }
 
@@ -657,6 +645,7 @@ export class WorldScene extends Phaser.Scene {
         sprite.setOrigin(0.5, 1)
         sprite.setScale(1)
         sprite.setDepth(WORLD_DEPTHS.buildings)
+        this.addBuildingLabel(building.x, building.y + building.height / 2 + 20, building.label)
         return
       }
 
@@ -665,6 +654,7 @@ export class WorldScene extends Phaser.Scene {
         sprite.setOrigin(0.5, 1)
         sprite.setScale(1)
         sprite.setDepth(WORLD_DEPTHS.buildings)
+        this.addBuildingLabel(building.x, building.y + building.height / 2 + 20, building.label)
         return
       }
 
@@ -699,6 +689,7 @@ export class WorldScene extends Phaser.Scene {
       buildingGraphics.fillStyle(0xffbd65, 0.18)
       buildingGraphics.fillCircle(building.x, baseTop + 46, 24)
       this.drawBuildingMark(buildingGraphics, building.id, building.x, baseTop + 26)
+      this.addBuildingLabel(building.x, building.y + building.height / 2 + 10, building.label)
     })
   }
 
