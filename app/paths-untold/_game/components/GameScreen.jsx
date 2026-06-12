@@ -4,11 +4,19 @@ import { createDebugLogger } from '../utils/debugLog';
 import { saveGameToSlot } from '../utils/saveSystem';
 import { buildScenePrompt } from '../utils/buildUnifiedPrompt';
 import { buildNarrativeEvaluatorPrompt } from '../utils/buildNarrativeEvaluatorPrompt';
+import { deriveSceneDirection } from '../utils/sceneDirection';
 import { getCurrentSceneWaveRole } from '../utils/storyBlueprintPlanner';
 import { planStoryBlueprint } from '../utils/storyBlueprintPlanner';
 import { planChapter } from '../utils/chapterPlanner';
 import { updateFromAIPacket } from '../state/updateFromAIPacket';
 import { extractAndNormalizeAiResponse } from '../utils/storyParser';
+import {
+  commitShadowScene,
+  createShadowDirectorRuntime,
+  failShadowScene,
+  initializeShadowSegment,
+  planShadowScene
+} from '../utils/shadowStoryDirector';
 import { NarrativeRuntimeInspector } from './dev/NarrativeRuntimeInspector';
 import {
   buildSceneSegments,
@@ -36,6 +44,10 @@ const backgroundImage = '/paths-untold/images/background-black.jpg';
 const debug = createDebugLogger('GameScreen');
 
 const DEBUG_FULL_PROMPTS = false;  // Set to true to dump full prompts (verbose)
+// Restart the development server after changing NEXT_PUBLIC_PATHS_UNTOLD_SHADOW_DIRECTOR.
+const shadowDirectorEnabled =
+  process.env.NODE_ENV === 'development' &&
+  process.env.NEXT_PUBLIC_PATHS_UNTOLD_SHADOW_DIRECTOR === '1';
 
 const createFreshMemory = () => ({
   summary: [],
@@ -93,6 +105,7 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
   const sceneGenerated = useRef(false);
   const playerNameRef = useRef(storyOptions?.playerName || '');
   const plannerRanRef = useRef(false);  // Prevent duplicate background planner calls
+  const shadowDirectorRef = useRef(null);
 
   const [gameMemory, setGameMemory] = useState(() => {
     if (storyOptions?.resumeFromSave && storyOptions.memory) {
@@ -130,6 +143,69 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
   const smoothScrollToBottom = (el) => {
     if (!el) return;
     setTimeout(() => el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }), 60);
+  };
+
+  const getShadowRuntime = () => {
+    if (!shadowDirectorEnabled) return null;
+    if (!shadowDirectorRef.current) {
+      shadowDirectorRef.current = createShadowDirectorRuntime();
+    }
+    return shadowDirectorRef.current;
+  };
+
+  const getExistingShadowRuntime = () => {
+    if (!shadowDirectorEnabled) return null;
+    return shadowDirectorRef.current;
+  };
+
+  const warnShadowDisabled = (runtime, reason) => {
+    if (!shadowDirectorEnabled || !runtime || runtime._lastWarningReason === reason) return;
+    runtime._lastWarningReason = reason;
+    console.warn('[Paths Untold shadow] disabled:', reason);
+  };
+
+  const shadowInitializeSegment = async (storyBlueprint) => {
+    const runtime = getShadowRuntime();
+    if (!runtime) return null;
+
+    const result = await initializeShadowSegment({ runtime, storyBlueprint });
+    if (!result.ok) {
+      warnShadowDisabled(runtime, result.reason);
+    }
+    return result;
+  };
+
+  const shadowPrepare = async ({ baseMemory, playerChoice, sceneIndex }) => {
+    const runtime = getShadowRuntime();
+    if (!runtime) return null;
+
+    const storyBlueprint = baseMemory?.arc?.storyBlueprint ?? null;
+    if (!storyBlueprint && !storyOptions?.resumeFromSave) {
+      return null;
+    }
+
+    const init = await shadowInitializeSegment(storyBlueprint);
+    if (!init?.ok) return init;
+
+    return planShadowScene({
+      runtime,
+      playerChoice,
+      liveDirectionText: deriveSceneDirection(baseMemory),
+      liveWaveRole: getCurrentSceneWaveRole(storyBlueprint),
+      sceneIndex
+    });
+  };
+
+  const shadowCommit = ({ generatedScene, sceneIndex }) => {
+    const runtime = getExistingShadowRuntime();
+    if (!runtime) return null;
+    return commitShadowScene({ runtime, generatedScene, sceneIndex });
+  };
+
+  const shadowFail = ({ error, sceneIndex, terminal }) => {
+    const runtime = getExistingShadowRuntime();
+    if (!runtime) return null;
+    return failShadowScene({ runtime, error, sceneIndex, terminal });
   };
 
   const restoreNode = (graph, nodeId, options = {}) => {
@@ -224,6 +300,7 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
             };
             setGameMemory(updated);
             memoryRef.current = updated;
+            await shadowInitializeSegment(blueprint);
             const duration = ((performance.now() - startTime) / 1000).toFixed(1);
             debug.log('[planner] background blueprint attached in', duration + 's');
           }
@@ -410,6 +487,7 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
       const nextGraph = insertNarrativeNode(currentGraph, newNode);
 
       restoreNode(nextGraph, newNode.id, { animateNodeId: newNode.id });
+      shadowCommit({ generatedScene: obj, sceneIndex: nextMem.sceneIndex });
 
       // Deferred identity: show name input only when the story earns it
       if (!playerNameRef.current && obj.identityRequirement?.required === true) {
@@ -440,8 +518,8 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
       };
     } catch (e) {
       debug.error('Parse/update failed:', e);
-
       if (!retry) {
+        shadowFail({ error: e, sceneIndex: sceneIdx, terminal: false });
         debug.warn('Retrying generation due to malformed output...');
         setSegments((prev) => [
           ...prev,
@@ -464,6 +542,7 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
         });
       }
 
+      shadowFail({ error: e, sceneIndex: sceneIdx, terminal: true });
       setDisplayedPaths([]);
       setSegments((prev) => [
         ...prev,
@@ -529,8 +608,12 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
     } else if (hasChapterPlan) {
       debug.log('[chapterPlanner] skipped: existing chapterPlan', { sceneIdx });
     }
-
     const nextSceneIndex = (baseMemory.sceneIndex ?? 0) + 1;
+    await shadowPrepare({
+      baseMemory,
+      playerChoice: choice,
+      sceneIndex: nextSceneIndex
+    });
     const { system: branchSys, user: branchUser } = buildScenePrompt(baseMemory, choice, { ...storyOptions, playerName });
     const branchMessages = [{ role: 'system', content: branchSys }, { role: 'user', content: branchUser }];
 
@@ -543,17 +626,22 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
       choice: choice?.slice(0, 40)
     });
 
-    await generateScene(branchMessages, async (nextScene) => {
-      await handleSceneResponse(nextScene, {
-        choice,
-        source,
-        parentId: activeNodeId,
-        choiceIndexFromParent: choiceIndex,
-        promptForNode: branchUser,
-        baseMemory
+    try {
+      await generateScene(branchMessages, async (nextScene) => {
+        await handleSceneResponse(nextScene, {
+          choice,
+          source,
+          parentId: activeNodeId,
+          choiceIndexFromParent: choiceIndex,
+          promptForNode: branchUser,
+          baseMemory
+        });
+        setIsLoading(false);
       });
-      setIsLoading(false);
-    });
+    } catch (error) {
+      shadowFail({ error, sceneIndex: nextSceneIndex, terminal: true });
+      throw error;
+    }
   };
 
   const handleSave = () => {
