@@ -87,6 +87,7 @@ export function updateFromAIPacket(memory, packet, playerChoiceText = '') {
     objectivesDelta,
     locationDelta,
     companionsDelta,
+    flagsDelta,
     arcDelta,
     prose = '',
     summary = '',
@@ -98,6 +99,7 @@ export function updateFromAIPacket(memory, packet, playerChoiceText = '') {
     objectivesDelta,
     locationDelta,
     companionsDelta,
+    flagsDelta,
     arcDelta,
   });
 

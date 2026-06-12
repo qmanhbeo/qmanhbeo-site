@@ -21,6 +21,7 @@ const OPENING_SCENE_SCHEMA_CONTRACT = `OUTPUT JSON SCHEMA FOR OPENING SCENE (req
   "locationDelta": { "name": "specific place", "addTags": [] },
   "objectivesDelta": [],
   "companionsDelta": [],
+  "flagsDelta": {},
   "arcDelta": { "tension": 0, "beat": 0, "chapter": 0 },
   "sceneRecord": { "event": "", "stateChange": "", "reveals": [] }
 }
@@ -44,6 +45,7 @@ const GENERAL_SCENE_SCHEMA_CONTRACT = `OUTPUT JSON SCHEMA FOR FOLLOW-UP SCENE (r
   "locationDelta": {},
   "objectivesDelta": [],
   "companionsDelta": [],
+  "flagsDelta": {},
   "arcDelta": {},
   "sceneRecord": { "event": "", "stateChange": "", "reveals": [] }
 }
@@ -181,9 +183,25 @@ export const buildScenePrompt = (gameMemory, latestChoice, playerIntro = null) =
 
   // ── Companions ─────────────────────────────────────────────────────────────
   const activeCompanions = (companions || []).filter(c => (c.status ?? 'active') === 'active');
+  function formatCompanionScores(c) {
+    const parts = [];
+    const s = c.scores ?? {};
+    if (typeof s.trust === 'number') parts.push(`trust=${s.trust}`);
+    if (typeof s.affection === 'number') parts.push(`affection=${s.affection}`);
+    if (typeof s.anger === 'number') parts.push(`anger=${s.anger}`);
+    // Only include fear/curiosity when notably high (≥70) or narratively useful
+    if (typeof s.fear === 'number' && s.fear >= 70) parts.push(`fear=${s.fear}`);
+    if (typeof s.curiosity === 'number' && s.curiosity >= 70) parts.push(`curiosity=${s.curiosity}`);
+    return parts.length > 0 ? ` (${parts.join(', ')})` : '';
+  }
+  function formatKnownFacts(c) {
+    const facts = Array.isArray(c.knownFacts) ? c.knownFacts.slice(0, 2) : [];
+    if (facts.length === 0) return '';
+    return `\n  known: ${facts.join('; ')}`;
+  }
   const companionString = activeCompanions.length > 0
     ? activeCompanions.map(c =>
-        `- ${c.name}: ${c.personality || 'unknown'}, role: ${c.role || 'unknown'}`
+        `- ${c.name}: ${c.personality || 'unknown'}, role: ${c.role || 'unknown'}${formatCompanionScores(c)}${formatKnownFacts(c)}`
       ).join('\n')
     : 'None yet';
 
@@ -239,11 +257,18 @@ Blueprint Position:
       : '- Chapter Plan: (being established)';
   }
 
+  // ── Flags ─────────────────────────────────────────────────────────────────
+  const flagKeys = Object.keys(world?.flags ?? {});
+  const flagsLine = flagKeys.length > 0
+    ? flagKeys.map(k => `${k}=${world.flags[k]}`).join(', ')
+    : 'none';
+
   const worldBlock = `
 World:
 - Location: ${world?.location?.name ?? 'Unknown Place'} [${(world?.location?.tags || []).join(', ')}]
 - Time: Day ${world?.clock?.day ?? 1}, ${world?.clock?.time ?? 'day'}
 - SceneTags: ${(world?.sceneTags || []).join(', ') || '—'}
+- Flags: ${flagsLine}
 - Objectives: ${(world?.objectives || []).map(o => `${o.status === 'active' ? '[•]' : '[ ]'} ${o.text}`).join(' | ') || '—'}
 - Arc: Chapter ${arc?.chapter ?? 1}, Beat ${arc?.beat ?? 0}, Tension ${tension}/10, Mode: ${effectiveMode}
 ${storyBlueprint ? '' : `- Arc Stage: ${arcStageLabel} | Chapter Stage: ${chapterStageLabel}
@@ -361,6 +386,7 @@ RULES:
   7. sceneRecord.stateChange must describe something concrete. If nothing changed, rule 1 was violated.
 - PLAYER IDENTITY: Do not ask for the player's name unless the scene creates a genuine narrative need — signing a document, being formally introduced, making a vow, giving testimony, being accused, or a relationship deepening to the point where a name is earned. If such a moment occurs AND the player name is unknown, set identityRequirement.required = true with a short in-world promptText (the NPC's exact words, as spoken dialogue). Do NOT trigger this in ordinary scenes or early in the story.
 - Keep character updates compact but useful.
+- FLAGS RULES: Use flagsDelta for persistent story/world facts that should affect future scenes. Prefer snake_case flag names. Do not use flags for trivial momentary details. Do not overwrite unrelated flags. Omit flagsDelta or use empty { set: {}, clear: [] } when no flag changes.
 
 OUTPUT SHAPE (STRICT JSON):
 {
@@ -372,9 +398,17 @@ OUTPUT SHAPE (STRICT JSON):
   "locationDelta": {},
   "objectivesDelta": [],
   "companionsDelta": [],
+  "flagsDelta": {},
   "arcDelta": {},
   "sceneRecord": {}
 }
+  "flagsDelta": {
+    "set": {
+      "castle_gate_open": true,
+      "elara_knows_about_relic": true
+    },
+    "clear": ["temporary_alarm_active"]
+  },
   "characters": [
     {
       "name": "string",

@@ -72,3 +72,6 @@ __pycache__/
 
 # test artifacts
 test-results/
+
+# external research repos (never committed)
+external_repos/

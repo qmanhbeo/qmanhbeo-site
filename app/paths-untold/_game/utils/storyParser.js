@@ -226,7 +226,15 @@ function normalizeScenePacket(obj, raw) {
   const choiceDirector = coerceChoiceDirector(obj.choiceDirector);
   const sceneRecord = coerceSceneRecord(obj.sceneRecord);
 
-  return { title, prose: finalProse, paths, characters, summary, sceneTags, objectivesDelta, locationDelta, companionsDelta, arcDelta, choiceDirector, sceneRecord };
+  // flagsDelta — pass through as-is (validated as { set?: Record<string,boolean>, clear?: string[] })
+  const flagsDelta = obj.flagsDelta && typeof obj.flagsDelta === 'object'
+    ? {
+        set: obj.flagsDelta.set && typeof obj.flagsDelta.set === 'object' ? { ...obj.flagsDelta.set } : undefined,
+        clear: Array.isArray(obj.flagsDelta.clear) ? obj.flagsDelta.clear.filter(k => typeof k === 'string') : undefined,
+      }
+    : undefined;
+
+  return { title, prose: finalProse, paths, characters, summary, sceneTags, objectivesDelta, locationDelta, companionsDelta, flagsDelta, arcDelta, choiceDirector, sceneRecord };
 }
 
 // ----------------- Public: central entry point -----------------

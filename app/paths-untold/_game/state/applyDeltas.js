@@ -23,6 +23,19 @@ export function applyDeltas(mem, out) {
       mem.world.sceneTags = normalizeTags(out.sceneTags);
     }
   
+    // Flags
+    if (out.flagsDelta) {
+      if (!mem.world.flags) mem.world.flags = {};
+      if (typeof out.flagsDelta.set === 'object' && out.flagsDelta.set !== null) {
+        Object.assign(mem.world.flags, out.flagsDelta.set);
+      }
+      if (Array.isArray(out.flagsDelta.clear)) {
+        for (const key of out.flagsDelta.clear) {
+          delete mem.world.flags[key];
+        }
+      }
+    }
+  
     // Objectives
     for (const d of out.objectivesDelta || []) {
       if (d.add) mem.world.objectives.push({ id: slug(d.add), text: d.add, status: "active" });
