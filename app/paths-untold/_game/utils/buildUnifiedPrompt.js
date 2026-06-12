@@ -15,7 +15,7 @@ const OPENING_SCENE_SCHEMA_CONTRACT = `OUTPUT JSON SCHEMA FOR OPENING SCENE (req
 {
   "title": "short descriptive story title",
   "prose": "80-120 word opening scene text — MUST BE prose, NOT scene or story",
-  "paths": ["choice 1", "choice 2", "choice 3"],
+  "paths": ["suggested action 1", "suggested action 2"],
   "summary": "one sentence summary",
   "sceneTags": [],
   "locationDelta": { "name": "specific place", "addTags": [] },
@@ -31,7 +31,7 @@ STRICT OUTPUT RULES FOR OPENING SCENE:
 - Use "prose", never "scene", "story", "Action", or "opening_scene".
 - Use "paths", never "choices" or "Choices".
 - Include a short story title in "title".
-- "paths" must contain 2-3 physical actions the player can take immediately.
+- "paths" must contain 2-4 suggested actions the player can take immediately. The player can also type a custom response.
 - "prose" must be narration/prose text, not a scene or story description.
 `;
 
@@ -39,7 +39,7 @@ STRICT OUTPUT RULES FOR OPENING SCENE:
 const GENERAL_SCENE_SCHEMA_CONTRACT = `OUTPUT JSON SCHEMA FOR FOLLOW-UP SCENE (required, no exceptions):
 {
   "prose": "80-120 word continuation scene text — MUST BE prose, NOT scene, story, or Action",
-  "paths": ["choice 1", "choice 2", "choice 3"],
+  "paths": ["suggested action 1", "suggested action 2"],
   "summary": "one sentence summary",
   "sceneTags": [],
   "locationDelta": {},
@@ -56,7 +56,7 @@ STRICT OUTPUT RULES FOR FOLLOW-UP SCENE:
 - Use "paths", never "choices" or "Choices".
 - Do NOT generate or include a new "title" field.
 - Only include deltas when something actually changes; otherwise use {} or [].
-- "paths" must contain 2-3 physical actions the player can take immediately.
+- "paths" must contain 2-4 suggested actions the player can take immediately. The player can also type a custom response.
 - "prose" must be narration/prose text, not a scene or story description.
 `;
 
@@ -365,7 +365,7 @@ RULES:
 - SECOND PERSON ONLY. The protagonist is "you" — always. Other NPCs may have names. Never use third-person ("he", "she", "they") for the player character.
 - CHOICE TEXT LAW — Choices are verbs, not blurbs. 2–8 words. Immediate action, stance, or value. No decorative prose, no outcome descriptions. Each option must be clearly distinct. Good: "Ask what she remembers" / "Touch the edge" / "Walk away". Bad: "Turn toward the baker and invite them to read a memory aloud, inviting soft candor to mingle with lilac and bread scent."
 - Paths MUST be rooted in the specific people, objects, and moments from the closing line of the prose. Never invent new locations or characters. Never spoil a consequence.
-- CHOICE DIRECTOR: Before writing paths, evaluate whether this scene warrants player input at all. Types: "paths" = concrete options (1–4, prefer 2–3); "threshold" = binary commitment (stay/leave, confess/deny, accept/refuse); "freetext" = player speaks in their own words — for answering a direct question, confessing, writing a message (set choiceDirector.prompt to the in-world question, leave paths=[]); "none" = no input needed — atmosphere, consequence, transition. Set choiceDirector.needed=false for "none". Never manufacture options just to fill a grid.
+- CHOICE DIRECTOR: Before writing paths, evaluate whether this scene warrants player input at all. Types: "paths" = concrete options (1–4, prefer 2–3); "threshold" = binary commitment (stay/leave, confess/deny, accept/refuse); "freetext" = player speaks in their own words — for answering a direct question, confessing, writing a message (set choiceDirector.prompt to the in-world question, leave paths=[]); "none" = no input needed — atmosphere, consequence, transition. Set choiceDirector.needed=false for "none". Never manufacture options just to fill a grid. Paths are suggested actions — the player can always type a free-text response instead.
 - TENSION MODE: This scene is in "${effectiveMode}" mode. Shape the scene accordingly:
   quiet: establish world and tone, introduce one thread gently. Conflict minimal. Something is noticed but not confronted.
   unease: introduce friction or wrongness. No explosion — the feeling that something is off. One thing becomes uncertain.
@@ -386,77 +386,36 @@ RULES:
   7. sceneRecord.stateChange must describe something concrete. If nothing changed, rule 1 was violated.
 - PLAYER IDENTITY: Do not ask for the player's name unless the scene creates a genuine narrative need — signing a document, being formally introduced, making a vow, giving testimony, being accused, or a relationship deepening to the point where a name is earned. If such a moment occurs AND the player name is unknown, set identityRequirement.required = true with a short in-world promptText (the NPC's exact words, as spoken dialogue). Do NOT trigger this in ordinary scenes or early in the story.
 - Keep character updates compact but useful.
-- FLAGS RULES: Use flagsDelta for persistent story/world facts that should affect future scenes. Prefer snake_case flag names. Do not use flags for trivial momentary details. Do not overwrite unrelated flags. Omit flagsDelta or use empty { set: {}, clear: [] } when no flag changes.
+- FLAGS RULES: Use flagsDelta for persistent story/world facts that should affect future scenes. Use has_... or ..._discovered for historical facts (e.g., has_activated_orb, hidden_passage_discovered). Use currently_... or explicit state flags for current conditions (e.g., orb_currently_active, door_symbols_faint). Clear current-state flags when they stop being true. Avoid contradictory flags — do not set orb_activated=true alongside orb_dimmed=true if orb_activated already means actively on. Prefer snake_case flag names. Do not use flags for trivial momentary details. Do not overwrite unrelated flags. Omit flagsDelta or use empty { set: {}, clear: [] } when no flag changes.
 
-OUTPUT SHAPE (STRICT JSON):
+OUTPUT SHAPE (STRICT JSON) — all fields inside one object:
 {
-  "title": "short title",
-  "prose": "MUST BE prose text, NOT scene or story",
-  "paths": ["choice 1", "choice 2", "choice 3"],
-  "summary": "one sentence",
-  "sceneTags": [],
-  "locationDelta": {},
-  "objectivesDelta": [],
-  "companionsDelta": [],
-  "flagsDelta": {},
-  "arcDelta": {},
-  "sceneRecord": {}
-}
-  "flagsDelta": {
-    "set": {
-      "castle_gate_open": true,
-      "elara_knows_about_relic": true
-    },
-    "clear": ["temporary_alarm_active"]
-  },
+  "prose": "narrative prose for this scene — never 'story' or 'scene' as key",
+  "paths": ["suggested action 1", "suggested action 2"],
+  "summary": "one sentence summary",
   "characters": [
     {
       "name": "string",
       "personality": "string",
       "role": "string",
-      "purpose": {
-        "main": "multi-step/emotional function across scenes",
-        "subgoals": ["string", "string", "string"],
-        "fulfilled": 0
-      },
+      "purpose": { "main": "multi-step function across scenes", "subgoals": ["string"], "fulfilled": 0 },
       "knownFacts": ["string"],
       "lastSpoken": { "line": "string" },
-      "relationshipHistory": [
-        { "event": "string", "impact": { "trust": 0, "affection": 0 } }
-      ]
+      "relationshipHistory": [ { "event": "string", "impact": { "trust": 0, "affection": 0 } } ]
     }
   ],
-  "summary": "string",
-  "sceneTags": ["string"],
-  "objectivesDelta": [
-    { "add": "string" },
-    { "complete": "string" },
-    { "fail": "string" }
-  ],
-  "locationDelta": {
-    "name": "string",
-    "addTags": ["string"],
-    "removeTags": ["string"]
-  },
+  "sceneTags": ["tag1"],
+  "locationDelta": { "name": "string", "addTags": ["string"], "removeTags": ["string"] },
+  "objectivesDelta": [ { "add": "string" }, { "complete": "string" }, { "fail": "string" } ],
   "companionsDelta": [
-    {
-      "idOrName": "string",
-      "say": "string",
-      "history": [{ "event": "string", "impact": 1 }],
-      "status": "active"
-    }
+    { "idOrName": "string", "say": "string", "history": [{ "event": "string", "impact": 1 }], "status": "active" }
   ],
+  "flagsDelta": { "set": { "flag_name": true }, "clear": ["temporary_flag"] },
   "arcDelta": {
-    "tension": 0,
-    "beat": 0,
-    "chapter": 0,
-    "coreQuestion": "",
-    "addThreads": [],
-    "removeThreads": [],
-    "completedBeat": "",
-    "advanceArc": false,
-    "advanceChapterStage": false,
-    "advanceArcStage": false
+    "tension": 0, "beat": 0, "chapter": 0,
+    "coreQuestion": "", "addThreads": [], "removeThreads": [],
+    "completedBeat": "", "advanceArc": false,
+    "advanceChapterStage": false, "advanceArcStage": false
   },
   "sceneRecord": {
     "event": "one sentence: what concretely happened this scene",
@@ -478,12 +437,33 @@ OUTPUT SHAPE (STRICT JSON):
   }
 }`.trim();
 
+  // ── Recent Full Scenes ─────────────────────────────────────────────────────
+  function buildRecentScenesBlock(proseArr, log, pathsArr) {
+    if (!proseArr || proseArr.length === 0) return '';
+    const count = Math.min(3, proseArr.length);
+    const start = proseArr.length - count;
+    const parts = [];
+    parts.push('Recent Full Scenes:');
+    for (let i = start; i < proseArr.length; i++) {
+      const entry = log?.find(r => r.sceneIndex === i);
+      const choice = entry?.playerChoice || pathsArr?.[i] || '—';
+      const text = (proseArr[i] || '').slice(0, 800);
+      if (!text) continue;
+      parts.push(`Scene ${i} | choice: "${choice}"`);
+      parts.push(text);
+      parts.push('');
+    }
+    return parts.join('\n').trim();
+  }
+
+  const recentScenesBlock = buildRecentScenesBlock(prose, sceneLog, gameMemory.paths);
+
   const user = `${worldBlock}
 
 Companions (active):
 ${companionString}
 
-Scene Log (last ${sceneLog.length} scenes):
+${recentScenesBlock ? `${recentScenesBlock}\n\n` : ''}Scene Log (last ${sceneLog.length} scenes):
 ${recentLog}
 
 Player's Choice:

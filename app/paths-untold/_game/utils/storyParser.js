@@ -234,7 +234,16 @@ function normalizeScenePacket(obj, raw) {
       }
     : undefined;
 
-  return { title, prose: finalProse, paths, characters, summary, sceneTags, objectivesDelta, locationDelta, companionsDelta, flagsDelta, arcDelta, choiceDirector, sceneRecord };
+  // identityRequirement — simple passthrough for deferred name input
+  const identityRequirement = obj.identityRequirement && typeof obj.identityRequirement === 'object'
+    ? {
+        required: obj.identityRequirement.required === true,
+        reason: typeof obj.identityRequirement.reason === 'string' ? obj.identityRequirement.reason : '',
+        promptText: typeof obj.identityRequirement.promptText === 'string' ? obj.identityRequirement.promptText : '',
+      }
+    : undefined;
+
+  return { title, prose: finalProse, paths, characters, summary, sceneTags, objectivesDelta, locationDelta, companionsDelta, flagsDelta, arcDelta, choiceDirector, sceneRecord, identityRequirement };
 }
 
 // ----------------- Public: central entry point -----------------
