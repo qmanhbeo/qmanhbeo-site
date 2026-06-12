@@ -6,6 +6,7 @@ import ExitButton from "@/app/world/_components/ExitButton"
 import VirtualJoystick from "@/app/world/_components/VirtualJoystick"
 import WorldDialogueBox from "@/app/world/_components/WorldDialogueBox"
 import WorldPromptOverlay, { useWorldPromptState } from "@/app/world/_components/WorldPromptOverlay"
+import BuildingLabelsOverlay from "@/app/world/_components/BuildingLabelsOverlay"
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
 import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
 import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
@@ -297,6 +298,7 @@ export default function WorldScreen() {
           <ExitButton onClick={handleExitWorld} />
         </header>
 
+        <BuildingLabelsOverlay />
         <WorldPromptOverlay
           promptState={promptState}
           bottomBand={overlayLayout?.bottomBand}

@@ -4,7 +4,16 @@ import type { PlayerPosition } from "@/game/types"
 
 export type WorldSfxCue = "dialogue-advance" | "dialogue-open" | "panel-open" | "ui-close"
 
+export interface BuildingLabelState {
+  id: string
+  label: string
+  screenX: number
+  screenY: number
+  visible: boolean
+}
+
 type WorldBridgeEventMap = {
+  "building-labels": BuildingLabelState[]
   "dialogue-closed": undefined
   "dialogue-interact": undefined
   "load-progress": { progress: number; label?: string }
