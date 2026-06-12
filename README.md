@@ -1,7 +1,5 @@
 # 🏰 Manh's Cozy Corner - Medieval Personal Website
 
-TEMPORARY TEST MARKER
-
 A horizontally scrolling personal website with a cozy medieval campfire aesthetic, built with Next.js and featuring immersive storytelling elements.
 
 ## 🌟 Overview
@@ -21,20 +19,25 @@ npm run dev
 
 Deployed at https://qmanhbeo-site-ecru.vercel.app/
 
-Next todos:
-- Add icon for tab (like at the top of the browser, next to tab's name).
-- Maybe change tab name to something else if want to
-- Add all everything to archive
-- Make Letter actually work
-- Add photos,
-- And think about real stories to add to the reflections/descriptions
-- Add links to spell scrolls
-- Maybe even put those projects INSIDE this website, usable from the web
-- Add links to papers, maybe even paper's repos and manuscripts
-- Fix fellowship's buttons' hover lights
-- Add more social media links
-- Add real reflections to campfire notes
-- Add also projects directly to the site. Like, web-UI usable apps within the scrolls. For example, the real estate data scraper, or news fetcher, or stock data fetcher. Idk if those python scripts can be added to web app and how, but we'll figure it out.
+## Environment Variables
+
+This project expects secrets and runtime configuration to be provided locally through `.env.local` or through Vercel environment variables.
+
+Required or optional variables include:
+
+- `RESEND_API_KEY`
+- `LETTER_TO_EMAIL`
+- `LLM_PROVIDER`
+- `COHERE_API` or `COHERE_API_KEY`
+- `COHERE_MODEL`
+- `COHERE_MODEL_FALLBACKS`
+- `COHERE_MODEL_LAST_RESORTS`
+- `COHERE_MAX_TOKENS`
+- `COHERE_TIMEOUT`
+- `ENABLE_PROVIDER_FALLBACK`
+- `OPENAI_API_KEY`
+- `NEXT_PUBLIC_API_BASE`
+- `NEXT_PUBLIC_LLM_MODEL`
 
 ## World Mode / Game View
 - Current route: `/world`. It is a dedicated screen, not an overlay on the home page and not the removed `/game` route.
