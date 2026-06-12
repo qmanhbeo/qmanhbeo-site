@@ -39,7 +39,7 @@ const ChoiceGrid = ({ choices, onChoice, onContinue, disabled = false, variant =
   // Loading state
   if (phase === 'loading') {
     return (
-      <div className="font-cardo min-h-[80px] flex flex-col items-center justify-center">
+      <div className="font-cardo min-h-[44px] flex flex-col items-center justify-center">
         <p className="text-amber-100/40 italic tracking-[0.25em] animate-pulse-slow text-sm">
           ✦ &nbsp; The paths align… &nbsp; ✦
         </p>
@@ -50,7 +50,7 @@ const ChoiceGrid = ({ choices, onChoice, onContinue, disabled = false, variant =
   // Still generating (initial load, no onContinue means it's waiting for AI)
   if (choices.length === 0 && !onContinue) {
     return (
-      <div className="font-cardo min-h-[80px] flex items-center justify-center">
+      <div className="font-cardo min-h-[44px] flex items-center justify-center">
         <p className="text-white/40 italic animate-pulse-slow text-sm tracking-wide">
           Preparing your next decisions…
         </p>
@@ -93,7 +93,7 @@ const ChoiceGrid = ({ choices, onChoice, onContinue, disabled = false, variant =
               <button
                 disabled={disabled}
                 onClick={() => handleClick(choice, index)}
-                className={`w-full border rounded-lg p-4 sm:p-5 text-center text-sm transition-all duration-500 cursor-pointer ${stateClasses}`}
+                className={`w-full border rounded-lg px-4 py-2 text-center text-sm transition-all duration-500 cursor-pointer ${stateClasses}`}
               >
                 {choice}
               </button>
@@ -129,7 +129,7 @@ const ChoiceGrid = ({ choices, onChoice, onContinue, disabled = false, variant =
             key={index}
             disabled={disabled}
             onClick={() => handleClick(choice, index)}
-            className={`border rounded-lg p-3 sm:p-5 flex items-center justify-center text-center min-h-[80px] sm:min-h-[100px] text-sm transition-all duration-500 cursor-pointer ${isLastOdd ? 'col-span-2' : ''} ${stateClasses}`}
+            className={`border rounded-lg px-3 py-2 sm:px-4 sm:py-2 flex items-center justify-center text-center min-h-[44px] sm:min-h-[48px] text-sm transition-all duration-500 cursor-pointer ${isLastOdd ? 'col-span-2' : ''} ${stateClasses}`}
           >
             {choice}
           </button>

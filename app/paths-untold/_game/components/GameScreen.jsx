@@ -373,6 +373,7 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
   const handleSceneResponse = async (rawAIX, options = {}) => {
     const {
       choice = '',
+      source = 'suggestion',
       retry = false,
       parentId = null,
       choiceIndexFromParent = null,
@@ -395,7 +396,7 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
       const obj = extractAndNormalizeAiResponse(rawAIX);
       if (!obj) throw new Error('Could not extract JSON payload from model output');
 
-      const nextMem = updateFromAIPacket(baseMemory, obj, choice);
+      const nextMem = updateFromAIPacket(baseMemory, obj, choice, source);
       const currentGraph = graphRef.current;
       const newNode = createNarrativeNode(currentGraph, {
         parentId,
@@ -481,7 +482,7 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
     }
   };
 
-  const handleChoiceClick = async (choice, choiceIndex = null) => {
+  const handleChoiceClick = async (choice, choiceIndex = null, source = 'suggestion') => {
     if (isLoading) return;
 
     const currentGraph = graphRef.current;
@@ -545,6 +546,7 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
     await generateScene(branchMessages, async (nextScene) => {
       await handleSceneResponse(nextScene, {
         choice,
+        source,
         parentId: activeNodeId,
         choiceIndexFromParent: choiceIndex,
         promptForNode: branchUser,
@@ -729,19 +731,40 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
         </div>
 
         <div className="flex-shrink-0 animate-fade-in-slow">
-          {!isLoading && displayedChoiceDirector?.type === 'freetext' ? (
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <p className="font-cardo italic text-white/45 text-sm animate-pulse-slow tracking-[0.25em]">
+                ✦ &nbsp; The paths align… &nbsp; ✦
+              </p>
+            </div>
+          ) : displayedChoiceDirector?.type === 'freetext' ? (
             <FreeTextInput
               prompt={displayedChoiceDirector.prompt}
-              onSubmit={(text) => handleChoiceClick(text, null)}
+              onSubmit={(text) => handleChoiceClick(text, null, 'custom')}
             />
+          ) : displayedChoiceDirector?.type === 'none' ? (
+            <button
+              onClick={() => handleChoiceClick('', null, 'continue')}
+              className="font-cardo border border-white/20 rounded-lg px-10 py-3 text-sm text-white/60 hover:border-amber-200/40 hover:text-white/80 transition-all duration-300 tracking-widest uppercase"
+            >
+              Continue
+            </button>
           ) : (
-            <ChoiceGrid
-              choices={displayedPaths}
-              onChoice={handleChoiceClick}
-              onContinue={!isLoading && displayedPaths.length === 0 ? () => handleChoiceClick('') : undefined}
-              disabled={isLoading}
-              variant={displayedChoiceDirector?.type === 'threshold' ? 'threshold' : 'default'}
-            />
+            <div className="w-full space-y-3">
+              {displayedPaths.length > 0 && (
+                <ChoiceGrid
+                  choices={displayedPaths}
+                  onChoice={(choice, index) => handleChoiceClick(choice, index, 'suggestion')}
+                  disabled={isLoading}
+                  variant={displayedChoiceDirector?.type === 'threshold' ? 'threshold' : 'default'}
+                />
+              )}
+              <FreeTextInput
+                compact
+                placeholder="Or type your own action…"
+                onSubmit={(text) => handleChoiceClick(text, null, 'custom')}
+              />
+            </div>
           )}
         </div>
       </div>

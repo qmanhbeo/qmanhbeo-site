@@ -77,7 +77,7 @@ function makeNewCompanion(incoming, sceneIdx) {
  * @param {string} playerChoiceText
  * @returns {import('./types').GameMemory}
  */
-export function updateFromAIPacket(memory, packet, playerChoiceText = '') {
+export function updateFromAIPacket(memory, packet, playerChoiceText = '', playerInputSource = 'suggestion') {
   // Defensive cloning (applyDeltas mutates)
   const draft = deepClone(ensureWorldArc(memory));
 
@@ -155,6 +155,7 @@ export function updateFromAIPacket(memory, packet, playerChoiceText = '') {
     ? {
         sceneIndex: sceneIdx,
         playerChoice: playerChoiceText || '',
+        playerInputSource,
         event: record.event || '',
         stateChange: record.stateChange || '',
         reveals: record.reveals || [],
