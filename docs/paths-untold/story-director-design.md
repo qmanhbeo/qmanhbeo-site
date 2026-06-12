@@ -168,7 +168,7 @@ The translation layer turns a plan into guidance such as:
 ```text
 Focus this scene on Missing Children, a local problem within the larger Village Curse.
 
-Escalate the threat with a visible consequence or tightening constraint, without resolving it.
+Escalate the pressure with a visible consequence or tightening constraint, without resolving it.
 
 Stay within the campaign's community-scale stakes ceiling.
 Keep Village Curse unresolved in the background.
@@ -214,3 +214,16 @@ prompt contracts are ready for migration.
 - UI inspection
 - visual charts
 - structured resolution conditions
+
+## 12. Phase 2 matrix validation
+
+The isolated director now has a fixture matrix for non-live validation. The
+matrix covers single-thread, linear required-child, deep hierarchy, branching
+optional-thread, personal relationship, and village-curse campaigns. It is still
+prototype-only and uses the same public director API as the focused simulation.
+
+The matrix reports completion rate and turn statistics, first resolution timing,
+resolution-eligible delay, beat frequencies, focus share, first-focus and
+resolution rates by thread, required-thread neglect gap, deterministic replay,
+and invariant counters. It is intended to answer whether one director rule set
+generalizes across structures before any shadow-mode or live integration work.

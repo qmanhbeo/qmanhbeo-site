@@ -7,6 +7,7 @@
     "dev": "next dev",
     "lint": "eslint .",
     "simulate:director": "node app/paths-untold/_game/director/storyDirectorSimulation.js",
+    "simulate:director:matrix": "node app/paths-untold/_game/director/storyDirectorMatrixSimulation.js",
     "start": "next start",
     "test:director": "vitest run app/paths-untold/_game/director/",
     "test:world": "node tests/playwright/world.smoke.mjs"
