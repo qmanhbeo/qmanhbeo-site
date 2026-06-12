@@ -27,7 +27,16 @@ function getResponsiveCameraZoom(viewportWidth: number, viewportHeight: number):
   if (isMobile) return 1
 
   const baseZoom = Math.min(viewportWidth / 1100, viewportHeight / 720)
-  return Math.min(Math.max(baseZoom, 1), 1.8)
+  const clampedZoom = Math.min(Math.max(baseZoom, 1), 1.8)
+
+  // Prevent extreme browser zoom-out / huge CSS viewports from showing beyond WORLD_BOUNDS.
+  // Phaser zoom is pixels-per-world-unit, so higher zoom means seeing less of the world.
+  const minZoomToAvoidVoid = Math.max(
+    viewportWidth / WORLD_BOUNDS.width,
+    viewportHeight / WORLD_BOUNDS.height,
+  )
+
+  return Math.max(clampedZoom, minZoomToAvoidVoid)
 }
 
 const WORLD_CENTER = { x: 1200, y: 900 } as const
