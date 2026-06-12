@@ -1,5 +1,6 @@
 // src/utils/buildUnifiedPrompt.js
 import { injectPhaseOutLogicIntoPrompt } from './phaseOutManager';
+import { deriveSceneDirection } from './sceneDirection';
 import {
   getCurrentArcNode,
   getCurrentChapterNode,
@@ -167,7 +168,6 @@ export const buildScenePrompt = (gameMemory, latestChoice, playerIntro = null) =
   // Blueprint takes priority: scene waveRole → effective prompt mode.
   // Fallback to legacy tension/chapter-stage logic when no blueprint.
   let effectiveMode;
-  let waveDirectorBlock = '';  // declared early for safe dev logging
   if (storyBlueprint && sceneWaveRole) {
     effectiveMode = blueprintEffectiveMode(sceneWaveRole, blueprintChapterNode?.targets ?? null);
   } else {
@@ -314,18 +314,13 @@ Max 120 words.${playerName ? `\nProtagonist name: "${playerName}" — use only i
   let arcDirectionBlock;
   if (storyBlueprint && blueprintArcNode && blueprintChapterNode) {
     const tgt = blueprintChapterNode.targets;
-    // Generate Wave Director block for explicit wave-role instructions
-    waveDirectorBlock = buildWaveDirectorBlock(sceneWaveRole, tgt, blueprintChapterNode);
     arcDirectionBlock = `
-  Story Blueprint is active. Follow the pre-planned wave structure — do not re-invent the macro shape.
+  Story Blueprint is active.
   Arc: ${blueprintArcNode.waveRole} — ${blueprintArcNode.purpose || '—'} (focus: ${blueprintArcNode.focusAxis || '—'})
   Chapter: ${blueprintChapterNode.waveRole} — ${blueprintChapterNode.purpose || '—'}
-  Scene wave role: ${sceneWaveRole} — shape this scene to match that role exactly.
-  Must Resolve this chapter: ${blueprintChapterNode.mustResolve || '—'}
   Core Question: ${storyBlueprint.coreQuestion || '—'}
   Chapter targets: tension ${tgt.tension}/10, intimacy ${tgt.intimacy}/10, pacing ${tgt.pacing}.
-  This scene must serve the wave role. Do NOT invent new structural arcs or sub-planners.
-  On the first scene: set arcDelta.coreQuestion to the blueprint's core question. Introduce narrative threads via arcDelta.addThreads.${waveDirectorBlock}`;
+  On the first scene: set arcDelta.coreQuestion to the blueprint's core question. Introduce narrative threads via arcDelta.addThreads.`;
   } else if (chapterPlan) {
     arcDirectionBlock = `
   Arc Stage: ${arcStageLabel}${arcPlan ? `\n  Arc Goal: ${arcPlan.arcGoal}\n  Arc Theme: ${arcPlan.arcTheme}` : ''}
@@ -446,6 +441,7 @@ OUTPUT SHAPE (STRICT JSON) — all fields inside one object:
   }
 
   const recentScenesBlock = buildRecentScenesBlock(prose, sceneLog, gameMemory.paths);
+  const sceneDirection = deriveSceneDirection(gameMemory);
 
   const user = `${worldBlock}
 
@@ -456,7 +452,7 @@ ${recentScenesBlock ? `${recentScenesBlock}\n\n` : ''}
 Player's Choice:
 ${latestChoice || '(story begins)'}
 
-${phaseOutPromptExtras}
+${sceneDirection ? `Scene Direction:\n${sceneDirection}\n\n` : ''}${phaseOutPromptExtras}
 
 TASK:
 ${taskBlock}`.trim();
