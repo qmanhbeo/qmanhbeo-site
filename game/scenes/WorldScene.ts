@@ -118,15 +118,20 @@ export class WorldScene extends Phaser.Scene {
   private npcs: NPC[] = []
   private player?: Player
   private uiLocked = false
-  private lastCamX = 0
-  private lastCamY = 0
-  private lastCamZoom = 0
+  private lastCamX = -1
+  private lastCamY = -1
+  private lastCamZoom = -1
+  private hasEmittedLabels = false
 
   constructor() {
     super("WorldScene")
   }
 
   create() {
+    this.lastCamX = -1
+    this.lastCamY = -1
+    this.lastCamZoom = -1
+    this.hasEmittedLabels = false
     this.getJoystickInput = (this.registry.get("getJoystickInput") as GetJoystickInput | undefined) ?? this.getJoystickInput
     const initialPlayerPosition = (this.registry.get("initialPlayerPosition") as PlayerPosition | undefined) ?? {
       x: 1200,
@@ -282,25 +287,27 @@ export class WorldScene extends Phaser.Scene {
     // Project building world positions to screen space for the React DOM overlay
     const cam = this.cameras.main
     if (
+      !this.hasEmittedLabels ||
       cam.scrollX !== this.lastCamX ||
       cam.scrollY !== this.lastCamY ||
       cam.zoom !== this.lastCamZoom
     ) {
+      this.hasEmittedLabels = true
       this.lastCamX = cam.scrollX
       this.lastCamY = cam.scrollY
       this.lastCamZoom = cam.zoom
 
       const wv = cam.worldView
       const padding = 60
+      const screenPos = new Phaser.Math.Vector2()
       const labelStates = buildingData.map((b) => {
         const labelWorldY = b.y + b.height / 2 + 20
-        const screenX = (b.x - cam.scrollX) * cam.zoom + (cam.x ?? 0)
-        const screenY = (labelWorldY - cam.scrollY) * cam.zoom + (cam.y ?? 0)
+        ;(cam as unknown as { matrix: { transformPoint: (x: number, y: number, out: Phaser.Math.Vector2) => void } }).matrix.transformPoint(b.x, labelWorldY, screenPos)
         return {
           id: b.id,
           label: b.label,
-          screenX: Math.round(screenX),
-          screenY: Math.round(screenY),
+          screenX: Math.round(screenPos.x),
+          screenY: Math.round(screenPos.y),
           visible:
             b.x >= wv.left - padding &&
             b.x <= wv.right + padding &&
