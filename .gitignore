@@ -56,3 +56,12 @@ tmp_screenshots
 screenshots/playwright/world/*.png
 !screenshots/playwright/world/.gitkeep
 screenshots/playwright/archive-codex/
+
+# local agent/debug artifacts
+.playwright-cli/
+.playwright-mcp/
+output/
+.claude/settings.local.json
+
+# Windows metadata artifacts
+*:Zone.Identifier
