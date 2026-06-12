@@ -207,19 +207,6 @@ export const buildScenePrompt = (gameMemory, latestChoice, playerIntro = null) =
 
   const phaseOutPromptExtras = injectPhaseOutLogicIntoPrompt(companions, sceneIndex);
 
-  // ── Scene log ──────────────────────────────────────────────────────────────
-  const recentLog = sceneLog.length > 0
-    ? sceneLog.map(r =>
-        [
-          `Scene ${r.sceneIndex} | choice: "${r.playerChoice || '—'}"`,
-          r.event       ? `  happened: ${r.event}` : null,
-          r.stateChange ? `  changed: ${r.stateChange}` : null,
-          r.reveals?.length ? `  revealed: ${r.reveals.join('; ')}` : null,
-          r.resolvedThreads?.length ? `  resolved: ${r.resolvedThreads.join(', ')}` : null,
-        ].filter(Boolean).join('\n')
-      ).join('\n\n')
-    : '(story just started)';
-
   // ── World block (injected into user message) ───────────────────────────────
 
   // Position labels — prefer blueprint, fall back to legacy plan labels
@@ -307,10 +294,10 @@ CHOICES — present 2–3 options. Each must be a physical action the player can
 LENGTH — 80–120 words maximum. 2–3 paragraphs, ≤ 2 sentences each. Do not name the player character.`
     : `${GENERAL_SCENE_SCHEMA_CONTRACT}
 
-Continue directly from the previous scene.
+Continue from the latest scene in Recent Full Scenes.
 
 CONTINUITY:
-- Previous scene: ${(prose[prose.length - 1] || '').slice(0, 400)}
+- Continue from the latest scene in Recent Full Scenes.
 - Player chose: "${latestChoice}"
 
 CONTINUITY RULES:
@@ -440,16 +427,18 @@ OUTPUT SHAPE (STRICT JSON) — all fields inside one object:
   // ── Recent Full Scenes ─────────────────────────────────────────────────────
   function buildRecentScenesBlock(proseArr, log, pathsArr) {
     if (!proseArr || proseArr.length === 0) return '';
-    const count = Math.min(3, proseArr.length);
+    const count = Math.min(5, proseArr.length);
     const start = proseArr.length - count;
     const parts = [];
     parts.push('Recent Full Scenes:');
     for (let i = start; i < proseArr.length; i++) {
       const entry = log?.find(r => r.sceneIndex === i);
-      const choice = entry?.playerChoice || pathsArr?.[i] || '—';
-      const text = (proseArr[i] || '').slice(0, 800);
+      const choice = entry?.playerChoice || '';
+      const text = (proseArr[i] || '').slice(0, 1000);
       if (!text) continue;
-      parts.push(`Scene ${i} | choice: "${choice}"`);
+      if (choice.trim()) {
+        parts.push(`Player chose: "${choice.trim()}"`);
+      }
       parts.push(text);
       parts.push('');
     }
@@ -463,9 +452,7 @@ OUTPUT SHAPE (STRICT JSON) — all fields inside one object:
 Companions (active):
 ${companionString}
 
-${recentScenesBlock ? `${recentScenesBlock}\n\n` : ''}Scene Log (last ${sceneLog.length} scenes):
-${recentLog}
-
+${recentScenesBlock ? `${recentScenesBlock}\n\n` : ''}
 Player's Choice:
 ${latestChoice || '(story begins)'}
 
