@@ -15,6 +15,7 @@ import { BuildingZone } from "@/game/objects/BuildingZone"
 import { NPC } from "@/game/objects/NPC"
 import { Player } from "@/game/objects/Player"
 import type { GetJoystickInput, PlayerPosition } from "@/game/types"
+import { getBuildingLabelStyle } from "@/game/labelUtils"
 
 const WORLD_BOUNDS = {
   width: 2400,
@@ -118,6 +119,8 @@ export class WorldScene extends Phaser.Scene {
   private npcs: NPC[] = []
   private player?: Player
   private uiLocked = false
+  private buildingLabelStyle!: Phaser.Types.GameObjects.Text.TextStyle
+  private buildingLabels: Phaser.GameObjects.Text[] = []
 
   constructor() {
     super("WorldScene")
@@ -135,6 +138,11 @@ export class WorldScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
     this.cameras.main.setBounds(0, 0, WORLD_BOUNDS.width, WORLD_BOUNDS.height)
     this.cameras.main.setBackgroundColor("#0a0604")
+
+    // Resolve font before drawWorld (which creates building labels).
+    // Phaser canvas text cannot use CSS custom properties in fontFamily.
+    this.buildingLabelStyle = getBuildingLabelStyle()
+
     this.drawWorld()
 
     this.player = new Player(this, initialPlayerPosition.x, initialPlayerPosition.y, this.getJoystickInput)
@@ -211,6 +219,18 @@ export class WorldScene extends Phaser.Scene {
       this.input.keyboard.on("keydown-TWO", () => this.environment?.handleKeyDown("2"))
       this.input.keyboard.on("keydown-THREE", () => this.environment?.handleKeyDown("3"))
       this.input.keyboard.on("keydown-FOUR", () => this.environment?.handleKeyDown("4"))
+    }
+
+    // Re-render building labels once the font file is loaded.
+    // next/font/google loads Cinzel with display:swap, so the font may not
+    // be available when the initial canvas text is drawn.  updateText()
+    // re-rasterizes the text canvas with the now-available font file.
+    if (typeof document !== "undefined" && document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        for (const label of this.buildingLabels) {
+          label.updateText()
+        }
+      })
     }
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -589,6 +609,18 @@ export class WorldScene extends Phaser.Scene {
     this.drawCampfire()
   }
 
+  private addBuildingLabel(
+    x: number,
+    y: number,
+    text: string,
+  ): Phaser.GameObjects.Text {
+    const label = this.add.text(x, y, text, this.buildingLabelStyle)
+      .setOrigin(0.5, 0)
+      .setDepth(WORLD_DEPTHS.buildings)
+    this.buildingLabels.push(label)
+    return label
+  }
+
   private drawVillageBuildings(graphics?: Phaser.GameObjects.Graphics) {
     const buildingGraphics = graphics ?? this.add.graphics().setDepth(WORLD_DEPTHS.buildings)
 
@@ -598,13 +630,7 @@ export class WorldScene extends Phaser.Scene {
         sprite.setOrigin(0.5, 1)
         sprite.setScale(1)
         sprite.setDepth(WORLD_DEPTHS.buildings)
-        this.add.text(building.x, building.y + building.height / 2 + 20, building.label, {
-          color: "#f4dcb1",
-          fontFamily: "var(--font-cinzel), serif",
-          fontSize: "15px",
-        })
-          .setOrigin(0.5, 0)
-          .setDepth(WORLD_DEPTHS.buildings)
+        this.addBuildingLabel(building.x, building.y + building.height / 2 + 20, building.label)
         return
       }
 
@@ -613,13 +639,7 @@ export class WorldScene extends Phaser.Scene {
         sprite.setOrigin(0.5, 1)
         sprite.setScale(1)
         sprite.setDepth(WORLD_DEPTHS.buildings)
-        this.add.text(building.x, building.y + building.height / 2 + 20, building.label, {
-          color: "#f4dcb1",
-          fontFamily: "var(--font-cinzel), serif",
-          fontSize: "15px",
-        })
-          .setOrigin(0.5, 0)
-          .setDepth(WORLD_DEPTHS.buildings)
+        this.addBuildingLabel(building.x, building.y + building.height / 2 + 20, building.label)
         return
       }
 
@@ -628,13 +648,7 @@ export class WorldScene extends Phaser.Scene {
         sprite.setOrigin(0.5, 1)
         sprite.setScale(1)
         sprite.setDepth(WORLD_DEPTHS.buildings)
-        this.add.text(building.x, building.y + building.height / 2 + 20, building.label, {
-          color: "#f4dcb1",
-          fontFamily: "var(--font-cinzel), serif",
-          fontSize: "15px",
-        })
-          .setOrigin(0.5, 0)
-          .setDepth(WORLD_DEPTHS.buildings)
+        this.addBuildingLabel(building.x, building.y + building.height / 2 + 20, building.label)
         return
       }
 
@@ -643,13 +657,7 @@ export class WorldScene extends Phaser.Scene {
         sprite.setOrigin(0.5, 1)
         sprite.setScale(1)
         sprite.setDepth(WORLD_DEPTHS.buildings)
-        this.add.text(building.x, building.y + building.height / 2 + 20, building.label, {
-          color: "#f4dcb1",
-          fontFamily: "var(--font-cinzel), serif",
-          fontSize: "15px",
-        })
-          .setOrigin(0.5, 0)
-          .setDepth(WORLD_DEPTHS.buildings)
+        this.addBuildingLabel(building.x, building.y + building.height / 2 + 20, building.label)
         return
       }
 
@@ -684,13 +692,7 @@ export class WorldScene extends Phaser.Scene {
       buildingGraphics.fillStyle(0xffbd65, 0.18)
       buildingGraphics.fillCircle(building.x, baseTop + 46, 24)
       this.drawBuildingMark(buildingGraphics, building.id, building.x, baseTop + 26)
-      this.add.text(building.x, building.y + building.height / 2 + 10, building.label, {
-        color: "#f4dcb1",
-        fontFamily: "var(--font-cinzel), serif",
-        fontSize: "15px",
-      })
-        .setOrigin(0.5, 0)
-        .setDepth(WORLD_DEPTHS.buildings)
+      this.addBuildingLabel(building.x, building.y + building.height / 2 + 10, building.label)
     })
   }
 
@@ -700,13 +702,7 @@ export class WorldScene extends Phaser.Scene {
       const top = building.y - building.height / 2
       const baseTop = top + 14
       this.drawBuildingMark(overlay, building.id, building.x, baseTop + 26)
-      this.add.text(building.x, building.y + building.height / 2 + 10, building.label, {
-        color: "#f4dcb1",
-        fontFamily: "var(--font-cinzel), serif",
-        fontSize: "15px",
-      })
-        .setOrigin(0.5, 0)
-        .setDepth(4)
+      this.addBuildingLabel(building.x, building.y + building.height / 2 + 10, building.label)
     })
   }
 
