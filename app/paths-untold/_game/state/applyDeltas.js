@@ -1,11 +1,17 @@
 // src/state/applyDeltas.js
+import { normalizeNarrativeObjects, placementsEqual } from './narrativeObjects';
 
 /**
  * Applies world/arc/objective/companion updates coming back from the model.
  * Mutates the provided `mem` object (simple, predictable flow).
  */
-export function applyDeltas(mem, out) {
+export function applyDeltas(mem, out, options = {}) {
     if (!mem || !out) return;
+    const sceneIndex = Number.isFinite(options.sceneIndex)
+      ? options.sceneIndex
+      : Number.isFinite(mem.sceneIndex)
+        ? mem.sceneIndex
+        : 0;
   
     // Location
     if (out.locationDelta?.name) mem.world.location.name = out.locationDelta.name;
@@ -35,6 +41,9 @@ export function applyDeltas(mem, out) {
         }
       }
     }
+
+    // Persistent narrative objects
+    applyObjectState(mem, out.objectsState, sceneIndex);
   
     // Objectives
     for (const d of out.objectivesDelta || []) {
@@ -180,6 +189,28 @@ if (blueprint) {
   function normalizeTags(arr) {
     return Array.from(new Set(arr.map(s => String(s).toLowerCase().trim()))).slice(0, 8);
   }
+
+  function applyObjectState(mem, objectsState, sceneIndex) {
+    if (!Array.isArray(objectsState)) return;
+    if (!Array.isArray(mem.world.objects)) mem.world.objects = [];
+
+    const previousById = new Map(normalizeNarrativeObjects(mem.world.objects).map((object) => [object.id, object]));
+    mem.world.objects = objectsState.map((object) => {
+      const previous = previousById.get(object.id);
+      const changed = !previous || hasObjectChanged(previous, object);
+      return {
+        ...object,
+        lastUpdatedScene: changed ? sceneIndex : previous.lastUpdatedScene
+      };
+    });
+  }
+
+  function hasObjectChanged(previous, next) {
+    return previous.name !== next.name ||
+      (previous.description ?? undefined) !== (next.description ?? undefined) ||
+      previous.condition !== next.condition ||
+      !placementsEqual(previous.placement, next.placement);
+  }
   
   function slug(s) {
     return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -188,4 +219,3 @@ if (blueprint) {
   function clamp(x, lo, hi) {
     return Math.max(lo, Math.min(hi, x));
   }
-  

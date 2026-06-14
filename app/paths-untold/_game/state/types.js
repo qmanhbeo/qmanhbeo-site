@@ -24,11 +24,26 @@
 
 /**
  * @typedef {{
+ *   id: string,
+ *   name: string,
+ *   description?: string,
+ *   condition: "intact"|"damaged"|"destroyed",
+ *   placement:
+ *     | { kind: "held", by: string }
+ *     | { kind: "placed", at: string }
+ *     | { kind: "unlocated" },
+ *   lastUpdatedScene: number
+ * }} NarrativeObject
+ */
+
+/**
+ * @typedef {{
  *   clock: Clock,
  *   location: Location,
  *   sceneTags: string[],
  *   objectives: Objective[],
- *   flags: Record<string, boolean>
+ *   flags: Record<string, boolean>,
+ *   objects: NarrativeObject[]
  * }} WorldState
  */
 

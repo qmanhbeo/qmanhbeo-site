@@ -9,6 +9,8 @@ import { updateGameMemory } from '../utils/memoryManager';
 import { updateCharacterTraits } from '../utils/updateCharacter';
 import { getComputedEmotions } from '../utils/emotionCalculator';
 import { assignPurposeIfNeeded, updatePhaseOutCountdowns } from '../utils/phaseOutManager';
+import { validateNormalizedScenePacket } from '../utils/storyParser';
+import { normalizeNarrativeObjects } from './narrativeObjects';
 
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
@@ -22,12 +24,14 @@ function ensureWorldArc(mem) {
   return {
     ...mem,
     sceneLog: mem?.sceneLog ?? [],
-    world: mem?.world ?? {
+    world: {
       clock: { day: 1, time: 'day' },
       location: { name: 'Unknown Place', tags: [] },
       sceneTags: [],
       objectives: [],
       flags: {},
+      ...(mem?.world ?? {}),
+      objects: normalizeNarrativeObjects(mem?.world?.objects),
     },
     arc: mem?.arc
       ? { coreQuestion: '', activeThreads: [], arcPlan: null, chapterPlan: null, ...mem.arc }
@@ -80,6 +84,13 @@ function makeNewCompanion(incoming, sceneIdx) {
 export function updateFromAIPacket(memory, packet, playerChoiceText = '', playerInputSource = 'suggestion') {
   // Defensive cloning (applyDeltas mutates)
   const draft = deepClone(ensureWorldArc(memory));
+  const nextSceneIndex = Array.isArray(draft.prose) ? draft.prose.length : draft.sceneIndex ?? 0;
+  const validation = validateNormalizedScenePacket(packet, {
+    currentObjects: draft.world.objects
+  });
+  if (!validation.ok) {
+    throw new Error(validation.reason);
+  }
 
   // 1) Apply world/arc/objective/companion deltas (mutates draft)
   const {
@@ -98,9 +109,12 @@ export function updateFromAIPacket(memory, packet, playerChoiceText = '', player
     sceneTags,
     objectivesDelta,
     locationDelta,
+    objectsState: validation.objectsState,
     companionsDelta,
     flagsDelta,
     arcDelta,
+  }, {
+    sceneIndex: nextSceneIndex
   });
 
   // 2) Append narrative (returns a new object)

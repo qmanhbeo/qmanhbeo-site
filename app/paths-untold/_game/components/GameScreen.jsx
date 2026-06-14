@@ -9,7 +9,17 @@ import { getCurrentSceneWaveRole } from '../utils/storyBlueprintPlanner';
 import { planStoryBlueprint } from '../utils/storyBlueprintPlanner';
 import { planChapter } from '../utils/chapterPlanner';
 import { updateFromAIPacket } from '../state/updateFromAIPacket';
-import { extractAndNormalizeAiResponse } from '../utils/storyParser';
+import {
+  buildSceneValidationRetryInstruction,
+  extractAndNormalizeAiResponse,
+  validateNormalizedScenePacket
+} from '../utils/storyParser';
+import {
+  buildContinuityAfterTrace,
+  buildContinuityBeforeTrace,
+  CONTINUITY_TRACE_PREFIX,
+  isContinuityTraceEnabled
+} from '../utils/continuityTrace';
 import {
   commitShadowScene,
   createShadowDirectorRuntime,
@@ -31,6 +41,7 @@ import {
   normalizeNarrativeGraph,
   setActiveNarrativeNode
 } from '../state/narrativeGraph';
+import { isPlayerHeldObject, normalizeNarrativeObjects } from '../state/narrativeObjects';
 
 import CharacterLog from './characterLog';
 import QuestLog from './QuestLog';
@@ -48,6 +59,9 @@ const DEBUG_FULL_PROMPTS = false;  // Set to true to dump full prompts (verbose)
 const shadowDirectorEnabled =
   process.env.NODE_ENV === 'development' &&
   process.env.NEXT_PUBLIC_PATHS_UNTOLD_SHADOW_DIRECTOR === '1';
+const continuityTraceEnabled =
+  process.env.NODE_ENV === 'development' &&
+  isContinuityTraceEnabled();
 
 const createFreshMemory = () => ({
   summary: [],
@@ -61,7 +75,8 @@ const createFreshMemory = () => ({
     location: { name: 'Unknown Place', tags: [] },
     sceneTags: [],
     objectives: [],
-    flags: {}
+    flags: {},
+    objects: []
   },
   arc: { chapter: 1, beat: 0, tension: 3, coreQuestion: '', activeThreads: [], arcPlan: null, chapterPlan: null, storyBlueprint: null }
 });
@@ -69,12 +84,14 @@ const createFreshMemory = () => ({
 const ensureWorldArc = (mem) => ({
   ...mem,
   sceneLog: mem?.sceneLog ?? [],
-  world: mem?.world ?? {
+  world: {
     clock: { day: 1, time: 'day' },
     location: { name: 'Unknown Place', tags: [] },
     sceneTags: [],
     objectives: [],
-    flags: {}
+    flags: {},
+    ...(mem?.world ?? {}),
+    objects: normalizeNarrativeObjects(mem?.world?.objects)
   },
   arc: mem?.arc
     ? { coreQuestion: '', activeThreads: [], arcPlan: null, chapterPlan: null, storyBlueprint: null, ...mem.arc }
@@ -229,6 +246,9 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
     setIsLoading(false);
     sceneGenerated.current = true;
   };
+
+  const playerHeldObjects = (gameMemory.world?.objects || [])
+    .filter(isPlayerHeldObject);
 
   useEffect(() => {
     if (storyOptions?.resumeFromSave && storyOptions.memory) {
@@ -473,7 +493,46 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
       const obj = extractAndNormalizeAiResponse(rawAIX);
       if (!obj) throw new Error('Could not extract JSON payload from model output');
 
+      const attempt = retry ? 'retry' : 'initial';
+      const continuityBeforeTrace = buildContinuityBeforeTrace({
+        sceneIndex: sceneIdx,
+        attempt,
+        playerChoice: choice,
+        currentLocation: baseMemory?.world?.location,
+        currentObjects: baseMemory?.world?.objects,
+        parsedLocationDelta: obj.locationDelta,
+        parsedObjectsState: obj.objectsState
+      });
+      if (continuityTraceEnabled) {
+        console.log(CONTINUITY_TRACE_PREFIX, 'before commit', continuityBeforeTrace);
+      }
+
+      const sceneValidation = validateNormalizedScenePacket(obj, {
+        currentObjects: baseMemory?.world?.objects
+      });
+      if (!sceneValidation.ok && continuityTraceEnabled) {
+        console.warn(CONTINUITY_TRACE_PREFIX, 'rejected packet', {
+          ...continuityBeforeTrace,
+          stage: 'rejected',
+          reason: sceneValidation.reason
+        });
+      }
+
       const nextMem = updateFromAIPacket(baseMemory, obj, choice, source);
+      if (continuityTraceEnabled) {
+        console.log(
+          CONTINUITY_TRACE_PREFIX,
+          'after commit',
+          buildContinuityAfterTrace({
+            sceneIndex: nextMem.sceneIndex,
+            attempt,
+            beforeObjects: continuityBeforeTrace.currentCanonicalObjects,
+            committedLocation: nextMem?.world?.location,
+            committedObjects: nextMem?.world?.objects
+          })
+        );
+      }
+
       const currentGraph = graphRef.current;
       const newNode = createNarrativeNode(currentGraph, {
         parentId,
@@ -525,7 +584,8 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
           ...prev,
           { html: '<i class="text-amber-300/70">The story hesitates for a moment\u2026</i>', animate: true, type: 'retry' }
         ]);
-        const { system: retrySys, user: retryUser } = buildScenePrompt(baseMemory, choice, { ...storyOptions, playerName: playerNameRef.current });
+        const { system: retrySys, user: retryBaseUser } = buildScenePrompt(baseMemory, choice, { ...storyOptions, playerName: playerNameRef.current });
+        const retryUser = `${retryBaseUser}\n\n${buildSceneValidationRetryInstruction(e?.message)}`;
         const retryMessages = [{ role: 'system', content: retrySys }, { role: 'user', content: retryUser }];
         return new Promise((resolve) => {
           generateScene(retryMessages, async (newResponse) => {
@@ -696,7 +756,7 @@ const GameScreen = ({ prompt, storyOptions, onBackToMenu }) => {
 
       {showItemsPanel && (
         <ItemsPanel
-          items={gameMemory.world?.items || []}
+          items={playerHeldObjects}
           onClose={() => setShowItemsPanel(false)}
         />
       )}

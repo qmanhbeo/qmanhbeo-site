@@ -1,4 +1,5 @@
 // src/state/migrateMemory.js
+import { normalizeNarrativeObjects } from './narrativeObjects';
 
 /**
  * Bring older saves up to date with the current GameMemory shape.
@@ -7,18 +8,24 @@
  */
 
 export function migrateMemory(raw) {
-    const isNew = raw && raw.world && raw.arc;
-
-    // Defaults for new fields
-    const world = isNew ? raw.world : {
+    const rawWorld =
+      raw?.world && typeof raw.world === 'object' && !Array.isArray(raw.world)
+        ? raw.world
+        : {};
+    const world = {
       clock: { day: 1, time: "day" },
       location: { name: "Unknown Place", tags: [] },
       sceneTags: [],
       objectives: [],
-      flags: {}
+      flags: {},
+      ...rawWorld,
+      objects: normalizeNarrativeObjects(rawWorld.objects)
     };
 
-    const rawArc = isNew ? raw.arc : {};
+    const rawArc =
+      raw?.arc && typeof raw.arc === 'object' && !Array.isArray(raw.arc)
+        ? raw.arc
+        : {};
     const arc = {
       chapter: rawArc.chapter ?? 1,
       beat: rawArc.beat ?? 0,

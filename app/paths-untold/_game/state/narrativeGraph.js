@@ -1,3 +1,5 @@
+import { normalizeNarrativeObjects } from './narrativeObjects';
+
 const GRAPH_VERSION = 2;
 
 function cloneJson(value) {
@@ -95,12 +97,14 @@ export function createMemorySnapshot(memory = {}) {
     sceneIndex: Number.isFinite(memory.sceneIndex) ? memory.sceneIndex
       : Number.isFinite(memory.currentScene) ? memory.currentScene
       : 0,
-    world: memory.world ?? {
+    world: {
       clock: { day: 1, time: 'day' },
       location: { name: 'Unknown Place', tags: [] },
       sceneTags: [],
       objectives: [],
-      flags: {}
+      flags: {},
+      ...(memory.world ?? {}),
+      objects: normalizeNarrativeObjects(memory.world?.objects)
     },
     arc: memory.arc ?? { chapter: 1, beat: 0, tension: 3 }
   });

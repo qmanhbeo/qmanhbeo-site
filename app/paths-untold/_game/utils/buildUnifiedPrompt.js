@@ -11,6 +11,13 @@ import {
 
 const DEBUG_FULL_PROMPTS = false;  // Set to true to dump full prompts (verbose)
 
+function formatObjectPlacement(placement) {
+  if (placement?.kind === 'held') return `held(${placement.by})`;
+  if (placement?.kind === 'placed') return `placed(${placement.at})`;
+  if (placement?.kind === 'unlocated') return 'unlocated';
+  return 'unlocated';
+}
+
 // Opening scene schema — includes title for story initialization.
 const OPENING_SCENE_SCHEMA_CONTRACT = `OUTPUT JSON SCHEMA FOR OPENING SCENE (required, no exceptions):
 {
@@ -20,6 +27,15 @@ const OPENING_SCENE_SCHEMA_CONTRACT = `OUTPUT JSON SCHEMA FOR OPENING SCENE (req
   "summary": "one sentence summary",
   "sceneTags": [],
   "locationDelta": { "name": "specific place", "addTags": [] },
+  "objectsState": [
+    {
+      "id": "stable_snake_case_id",
+      "name": "display name",
+      "description": "short optional description",
+      "condition": "intact | damaged | destroyed",
+      "placement": { "kind": "held", "by": "player | NPC id/name" }
+    }
+  ],
   "objectivesDelta": [],
   "companionsDelta": [],
   "flagsDelta": {},
@@ -32,6 +48,8 @@ STRICT OUTPUT RULES FOR OPENING SCENE:
 - Use "prose", never "scene", "story", "Action", or "opening_scene".
 - Use "paths", never "choices" or "Choices".
 - Include a short story title in "title".
+- Include locationDelta.name on every scene, naming the physical location where the prose ends.
+- Include objectsState on every scene; use [] when no persistent objects exist.
 - "paths" must contain 2-4 suggested actions the player can take immediately. The player can also type a custom response.
 - "prose" must be narration/prose text, not a scene or story description.
 `;
@@ -43,7 +61,16 @@ const GENERAL_SCENE_SCHEMA_CONTRACT = `OUTPUT JSON SCHEMA FOR FOLLOW-UP SCENE (r
   "paths": ["suggested action 1", "suggested action 2"],
   "summary": "one sentence summary",
   "sceneTags": [],
-  "locationDelta": {},
+  "locationDelta": { "name": "physical location where this scene ends", "addTags": [], "removeTags": [] },
+  "objectsState": [
+    {
+      "id": "stable_snake_case_id",
+      "name": "established display name",
+      "description": "short optional description",
+      "condition": "intact | damaged | destroyed",
+      "placement": { "kind": "held", "by": "player | NPC id/name" }
+    }
+  ],
   "objectivesDelta": [],
   "companionsDelta": [],
   "flagsDelta": {},
@@ -57,6 +84,8 @@ STRICT OUTPUT RULES FOR FOLLOW-UP SCENE:
 - Use "paths", never "choices" or "Choices".
 - Do NOT generate or include a new "title" field.
 - Only include deltas when something actually changes; otherwise use {} or [].
+- Include locationDelta.name on every scene, naming the physical location where the prose ends, even if unchanged.
+- Include objectsState on every scene; it must repeat all tracked objects even when unchanged.
 - "paths" must contain 2-4 suggested actions the player can take immediately. The player can also type a custom response.
 - "prose" must be narration/prose text, not a scene or story description.
 `;
@@ -131,7 +160,8 @@ export const buildScenePrompt = (gameMemory, latestChoice, playerIntro = null) =
       location: { name: 'Unknown Place', tags: [] },
       sceneTags: [],
       objectives: [],
-      flags: {}
+      flags: {},
+      objects: []
     },
     arc = { chapter: 1, beat: 0, tension: 3, coreQuestion: '', activeThreads: [], arcPlan: null, chapterPlan: null }
   } = gameMemory;
@@ -250,6 +280,15 @@ Blueprint Position:
     ? flagKeys.map(k => `${k}=${world.flags[k]}`).join(', ')
     : 'none';
 
+  const trackedObjects = Array.isArray(world?.objects) ? world.objects : [];
+  const objectsBlock = trackedObjects.length > 0
+    ? trackedObjects.map((object) => {
+        const placement = formatObjectPlacement(object.placement);
+        const description = object.description ? `; description=${object.description}` : '';
+        return `- ${object.id}: ${object.name}; condition=${object.condition}; placement=${placement}${description}`;
+      }).join('\n')
+    : '- none tracked yet';
+
   const worldBlock = `
 World:
 - Location: ${world?.location?.name ?? 'Unknown Place'} [${(world?.location?.tags || []).join(', ')}]
@@ -263,6 +302,27 @@ ${storyBlueprint ? '' : `- Arc Stage: ${arcStageLabel} | Chapter Stage: ${chapte
 - Active Threads: ${(arc?.activeThreads || []).join(' | ') || '(none yet)'}
 ${planBlock}
 `.trim();
+
+  const canonicalObjectsBlock = `Canonical Objects (authoritative persistent state):
+${objectsBlock}`;
+
+  const playerAttemptAuthorityBlock = `PLAYER INPUT IS AN ATTEMPT, NOT CANONICAL FACT.
+
+Before writing the scene, compare the player's attempted action with Canonical World and Canonical Objects.
+
+If the action contradicts canonical reality:
+- do not accept or silently repair the false premise;
+- explicitly correct or challenge the contradiction as a game master or narrator;
+- narrate the attempt failing, being impossible, or requiring a different action;
+- preserve canonical object state unless a logically possible event actually changes it.
+
+Required examples:
+- A destroyed object cannot be used, eaten, opened, restored, or possessed normally.
+- An object held by another character cannot be used by the player without first retrieving it.
+- An object placed elsewhere cannot appear in the player's possession.
+- A consumed object cannot be consumed again.
+- A replacement object must be explicitly acquired and introduced with a new stable ID.
+- The player's wording does not override canonical state.`;
 
   // ── Task block ─────────────────────────────────────────────────────────────
   const playerName = playerIntro?.playerName || '';
@@ -368,7 +428,11 @@ RULES:
   7. sceneRecord.stateChange must describe something concrete. If nothing changed, rule 1 was violated.
 - PLAYER IDENTITY: Do not ask for the player's name unless the scene creates a genuine narrative need — signing a document, being formally introduced, making a vow, giving testimony, being accused, or a relationship deepening to the point where a name is earned. If such a moment occurs AND the player name is unknown, set identityRequirement.required = true with a short in-world promptText (the NPC's exact words, as spoken dialogue). Do NOT trigger this in ordinary scenes or early in the story.
 - Keep character updates compact but useful.
+- OBJECT CONTINUITY: Canonical Objects are authoritative. Never depict a destroyed object functioning normally. Never give the player an object canonically held by someone else or placed elsewhere. Return objectsState as the complete end-of-scene state of every tracked persistent object. Repeat unchanged objects unchanged. Reflect transfers, placement, retrieval, damage, and destruction. If the attempted player action fails, preserve the previous object state. Do not change an existing object's stable ID or established name. Do not omit destroyed or off-screen objects. Add new persistent plot-relevant objects with a stable ID and name. Do not use flags as a substitute for tracked object state. Each object must use exactly one placement value: { "kind": "held", "by": "player or stable NPC/companion id/name" }, { "kind": "placed", "at": "specific useful placement" }, or { "kind": "unlocated" }. For placed objects, use the most specific useful placement available, such as "Aldi Checkout Counter". Use unlocated only when no useful physical placement exists.
 - FLAGS RULES: Use flagsDelta for persistent story/world facts that should affect future scenes. Use has_... or ..._discovered for historical facts (e.g., has_activated_orb, hidden_passage_discovered). Use currently_... or explicit state flags for current conditions (e.g., orb_currently_active, door_symbols_faint). Clear current-state flags when they stop being true. Avoid contradictory flags — do not set orb_activated=true alongside orb_dimmed=true if orb_activated already means actively on. Prefer snake_case flag names. Do not use flags for trivial momentary details. Do not overwrite unrelated flags. Omit flagsDelta or use empty { set: {}, clear: [] } when no flag changes.
+- LOCATION RULE: locationDelta.name is required in every scene and must name the physical location where the prose ends, even if unchanged.
+
+FINAL SELF-CHECK: Before returning JSON, verify that the prose and objectsState agree with each other and with the supplied Canonical Objects. If the player attempted a contradiction, the prose must acknowledge it rather than comply with it.
 
 OUTPUT SHAPE (STRICT JSON) — all fields inside one object:
 {
@@ -388,6 +452,15 @@ OUTPUT SHAPE (STRICT JSON) — all fields inside one object:
   ],
   "sceneTags": ["tag1"],
   "locationDelta": { "name": "string", "addTags": ["string"], "removeTags": ["string"] },
+  "objectsState": [
+    {
+      "id": "stable_snake_case_id",
+      "name": "established display name",
+      "description": "short optional description",
+      "condition": "intact | damaged | destroyed",
+      "placement": { "kind": "held", "by": "player | companion id/name" }
+    }
+  ],
   "objectivesDelta": [ { "add": "string" }, { "complete": "string" }, { "fail": "string" } ],
   "companionsDelta": [
     { "idOrName": "string", "say": "string", "history": [{ "event": "string", "impact": 1 }], "status": "active" }
@@ -444,6 +517,10 @@ OUTPUT SHAPE (STRICT JSON) — all fields inside one object:
   const sceneDirection = deriveSceneDirection(gameMemory);
 
   const user = `${worldBlock}
+
+${playerAttemptAuthorityBlock}
+
+${canonicalObjectsBlock}
 
 Companions (active):
 ${companionString}

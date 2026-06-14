@@ -1,4 +1,5 @@
 // src/utils/storyParser.js
+import { normalizeNarrativeObjects, validatePlacement } from '../state/narrativeObjects';
 //
 // Central parser/normalizer for model output.
 // Accepts either:
@@ -140,6 +141,47 @@ function coerceLocationDelta(v) {
   return { name, addTags, removeTags };
 }
 
+function coerceObjectsState(v) {
+  if (!Array.isArray(v)) return undefined;
+  return v.map((object) => {
+    if (!object || typeof object !== 'object') return object;
+    const out = {};
+    if ('id' in object) out.id = typeof object.id === 'string' ? object.id.trim() : object.id;
+    if ('name' in object) out.name = typeof object.name === 'string' ? object.name.trim() : object.name;
+    if ('description' in object && typeof object.description === 'string') {
+      const description = object.description.trim();
+      if (description) out.description = description;
+    }
+    if ('condition' in object) out.condition = object.condition;
+    if ('placement' in object && object.placement && typeof object.placement === 'object') {
+      const placement = {};
+      if ('kind' in object.placement) {
+        placement.kind = typeof object.placement.kind === 'string'
+          ? object.placement.kind.trim()
+          : object.placement.kind;
+      }
+      if ('by' in object.placement) {
+        placement.by = typeof object.placement.by === 'string'
+          ? object.placement.by.trim()
+          : object.placement.by;
+      }
+      if ('at' in object.placement) {
+        placement.at = typeof object.placement.at === 'string'
+          ? object.placement.at.trim()
+          : object.placement.at;
+      }
+      out.placement = placement;
+    }
+    if ('holder' in object) {
+      out.holder = object.holder;
+    }
+    if ('location' in object) {
+      out.location = object.location;
+    }
+    return out;
+  });
+}
+
 function coerceCompanionsDelta(v) {
   if (!Array.isArray(v)) return [];
   return v.map(it => {
@@ -221,6 +263,7 @@ function normalizeScenePacket(obj, raw) {
   const sceneTags = coerceSceneTags(obj.sceneTags);
   const objectivesDelta = coerceObjectivesDelta(obj.objectivesDelta);
   const locationDelta = coerceLocationDelta(obj.locationDelta);
+  const objectsState = coerceObjectsState(obj.objectsState);
   const companionsDelta = coerceCompanionsDelta(obj.companionsDelta);
   const arcDelta = coerceArcDelta(obj.arcDelta);
   const choiceDirector = coerceChoiceDirector(obj.choiceDirector);
@@ -243,7 +286,7 @@ function normalizeScenePacket(obj, raw) {
       }
     : undefined;
 
-  return { title, prose: finalProse, paths, characters, summary, sceneTags, objectivesDelta, locationDelta, companionsDelta, flagsDelta, arcDelta, choiceDirector, sceneRecord, identityRequirement };
+  return { title, prose: finalProse, paths, characters, summary, sceneTags, objectivesDelta, locationDelta, objectsState, companionsDelta, flagsDelta, arcDelta, choiceDirector, sceneRecord, identityRequirement };
 }
 
 // ----------------- Public: central entry point -----------------
@@ -281,6 +324,99 @@ export function extractAndNormalizeAiResponse(upstream) {
   const parsed = robustParseJSON(text);
   if (!parsed) return null;
   return normalizeScenePacket(parsed, text);
+}
+
+export function validateNormalizedScenePacket(packet, { currentObjects = [] } = {}) {
+  const locationName = packet?.locationDelta?.name;
+  if (typeof locationName !== 'string' || locationName.trim().length === 0) {
+    return {
+      ok: false,
+      reason: 'missing_location_delta_name'
+    };
+  }
+
+  if (!Array.isArray(packet?.objectsState)) {
+    return {
+      ok: false,
+      reason: 'missing_objects_state'
+    };
+  }
+
+  const currentById = new Map(
+    normalizeNarrativeObjects(currentObjects)
+      .map((object) => [String(object.id), object])
+  );
+  const seen = new Set();
+  const objectsState = [];
+
+  for (const object of packet.objectsState) {
+    if (!object || typeof object !== 'object') {
+      return { ok: false, reason: 'invalid_object_state' };
+    }
+
+    const id = typeof object.id === 'string' ? object.id.trim() : '';
+    if (!id) return { ok: false, reason: 'invalid_object_id' };
+    if (seen.has(id)) return { ok: false, reason: `duplicate_object_id:${id}` };
+    seen.add(id);
+
+    const name = typeof object.name === 'string' ? object.name.trim() : '';
+    if (!name) return { ok: false, reason: `missing_object_name:${id}` };
+
+    const previous = currentById.get(id);
+    if (previous?.name && previous.name !== name) {
+      return { ok: false, reason: `renamed_object:${id}` };
+    }
+
+    if (!['intact', 'damaged', 'destroyed'].includes(object.condition)) {
+      return { ok: false, reason: `invalid_object_condition:${id}` };
+    }
+
+    if ('holder' in object || 'location' in object) {
+      return { ok: false, reason: `legacy_object_placement_fields:${id}` };
+    }
+
+    const placementValidation = validatePlacement(object.placement, id);
+    if (!placementValidation.ok) return placementValidation;
+
+    const incomingDescription =
+      typeof object.description === 'string' && object.description.trim()
+        ? object.description.trim()
+        : null;
+
+    const nextObject = {
+      id,
+      name,
+      condition: object.condition,
+      placement: placementValidation.placement
+    };
+    if (incomingDescription) {
+      nextObject.description = incomingDescription;
+    } else if (typeof previous?.description === 'string' && previous.description.trim()) {
+      nextObject.description = previous.description.trim();
+    }
+    objectsState.push(nextObject);
+  }
+
+  for (const id of currentById.keys()) {
+    if (!seen.has(id)) {
+      return { ok: false, reason: `missing_tracked_object:${id}` };
+    }
+  }
+
+  return { ok: true, objectsState };
+}
+
+export function buildSceneValidationRetryInstruction(reason = '') {
+  const safeReason = String(reason || 'invalid_scene_packet')
+    .replace(/[^\w:.-]+/g, ' ')
+    .trim()
+    .slice(0, 160);
+  return [
+    'Previous scene packet rejected:',
+    safeReason || 'invalid_scene_packet',
+    'Return the full scene JSON again. Each object placement must be exactly one of:',
+    '{ "kind": "held", "by": "..." }, { "kind": "placed", "at": "..." }, or { "kind": "unlocated" }.'
+  ].join('\n');
 }
 
 // ----------------- LEGACY export (kept for compatibility) -----------------

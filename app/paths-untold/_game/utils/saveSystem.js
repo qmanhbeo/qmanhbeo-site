@@ -1,4 +1,5 @@
 // saveSystem.js
+import { migrateMemory } from '../state/migrateMemory';
 
 export const saveGameToSlot = (slotKey, gameData) => {
   if (!gameData.memory || !gameData.ui) {
@@ -23,7 +24,10 @@ export const loadGameFromSlot = (slotKey) => {
       console.warn("⚠️ Save file incomplete:", parsed);
       return null;
     }
-    return parsed;
+    return {
+      ...parsed,
+      memory: migrateMemory(parsed.memory)
+    };
   } catch (e) {
     console.error("❌ Failed to parse save file:", e);
     return null;
