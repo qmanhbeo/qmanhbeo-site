@@ -152,6 +152,8 @@ export default function WorldScreen() {
   })
 
   const handleWorldKeyDown = useEffectEvent((event: KeyboardEvent) => {
+    if (document.querySelector('[aria-modal="true"]')) return
+
     if (event.key === "Escape") {
       event.preventDefault()
       handleEscape()

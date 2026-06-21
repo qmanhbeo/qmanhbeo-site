@@ -272,6 +272,7 @@ export class WorldScene extends Phaser.Scene {
     if (justInteracted && activeTarget) {
       this.uiLocked = true
       this.player.setControlsLocked(true)
+      if (this.input.keyboard) this.input.keyboard.enabled = false
       this.syncTargetHalo(null)
       this.registry.set("promptText", "")
 
@@ -862,6 +863,7 @@ export class WorldScene extends Phaser.Scene {
   private unlockWorldUi() {
     this.uiLocked = false
     this.player?.setControlsLocked(false)
+    if (this.input.keyboard) this.input.keyboard.enabled = true
   }
 
   private bardSprite?: Phaser.GameObjects.Sprite
