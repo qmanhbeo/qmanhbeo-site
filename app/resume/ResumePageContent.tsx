@@ -181,13 +181,11 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
           {/* Summary */}
           <section className="mb-6 print:mb-4">
             <p className="font-sans text-sm leading-relaxed text-slate-700">
-              Graduate researcher bridging quantitative social science and AI engineering, with a focus on
-              systematic text classification, structured data collection, and evaluation benchmark design.
-              Experience building NLP pipelines for multi-label document classification with attention-based
-              interpretability, engineering LLM-powered systems with context management and structured output
-              parsing, and publishing open datasets with documented community adoption. Adept at parsing
-              technical documentation, designing classification schemes, and working with structured and
-              unstructured data at scale across sustainability, policy, and language domains.
+              Graduate student and active researcher with a background in economics and AI engineering.
+              Experience in systematic text classification, structured data collection, and evaluation
+              benchmark design using NLP pipelines, LLM systems, and attention-based interpretability.
+              Adept at parsing technical documentation, designing classification schemes, and working
+              with structured and unstructured data across sustainability, policy, and language domains.
             </p>
           </section>
 
