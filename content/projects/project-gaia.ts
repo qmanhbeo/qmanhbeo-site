@@ -3,29 +3,29 @@ import type { ProjectEntry } from "@/content/entries"
 const projectGaia: ProjectEntry = {
   slug: "project-gaia",
   type: "project",
-  title: "GAIA: An Agent-Based Sandbox for Society's Oldest Problem — Resource Allocation",
-  subtitle: "Households, labour, food, water, and policy in one living system",
+  title: "GAIA: Agent-based Economic Simulation for Reinforcement Learning Decision Making",
+  subtitle: "Households, labor, food, water, and policy in one living system",
   dateLabel: "Apr 2025 - Present",
   status: "In Progress",
   summary:
-    "A personal project exploring society's oldest problem — who gets what, under what constraints, and at whose cost — through agent-based simulation and reinforcement learning.",
+    "Conceived and developed as a personal research initiative in computational philosophy and social science to model society's foundational challenge: optimal resource allocation.",
   description:
     "GAIA is a personal effort to do social science through simulation: building a world of households, scarcity, and ecological limits where questions of fairness, distribution, and collective survival can be probed rather than optimised into abstraction.",
   detailSections: [
     {
       label: "Premise",
       content:
-        "A personal project exploring society's oldest problem — who gets what, under what constraints, and at whose cost — through agent-based simulation.",
+        "Conceived and developed as a personal research initiative in computational philosophy and social science to model society's foundational challenge: optimal resource allocation.",
     },
     {
       label: "Design",
       content:
-        "Households, labour, food, water, and policy are modelled as interdependent agents so that emergent distributional outcomes can be observed, stressed, and debated rather than hidden inside a reward function.",
+        "Represented households, labor, consumption, ecological limits, and policy choices as interconnected agents to observe how emergent behaviors surface before optimization claims are made.",
     },
     {
       label: "Purpose",
       content:
-        "A sandbox for social-science thinking: testing theories of fairness, institutional design, and allocation under ecological and institutional constraints before any claim of optimality is entertained.",
+        "Designed the framework to stress-test institutional constraints, trade-offs, and delayed consequences in resource-scarce environments.",
     },
   ],
   links: [
