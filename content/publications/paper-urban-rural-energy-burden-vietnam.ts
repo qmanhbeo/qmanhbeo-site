@@ -22,7 +22,7 @@ const paperUrbanRuralEnergyBurdenVietnam: PublicationEntry = {
   implications:
     "Energy affordability policy that ignores geography will systematically undercount who carries the burden of the low-carbon transition.",
   link: {
-    label: "Seek the Original Parchment",
+    label: "Preprint",
     href: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5261109",
     kind: "reference",
   },

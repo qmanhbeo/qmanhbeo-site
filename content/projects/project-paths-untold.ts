@@ -35,6 +35,12 @@ const projectPathsUntold: ProjectEntry = {
       kind: "repository",
       showOnCard: true,
     },
+    {
+      label: "Live Demo",
+      href: "/paths-untold",
+      kind: "demo",
+      showOnCard: true,
+    },
   ],
   tags: ["OpenAI API", "Prompt Engineering", "Context Management", "State Tracking", "Regex Validation", "LLM Output Parsing"],
 }

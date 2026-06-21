@@ -56,14 +56,14 @@ const EXPERIENCE: { period: string; role: string; organization: string; details:
     organization: "University of Birmingham",
     details: [
       "Represent a small postgraduate cohort in the MSc AI and Sustainable Development programme.",
-      "Collect and communicate student feedback to academic staff through one-to-one discussions.",
+      "Collect and communicate student feedback to academic staff.",
       "Liaise with programme leads to bridge student perspectives with institutional action.",
     ],
   },
   {
     period: "Oct 2024 - Apr 2026",
     role: "Research Assistant",
-    organization: "EEPSEA",
+    organization: "EEPSEA (Economy and Environment Partnership for Southeast Asia)",
     details: [
       "Contract research assistant working under Dr Truong Dang Thuy on energy poverty and energy transition.",
       "Collaborate on ongoing research in energy economics and policy analysis.",
@@ -95,6 +95,12 @@ const EXPERIENCE: { period: string; role: string; organization: string; details:
     organization: "University of Economics Ho Chi Minh City",
     details: ["Contributed student perspectives during FIBAA standards accreditation process."],
     cert: "FIBAA.jpg",
+  },
+  {
+    period: "Nov 2023 - Jan 2024",
+    role: "Undergraduate Teaching Assistant",
+    organization: "University of Economics Ho Chi Minh City",
+    details: ["Graded assignments and provided feedback for a Time Series Econometrics course."],
   },
 ]
 
@@ -289,7 +295,7 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                         rel="noopener noreferrer"
                         className="font-sans text-xs text-blue-700 hover:underline"
                       >
-                        {link.kind === "repository" ? "Repository" : link.kind === "demo" ? "Demo" : link.kind === "kaggle" ? "Kaggle Dataset" : "Paper"}
+                        {link.kind === "repository" ? "GitHub" : link.kind === "demo" ? "Demo" : link.kind === "kaggle" ? "Kaggle Dataset" : link.kind === "citation" ? "External Sample Work" : "Paper"}
                       </a>
                     ))}
                   </div>

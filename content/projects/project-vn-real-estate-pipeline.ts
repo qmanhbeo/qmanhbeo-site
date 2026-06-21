@@ -39,12 +39,12 @@ const projectVnRealEstatePipeline: ProjectEntry = {
     {
       label: "Organic citation (forked dataset)",
       href: "https://www.kaggle.com/datasets/cnglmph/ho-chi-minh-city-real-estate-data-2025",
-      kind: "reference",
+      kind: "citation",
     },
     {
       label: "Organic citation (Tableau viz)",
       href: "https://public.tableau.com/app/profile/bluetail.zacky/viz/SaigonRealEstate2025/Overview",
-      kind: "reference",
+      kind: "citation",
     },
   ],
   tags: ["Web Scraping", "Data Cleaning", "Regex Parsing", "Kaggle Publication", "Data Validation", "Exploratory Analysis"],
