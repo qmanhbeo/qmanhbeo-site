@@ -276,6 +276,9 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                   <span className="font-sans text-sm font-semibold text-slate-900">{project.title}</span>
                   <span className="font-sans text-xs text-slate-500">{project.dateLabel}</span>
                 </div>
+                {project.subtitle && (
+                  <p className="font-sans text-xs italic text-slate-500">{project.subtitle}</p>
+                )}
                 {project.detailSections.length > 0 && (
                   <ul className="ml-4 list-disc font-sans text-xs text-slate-700">
                     {project.detailSections.map((section, j) => (

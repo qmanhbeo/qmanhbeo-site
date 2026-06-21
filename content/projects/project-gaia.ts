@@ -3,29 +3,29 @@ import type { ProjectEntry } from "@/content/entries"
 const projectGaia: ProjectEntry = {
   slug: "project-gaia",
   type: "project",
-  title: "GAIA: Agent-based Economic Simulation for Reinforcement Learning Decision Making",
-  subtitle: "Households, labor, food, water, and policy in one living system",
+  title: "GAIA: An Agent-Based Sandbox for Society's Oldest Problem — Resource Allocation",
+  subtitle: "Households, labour, food, water, and policy in one living system",
   dateLabel: "Apr 2025 - Present",
   status: "In Progress",
   summary:
-    "An agent-based world of households, labour, food, water, and environmental limits, built as a place where resource-allocation policies can be tested against something closer to life.",
+    "A personal project exploring society's oldest problem — who gets what, under what constraints, and at whose cost — through agent-based simulation and reinforcement learning.",
   description:
-    "GAIA is a simulated economy where reinforcement learning is forced to negotiate with households, scarcity, and environmental constraints rather than abstract reward surfaces detached from lived systems.",
+    "GAIA is a personal effort to do social science through simulation: building a world of households, scarcity, and ecological limits where questions of fairness, distribution, and collective survival can be probed rather than optimised into abstraction.",
   detailSections: [
     {
-      label: "Core Premise",
+      label: "Premise",
       content:
-        "The project starts from the belief that allocation problems should be tested in worlds with interdependence, trade-offs, and delayed consequences. GAIA turns those interactions into a simulation that can be probed, stressed, and revised.",
+        "A personal project exploring society's oldest problem — who gets what, under what constraints, and at whose cost — through agent-based simulation.",
     },
     {
-      label: "How It Works",
+      label: "Design",
       content:
-        "Households, labor, consumption, ecological limits, and policy choices are represented as connected agents and state transitions so emergent behavior can surface before any claim of optimization is taken seriously.",
+        "Households, labour, food, water, and policy are modelled as interdependent agents so that emergent distributional outcomes can be observed, stressed, and debated rather than hidden inside a reward function.",
     },
     {
-      label: "Research Use",
+      label: "Purpose",
       content:
-        "GAIA is meant to support experiments on fairer resource allocation, policy stress-testing, and decision-making under ecological and institutional constraints.",
+        "A sandbox for social-science thinking: testing theories of fairness, institutional design, and allocation under ecological and institutional constraints before any claim of optimality is entertained.",
     },
   ],
   links: [
@@ -36,7 +36,7 @@ const projectGaia: ProjectEntry = {
       showOnCard: true,
     },
   ],
-  tags: ["Agent-Based Modelling", "Simulation", "Reinforcement Learning", "Interactive Visualisation"],
+  tags: ["Agent-Based Modelling", "Simulation", "Reinforcement Learning", "Resource Allocation", "Social Science", "Fairness"],
 }
 
 export default projectGaia
