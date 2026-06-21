@@ -10,7 +10,7 @@ const EDUCATION: { period: string; institution: string; degree: string; details?
     period: "Sep 2025 - Sep 2026",
     institution: "University of Birmingham",
     degree: "MSc AI and Sustainable Development",
-    details: ["Birmingham Award with Distinction.", "Working on measuring AI-for-Sustainability Research and Policy semantic gap in the embedding space for the MSc dissertation under Dr Chris Arnold."],
+    details: ["Birmingham Award with Distinction.", "Working on measuring AI-for-Sustainability Research and Policy semantic gap in the embedding space for the MSc dissertation under the supervision of Dr Christian Arnold."],
   },
   {
     period: "May 2025",
