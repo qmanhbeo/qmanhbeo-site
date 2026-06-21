@@ -134,7 +134,7 @@ interface ResumePageContentProps {
 }
 
 export default function ResumePageContent({ publications, projects, arcs }: ResumePageContentProps) {
-  const skills = extractSkills(projects)
+  const skills = ["Applied Econometrics", "Time Series Analysis", "Systematic Literature Review", "Research Design", "Stata", "R", "Policy Analysis", "Survey Design", "Data Integrity & Validation", ...extractSkills(projects)]
   const awards = extractAwards(arcs)
 
   const handlePrint = useCallback(() => {
