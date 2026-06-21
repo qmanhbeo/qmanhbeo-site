@@ -8,7 +8,7 @@ const paperRenewableDelayVietnam: PublicationEntry = {
   subtitle: "Energy and livelihoods at the edge of transition timelines",
   journal: "ELG 2025",
   yearLabel: "2025",
-  status: "Published",
+  status: "Conference Paper",
   summary:
     "A study of how renewable energy delays ripple outward, turning project timelines into lived socioeconomic costs for Vietnamese households and communities.",
   abstract:

@@ -13,7 +13,7 @@ export interface EntryImage {
 export interface EntryLink {
   label: string
   href: string
-  kind: "repository" | "demo" | "reference"
+  kind: "repository" | "demo" | "reference" | "kaggle"
   showOnCard?: boolean
 }
 

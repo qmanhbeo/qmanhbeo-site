@@ -10,7 +10,7 @@ const EDUCATION: { period: string; institution: string; degree: string; details?
     period: "Sep 2025 - Sep 2026",
     institution: "University of Birmingham",
     degree: "MSc AI and Sustainable Development",
-    details: ["Birmingham Award with Distinction.", "Working on reinforcement learning for real-world resource allocation."],
+    details: ["Birmingham Award with Distinction.", "Working on measuring AI-for-Sustainability Research and Policy semantic gap in the embedding space for the MSc dissertation under Dr Chris Arnold."],
   },
   {
     period: "May 2025",
@@ -36,7 +36,7 @@ const EDUCATION: { period: string; institution: string; degree: string; details?
 
 const LANGUAGES: { language: string; proficiency: string }[] = [
   { language: "Vietnamese", proficiency: "Native or bilingual proficiency" },
-  { language: "English", proficiency: "Native or bilingual proficiency" },
+  { language: "English", proficiency: "Fluent" },
   { language: "Chinese", proficiency: "Elementary proficiency" },
   { language: "French", proficiency: "Elementary proficiency" },
 ]
@@ -61,7 +61,7 @@ const EXPERIENCE: { period: string; role: string; organization: string; details:
     ],
   },
   {
-    period: "Oct 2024 - Present",
+    period: "Oct 2024 - Apr 2026",
     role: "Research Assistant",
     organization: "EEPSEA",
     details: [
@@ -82,9 +82,10 @@ const EXPERIENCE: { period: string; role: string; organization: string; details:
     role: "PGT SHAPE AI Challenge Contributor",
     organization: "Oxford University Press",
     details: [
-      "Collaborated voluntarily to improve an AI evaluation benchmark for real-world language teaching.",
-      "Worked in a small international team to strengthen benchmark validity.",
-      "Contribution will be acknowledged in the method paper.",
+      "Contributed to the development and validation of an LLM evaluation benchmark for real-world language teaching and text assessment.",
+      "Collaborated in a small international team on systematic content annotation and benchmark validity testing.",
+      "Analysed language-teaching data and evaluation outputs to improve classification rubric design and assessment consistency.",
+      "Contribution acknowledged in the method paper (in preparation).",
     ],
     cert: "PGTShapeAI.png",
   },
@@ -174,11 +175,13 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
           {/* Summary */}
           <section className="mb-6 print:mb-4">
             <p className="font-sans text-sm leading-relaxed text-slate-700">
-              My work, study, and hobbies focus on applying reinforcement learning and agent-based modelling
-              to challenges in sustainability, public services, and equitable resource distribution. I work with
-              data pipelines, simulations, reinforcement learning, advanced machine learning, and evaluation
-              that integrate behavioural realism with algorithmic optimisation. I am motivated by advancing
-              AI systems that can support fairer and more effective decision-making in the real world.
+              Graduate researcher bridging quantitative social science and AI engineering, with a focus on
+              systematic text classification, structured data collection, and evaluation benchmark design.
+              Experience building NLP pipelines for multi-label document classification with attention-based
+              interpretability, engineering LLM-powered systems with context management and structured output
+              parsing, and publishing open datasets with documented community adoption. Adept at parsing
+              technical documentation, designing classification schemes, and working with structured and
+              unstructured data at scale across sustainability, policy, and language domains.
             </p>
           </section>
 
@@ -269,7 +272,13 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                   <span className="font-sans text-sm font-semibold text-slate-900">{project.title}</span>
                   <span className="font-sans text-xs text-slate-500">{project.dateLabel}</span>
                 </div>
-                <p className="font-sans text-sm text-slate-700">{project.description}</p>
+                {project.detailSections.length > 0 && (
+                  <ul className="ml-4 list-disc font-sans text-xs text-slate-700">
+                    {project.detailSections.map((section, j) => (
+                      <li key={j}>{section.content}</li>
+                    ))}
+                  </ul>
+                )}
                 {project.links.length > 0 && (
                   <div className="mt-0.5 flex gap-3">
                     {project.links.map((link, j) => (
@@ -280,7 +289,7 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                         rel="noopener noreferrer"
                         className="font-sans text-xs text-blue-700 hover:underline"
                       >
-                        {link.kind === "repository" ? "Repository" : link.kind === "demo" ? "Demo" : "Paper"}
+                        {link.kind === "repository" ? "Repository" : link.kind === "demo" ? "Demo" : link.kind === "kaggle" ? "Kaggle Dataset" : "Paper"}
                       </a>
                     ))}
                   </div>
@@ -298,7 +307,7 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                   <span className="font-sans text-sm font-semibold text-slate-900">{pub.title}</span>
                   <span className="font-sans text-xs text-slate-500">{pub.yearLabel}</span>
                 </div>
-                <p className="font-sans text-sm text-slate-600 italic">{pub.journal}</p>
+                <p className="font-sans text-sm text-slate-600 italic">{pub.status ? `${pub.status} — ` : ""}{pub.journal}</p>
                 <p className="font-sans text-xs text-slate-600">{pub.abstract}</p>
                 {pub.link && (
                   <a href={pub.link.href} target="_blank" rel="noopener noreferrer" className="font-sans text-xs text-blue-700 hover:underline">

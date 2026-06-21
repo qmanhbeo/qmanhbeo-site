@@ -35,6 +35,12 @@ const projectUkProcurementPipeline: ProjectEntry = {
       kind: "repository",
       showOnCard: true,
     },
+    {
+      label: "Kaggle Dataset",
+      href: "https://www.kaggle.com/datasets/qmanhbeo/uk-public-procurement-data-contracts-finder/data",
+      kind: "kaggle",
+      showOnCard: true,
+    },
   ],
   tags: ["Public Data Collection", "Scraping", "Preprocessing", "Policy Analysis"],
 }

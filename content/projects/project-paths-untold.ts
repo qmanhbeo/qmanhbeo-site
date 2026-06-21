@@ -3,29 +3,29 @@ import type { ProjectEntry } from "@/content/entries"
 const projectPathsUntold: ProjectEntry = {
   slug: "project-paths-untold",
   type: "project",
-  title: "Paths Untold: AI-Generated Interactive Story Game",
-  subtitle: "Generated scenes with memory, persistence, and emotional weather",
+  title: "Paths Untold: LLM-Powered Narrative Engine with State Management",
+  subtitle: "Controlling non-deterministic LLM outputs through prompt engineering, parsing, and context tracking",
   dateLabel: "Mar 2025 - Jul 2025",
   status: "Prototype",
   summary:
-    "A story game where scenes are generated on the fly, memory lingers, emotions shift, and the world remembers enough to make choices feel like they matter.",
+    "A generative narrative system that uses the OpenAI API with custom prompt engineering, context-window management, and structured output parsing to maintain character memory, emotional continuity, and coherent storytelling across generated scenes.",
   description:
-    "Paths Untold explores what interactive fiction becomes when generated scenes are anchored by memory, emotional state, and enough continuity for the player to feel that the world has actually noticed them.",
+    "Paths Untold engineers non-deterministic LLM outputs into a playable interactive fiction engine. The system manages context windows, tracks narrative state across scenes, and applies regex-based validation schemas to parse and restructure freeform LLM responses into structured game-state representations.",
   detailSections: [
     {
-      label: "Narrative Goal",
+      label: "LLM Engine",
       content:
-        "The project set out to make AI-generated storytelling feel less disposable by preserving state, tone, and consequences across scenes instead of resetting after each prompt.",
+        "Engineered a generative narrative engine using the OpenAI API with custom prompt engineering, context-window management, and state tracking.",
     },
     {
-      label: "Technical Shape",
+      label: "Output Parsing",
       content:
-        "OpenAI-powered generation, state tracking, and save-load flows were combined so narrative branches could carry forward character context and emotional residue.",
+        "Developed regex-based validation pipelines to parse and restructure non-deterministic LLM text responses into structured application states.",
     },
     {
-      label: "What It Tested",
+      label: "Defensive Architecture",
       content:
-        "More than a game, it was a design experiment in whether generative systems can sustain continuity well enough for players to invest in their choices.",
+        "Implemented defensive prompt architectures to handle variable-format semi-structured text output at inference time.",
     },
   ],
   links: [
@@ -36,7 +36,7 @@ const projectPathsUntold: ProjectEntry = {
       showOnCard: true,
     },
   ],
-  tags: ["OpenAI API", "Narrative Systems", "State Tracking", "Save / Load"],
+  tags: ["OpenAI API", "Prompt Engineering", "Context Management", "State Tracking", "Regex Validation", "LLM Output Parsing"],
 }
 
 export default projectPathsUntold

@@ -8,7 +8,7 @@ const paperUrbanRuralEnergyBurdenVietnam: PublicationEntry = {
   subtitle: "Tracing who carries the cost of energy over time",
   journal: "Working Paper",
   yearLabel: "2025",
-  status: "Working Paper",
+  status: "Preprint/Working Paper (Reviewed by Energy Policy)",
   summary:
     "A longitudinal view of how energy burdens diverge across urban and rural households, and what that reveals about structural inequality in Vietnam.",
   abstract:
