@@ -250,7 +250,14 @@ export class WorldScene extends Phaser.Scene {
     })
 
     const offSectionClosed = gameBridge.on("section-closed", () => this.unlockWorldUi())
-    const offDialogueClosed = gameBridge.on("dialogue-closed", () => this.unlockWorldUi())
+    const offDialogueClosed = gameBridge.on("dialogue-closed", () => {
+      this.unlockWorldUi()
+      if (this.guideState === "arrived") {
+        this.guideState = "idle"
+        this.guideDestination = null
+        this.manhNpc?.startWanderingPublic()
+      }
+    })
     this.cleanupFns.push(offSectionClosed, offDialogueClosed)
 
     this.registry.set("promptText", "")
