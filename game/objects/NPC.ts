@@ -240,13 +240,13 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     return Phaser.Math.Distance.Between(this.x, this.y, this.leadTarget.x, this.leadTarget.y) < ARRIVAL_THRESHOLD
   }
 
-  private updateLeading(delta: number) {
+  private updateLeading(_delta: number) {
     if (!this.leadTarget) return
     const dx = this.leadTarget.x - this.x
     const dy = this.leadTarget.y - this.y
     const distance = Math.sqrt(dx * dx + dy * dy)
     if (distance < ARRIVAL_THRESHOLD) {
-      this.stopLeading()
+      this.setVelocity(0, 0)
       return
     }
     const vx = (dx / distance) * LEAD_SPEED
