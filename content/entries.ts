@@ -197,6 +197,8 @@ function getEntrySearchText(entry: ContentEntry) {
   switch (entry.type) {
     case "arc":
       return [
+        getEntryKindLabel(entry),
+        getEntryCollectionLabel(entry),
         entry.title,
         entry.subtitle,
         entry.summary,
@@ -215,6 +217,8 @@ function getEntrySearchText(entry: ContentEntry) {
         .toLowerCase()
     case "project":
       return [
+        getEntryKindLabel(entry),
+        getEntryCollectionLabel(entry),
         entry.title,
         entry.subtitle,
         entry.summary,
@@ -229,6 +233,8 @@ function getEntrySearchText(entry: ContentEntry) {
         .toLowerCase()
     case "publication":
       return [
+        getEntryKindLabel(entry),
+        getEntryCollectionLabel(entry),
         entry.title,
         entry.subtitle,
         entry.summary,
@@ -247,6 +253,8 @@ function getEntrySearchText(entry: ContentEntry) {
         .toLowerCase()
     case "note":
       return [
+        getEntryKindLabel(entry),
+        getEntryCollectionLabel(entry),
         entry.title,
         entry.subtitle,
         entry.summary,
