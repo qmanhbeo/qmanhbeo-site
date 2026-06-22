@@ -65,7 +65,7 @@ export const buildingData: BuildingData[] = [
   },
   {
     id: "cave",
-    label: "Mysterious Cave",
+    label: "Untold Path",
     prompt: "Press E to enter the Cave",
     sectionId: "paths-untold",
     x: 1200,
