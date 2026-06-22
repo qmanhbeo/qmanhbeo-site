@@ -368,7 +368,7 @@ export class WorldScene extends Phaser.Scene {
               isOpen: true,
               npcId: "manh",
               speaker: "Manh",
-              lines: ["Curious about my work?"],
+              lines: ["Welcome to the Hearth! Wander as you like."],
               lineIndex: 0,
               choices: [
                 { id: "manh-guide-workshop", label: "Show me projects", nextLines: ["Follow me to the Workshop."] },
