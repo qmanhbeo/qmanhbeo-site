@@ -22,6 +22,9 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
   const [stickOffset, setStickOffset] = useState({ x: 0, y: 0 })
   const padRef = useRef<HTMLDivElement>(null)
   const isDraggingRef = useRef(false)
+  const choicesVisibleRef = useRef(false)
+  const lastChoiceNavRef = useRef<"up" | "down" | null>(null)
+  choicesVisibleRef.current = !!dialogueState.choices && dialogueState.choices.length > 0
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(pointer: coarse)")
@@ -58,10 +61,24 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
         x: nextX / maxRadius,
         y: nextY / maxRadius,
       }
+
+      if (choicesVisibleRef.current) {
+        const normalizedY = nextY / maxRadius
+        if (normalizedY < -0.5 && lastChoiceNavRef.current !== "up") {
+          lastChoiceNavRef.current = "up"
+          gameBridge.emit("choice-navigate", { direction: "up" })
+        } else if (normalizedY > 0.5 && lastChoiceNavRef.current !== "down") {
+          lastChoiceNavRef.current = "down"
+          gameBridge.emit("choice-navigate", { direction: "down" })
+        } else if (Math.abs(normalizedY) < 0.3) {
+          lastChoiceNavRef.current = null
+        }
+      }
     }
 
     const resetPad = () => {
       isDraggingRef.current = false
+      lastChoiceNavRef.current = null
       setStickOffset({ x: 0, y: 0 })
       joystickRef.current = {
         ...joystickRef.current,

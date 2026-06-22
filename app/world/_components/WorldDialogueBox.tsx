@@ -7,9 +7,10 @@ import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLay
 interface WorldDialogueBoxProps {
   bottomBand?: OverlayLayoutMetrics["bottomBand"]
   onChoiceSelect?: (option: DialogueChoiceOption) => void
+  focusedChoiceIndex?: number
 }
 
-export default function WorldDialogueBox({ bottomBand, onChoiceSelect }: WorldDialogueBoxProps) {
+export default function WorldDialogueBox({ bottomBand, onChoiceSelect, focusedChoiceIndex = 0 }: WorldDialogueBoxProps) {
   const { dialogueState } = useWorld()
 
   if (!dialogueState.isOpen) return null
@@ -41,11 +42,14 @@ export default function WorldDialogueBox({ bottomBand, onChoiceSelect }: WorldDi
 
         {hasChoices && (
           <div className="mt-4 flex flex-col gap-2">
-            {dialogueState.choices!.map((choice) => (
+            {dialogueState.choices!.map((choice, index) => (
               <button
                 key={choice.id}
-                onClick={() => onChoiceSelect?.(choice)}
-                className="medieval-button w-full rounded px-4 py-2.5 text-left font-garamond text-base text-amber-100 transition-all hover:bg-amber-400/10 hover:text-amber-50"
+                className={`medieval-button w-full rounded px-4 py-2.5 text-left font-garamond text-base transition-all ${
+                  index === focusedChoiceIndex
+                    ? "bg-amber-400/15 text-amber-50 ring-1 ring-amber-400/40"
+                    : "text-amber-100"
+                }`}
               >
                 {choice.label}
               </button>

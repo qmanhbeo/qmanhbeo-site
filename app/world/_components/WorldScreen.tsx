@@ -55,6 +55,9 @@ export default function WorldScreen() {
   const lastSoundCueRef = useRef<string | null>(null)
   const [promptText, setPromptText] = useState("")
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
+  const [focusedChoiceIndex, setFocusedChoiceIndex] = useState(0)
+  const choicesLengthRef = useRef(0)
+  choicesLengthRef.current = dialogueState.choices?.length ?? 0
   const uiLocked = dialogueState.isOpen || activeSectionId !== null
   const promptState = useWorldPromptState({
     contextualPrompt: promptText,
@@ -172,9 +175,14 @@ export default function WorldScreen() {
   })
 
   const handleDialogueInteract = useEffectEvent(() => {
-    if (dialogueState.isOpen) {
-      handleAdvanceDialogue()
+    if (!dialogueState.isOpen) return
+    const hasChoices = dialogueState.choices && dialogueState.choices.length > 0
+    if (hasChoices) {
+      const option = dialogueState.choices![focusedChoiceIndex]
+      if (option) handleChoiceSelect(option)
+      return
     }
+    handleAdvanceDialogue()
   })
 
   const handleWorldKeyDown = useEffectEvent((event: KeyboardEvent) => {
@@ -186,11 +194,31 @@ export default function WorldScreen() {
       return
     }
 
-    // E key advances dialogue when open, otherwise ignored (interact is handled in Phaser)
-    if (event.key === "e" || event.key === "E") {
+    const hasChoices = dialogueState.choices && dialogueState.choices.length > 0
+
+    // Choice navigation: W/S or up/down arrows
+    if ((event.key === "w" || event.key === "W" || event.key === "ArrowUp") && hasChoices) {
+      event.preventDefault()
+      setFocusedChoiceIndex((prev) => (prev - 1 + dialogueState.choices!.length) % dialogueState.choices!.length)
+      return
+    }
+
+    if ((event.key === "s" || event.key === "S" || event.key === "ArrowDown") && hasChoices) {
+      event.preventDefault()
+      setFocusedChoiceIndex((prev) => (prev + 1) % dialogueState.choices!.length)
+      return
+    }
+
+    // E / Enter confirms focused choice or advances dialogue
+    if (event.key === "e" || event.key === "E" || event.key === "Enter") {
       if (dialogueState.isOpen) {
         event.preventDefault()
-        handleAdvanceDialogue()
+        if (hasChoices) {
+          const option = dialogueState.choices![focusedChoiceIndex]
+          if (option) handleChoiceSelect(option)
+        } else {
+          handleAdvanceDialogue()
+        }
       }
     }
   })
@@ -226,6 +254,11 @@ export default function WorldScreen() {
     })
     const offWorldSfx = gameBridge.on("world-sfx", handleWorldSfx)
     const offDialogueInteract = gameBridge.on("dialogue-interact", handleDialogueInteract)
+    const offChoiceNavigate = gameBridge.on("choice-navigate", ({ direction }) => {
+      const len = choicesLengthRef.current
+      if (len === 0) return
+      setFocusedChoiceIndex((prev) => (direction === "up" ? (prev - 1 + len) % len : (prev + 1) % len))
+    })
 
     const handleKeyDown = (event: KeyboardEvent) => {
       handleWorldKeyDown(event)
@@ -243,6 +276,7 @@ export default function WorldScreen() {
       offPromptChanged()
       offWorldSfx()
       offDialogueInteract()
+      offChoiceNavigate()
       document.body.style.overflow = originalOverflow
       document.body.style.overscrollBehavior = originalOverscrollBehavior
       if (originalOverlayLock) {
@@ -258,6 +292,10 @@ export default function WorldScreen() {
     setActiveSectionId,
     setPlayerPosition,
   ])
+
+  useEffect(() => {
+    setFocusedChoiceIndex(0)
+  }, [dialogueState.isOpen, dialogueState.choices, dialogueState.lineIndex])
 
   useEffect(() => {
     const shouldLock = dialogueState.isOpen || isArchiveOverlayOpen || activeSectionId || promptState.isVisible
@@ -332,6 +370,7 @@ export default function WorldScreen() {
         <WorldDialogueBox
           bottomBand={overlayLayout?.bottomBand}
           onChoiceSelect={handleChoiceSelect}
+          focusedChoiceIndex={focusedChoiceIndex}
         />
         <VirtualJoystick joystickRef={joystickRef} placement="overlay" />
       </div>

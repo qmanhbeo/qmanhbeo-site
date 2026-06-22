@@ -7,6 +7,7 @@ export type WorldSfxCue = "dialogue-advance" | "dialogue-open" | "panel-open" | 
 type WorldBridgeEventMap = {
   "bard-started-playing": undefined
   "bard-stopped-playing": undefined
+  "choice-navigate": { direction: "up" | "down" }
   "dialogue-closed": undefined
   "dialogue-interact": undefined
   "load-progress": { progress: number; label?: string }
