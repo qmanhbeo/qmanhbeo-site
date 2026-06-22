@@ -174,6 +174,7 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
               <a href="https://www.linkedin.com/in/qmanhbeo/" className="hover:text-slate-700" target="_blank" rel="noopener noreferrer">LinkedIn</a>
               <a href="https://github.com/qmanhbeo" className="hover:text-slate-700" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="https://qmanhbeo.vercel.app/" className="hover:text-slate-700" target="_blank" rel="noopener noreferrer">Portfolio</a>
               <span>qmanhbeo@gmail.com</span>
             </div>
           </div>
