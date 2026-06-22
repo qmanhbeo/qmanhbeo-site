@@ -1,22 +1,24 @@
 "use client"
 
 import { MessageCircle } from "lucide-react"
-import { useWorld } from "@/context/WorldContext"
+import { useWorld, type DialogueChoiceOption } from "@/context/WorldContext"
 import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLayout"
 
 interface WorldDialogueBoxProps {
   bottomBand?: OverlayLayoutMetrics["bottomBand"]
+  onChoiceSelect?: (option: DialogueChoiceOption) => void
 }
 
-export default function WorldDialogueBox({ bottomBand }: WorldDialogueBoxProps) {
+export default function WorldDialogueBox({ bottomBand, onChoiceSelect }: WorldDialogueBoxProps) {
   const { dialogueState } = useWorld()
 
   if (!dialogueState.isOpen) return null
 
   const activeLine = dialogueState.lines[dialogueState.lineIndex] ?? ""
+  const hasChoices = dialogueState.choices && dialogueState.choices.length > 0
 
   const bottomY = bottomBand?.start ?? 200
-  const topY = bottomY - 280
+  const topY = bottomY - (hasChoices ? 360 : 280)
 
   return (
     <div
@@ -36,6 +38,20 @@ export default function WorldDialogueBox({ bottomBand }: WorldDialogueBoxProps) 
         </div>
 
         <p className="font-garamond text-lg leading-8 text-amber-50/92">{activeLine}</p>
+
+        {hasChoices && (
+          <div className="mt-4 flex flex-col gap-2">
+            {dialogueState.choices!.map((choice) => (
+              <button
+                key={choice.id}
+                onClick={() => onChoiceSelect?.(choice)}
+                className="medieval-button w-full rounded px-4 py-2.5 text-left font-garamond text-base text-amber-100 transition-all hover:bg-amber-400/10 hover:text-amber-50"
+              >
+                {choice.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

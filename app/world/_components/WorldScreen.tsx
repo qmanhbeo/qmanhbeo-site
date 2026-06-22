@@ -10,7 +10,7 @@ import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
 import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
 import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
 import { useAudioContext } from "@/context/AudioContext"
-import { useWorld, type WorldDialogueState } from "@/context/WorldContext"
+import { useWorld, type DialogueChoiceOption, type WorldDialogueState } from "@/context/WorldContext"
 import { gameBridge, type WorldSfxCue } from "@/game/GameBridge"
 import type { JoystickInputState } from "@/game/types"
 
@@ -50,7 +50,7 @@ export default function WorldScreen() {
     setDialogueState,
     setPlayerPosition,
   } = useWorld()
-  const { pauseAllAmbient, playSfx, stopSfx, resumeAllAmbient } = useAudioContext()
+  const { pauseAllAmbient, playBardMusic, playSfx, stopBardMusic, stopSfx, resumeAllAmbient } = useAudioContext()
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
   const lastSoundCueRef = useRef<string | null>(null)
   const [promptText, setPromptText] = useState("")
@@ -107,8 +107,34 @@ export default function WorldScreen() {
     })
   }, [setDialogueState])
 
-  const handleAdvanceDialogue = useCallback(() => {
+  const handleChoiceSelect = useCallback((option: DialogueChoiceOption) => {
     if (!dialogueState.isOpen) return
+
+    if (dialogueState.npcId === "bard") {
+      if (option.id === "bard-hear") {
+        playBardMusic()
+        gameBridge.emit("bard-started-playing", undefined)
+      } else if (option.id === "bard-thanks") {
+        stopBardMusic()
+        gameBridge.emit("bard-stopped-playing", undefined)
+      }
+    }
+
+    if (option.nextLines.length === 0) {
+      handleCloseDialogue()
+      return
+    }
+
+    setDialogueState({
+      ...dialogueState,
+      lines: option.nextLines,
+      lineIndex: 0,
+      choices: undefined,
+    })
+  }, [dialogueState, playBardMusic, stopBardMusic, handleCloseDialogue, setDialogueState])
+
+  const handleAdvanceDialogue = useCallback(() => {
+    if (!dialogueState.isOpen || (dialogueState.choices && dialogueState.choices.length > 0)) return
     const isLastLine = dialogueState.lineIndex >= dialogueState.lines.length - 1
     if (isLastLine) {
       handleCloseDialogue()
@@ -305,6 +331,7 @@ export default function WorldScreen() {
         />
         <WorldDialogueBox
           bottomBand={overlayLayout?.bottomBand}
+          onChoiceSelect={handleChoiceSelect}
         />
         <VirtualJoystick joystickRef={joystickRef} placement="overlay" />
       </div>

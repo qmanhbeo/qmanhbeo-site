@@ -128,6 +128,7 @@ export class WorldScene extends Phaser.Scene {
   private npcs: NPC[] = []
   private player?: Player
   private uiLocked = false
+  private bardIsPlaying = false
   private buildingLabelStyle!: Phaser.Types.GameObjects.Text.TextStyle
   private buildingLabels: Phaser.GameObjects.Text[] = []
 
@@ -284,18 +285,43 @@ export class WorldScene extends Phaser.Scene {
         gameBridge.emit("open-section", { sectionId: activeTarget.sectionId })
       } else {
         gameBridge.emit("world-sfx", { cue: "dialogue-open" })
-        const soundCue = activeTarget.npcId === "tungtung" ? "tung-tung-sahur" : activeTarget.npcId === "hachimi" ? "hachimi" : undefined
-        gameBridge.emit("open-dialogue", {
-          isOpen: true,
-          npcId: activeTarget.npcId,
-          speaker: activeTarget.speaker,
-          lines: activeTarget.lines,
-          lineIndex: 0,
-          soundCue,
-        })
 
-        if (activeTarget.npcId === "bard" && this.bardSprite) {
-          this.time.delayedCall(300, () => this.bardSprite?.setFrame("frame_007"))
+        if (activeTarget.npcId === "bard") {
+          if (this.bardIsPlaying) {
+            gameBridge.emit("open-dialogue", {
+              isOpen: true,
+              npcId: "bard",
+              speaker: "Bard",
+              lines: ["The melody dances with the flames..."],
+              lineIndex: 0,
+              choices: [
+                { id: "bard-thanks", label: "♫ Thank you, that\u2019s enough", nextLines: ["The fire will remember the song.", "Until next time, wanderer."] },
+                { id: "bard-keep", label: "Keep playing", nextLines: [] },
+              ],
+            })
+          } else {
+            gameBridge.emit("open-dialogue", {
+              isOpen: true,
+              npcId: "bard",
+              speaker: "Bard",
+              lines: ["Care for a tune?"],
+              lineIndex: 0,
+              choices: [
+                { id: "bard-hear", label: "\u266A Hear a tune", nextLines: ["\u266A (The Bard plays a gentle melody on the lute)", "A melody for the fire-lit soul.", "May it warm your travels."] },
+                { id: "bard-later", label: "Maybe later", nextLines: ["Another time, wanderer.", "The fire will still be here."] },
+              ],
+            })
+          }
+        } else {
+          const soundCue = activeTarget.npcId === "tungtung" ? "tung-tung-sahur" : activeTarget.npcId === "hachimi" ? "hachimi" : undefined
+          gameBridge.emit("open-dialogue", {
+            isOpen: true,
+            npcId: activeTarget.npcId,
+            speaker: activeTarget.speaker,
+            lines: activeTarget.lines,
+            lineIndex: 0,
+            soundCue,
+          })
         }
       }
     }
@@ -898,21 +924,30 @@ export class WorldScene extends Phaser.Scene {
     let isResting = false
 
     const startIdleCheck = () => {
-      if (isResting) return
       this.time.delayedCall(8000 + Math.random() * 7000, () => {
-        if (!isResting) {
-          this.bardSprite?.play("bard-checking")
+        if (!isResting && this.bardSprite?.active) {
+          this.bardSprite.play("bard-checking")
           this.time.delayedCall(1000, () => {
             if (this.bardSprite?.active) this.bardSprite.setFrame("frame_000")
           })
         }
-        startIdleCheck()
+        if (this.scene.isActive()) startIdleCheck()
       })
     }
     startIdleCheck()
-  }
 
-  private handleBardDialogue(_bard: NPC) {
-    this.bardSprite?.setFrame("frame_007")
+    const offStarted = gameBridge.on("bard-started-playing", () => {
+      this.bardIsPlaying = true
+      isResting = true
+      this.bardSprite?.play("bard-playing")
+    })
+
+    const offStopped = gameBridge.on("bard-stopped-playing", () => {
+      this.bardIsPlaying = false
+      isResting = false
+      if (this.bardSprite?.active) this.bardSprite.setFrame("frame_000")
+    })
+
+    this.cleanupFns.push(offStarted, offStopped)
   }
 }

@@ -5,6 +5,8 @@ import type { PlayerPosition } from "@/game/types"
 export type WorldSfxCue = "dialogue-advance" | "dialogue-open" | "panel-open" | "ui-close"
 
 type WorldBridgeEventMap = {
+  "bard-started-playing": undefined
+  "bard-stopped-playing": undefined
   "dialogue-closed": undefined
   "dialogue-interact": undefined
   "load-progress": { progress: number; label?: string }

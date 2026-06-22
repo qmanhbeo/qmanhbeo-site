@@ -12,6 +12,12 @@ import {
 import { usePathname, useRouter } from "next/navigation"
 import type { WorldSectionId } from "@/utils/worldSections"
 
+export interface DialogueChoiceOption {
+  id: string
+  label: string
+  nextLines: string[]
+}
+
 export interface WorldDialogueState {
   isOpen: boolean
   npcId: string | null
@@ -19,6 +25,7 @@ export interface WorldDialogueState {
   lines: string[]
   lineIndex: number
   soundCue?: string
+  choices?: DialogueChoiceOption[]
 }
 
 export interface WorldPlayerPosition {

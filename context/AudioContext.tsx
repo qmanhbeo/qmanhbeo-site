@@ -17,6 +17,8 @@ interface AudioContextValue {
   setAmbientVolume: (track: keyof AmbientVolumes, value: number) => void
   playSfx: (type: "click" | "transition" | "open" | "flip") => void
   stopSfx: (type: string) => void
+  playBardMusic: () => void
+  stopBardMusic: () => void
   pauseAllAmbient: () => void
   resumeAllAmbient: () => void
 }
@@ -50,6 +52,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [sfxEnabled, setSfxEnabled] = useState(true)
   const [ambientVolumes, setAmbientVolumesState] = useState<AmbientVolumes>({ fire: 0, rain: 0, music: 0 })
   const sfxHowlsRef = useRef<Record<string, Howl>>({})
+  const luteHowlRef = useRef<Howl | null>(null)
   const ambientVolumesRef = useRef(ambientVolumes)
 
   useEffect(() => {
@@ -74,6 +77,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       sfxHowlsRef.current.flip = new Howl({ src: ["/sounds/page-turn-heavy.mp3"], volume: 0.12, html5: false })
       sfxHowlsRef.current["tung-tung-sahur"] = new Howl({ src: ["/game/characters/tungtung/tung-tung-sahur.mp3"], volume: 0.5, html5: true })
       sfxHowlsRef.current.hachimi = new Howl({ src: ["/game/characters/hachimi-sheet/hachimi.mp3"], volume: 0.5, html5: true })
+      luteHowlRef.current = new Howl({ src: ["/sounds/lute-loop.wav"], volume: 0.3, loop: true, html5: true })
     })
     return () => {
       cancelled = true
@@ -120,6 +124,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     sfxHowlsRef.current[type]?.stop()
   }, [])
 
+  const playBardMusic = useCallback(() => {
+    luteHowlRef.current?.play()
+  }, [])
+
+  const stopBardMusic = useCallback(() => {
+    luteHowlRef.current?.stop()
+  }, [])
+
   const pauseAllAmbient = useCallback(() => {
     if (typeof window === "undefined") return
     window.dispatchEvent(new CustomEvent("ambient:pause"))
@@ -141,6 +153,8 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         setAmbientVolume,
         playSfx,
         stopSfx,
+        playBardMusic,
+        stopBardMusic,
         pauseAllAmbient,
         resumeAllAmbient,
       }}
