@@ -149,6 +149,11 @@ export class WorldScene extends Phaser.Scene {
       label: "Yard",
       description: "The Yard \u2014 campfire thoughts, personal notes, and loose pages. The informal side of things.",
     },
+    "manh-guide-post": {
+      x: 1340, y: 1050,
+      label: "Post",
+      description: "The Post \u2014 this is where the paths cross. Drop a letter if you want to reach the real Manh. The words you write will find their way.",
+    },
   }
   private buildingLabelStyle!: Phaser.Types.GameObjects.Text.TextStyle
   private buildingLabels: Phaser.GameObjects.Text[] = []
@@ -360,8 +365,9 @@ export class WorldScene extends Phaser.Scene {
               lineIndex: 0,
               choices: [
                 { id: "manh-guide-workshop", label: "Show me projects", nextLines: ["Follow me to the Workshop."] },
-                { id: "manh-guide-library", label: "Show me research", nextLines: ["Follow me to the Library."] },
+                { id: "manh-guide-library", label: "Show me the library", nextLines: ["Follow me to the Library."] },
                 { id: "manh-guide-yard", label: "Show me notes", nextLines: ["Follow me to the Yard."] },
+                { id: "manh-guide-post", label: "Show me the real Manh", nextLines: ["Follow me to the Post."] },
               ],
             })
           } else if (this.guideState === "arrived" && this.guideDestination) {
