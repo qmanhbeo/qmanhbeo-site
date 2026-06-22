@@ -246,6 +246,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     const distance = Math.sqrt(dx * dx + dy * dy)
     if (distance < ARRIVAL_THRESHOLD) {
       this.setVelocity(0, 0)
+      if (!this.isFlipCar) this.play(`world-npc-${this.id}-idle-${this.wanderState.direction}`)
       return
     }
     const vx = (dx / distance) * LEAD_SPEED
