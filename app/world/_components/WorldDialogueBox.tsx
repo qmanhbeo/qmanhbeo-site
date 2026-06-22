@@ -46,9 +46,7 @@ export default function WorldDialogueBox({ bottomBand, onChoiceSelect, focusedCh
               <button
                 key={choice.id}
                 className={`medieval-button w-full rounded px-4 py-2.5 text-left font-garamond text-base transition-all ${
-                  index === focusedChoiceIndex
-                    ? "bg-amber-400/15 text-amber-50 ring-1 ring-amber-400/40"
-                    : "text-amber-100"
+                  index === focusedChoiceIndex ? "medieval-button-active" : ""
                 }`}
               >
                 {choice.label}
