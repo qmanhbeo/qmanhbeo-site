@@ -125,11 +125,18 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const playBardMusic = useCallback(() => {
-    luteHowlRef.current?.play()
+    const howl = luteHowlRef.current
+    if (!howl) return
+    howl.volume(0)
+    howl.play()
+    howl.fade(0, 0.3, 1500)
   }, [])
 
   const stopBardMusic = useCallback(() => {
-    luteHowlRef.current?.stop()
+    const howl = luteHowlRef.current
+    if (!howl) return
+    howl.fade(0.3, 0, 1000)
+    howl.once("fade", () => howl.stop())
   }, [])
 
   const pauseAllAmbient = useCallback(() => {
