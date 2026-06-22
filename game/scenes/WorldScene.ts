@@ -781,6 +781,15 @@ export class WorldScene extends Phaser.Scene {
         return
       }
 
+      if (building.id === "cave" && this.textures.exists("building-cave")) {
+        const sprite = this.add.sprite(building.x, building.y + 70, "building-cave", "frame_000")
+        sprite.setOrigin(0.5, 1)
+        sprite.setScale(1)
+        sprite.setDepth(WORLD_DEPTHS.buildings)
+        this.addBuildingLabel(building.x, building.y + building.height / 2 + 20, building.label)
+        return
+      }
+
       const left = building.x - building.width / 2
       const top = building.y - building.height / 2
       const right = building.x + building.width / 2

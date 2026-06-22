@@ -10,6 +10,7 @@ import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
 import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
 import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
 import { useAudioContext } from "@/context/AudioContext"
+import { useRouter } from "next/navigation"
 import { useWorld, type DialogueChoiceOption, type WorldDialogueState } from "@/context/WorldContext"
 import { gameBridge, type WorldSfxCue } from "@/game/GameBridge"
 import type { JoystickInputState } from "@/game/types"
@@ -41,6 +42,7 @@ const WORLD_SFX_BY_CUE = {
 } satisfies Record<WorldSfxCue, "click" | "transition" | "open" | "flip">
 
 export default function WorldScreen() {
+  const router = useRouter()
   const {
     activeSectionId,
     closeWorld,
@@ -253,6 +255,10 @@ export default function WorldScreen() {
     const offOpenSection = gameBridge.on("open-section", ({ sectionId }) => {
       if (sectionId === "publications") {
         setIsArchiveOverlayOpen(true)
+        return
+      }
+      if (sectionId === "paths-untold") {
+        router.push("/paths-untold")
         return
       }
       setActiveSectionId(sectionId)

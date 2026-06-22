@@ -63,4 +63,15 @@ export const buildingData: BuildingData[] = [
     height: 72,
     color: 0x8a4f24,
   },
+  {
+    id: "cave",
+    label: "Mysterious Cave",
+    prompt: "Press E to enter the Cave",
+    sectionId: "paths-untold",
+    x: 1200,
+    y: 1600,
+    width: 88,
+    height: 72,
+    color: 0x1a0e0a,
+  },
 ]

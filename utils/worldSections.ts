@@ -1,4 +1,4 @@
-export type WorldSectionId = "projects" | "publications" | "blog" | "letter"
+export type WorldSectionId = "projects" | "publications" | "blog" | "letter" | "paths-untold"
 export type SectionSurface = "home" | "world-panel"
 
 export type CanonicalEntryOriginSection =
@@ -22,6 +22,7 @@ export const WORLD_SECTION_LABELS: Record<WorldSectionId, string> = {
   publications: "Library / Publications",
   blog: "Tavern / Notes",
   letter: "Post Office / Letter",
+  "paths-untold": "Mysterious Cave / Paths Untold",
 }
 
 export const LEGACY_ENTRY_SECTION_ALIASES: Record<LegacyEntryOriginSection, CanonicalEntryOriginSection> = {

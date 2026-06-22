@@ -19,7 +19,7 @@ const WORLD_SECTION_COMPONENTS = {
 export default function WorldSectionPanel() {
   const { activeSectionId, setActiveSectionId } = useWorld()
 
-  if (!activeSectionId) return null
+  if (!activeSectionId || activeSectionId === "paths-untold") return null
 
   const SectionComponent = WORLD_SECTION_COMPONENTS[activeSectionId]
 

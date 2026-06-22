@@ -294,6 +294,7 @@ export class BootScene extends Phaser.Scene {
     this.load.atlas("building-tavern", "/game/buildings/tavern-yard/spritesheet.png", "/game/buildings/tavern-yard/spritesheet.json")
     this.load.atlas("building-post-office", "/game/buildings/post-office/spritesheet.png", "/game/buildings/post-office/spritesheet.json")
     this.load.atlas("building-workshop", "/game/buildings/workshop/spritesheet.png", "/game/buildings/workshop/spritesheet.json")
+    this.load.atlas("building-cave", "/game/buildings/cave/spritesheet.png", "/game/buildings/cave/spritesheet.json")
     this.load.atlas("bard", "/game/characters/bard-sheet/spritesheet.png", "/game/characters/bard-sheet/spritesheet.json")
     NPC_ASSETS.forEach((asset) => {
       if (asset.isAtlas) {
