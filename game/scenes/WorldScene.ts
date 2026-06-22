@@ -252,6 +252,9 @@ export class WorldScene extends Phaser.Scene {
     const offSectionClosed = gameBridge.on("section-closed", () => this.unlockWorldUi())
     const offDialogueClosed = gameBridge.on("dialogue-closed", () => {
       this.unlockWorldUi()
+      for (const npc of this.npcs) {
+        if (npc.hasSprite) npc.resumeWandering()
+      }
       if (this.guideState === "arrived") {
         this.guideState = "idle"
         this.guideDestination = null
@@ -335,6 +338,9 @@ export class WorldScene extends Phaser.Scene {
         gameBridge.emit("open-section", { sectionId: activeTarget.sectionId })
       } else {
         gameBridge.emit("world-sfx", { cue: "dialogue-open" })
+
+        const targetNpc = this.npcs.find((n) => n.id === activeTarget.npcId)
+        if (targetNpc?.hasSprite) targetNpc.pauseWandering()
 
         if (activeTarget.npcId === "bard") {
           if (this.bardIsPlaying) {

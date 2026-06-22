@@ -26,6 +26,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
   }
 
   private leadTarget: { x: number; y: number } | null = null
+  private wanderPaused = false
 
   private readonly isFlipCar: boolean
 
@@ -135,7 +136,19 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  pauseWandering() {
+    this.wanderPaused = true
+    if (this.wanderState.isWandering) this.stopWandering(false)
+  }
+
+  resumeWandering() {
+    this.wanderPaused = false
+    if (this.leadTarget) return
+    this.startWanderingPublic()
+  }
+
   private updateWandering(delta: number) {
+    if (this.wanderPaused) return
     const state = this.wanderState
 
     if (state.pauseRemaining > 0) {
