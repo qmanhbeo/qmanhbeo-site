@@ -129,6 +129,27 @@ export class WorldScene extends Phaser.Scene {
   private player?: Player
   private uiLocked = false
   private bardIsPlaying = false
+  private guideState: "idle" | "leading" | "arrived" = "idle"
+  private guideDestination: { x: number; y: number; description: string; label: string } | null = null
+  private guideArrivalTime = 0
+  private manhNpc: NPC | null = null
+  private readonly GUIDE_DESTINATIONS: Record<string, { x: number; y: number; description: string; label: string }> = {
+    "manh-guide-workshop": {
+      x: 1340, y: 860,
+      label: "Workshop",
+      description: "The Workshop \u2014 this is where the built things live. Every prototype, every experiment, every half-baked idea that turned into something real.",
+    },
+    "manh-guide-library": {
+      x: 1060, y: 860,
+      label: "Library",
+      description: "The Library \u2014 research notes, publications, and the longer trails of thought. Some paths are walked in words.",
+    },
+    "manh-guide-yard": {
+      x: 1060, y: 960,
+      label: "Yard",
+      description: "The Yard \u2014 campfire thoughts, personal notes, and loose pages. The informal side of things.",
+    },
+  }
   private buildingLabelStyle!: Phaser.Types.GameObjects.Text.TextStyle
   private buildingLabels: Phaser.GameObjects.Text[] = []
 
@@ -201,6 +222,11 @@ export class WorldScene extends Phaser.Scene {
       this.setupBardBehavior(bard)
     }
 
+    const manhNpc = this.npcs.find((n) => n.id === "manh")
+    if (manhNpc) {
+      this.setupManhBehavior(manhNpc)
+    }
+
     this.buildingHalo = this.add.ellipse(0, 0, 94, 70, 0xffc56f, 0)
       .setDepth(5)
       .setStrokeStyle(2, 0xffd27b, 0.42)
@@ -270,6 +296,18 @@ export class WorldScene extends Phaser.Scene {
     this.syncTargetHalo(activeTarget)
     this.registry.set("promptText", activeTarget?.prompt ?? "")
 
+    if (this.guideState === "leading" && this.manhNpc?.hasArrivedAtTarget()) {
+      this.guideState = "arrived"
+      this.guideArrivalTime = time
+      this.manhNpc.stopLeading()
+    }
+
+    if (this.guideState === "arrived" && time - this.guideArrivalTime > 30000) {
+      this.guideState = "idle"
+      this.guideDestination = null
+      this.manhNpc?.startWanderingPublic()
+    }
+
     if (justInteracted && activeTarget) {
       this.uiLocked = true
       this.player.setControlsLocked(true)
@@ -311,6 +349,32 @@ export class WorldScene extends Phaser.Scene {
                 { id: "bard-later", label: "Maybe later", nextLines: ["Another time, wanderer.", "The fire will still be here."] },
               ],
             })
+          }
+        } else if (activeTarget.npcId === "manh") {
+          if (this.guideState === "idle") {
+            gameBridge.emit("open-dialogue", {
+              isOpen: true,
+              npcId: "manh",
+              speaker: "Manh",
+              lines: ["Curious about my work?"],
+              lineIndex: 0,
+              choices: [
+                { id: "manh-guide-workshop", label: "Show me projects", nextLines: ["Follow me to the Workshop."] },
+                { id: "manh-guide-library", label: "Show me research", nextLines: ["Follow me to the Library."] },
+                { id: "manh-guide-yard", label: "Show me notes", nextLines: ["Follow me to the Yard."] },
+              ],
+            })
+          } else if (this.guideState === "arrived" && this.guideDestination) {
+            gameBridge.emit("open-dialogue", {
+              isOpen: true,
+              npcId: "manh",
+              speaker: "Manh",
+              lines: [this.guideDestination.description],
+              lineIndex: 0,
+            })
+          } else {
+            this.unlockWorldUi()
+            return
           }
         } else {
           const soundCue = activeTarget.npcId === "tungtung" ? "tung-tung-sahur" : activeTarget.npcId === "hachimi" ? "hachimi" : undefined
@@ -810,6 +874,7 @@ export class WorldScene extends Phaser.Scene {
     let nearestDistance = Number.POSITIVE_INFINITY
 
     for (const npc of this.npcs) {
+      if (npc.id === "manh" && this.guideState === "leading") continue
       const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, npc.x, npc.y)
       if (distance < 52 && distance < nearestDistance) {
         nearestDistance = distance
@@ -952,5 +1017,19 @@ export class WorldScene extends Phaser.Scene {
     })
 
     this.cleanupFns.push(offStarted, offStopped)
+  }
+
+  private setupManhBehavior(manhNpc: NPC) {
+    this.manhNpc = manhNpc
+
+    const offGuide = gameBridge.on("manh-start-guide", ({ choiceId }) => {
+      const dest = this.GUIDE_DESTINATIONS[choiceId]
+      if (!dest) return
+      this.guideState = "leading"
+      this.guideDestination = dest
+      manhNpc.leadTo(dest.x, dest.y)
+    })
+
+    this.cleanupFns.push(offGuide)
   }
 }

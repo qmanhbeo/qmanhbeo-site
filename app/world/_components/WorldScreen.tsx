@@ -53,6 +53,7 @@ export default function WorldScreen() {
   const { pauseAllAmbient, playBardMusic, playSfx, stopBardMusic, stopSfx, resumeAllAmbient } = useAudioContext()
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
   const lastSoundCueRef = useRef<string | null>(null)
+  const pendingGuideChoiceRef = useRef<string | null>(null)
   const [promptText, setPromptText] = useState("")
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
   const [focusedChoiceIndex, setFocusedChoiceIndex] = useState(0)
@@ -108,6 +109,10 @@ export default function WorldScreen() {
       lines: [],
       lineIndex: 0,
     })
+    if (pendingGuideChoiceRef.current) {
+      gameBridge.emit("manh-start-guide", { choiceId: pendingGuideChoiceRef.current })
+      pendingGuideChoiceRef.current = null
+    }
   }, [setDialogueState])
 
   const handleChoiceSelect = useCallback((option: DialogueChoiceOption) => {
@@ -121,6 +126,17 @@ export default function WorldScreen() {
         stopBardMusic()
         gameBridge.emit("bard-stopped-playing", undefined)
       }
+    }
+
+    if (dialogueState.npcId === "manh" && option.id.startsWith("manh-guide-")) {
+      pendingGuideChoiceRef.current = option.id
+      setDialogueState({
+        ...dialogueState,
+        lines: option.nextLines,
+        lineIndex: 0,
+        choices: undefined,
+      })
+      return
     }
 
     if (option.nextLines.length === 0) {

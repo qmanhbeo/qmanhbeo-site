@@ -2,6 +2,8 @@ import Phaser from "phaser"
 import type { NpcData } from "@/game/config/npcData"
 
 const WANDER_SPEED = 32
+const LEAD_SPEED = 48
+const ARRIVAL_THRESHOLD = 16
 const WALK_DURATION_MIN = 1000
 const WALK_DURATION_MAX = 3000
 const PAUSE_DURATION_MIN = 500
@@ -22,6 +24,8 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     timer: number
     pauseRemaining: number
   }
+
+  private leadTarget: { x: number; y: number } | null = null
 
   private readonly isFlipCar: boolean
 
@@ -124,7 +128,9 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     this.shadow.setPosition(this.x, this.y + 11)
     this.shadow.setScale(1, 1 + Math.abs(this.y - this.baseY) * 0.03)
 
-    if (this.hasSprite) {
+    if (this.leadTarget) {
+      this.updateLeading(delta)
+    } else if (this.hasSprite) {
       this.updateWandering(delta)
     }
   }
@@ -202,6 +208,62 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
   public startWanderingPublic() {
     if (this.hasSprite && !this.wanderState.isWandering) {
       this.startWandering()
+    }
+  }
+
+  get isLeading(): boolean {
+    return this.leadTarget !== null
+  }
+
+  leadTo(x: number, y: number): void {
+    this.leadTarget = { x, y }
+    this.wanderState.isWandering = false
+    this.wanderState.pauseRemaining = 0
+    this.setVelocity(0, 0)
+  }
+
+  stopLeading(facingDirection?: Direction): void {
+    this.leadTarget = null
+    this.setVelocity(0, 0)
+    if (this.hasSprite && !this.isFlipCar) {
+      const dir = facingDirection ?? this.wanderState.direction
+      const idleKey = `world-npc-${this.id}-idle-${dir}`
+      if (this.anims.exists(idleKey)) {
+        this.play(idleKey)
+      }
+    }
+    this.wanderState.pauseRemaining = Phaser.Math.Between(PAUSE_DURATION_MIN, PAUSE_DURATION_MAX)
+  }
+
+  hasArrivedAtTarget(): boolean {
+    if (!this.leadTarget) return false
+    return Phaser.Math.Distance.Between(this.x, this.y, this.leadTarget.x, this.leadTarget.y) < ARRIVAL_THRESHOLD
+  }
+
+  private updateLeading(delta: number) {
+    if (!this.leadTarget) return
+    const dx = this.leadTarget.x - this.x
+    const dy = this.leadTarget.y - this.y
+    const distance = Math.sqrt(dx * dx + dy * dy)
+    if (distance < ARRIVAL_THRESHOLD) {
+      this.stopLeading()
+      return
+    }
+    const vx = (dx / distance) * LEAD_SPEED
+    const vy = (dy / distance) * LEAD_SPEED
+    this.setVelocity(vx, vy)
+    const absDx = Math.abs(dx)
+    const absDy = Math.abs(dy)
+    if (absDy > absDx) {
+      this.wanderState.direction = dy > 0 ? "down" : "up"
+    } else {
+      this.wanderState.direction = dx > 0 ? "right" : "left"
+    }
+    if (!this.isFlipCar) {
+      const walkKey = `world-npc-${this.id}-${this.wanderState.direction}`
+      if (this.anims.getName() !== walkKey) {
+        this.play(walkKey, true)
+      }
     }
   }
 

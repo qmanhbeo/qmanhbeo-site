@@ -9,6 +9,7 @@ type WorldBridgeEventMap = {
   "bard-stopped-playing": undefined
   "choice-navigate": { direction: "up" | "down" }
   "dialogue-closed": undefined
+  "manh-start-guide": { choiceId: string }
   "dialogue-interact": undefined
   "load-progress": { progress: number; label?: string }
   "open-dialogue": WorldDialogueState
