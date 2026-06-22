@@ -375,6 +375,7 @@ export class WorldScene extends Phaser.Scene {
                 { id: "manh-guide-library", label: "Show me the library", nextLines: ["Follow me to the Library."] },
                 { id: "manh-guide-yard", label: "Show me notes", nextLines: ["Follow me to the Yard."] },
                 { id: "manh-guide-post", label: "Show me the real Manh", nextLines: ["Follow me to the Post."] },
+                { id: "manh-goodbye", label: "Just wandering", nextLines: [] },
               ],
             })
           } else if (this.guideState === "arrived" && this.guideDestination) {
