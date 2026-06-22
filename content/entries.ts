@@ -30,6 +30,7 @@ interface BaseEntry {
   dateLabel?: string
   mood?: string
   order?: number
+  excludeFromResume?: boolean
 }
 
 export interface ArcEntry extends BaseEntry {

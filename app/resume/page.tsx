@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ResumePage() {
   const publications = getEntriesByType("publication")
-  const projects = getEntriesByType("project")
+  const projects = getEntriesByType("project").filter((p) => !p.excludeFromResume)
   const arcs = getEntriesByType("arc")
 
   return (
