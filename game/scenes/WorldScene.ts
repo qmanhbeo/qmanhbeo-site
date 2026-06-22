@@ -945,7 +945,10 @@ export class WorldScene extends Phaser.Scene {
     const offStopped = gameBridge.on("bard-stopped-playing", () => {
       this.bardIsPlaying = false
       isResting = false
-      if (this.bardSprite?.active) this.bardSprite.setFrame("frame_000")
+      if (this.bardSprite?.active) {
+        this.bardSprite.anims.stop()
+        this.bardSprite.setFrame("frame_000")
+      }
     })
 
     this.cleanupFns.push(offStarted, offStopped)
