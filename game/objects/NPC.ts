@@ -232,7 +232,6 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
         this.play(idleKey)
       }
     }
-    this.wanderState.pauseRemaining = Phaser.Math.Between(PAUSE_DURATION_MIN, PAUSE_DURATION_MAX)
   }
 
   hasArrivedAtTarget(): boolean {
@@ -240,7 +239,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     return Phaser.Math.Distance.Between(this.x, this.y, this.leadTarget.x, this.leadTarget.y) < ARRIVAL_THRESHOLD
   }
 
-  private updateLeading(_delta: number) {
+  private updateLeading(delta: number) {
     if (!this.leadTarget) return
     const dx = this.leadTarget.x - this.x
     const dy = this.leadTarget.y - this.y
