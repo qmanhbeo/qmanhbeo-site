@@ -26,6 +26,7 @@ export interface WorldDialogueState {
   lineIndex: number
   soundCue?: string
   choices?: DialogueChoiceOption[]
+  chatMode?: boolean
 }
 
 export interface WorldPlayerPosition {

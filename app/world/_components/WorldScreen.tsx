@@ -5,6 +5,7 @@ import dynamic from "next/dynamic"
 import ExitButton from "@/app/world/_components/ExitButton"
 import VirtualJoystick from "@/app/world/_components/VirtualJoystick"
 import WorldDialogueBox from "@/app/world/_components/WorldDialogueBox"
+import ManhChatDialog from "@/app/world/_components/ManhChatDialog"
 import WorldPromptOverlay, { useWorldPromptState } from "@/app/world/_components/WorldPromptOverlay"
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
 import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
@@ -162,6 +163,20 @@ export default function WorldScreen() {
       return
     }
 
+    if (dialogueState.npcId === "manh" && option.id === "manh-chat-freely") {
+      setDialogueState({
+        ...dialogueState,
+        isOpen: true,
+        npcId: "manh",
+        speaker: "Manh",
+        lines: [],
+        lineIndex: 0,
+        choices: undefined,
+        chatMode: true,
+      })
+      return
+    }
+
     if (option.id === "cave-enter") {
       window.open("/paths-untold", "_blank")
       handleCloseDialogue()
@@ -238,6 +253,8 @@ export default function WorldScreen() {
       handleEscape()
       return
     }
+
+    if (dialogueState.chatMode) return
 
     const hasChoices = dialogueState.choices && dialogueState.choices.length > 0
 
@@ -439,11 +456,18 @@ export default function WorldScreen() {
           promptState={promptState}
           bottomBand={overlayLayout?.bottomBand}
         />
-        <WorldDialogueBox
-          bottomBand={overlayLayout?.bottomBand}
-          onChoiceSelect={handleChoiceSelect}
-          focusedChoiceIndex={focusedChoiceIndex}
-        />
+        {dialogueState.isOpen && dialogueState.chatMode ? (
+          <ManhChatDialog
+            bottomBand={overlayLayout?.bottomBand}
+            onClose={handleCloseDialogue}
+          />
+        ) : (
+          <WorldDialogueBox
+            bottomBand={overlayLayout?.bottomBand}
+            onChoiceSelect={handleChoiceSelect}
+            focusedChoiceIndex={focusedChoiceIndex}
+          />
+        )}
         {gatheringNotification && (
           <div className="pointer-events-auto fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-500">
             <div className="bg-amber-950/80 backdrop-blur-sm text-amber-200 border border-amber-700/50 px-6 py-3 rounded-lg font-cinzel text-sm shadow-lg">

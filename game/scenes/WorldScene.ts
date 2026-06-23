@@ -441,6 +441,7 @@ export class WorldScene extends Phaser.Scene {
               lineIndex: 0,
               choices: [
                 { id: "manh-show-around", label: "Show me around!", nextLines: ["Curious about my work? There's plenty to see..."] },
+                { id: "manh-chat-freely", label: "Chat freely", nextLines: [] },
                 { id: "manh-goodbye", label: "Just wandering", nextLines: [] },
               ],
             })
@@ -1270,6 +1271,14 @@ export class WorldScene extends Phaser.Scene {
       manhNpc.leadTo(dest.x, dest.y)
     })
 
-    this.cleanupFns.push(offGuide)
+    const offChatMove = gameBridge.on("manh-chat-move-to", ({ locationId }) => {
+      const dest = this.GUIDE_DESTINATIONS[locationId]
+      if (!dest) return
+      this.guideState = "leading"
+      this.guideDestination = dest
+      manhNpc.leadTo(dest.x, dest.y)
+    })
+
+    this.cleanupFns.push(offGuide, offChatMove)
   }
 }
