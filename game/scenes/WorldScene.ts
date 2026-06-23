@@ -1181,7 +1181,7 @@ export class WorldScene extends Phaser.Scene {
     const now = new Date()
     const h = now.getHours()
     const m = now.getMinutes()
-    const inWindow = h === 17 && m >= 0 && m < 30
+    const inWindow = h === 19 && m >= 0 && m < 30
 
     if (inWindow && !this.isGatheringActive) {
       if (this.uiLocked) {
