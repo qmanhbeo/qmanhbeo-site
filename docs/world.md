@@ -38,11 +38,15 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 
 **Current session note - 2026-05-17 sky layer pivot:** Replaced initialization-order dependence with a stable sky-layer placement model in `EnvironmentManager`. Moon and stars now use a single `repositionSkyLayer()` path based on camera `worldView` plus subtle normalized drift from camera travel, so they behave like a distant environmental layer (not world props and not HUD). Placement is recalculated at create, each update, and on viewport changes, and the moon remains fully visible across desktop default, 125%-equivalent viewport, and mobile-ish viewport checks.
 
+**Current session note - 2026-06-23 Manh free-chat digital twin:** Manh's dialogue options are now nested: "Show me around!" expands to 4 tour destinations. A new "Chat freely" option opens a free-text LLM chat dialog powered by Cohere (same key as Paths Untold). The LLM receives a system prompt describing Manh's personality, a compact knowledge index of all 32 archive entries, and tool definitions (`moveTo`, `emote`). Tool calls are executed via GameBridge events (`manh-chat-move-to` reuses the guide `leadTo` system). Chat mode uses the same overlay slot as the dialogue box, toggled by `chatMode` in `WorldDialogueState`. Keyboard: Enter to send, Escape to close.
+
 **Start here next session:**
 1. Decide and implement the dedicated world audio slice: BGM, footsteps, door-enter, and dialogue blip, while preserving mobile-safe gesture gating and silent fallback
 2. Keep the existing site SFX bridge for UI cues unless a dedicated game-only sound clearly replaces one of those cues
 3. Keep `/world` as the only route identity; do not reintroduce `/game`
 4. Update this file before and after each meaningful World Mode step
+5. Consider adding `showEntry` tool to allow Manh to open archive entry overlays from chat
+6. Consider adding `pointAt` tool for Manh to gesture toward buildings
 
 **Assets still not sourced yet** — dedicated game audio is still pending. Phaser scenes and the world route must fall back gracefully to procedural graphics and silent-safe audio behavior when tiles, sprites, map data, or game audio are missing.
 
@@ -101,6 +105,8 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-04-28: Removed the visible `World Route` label and renamed the world title to `By the Hearth`.
 - [x] 2026-05-17: Investigated moon/star desktop clipping in `/world`, confirmed camera-initialization ordering as the exact cause, and applied a one-change fix by creating the environment only after camera follow + zoom setup so sky bodies start in-view at default desktop and remain stable across resize/zoom.
 - [x] 2026-05-17: Pivoted sky behavior to a distant camera-relative environmental layer by consolidating moon/star placement into `EnvironmentManager.repositionSkyLayer()` using camera `worldView` anchors and subtle drift, eliminating frame-0 scroll timing dependence and preserving night atmosphere.
+- [x] 2026-06-23: Nested Manh's tour options behind "Show me around!" — reduces choice overload on first greeting.
+- [x] 2026-06-23: Added Manh digital twin with free-text LLM chat ("Chat freely" option). New `app/api/manh/chat/route.ts` (Cohere, system prompt + tool defs), `ManhChatDialog.tsx` (chat UI with text input + message log), `chatMode` in dialogue state, `manh-chat-move-to` GameBridge event for LLM-initiated guide actions.
 
 ---
 
@@ -326,5 +332,7 @@ Building → Section mapping:
 | `context/AudioContext.tsx` | Ambient audio pause/resume hooks |
 | `app/layout.tsx` | Root providers and global chrome |
 | `components/HeroSection.tsx` | Home CTA entry into the world route |
+| `app/api/manh/chat/route.ts` | Manh digital twin LLM proxy (Cohere, system prompt + tool defs) |
+| `app/world/_components/ManhChatDialog.tsx` | Free-text chat UI for Manh digital twin |
 | `components/*Section.tsx` | Shared content sections to be adapted for `world-panel` |
 | `utils/entryNavigation.ts` | Item-detail origin and return-state persistence |
