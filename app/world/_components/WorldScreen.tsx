@@ -256,6 +256,8 @@ export default function WorldScreen() {
       return
     }
 
+    if (dialogueState.chatMode) return
+
     const hasChoices = dialogueState.choices && dialogueState.choices.length > 0
 
     // Choice navigation: W/S or up/down arrows
