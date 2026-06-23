@@ -891,9 +891,9 @@ export class WorldScene extends Phaser.Scene {
   private drawForest() {
     if (!this.textures.exists("tree")) return
 
-    const STEP = 48
-    const padW = 240
-    const padH = 100
+    const STEP = 40
+    const padW = 280
+    const padH = 140
     const cx = 1200
     const cy = 1600
 
@@ -901,17 +901,19 @@ export class WorldScene extends Phaser.Scene {
       for (let y = cy - padH; y < cy + padH; y += STEP) {
         const hash = stableTileHash(Math.floor(x / STEP), Math.floor(y / STEP), 53)
 
-        if (hash % 100 >= 40) continue
+        if (hash % 100 >= 65) continue
 
-        const posX = x + (hash % 9) - 4
-        const posY = y + ((hash >> 4) % 9) - 4
+        const posX = x + (hash % 13) - 6
+        const posY = y + ((hash >> 4) % 13) - 6
 
-        if (posX > cx - 48 && posX < cx + 48 && posY > cy - 40 && posY < cy + 40) continue
+        if (posX > cx - 140 && posX < cx + 140 && posY > cy - 160 && posY < cy + 60) continue
+
+        const depth = posY >= cy ? WORLD_DEPTHS.buildings + 1 : WORLD_DEPTHS.forest
 
         this.add.sprite(posX, posY, "tree", hash % 8)
           .setOrigin(0.5, 1)
           .setScale(2.5 + ((hash >> 8) % 11) * 0.1)
-          .setDepth(WORLD_DEPTHS.forest)
+          .setDepth(depth)
       }
     }
   }
