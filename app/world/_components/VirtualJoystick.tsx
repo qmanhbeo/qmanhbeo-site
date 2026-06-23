@@ -174,6 +174,7 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay", ch
       onPointerDown={handleInteract}
       onPointerUp={handleInteractEnd}
       onPointerLeave={handleInteractEnd}
+      onMouseDown={(e) => e.preventDefault()}
     >
       E
     </button>
