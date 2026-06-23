@@ -5,6 +5,7 @@ import type { PlayerPosition } from "@/game/types"
 export type WorldSfxCue = "dialogue-advance" | "dialogue-open" | "panel-open" | "ui-close"
 
 type WorldBridgeEventMap = {
+  "bard-mute-changed": { muted: boolean }
   "bard-started-playing": undefined
   "bard-stopped-playing": undefined
   "choice-navigate": { direction: "up" | "down" }

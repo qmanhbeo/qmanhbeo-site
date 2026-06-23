@@ -122,10 +122,16 @@ export default function WorldScreen() {
     if (!dialogueState.isOpen) return
 
     if (dialogueState.npcId === "bard") {
-      if (option.id === "bard-hear") {
+      if (option.id === "bard-hear" || option.id === "bard-unmute") {
         gameBridge.emit("bard-started-playing", undefined)
-      } else if (option.id === "bard-thanks") {
+        if (option.id === "bard-unmute") {
+          gameBridge.emit("bard-mute-changed", { muted: false })
+        }
+      } else if (option.id === "bard-thanks" || option.id === "bard-mute") {
         gameBridge.emit("bard-stopped-playing", undefined)
+        if (option.id === "bard-mute") {
+          gameBridge.emit("bard-mute-changed", { muted: true })
+        }
       }
     }
 

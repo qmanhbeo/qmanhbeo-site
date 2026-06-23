@@ -130,6 +130,7 @@ export class WorldScene extends Phaser.Scene {
   private uiLocked = false
   private bardIsPlaying = false
   private isGatheringActive = false
+  private gatheringBardMuted = false
   private pendingGatheringStart = false
   private gatheringCheckTimer?: Phaser.Time.TimerEvent
   private guideState: "idle" | "leading" | "arrived" = "idle"
@@ -370,7 +371,7 @@ export class WorldScene extends Phaser.Scene {
         const targetNpc = this.npcs.find((n) => n.id === activeTarget.npcId)
         if (targetNpc?.hasSprite && !this.isGatheringActive) targetNpc.pauseWandering()
 
-        if (this.isGatheringActive) {
+        if (this.isGatheringActive && activeTarget.npcId !== "bard") {
           const npcEntry = npcData.find((n) => n.id === activeTarget.npcId)
           if (npcEntry?.gatheringDialogueLines?.length) {
             gameBridge.emit("open-dialogue", {
@@ -386,7 +387,26 @@ export class WorldScene extends Phaser.Scene {
         }
 
         if (activeTarget.npcId === "bard") {
-          if (this.bardIsPlaying) {
+          if (this.isGatheringActive) {
+            gameBridge.emit("open-dialogue", {
+              isOpen: true,
+              npcId: "bard",
+              speaker: "Bard",
+              lines: this.gatheringBardMuted
+                ? ["The fire crackles in the silence..."]
+                : ["The melody dances with the flames... but if you need quiet, just say the word."],
+              lineIndex: 0,
+              choices: this.gatheringBardMuted
+                ? [
+                    { id: "bard-unmute", label: "(Unmute the music)", nextLines: ["The melody picks up where it left off..."] },
+                    { id: "gathering-thanks", label: "...", nextLines: [] },
+                  ]
+                : [
+                    { id: "bard-mute", label: "(I'd rather have quiet)", nextLines: ["The fire crackles in the silence instead."] },
+                    { id: "gathering-thanks", label: "Keep playing", nextLines: [] },
+                  ],
+            })
+          } else if (this.bardIsPlaying) {
             gameBridge.emit("open-dialogue", {
               isOpen: true,
               npcId: "bard",
@@ -1235,7 +1255,11 @@ export class WorldScene extends Phaser.Scene {
       }
     })
 
-    this.cleanupFns.push(offStarted, offStopped)
+    const offMute = gameBridge.on("bard-mute-changed", ({ muted }) => {
+      this.gatheringBardMuted = muted
+    })
+
+    this.cleanupFns.push(offStarted, offStopped, offMute)
   }
 
   private setupManhBehavior(manhNpc: NPC) {
