@@ -107,7 +107,6 @@ Do not keep coding against a stale plan. If the architecture changes, update thi
 - [x] 2026-05-17: Pivoted sky behavior to a distant camera-relative environmental layer by consolidating moon/star placement into `EnvironmentManager.repositionSkyLayer()` using camera `worldView` anchors and subtle drift, eliminating frame-0 scroll timing dependence and preserving night atmosphere.
 - [x] 2026-06-23: Nested Manh's tour options behind "Show me around!" — reduces choice overload on first greeting.
 - [x] 2026-06-23: Added Manh digital twin with free-text LLM chat ("Chat freely" option). New `app/api/manh/chat/route.ts` (Cohere, system prompt + tool defs), `ManhChatDialog.tsx` (chat UI with text input + message log), `chatMode` in dialogue state, `manh-chat-move-to` GameBridge event for LLM-initiated guide actions.
-- [x] 2026-06-23: Fixed ManhChatDialog mobile keyboard handling — switched from `position: absolute; top:` to `position: fixed; bottom:` with `visualViewport` resize listener. When keyboard opens, dialog anchors 16px above visual viewport bottom with responsive max-height. When keyboard closes, dialog returns to sitting above the bottom band (joystick area). No trailing gaps, no overlapping.
 
 ---
 

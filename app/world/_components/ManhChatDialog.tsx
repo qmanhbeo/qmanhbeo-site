@@ -36,6 +36,24 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const [viewportHeight, setViewportHeight] = useState(800)
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false)
+
+  useEffect(() => {
+    const onResize = () => {
+      const vh = window.visualViewport?.height ?? window.innerHeight
+      setViewportHeight(vh)
+      setIsKeyboardOpen(vh < window.innerHeight * 0.75)
+    }
+    onResize()
+    window.visualViewport?.addEventListener("resize", onResize)
+    window.addEventListener("resize", onResize)
+    return () => {
+      window.visualViewport?.removeEventListener("resize", onResize)
+      window.removeEventListener("resize", onResize)
+    }
+  }, [])
+
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [])
@@ -117,26 +135,10 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
     [sendMessage, onClose],
   )
 
-  const [viewportHeight, setViewportHeight] = useState(800)
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false)
-
-  useEffect(() => {
-    const onResize = () => {
-      const vh = window.visualViewport?.height ?? window.innerHeight
-      setViewportHeight(vh)
-      setIsKeyboardOpen(vh < window.innerHeight * 0.75)
-    }
-    onResize()
-    window.visualViewport?.addEventListener("resize", onResize)
-    window.addEventListener("resize", onResize)
-    return () => {
-      window.visualViewport?.removeEventListener("resize", onResize)
-      window.removeEventListener("resize", onResize)
-    }
-  }, [])
-
   const bottomY = bottomBand?.start ?? 200
-  const bottomOffset = isKeyboardOpen ? 16 : bottomY + 24
+  const bottomOffset = isKeyboardOpen
+    ? 16
+    : bottomY + 24
   const dialogMaxHeight = isKeyboardOpen
     ? Math.min(viewportHeight - 96, 400)
     : Math.min(bottomY - Math.max(60, bottomY - 360) - 24, 400)
