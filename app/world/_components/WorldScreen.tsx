@@ -58,6 +58,7 @@ export default function WorldScreen() {
   const pendingGuideChoiceRef = useRef<string | null>(null)
   const [promptText, setPromptText] = useState("")
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
+  const [gatheringNotification, setGatheringNotification] = useState<string | null>(null)
   const [focusedChoiceIndex, setFocusedChoiceIndex] = useState(0)
   const choicesLengthRef = useRef(0)
   choicesLengthRef.current = dialogueState.choices?.length ?? 0
@@ -122,10 +123,8 @@ export default function WorldScreen() {
 
     if (dialogueState.npcId === "bard") {
       if (option.id === "bard-hear") {
-        playBardMusic()
         gameBridge.emit("bard-started-playing", undefined)
       } else if (option.id === "bard-thanks") {
-        stopBardMusic()
         gameBridge.emit("bard-stopped-playing", undefined)
       }
     }
@@ -158,7 +157,7 @@ export default function WorldScreen() {
       lineIndex: 0,
       choices: undefined,
     })
-  }, [dialogueState, playBardMusic, stopBardMusic, handleCloseDialogue, setDialogueState])
+  }, [dialogueState, handleCloseDialogue, setDialogueState])
 
   const handleAdvanceDialogue = useCallback(() => {
     if (!dialogueState.isOpen || (dialogueState.choices && dialogueState.choices.length > 0)) return
@@ -301,6 +300,13 @@ export default function WorldScreen() {
       setFocusedChoiceIndex((prev) => (direction === "up" ? (prev - 1 + len) % len : (prev + 1) % len))
     })
 
+    const offBardStarted = gameBridge.on("bard-started-playing", () => playBardMusic())
+    const offBardStopped = gameBridge.on("bard-stopped-playing", () => stopBardMusic())
+    const offNotification = gameBridge.on("world-notification", ({ text }) => {
+      setGatheringNotification(text)
+      setTimeout(() => setGatheringNotification(null), 4000)
+    })
+
     const handleKeyDown = (event: KeyboardEvent) => {
       handleWorldKeyDown(event)
     }
@@ -318,6 +324,9 @@ export default function WorldScreen() {
       offWorldSfx()
       offDialogueInteract()
       offChoiceNavigate()
+      offBardStarted()
+      offBardStopped()
+      offNotification()
       document.body.style.overflow = originalOverflow
       document.body.style.overscrollBehavior = originalOverscrollBehavior
       if (originalOverlayLock) {
@@ -413,6 +422,13 @@ export default function WorldScreen() {
           onChoiceSelect={handleChoiceSelect}
           focusedChoiceIndex={focusedChoiceIndex}
         />
+        {gatheringNotification && (
+          <div className="pointer-events-auto fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-500">
+            <div className="bg-amber-950/80 backdrop-blur-sm text-amber-200 border border-amber-700/50 px-6 py-3 rounded-lg font-cinzel text-sm shadow-lg">
+              {gatheringNotification}
+            </div>
+          </div>
+        )}
         <VirtualJoystick joystickRef={joystickRef} placement="overlay" />
       </div>
 

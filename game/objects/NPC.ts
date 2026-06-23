@@ -29,6 +29,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
   private wanderPaused = false
 
   private readonly isFlipCar: boolean
+  bobbingTween?: Phaser.Tweens.Tween
 
   constructor(scene: Phaser.Scene, data: NpcData) {
     const textureKey = scene.textures.exists(`world-npc-${data.id}`) ? `world-npc-${data.id}` : "world-npc"
@@ -113,7 +114,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
         }
       }
     } else {
-      scene.tweens.add({
+      this.bobbingTween = scene.tweens.add({
         targets: this,
         y: data.y - 2,
         duration: 1300 + (data.x % 4) * 120,

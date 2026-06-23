@@ -17,6 +17,7 @@ type WorldBridgeEventMap = {
   "player-position": PlayerPosition
   "prompt-changed": { prompt: string }
   "section-closed": undefined
+  "world-notification": { text: string }
   "world-sfx": { cue: WorldSfxCue }
 }
 

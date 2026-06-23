@@ -129,6 +129,9 @@ export class WorldScene extends Phaser.Scene {
   private player?: Player
   private uiLocked = false
   private bardIsPlaying = false
+  private isGatheringActive = false
+  private pendingGatheringStart = false
+  private gatheringCheckTimer?: Phaser.Time.TimerEvent
   private guideState: "idle" | "leading" | "arrived" = "idle"
   private guideDestination: { x: number; y: number; description: string; label: string } | null = null
   private guideArrivalTime = 0
@@ -154,6 +157,14 @@ export class WorldScene extends Phaser.Scene {
       label: "Post",
       description: "The Post \u2014 this is where the paths cross. Drop a letter if you want to reach the real Manh. The words you write will find their way.",
     },
+  }
+  private readonly GATHERING_DESTINATIONS: Record<string, { x: number; y: number }> = {
+    manh: { x: 1180, y: 870 },
+    tungtung: { x: 1220, y: 930 },
+    hachimi: { x: 1150, y: 940 },
+    alex: { x: 1070, y: 870 },
+    adam: { x: 1330, y: 870 },
+    avery: { x: 1180, y: 950 },
   }
   private buildingLabelStyle!: Phaser.Types.GameObjects.Text.TextStyle
   private buildingLabels: Phaser.GameObjects.Text[] = []
@@ -232,6 +243,13 @@ export class WorldScene extends Phaser.Scene {
       this.setupManhBehavior(manhNpc)
     }
 
+    this.checkGatheringTime()
+    this.gatheringCheckTimer = this.time.addEvent({
+      delay: 15000,
+      loop: true,
+      callback: () => this.checkGatheringTime(),
+    })
+
     this.buildingHalo = this.add.ellipse(0, 0, 94, 70, 0xffc56f, 0)
       .setDepth(5)
       .setStrokeStyle(2, 0xffd27b, 0.42)
@@ -252,13 +270,20 @@ export class WorldScene extends Phaser.Scene {
     const offSectionClosed = gameBridge.on("section-closed", () => this.unlockWorldUi())
     const offDialogueClosed = gameBridge.on("dialogue-closed", () => {
       this.unlockWorldUi()
-      for (const npc of this.npcs) {
-        if (npc.hasSprite) npc.resumeWandering()
+      if (!this.isGatheringActive) {
+        for (const npc of this.npcs) {
+          if (npc.hasSprite) npc.resumeWandering()
+        }
       }
       if (this.guideState === "arrived") {
         this.guideState = "idle"
         this.guideDestination = null
         this.manhNpc?.startWanderingPublic()
+        this.leadManhToGathering()
+      }
+      if (this.pendingGatheringStart) {
+        this.pendingGatheringStart = false
+        this.startCampfireGathering(false)
       }
     })
     this.cleanupFns.push(offSectionClosed, offDialogueClosed)
@@ -284,6 +309,7 @@ export class WorldScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.cleanupFns.forEach((cleanup) => cleanup())
       this.cleanupFns.length = 0
+      this.gatheringCheckTimer?.destroy()
       this.persistPlayerPosition()
       this.scale.off("resize", handleResize)
       this.environment?.destroy()
@@ -321,6 +347,7 @@ export class WorldScene extends Phaser.Scene {
       this.guideState = "idle"
       this.guideDestination = null
       this.manhNpc?.startWanderingPublic()
+      this.leadManhToGathering()
     }
 
     if (justInteracted && activeTarget) {
@@ -340,7 +367,22 @@ export class WorldScene extends Phaser.Scene {
         gameBridge.emit("world-sfx", { cue: "dialogue-open" })
 
         const targetNpc = this.npcs.find((n) => n.id === activeTarget.npcId)
-        if (targetNpc?.hasSprite) targetNpc.pauseWandering()
+        if (targetNpc?.hasSprite && !this.isGatheringActive) targetNpc.pauseWandering()
+
+        if (this.isGatheringActive) {
+          const npcEntry = npcData.find((n) => n.id === activeTarget.npcId)
+          if (npcEntry?.gatheringDialogueLines?.length) {
+            gameBridge.emit("open-dialogue", {
+              isOpen: true,
+              npcId: activeTarget.npcId,
+              speaker: activeTarget.speaker,
+              lines: npcEntry.gatheringDialogueLines,
+              lineIndex: 0,
+              choices: [{ id: "gathering-thanks", label: "...", nextLines: [] }],
+            })
+            return
+          }
+        }
 
         if (activeTarget.npcId === "bard") {
           if (this.bardIsPlaying) {
@@ -1019,6 +1061,122 @@ export class WorldScene extends Phaser.Scene {
     if (this.input.keyboard) {
       this.input.keyboard.enabled = true
       this.input.keyboard.enableGlobalCapture()
+    }
+  }
+
+  private startCampfireGathering(instant: boolean) {
+    this.isGatheringActive = true
+
+    this.npcs.forEach((npc) => {
+      const dest = this.GATHERING_DESTINATIONS[npc.id]
+      if (!dest) return
+      if (npc.id === "manh" && this.guideState === "leading") return
+
+      if (npc.hasSprite) {
+        if (instant) {
+          npc.setPosition(dest.x, dest.y)
+          npc.setVelocity(0, 0)
+          npc.stopLeading("down")
+        } else {
+          npc.leadTo(dest.x, dest.y)
+        }
+      } else {
+        npc.bobbingTween?.destroy()
+        if (instant) {
+          npc.setPosition(dest.x, dest.y)
+          npc.bobbingTween = this.tweens.add({
+            targets: npc,
+            y: dest.y - 2,
+            duration: 1300 + (npc.x % 4) * 120,
+            ease: "Sine.inOut",
+            yoyo: true,
+            repeat: -1,
+          })
+        } else {
+          this.tweens.add({
+            targets: npc,
+            x: dest.x,
+            y: dest.y,
+            duration: 2000,
+            ease: "Sine.easeInOut",
+            onComplete: () => {
+              npc.bobbingTween?.destroy()
+              npc.bobbingTween = this.tweens.add({
+                targets: npc,
+                y: dest.y - 2,
+                duration: 1300 + (npc.x % 4) * 120,
+                ease: "Sine.inOut",
+                yoyo: true,
+                repeat: -1,
+              })
+            },
+          })
+        }
+      }
+    })
+
+    gameBridge.emit("bard-started-playing", undefined)
+    gameBridge.emit("world-notification", { text: "The townsfolk gather around the fire..." })
+    this.pendingGatheringStart = false
+  }
+
+  private endCampfireGathering() {
+    this.isGatheringActive = false
+
+    gameBridge.emit("bard-stopped-playing", undefined)
+
+    this.npcs.forEach((npc) => {
+      const original = npcData.find((d) => d.id === npc.id)
+      if (!original) return
+
+      if (npc.hasSprite) {
+        npc.stopLeading()
+        npc.resumeWandering()
+      } else {
+        npc.bobbingTween?.destroy()
+        this.tweens.add({
+          targets: npc,
+          x: original.x,
+          y: original.y,
+          duration: 1500,
+          ease: "Sine.easeInOut",
+          onComplete: () => {
+            npc.bobbingTween = this.tweens.add({
+              targets: npc,
+              y: original.y - 2,
+              duration: 1300 + (original.x % 4) * 120,
+              ease: "Sine.inOut",
+              yoyo: true,
+              repeat: -1,
+            })
+          },
+        })
+      }
+    })
+  }
+
+  private checkGatheringTime() {
+    const now = new Date()
+    const h = now.getHours()
+    const m = now.getMinutes()
+    const inWindow = h === 17 && m >= 0 && m < 30
+
+    if (inWindow && !this.isGatheringActive) {
+      if (this.uiLocked) {
+        this.pendingGatheringStart = true
+        return
+      }
+      this.startCampfireGathering(m < 15)
+    } else if (!inWindow && this.isGatheringActive) {
+      this.endCampfireGathering()
+    }
+  }
+
+  private leadManhToGathering() {
+    if (!this.isGatheringActive || !this.manhNpc) return
+    const dest = this.GATHERING_DESTINATIONS["manh"]
+    if (dest) {
+      this.manhNpc.leadTo(dest.x, dest.y)
     }
   }
 

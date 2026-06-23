@@ -13,6 +13,7 @@ export interface NpcData {
   y: number
   tint: number
   dialogueLines: string[]
+  gatheringDialogueLines?: string[]
   spriteConfig?: SpriteConfig
 }
 
@@ -36,6 +37,7 @@ export const npcData: NpcData[] = [
       "Manh keeps leaving half the village in draft mode.",
       "The Library is where the serious scrolls live.",
     ],
+    gatheringDialogueLines: ["Best part of the evening. Just let the fire do its work."],
   },
   {
     id: "adam",
@@ -47,6 +49,7 @@ export const npcData: NpcData[] = [
       "The Workshop is the right door if you want the built things.",
       "Every good prototype in this town starts a little rough.",
     ],
+    gatheringDialogueLines: ["The fire brings out the good stories. Or just good silence."],
   },
   {
     id: "avery",
@@ -58,6 +61,7 @@ export const npcData: NpcData[] = [
       "The campfire is still the center of the whole world here.",
       "Walk around first. The village makes more sense once you feel the distances.",
     ],
+    gatheringDialogueLines: ["Some conversations don't need words. This is one of them."],
   },
   {
     id: "tungtung",
@@ -66,6 +70,7 @@ export const npcData: NpcData[] = [
     y: CENTER_Y - 100,
     tint: 0xffffff,
     dialogueLines: ["Tung Tung Tung Sahur"],
+    gatheringDialogueLines: ["Tung Tung... Sahur... (swaying to the music)"],
     spriteConfig: {
       path: "/game/characters/tungtung-sheet/spritesheet.png",
       atlasPath: "/game/characters/tungtung-sheet/spritesheet.json",
@@ -84,6 +89,7 @@ export const npcData: NpcData[] = [
       "Welcome to the village!",
       "The fire keeps us warm.",
     ],
+    gatheringDialogueLines: ["Even the guide rests by the fire. The music will still be here tomorrow."],
     spriteConfig: {
       path: "/game/characters/manh-sheet/spritesheet.png",
       atlasPath: "/game/characters/manh-sheet/spritesheet.json",
@@ -99,6 +105,7 @@ export const npcData: NpcData[] = [
     y: CENTER_Y + 80,
     tint: 0xffffff,
     dialogueLines: ["hachimichimichi", "ashigagaashi", "mambow", "mambOW", "ma-ambow", "ting ting tung tung ting", "tingting ting tungtung ting"],
+    gatheringDialogueLines: ["mambow... (vibrating gently with the melody)"],
     spriteConfig: {
       path: "/game/characters/hachimi-sheet/spritesheet.png",
       atlasPath: "/game/characters/hachimi-sheet/spritesheet.json",
@@ -117,5 +124,6 @@ export const npcData: NpcData[] = [
       "Care for a tune?",
       "The fire keeps time for us all.",
     ],
+    gatheringDialogueLines: ["The fire and I are one song tonight. Find your own rhythm by the warmth."],
   },
 ]
