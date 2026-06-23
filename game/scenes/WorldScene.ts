@@ -892,13 +892,11 @@ export class WorldScene extends Phaser.Scene {
     if (!this.textures.exists("tree")) return
 
     const STEP = 40
-    const padW = 280
-    const padH = 140
     const cx = 1200
     const cy = 1600
 
-    for (let x = cx - padW; x < cx + padW; x += STEP) {
-      for (let y = cy - padH + 40; y < cy + padH + 40; y += STEP) {
+    for (let x = 0; x < 2400; x += STEP) {
+      for (let y = 1500; y < 1800; y += STEP) {
         const hash = stableTileHash(Math.floor(x / STEP), Math.floor(y / STEP), 53)
 
         if (hash % 100 >= 90) continue
