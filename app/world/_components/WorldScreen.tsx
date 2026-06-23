@@ -141,6 +141,12 @@ export default function WorldScreen() {
       return
     }
 
+    if (option.id === "cave-enter") {
+      window.open("/paths-untold", "_blank")
+      handleCloseDialogue()
+      return
+    }
+
     if (option.nextLines.length === 0) {
       handleCloseDialogue()
       return
@@ -258,7 +264,20 @@ export default function WorldScreen() {
         return
       }
       if (sectionId === "paths-untold") {
-        router.push("/paths-untold")
+        gameBridge.emit("open-dialogue", {
+          isOpen: true,
+          npcId: null,
+          speaker: "",
+          lines: [
+            "The cave mouth yawns before you, a passage into darkness...",
+            "A cold draft whispers from within, carrying the promise of untold stories.",
+          ],
+          lineIndex: 0,
+          choices: [
+            { id: "cave-enter", label: "Enter the cave", nextLines: [] },
+            { id: "cave-retreat", label: "Turn back", nextLines: [] },
+          ],
+        })
         return
       }
       setActiveSectionId(sectionId)
