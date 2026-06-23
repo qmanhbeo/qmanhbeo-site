@@ -118,7 +118,8 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
   )
 
   const bottomY = bottomBand?.start ?? 200
-  const topY = bottomY - 420
+  const topY = Math.max(60, bottomY - 360)
+  const maxHeight = Math.min(bottomY - topY - 24, 400)
 
   return (
     <div
@@ -126,7 +127,7 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
       style={{ left: 0, right: 0, top: `${topY}px` }}
     >
       <div className="flex w-full max-w-3xl flex-col rounded-[1.8rem] border border-amber-400/18 bg-[#120a08]/92 shadow-[0_18px_55px_rgba(0,0,0,0.42)] backdrop-blur-sm"
-        style={{ maxHeight: `${bottomY - topY}px` }}
+        style={{ maxHeight: `${maxHeight}px` }}
       >
         <div className="flex items-center justify-between border-b border-amber-400/12 px-5 py-3">
           <div className="flex items-center gap-2 text-amber-100">
@@ -141,9 +142,7 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 py-3 scrollbar-fade"
-          style={{ minHeight: "120px" }}
-        >
+        <div className="flex-1 overflow-y-auto px-5 py-3 scrollbar-fade">
           {messages.map((msg, i) => {
             if (msg.role === "emote") {
               return (
