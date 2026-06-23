@@ -158,13 +158,13 @@ export class WorldScene extends Phaser.Scene {
       description: "The Post \u2014 this is where the paths cross. Drop a letter if you want to reach the real Manh. The words you write will find their way.",
     },
   }
-  private readonly GATHERING_DESTINATIONS: Record<string, { x: number; y: number }> = {
-    manh: { x: 1180, y: 870 },
-    tungtung: { x: 1220, y: 930 },
-    hachimi: { x: 1150, y: 940 },
-    alex: { x: 1070, y: 870 },
-    adam: { x: 1330, y: 870 },
-    avery: { x: 1180, y: 950 },
+  private readonly GATHERING_DESTINATIONS: Record<string, { x: number; y: number; dir: "up" | "down" | "left" | "right" }> = {
+    manh: { x: 1168, y: 844, dir: "down" },
+    tungtung: { x: 1233, y: 844, dir: "down" },
+    hachimi: { x: 1168, y: 956, dir: "up" },
+    alex: { x: 1135, y: 900, dir: "right" },
+    adam: { x: 1265, y: 900, dir: "left" },
+    avery: { x: 1200, y: 956, dir: "up" },
   }
   private buildingLabelStyle!: Phaser.Types.GameObjects.Text.TextStyle
   private buildingLabels: Phaser.GameObjects.Text[] = []
@@ -1074,11 +1074,11 @@ export class WorldScene extends Phaser.Scene {
       if (npc.id === "manh" && this.guideState === "leading") return
 
       if (npc.hasSprite) {
+        npc.pauseWandering()
         if (instant) {
           npc.setPosition(dest.x, dest.y)
           npc.setVelocity(0, 0)
-          npc.stopLeading("down")
-          npc.pauseWandering()
+          npc.stopLeading(dest.dir)
         } else {
           npc.leadTo(dest.x, dest.y)
         }
