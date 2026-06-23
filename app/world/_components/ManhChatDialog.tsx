@@ -117,17 +117,37 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
     [sendMessage, onClose],
   )
 
+  const [viewportHeight, setViewportHeight] = useState(800)
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false)
+
+  useEffect(() => {
+    const onResize = () => {
+      const vh = window.visualViewport?.height ?? window.innerHeight
+      setViewportHeight(vh)
+      setIsKeyboardOpen(vh < window.innerHeight * 0.75)
+    }
+    onResize()
+    window.visualViewport?.addEventListener("resize", onResize)
+    window.addEventListener("resize", onResize)
+    return () => {
+      window.visualViewport?.removeEventListener("resize", onResize)
+      window.removeEventListener("resize", onResize)
+    }
+  }, [])
+
   const bottomY = bottomBand?.start ?? 200
-  const topY = Math.max(60, bottomY - 360)
-  const maxHeight = Math.min(bottomY - topY - 24, 400)
+  const bottomOffset = isKeyboardOpen ? 16 : bottomY + 24
+  const dialogMaxHeight = isKeyboardOpen
+    ? Math.min(viewportHeight - 96, 400)
+    : Math.min(bottomY - Math.max(60, bottomY - 360) - 24, 400)
 
   return (
     <div
-      className="absolute z-40 flex justify-center px-4"
-      style={{ left: 0, right: 0, top: `${topY}px` }}
+      className="fixed z-40 flex justify-center px-4"
+      style={{ left: 0, right: 0, bottom: `${bottomOffset}px` }}
     >
       <div className="flex w-full max-w-3xl flex-col rounded-[1.8rem] border border-amber-400/18 bg-[#120a08]/92 shadow-[0_18px_55px_rgba(0,0,0,0.42)] backdrop-blur-sm"
-        style={{ maxHeight: `${maxHeight}px` }}
+        style={{ maxHeight: `${dialogMaxHeight}px` }}
       >
         <div className="flex items-center justify-between border-b border-amber-400/12 px-5 py-3">
           <div className="flex items-center gap-2 text-amber-100">
