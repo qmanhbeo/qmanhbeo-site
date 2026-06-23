@@ -901,12 +901,12 @@ export class WorldScene extends Phaser.Scene {
       for (let y = cy - padH; y < cy + padH; y += STEP) {
         const hash = stableTileHash(Math.floor(x / STEP), Math.floor(y / STEP), 53)
 
-        if (hash % 100 >= 65) continue
+        if (hash % 100 >= 90) continue
 
         const posX = x + (hash % 13) - 6
         const posY = y + ((hash >> 4) % 13) - 6
 
-        if (posX > cx - 140 && posX < cx + 140 && posY > cy - 160 && posY < cy + 60) continue
+        if (posX > cx - 140 && posX < cx + 140 && posY > cy - 80 && posY < cy + 40) continue
 
         const depth = posY >= cy ? WORLD_DEPTHS.buildings + 1 : WORLD_DEPTHS.forest
 
