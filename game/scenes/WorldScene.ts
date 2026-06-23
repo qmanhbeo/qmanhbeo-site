@@ -898,7 +898,7 @@ export class WorldScene extends Phaser.Scene {
     const cy = 1600
 
     for (let x = cx - padW; x < cx + padW; x += STEP) {
-      for (let y = cy - padH; y < cy + padH; y += STEP) {
+      for (let y = cy - padH + 40; y < cy + padH + 40; y += STEP) {
         const hash = stableTileHash(Math.floor(x / STEP), Math.floor(y / STEP), 53)
 
         if (hash % 100 >= 90) continue
