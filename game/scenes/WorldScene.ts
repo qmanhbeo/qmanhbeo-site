@@ -738,7 +738,7 @@ export class WorldScene extends Phaser.Scene {
   ): Phaser.GameObjects.Text {
     const label = this.add.text(x, y, text, this.buildingLabelStyle)
       .setOrigin(0.5, 0)
-      .setDepth(WORLD_DEPTHS.buildings)
+      .setDepth(WORLD_DEPTHS.buildings + 2)
     this.buildingLabels.push(label)
     return label
   }
@@ -905,8 +905,6 @@ export class WorldScene extends Phaser.Scene {
 
         const posX = x + (hash % 13) - 6
         const posY = y + ((hash >> 4) % 13) - 6
-
-        if (posX > cx - 140 && posX < cx + 140 && posY > cy - 80 && posY < cy + 40) continue
 
         const depth = posY >= cy ? WORLD_DEPTHS.buildings + 1 : WORLD_DEPTHS.forest
 
