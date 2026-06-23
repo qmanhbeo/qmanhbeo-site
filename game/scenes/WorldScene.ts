@@ -904,7 +904,7 @@ export class WorldScene extends Phaser.Scene {
         const posX = x + (hash % 13) - 6
         const posY = y + ((hash >> 4) % 13) - 6
 
-        if (posX > cx - 44 && posX < cx + 44 && posY > cy - 36 && posY < cy + 36) continue
+        if (posX > cx - 44 && posX < cx + 44 && posY > cy - 21 && posY < cy + 51) continue
 
         const depth = posY >= cy ? WORLD_DEPTHS.buildings + 1 : WORLD_DEPTHS.forest
 
