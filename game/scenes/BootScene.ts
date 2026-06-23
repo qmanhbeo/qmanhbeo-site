@@ -315,6 +315,10 @@ export class BootScene extends Phaser.Scene {
       frameWidth: WORLD_DECORATION_FRAME_SIZE,
       frameHeight: WORLD_DECORATION_FRAME_SIZE,
     })
+    this.load.spritesheet("tree", "/game/buildings/tree/tree.png", {
+      frameWidth: 16,
+      frameHeight: 32,
+    })
     this.load.tilemapTiledJSON(WORLD_TILESET.mapKey, WORLD_TILESET.mapPath)
     this.load.on("progress", (progress: number) => {
       gameBridge.emit("load-progress", {

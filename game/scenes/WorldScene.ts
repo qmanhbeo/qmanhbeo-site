@@ -459,6 +459,7 @@ export class WorldScene extends Phaser.Scene {
 
     this.drawVillageBuildings()
     this.drawCampfire()
+    this.drawForest()
 
     logWorldVisualDebug("tiled village rendered", {
       grassTiles,
@@ -727,6 +728,7 @@ export class WorldScene extends Phaser.Scene {
     this.drawVillageBuildings(background)
 
     this.drawCampfire()
+    this.drawForest()
   }
 
   private addBuildingLabel(
@@ -884,6 +886,34 @@ export class WorldScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1,
     })
+  }
+
+  private drawForest() {
+    if (!this.textures.exists("tree")) return
+
+    const STEP = 48
+    const padW = 240
+    const padH = 100
+    const cx = 1200
+    const cy = 1600
+
+    for (let x = cx - padW; x < cx + padW; x += STEP) {
+      for (let y = cy - padH; y < cy + padH; y += STEP) {
+        const hash = stableTileHash(Math.floor(x / STEP), Math.floor(y / STEP), 53)
+
+        if (hash % 100 >= 40) continue
+
+        const posX = x + (hash % 9) - 4
+        const posY = y + ((hash >> 4) % 9) - 4
+
+        if (posX > cx - 48 && posX < cx + 48 && posY > cy - 40 && posY < cy + 40) continue
+
+        this.add.sprite(posX, posY, "tree", hash % 8)
+          .setOrigin(0.5, 1)
+          .setScale(2.5 + ((hash >> 8) % 11) * 0.1)
+          .setDepth(WORLD_DEPTHS.forest)
+      }
+    }
   }
 
   private getActiveTarget(): ActiveTarget | null {

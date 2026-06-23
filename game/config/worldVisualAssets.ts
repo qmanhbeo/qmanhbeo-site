@@ -3,6 +3,7 @@ export const WORLD_VISUAL_DEBUG = false
 export const WORLD_DEPTHS = {
   ground: 0,
   decorations: 1,
+  forest: 2,
   buildings: 4,
   campfireGlow: 4,
   campfireFire: 6,
