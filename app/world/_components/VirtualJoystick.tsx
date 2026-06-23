@@ -25,18 +25,11 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay", ch
   const isDraggingRef = useRef(false)
   const choicesVisibleRef = useRef(false)
   const lastChoiceNavRef = useRef<"up" | "down" | null>(null)
-  const lastChatNavRef = useRef<"up" | "down" | null>(null)
-  const chatModeRef = useRef(false)
-  const keyboardActiveRef = useRef(false)
   choicesVisibleRef.current = !!dialogueState.choices && dialogueState.choices.length > 0
+  const chatModeRef = useRef(false)
+  const lastChatNavRef = useRef<"up" | "down" | null>(null)
+  const chatKeyboardActiveRef = useRef(false)
   chatModeRef.current = !!dialogueState.chatMode
-
-  useEffect(() => {
-    const offKeyboard = gameBridge.on("chat-keyboard-state", ({ active }) => {
-      keyboardActiveRef.current = active
-    })
-    return offKeyboard
-  }, [])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(pointer: coarse)")
@@ -49,6 +42,13 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay", ch
   useEffect(() => {
     joystickRef.current = ZERO_INPUT
   }, [joystickRef])
+
+  useEffect(() => {
+    const offKeyboard = gameBridge.on("chat-keyboard-state", ({ active }) => {
+      chatKeyboardActiveRef.current = active
+    })
+    return offKeyboard
+  }, [])
 
   useEffect(() => {
     if (!isCoarsePointer) return
@@ -74,18 +74,7 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay", ch
         y: nextY / maxRadius,
       }
 
-      if (chatModeRef.current && !keyboardActiveRef.current) {
-        const normalizedY = nextY / maxRadius
-        if (normalizedY < -0.5 && lastChatNavRef.current !== "up") {
-          lastChatNavRef.current = "up"
-          gameBridge.emit("chat-navigate", { direction: "up" })
-        } else if (normalizedY > 0.5 && lastChatNavRef.current !== "down") {
-          lastChatNavRef.current = "down"
-          gameBridge.emit("chat-navigate", { direction: "down" })
-        } else if (Math.abs(normalizedY) < 0.3) {
-          lastChatNavRef.current = null
-        }
-      } else if (choicesVisibleRef.current) {
+      if (choicesVisibleRef.current) {
         const normalizedY = nextY / maxRadius
         if (normalizedY < -0.5 && lastChoiceNavRef.current !== "up") {
           lastChoiceNavRef.current = "up"
@@ -95,6 +84,19 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay", ch
           gameBridge.emit("choice-navigate", { direction: "down" })
         } else if (Math.abs(normalizedY) < 0.3) {
           lastChoiceNavRef.current = null
+        }
+      }
+
+      if (chatModeRef.current && !chatKeyboardActiveRef.current) {
+        const normalizedY = nextY / maxRadius
+        if (normalizedY < -0.5 && lastChatNavRef.current !== "up") {
+          lastChatNavRef.current = "up"
+          gameBridge.emit("chat-navigate", { direction: "up" })
+        } else if (normalizedY > 0.5 && lastChatNavRef.current !== "down") {
+          lastChatNavRef.current = "down"
+          gameBridge.emit("chat-navigate", { direction: "down" })
+        } else if (Math.abs(normalizedY) < 0.3) {
+          lastChatNavRef.current = null
         }
       }
     }
@@ -142,13 +144,13 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay", ch
   )
 
   const handleInteract = () => {
-    if (dialogueState.isOpen) {
-      if (chatModeRef.current) {
-        if (!keyboardActiveRef.current) {
-          chatInteractRef?.current?.()
-        }
-        return
+    if (chatModeRef.current) {
+      if (!chatKeyboardActiveRef.current) {
+        chatInteractRef?.current?.()
       }
+      return
+    }
+    if (dialogueState.isOpen) {
       gameBridge.emit("dialogue-interact", undefined)
       return
     }
@@ -159,7 +161,7 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay", ch
   }
 
   const handleInteractEnd = () => {
-    if (dialogueState.isOpen) return
+    if (dialogueState.chatMode || dialogueState.isOpen) return
     joystickRef.current = {
       ...joystickRef.current,
       interact: false,
@@ -174,7 +176,6 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay", ch
       onPointerDown={handleInteract}
       onPointerUp={handleInteractEnd}
       onPointerLeave={handleInteractEnd}
-      onMouseDown={(e) => e.preventDefault()}
     >
       E
     </button>

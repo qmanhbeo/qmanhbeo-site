@@ -57,10 +57,10 @@ export default function WorldScreen() {
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
   const lastSoundCueRef = useRef<string | null>(null)
   const pendingGuideChoiceRef = useRef<string | null>(null)
-  const chatInteractRef = useRef<(() => void) | null>(null)
   const [promptText, setPromptText] = useState("")
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
   const [gatheringNotification, setGatheringNotification] = useState<string | null>(null)
+  const chatInteractRef = useRef<(() => void) | null>(null)
   const [focusedChoiceIndex, setFocusedChoiceIndex] = useState(0)
   const choicesLengthRef = useRef(0)
   choicesLengthRef.current = dialogueState.choices?.length ?? 0
