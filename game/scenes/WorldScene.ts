@@ -440,10 +440,7 @@ export class WorldScene extends Phaser.Scene {
               lines: ["Welcome to the Hearth! Wander as you like."],
               lineIndex: 0,
               choices: [
-                { id: "manh-guide-workshop", label: "Show me projects", nextLines: ["Follow me to the Workshop."] },
-                { id: "manh-guide-library", label: "Show me the library", nextLines: ["Follow me to the Library."] },
-                { id: "manh-guide-yard", label: "Show me notes", nextLines: ["Follow me to the Yard."] },
-                { id: "manh-guide-post", label: "Show me the real Manh", nextLines: ["Follow me to the Post."] },
+                { id: "manh-show-around", label: "Show me around!", nextLines: ["Curious about my work? There's plenty to see..."] },
                 { id: "manh-goodbye", label: "Just wandering", nextLines: [] },
               ],
             })

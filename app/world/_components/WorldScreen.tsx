@@ -135,6 +135,22 @@ export default function WorldScreen() {
       }
     }
 
+    if (dialogueState.npcId === "manh" && option.id === "manh-show-around") {
+      setDialogueState({
+        ...dialogueState,
+        lines: ["Curious about my work? There's plenty to see..."],
+        lineIndex: 0,
+        choices: [
+          { id: "manh-guide-workshop", label: "Show me projects", nextLines: ["Follow me to the Workshop."] },
+          { id: "manh-guide-library", label: "Show me the library", nextLines: ["Follow me to the Library."] },
+          { id: "manh-guide-yard", label: "Show me notes", nextLines: ["Follow me to the Yard."] },
+          { id: "manh-guide-post", label: "Show me the real Manh", nextLines: ["Follow me to the Post."] },
+          { id: "manh-goodbye", label: "Never mind", nextLines: [] },
+        ],
+      })
+      return
+    }
+
     if (dialogueState.npcId === "manh" && option.id.startsWith("manh-guide-")) {
       pendingGuideChoiceRef.current = option.id
       setDialogueState({
