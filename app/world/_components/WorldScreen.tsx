@@ -52,7 +52,7 @@ export default function WorldScreen() {
     setDialogueState,
     setPlayerPosition,
   } = useWorld()
-  const { pauseAllAmbient, playBardMusic, playSfx, stopBardMusic, stopSfx, resumeAllAmbient } = useAudioContext()
+  const { pauseAllAmbient, playBardMusic, playSfx, stopBardMusic, stopBardMusicImmediate, stopSfx, resumeAllAmbient } = useAudioContext()
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
   const lastSoundCueRef = useRef<string | null>(null)
   const pendingGuideChoiceRef = useRef<string | null>(null)
@@ -122,16 +122,16 @@ export default function WorldScreen() {
     if (!dialogueState.isOpen) return
 
     if (dialogueState.npcId === "bard") {
-      if (option.id === "bard-hear" || option.id === "bard-unmute") {
+      if (option.id === "bard-hear") {
         gameBridge.emit("bard-started-playing", undefined)
-        if (option.id === "bard-unmute") {
-          gameBridge.emit("bard-mute-changed", { muted: false })
-        }
-      } else if (option.id === "bard-thanks" || option.id === "bard-mute") {
+      } else if (option.id === "bard-thanks") {
         gameBridge.emit("bard-stopped-playing", undefined)
-        if (option.id === "bard-mute") {
-          gameBridge.emit("bard-mute-changed", { muted: true })
-        }
+      } else if (option.id === "bard-mute") {
+        stopBardMusicImmediate()
+        gameBridge.emit("bard-mute-changed", { muted: true })
+      } else if (option.id === "bard-unmute") {
+        playBardMusic()
+        gameBridge.emit("bard-mute-changed", { muted: false })
       }
     }
 

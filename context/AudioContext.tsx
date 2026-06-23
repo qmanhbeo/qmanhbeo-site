@@ -19,6 +19,7 @@ interface AudioContextValue {
   stopSfx: (type: string) => void
   playBardMusic: () => void
   stopBardMusic: () => void
+  stopBardMusicImmediate: () => void
   pauseAllAmbient: () => void
   resumeAllAmbient: () => void
 }
@@ -139,6 +140,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     howl.once("fade", () => howl.stop())
   }, [])
 
+  const stopBardMusicImmediate = useCallback(() => {
+    luteHowlRef.current?.stop()
+  }, [])
+
   const pauseAllAmbient = useCallback(() => {
     if (typeof window === "undefined") return
     window.dispatchEvent(new CustomEvent("ambient:pause"))
@@ -162,6 +167,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         stopSfx,
         playBardMusic,
         stopBardMusic,
+        stopBardMusicImmediate,
         pauseAllAmbient,
         resumeAllAmbient,
       }}
