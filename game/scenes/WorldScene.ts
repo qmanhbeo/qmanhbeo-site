@@ -225,6 +225,7 @@ export class WorldScene extends Phaser.Scene {
     this.npcs = npcData.map((npc) => new NPC(this, npc))
 
     this.time.delayedCall(2000, () => {
+      if (this.isGatheringActive) return
       this.npcs.forEach((npc) => {
         if (npc.id === "bard") return
         if (npc.hasSprite) {
@@ -1077,6 +1078,7 @@ export class WorldScene extends Phaser.Scene {
           npc.setPosition(dest.x, dest.y)
           npc.setVelocity(0, 0)
           npc.stopLeading("down")
+          npc.pauseWandering()
         } else {
           npc.leadTo(dest.x, dest.y)
         }
@@ -1166,7 +1168,7 @@ export class WorldScene extends Phaser.Scene {
         this.pendingGatheringStart = true
         return
       }
-      this.startCampfireGathering(m < 15)
+      this.startCampfireGathering(m >= 15)
     } else if (!inWindow && this.isGatheringActive) {
       this.endCampfireGathering()
     }
