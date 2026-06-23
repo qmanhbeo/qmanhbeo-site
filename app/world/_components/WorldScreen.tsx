@@ -57,6 +57,7 @@ export default function WorldScreen() {
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
   const lastSoundCueRef = useRef<string | null>(null)
   const pendingGuideChoiceRef = useRef<string | null>(null)
+  const chatInteractRef = useRef<(() => void) | null>(null)
   const [promptText, setPromptText] = useState("")
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
   const [gatheringNotification, setGatheringNotification] = useState<string | null>(null)
@@ -236,6 +237,7 @@ export default function WorldScreen() {
 
   const handleDialogueInteract = useEffectEvent(() => {
     if (!dialogueState.isOpen) return
+    if (dialogueState.chatMode) return
     const hasChoices = dialogueState.choices && dialogueState.choices.length > 0
     if (hasChoices) {
       const option = dialogueState.choices![focusedChoiceIndex]
@@ -253,8 +255,6 @@ export default function WorldScreen() {
       handleEscape()
       return
     }
-
-    if (dialogueState.chatMode) return
 
     const hasChoices = dialogueState.choices && dialogueState.choices.length > 0
 
@@ -460,6 +460,7 @@ export default function WorldScreen() {
           <ManhChatDialog
             bottomBand={overlayLayout?.bottomBand}
             onClose={handleCloseDialogue}
+            chatInteractRef={chatInteractRef}
           />
         ) : (
           <WorldDialogueBox
@@ -475,7 +476,7 @@ export default function WorldScreen() {
             </div>
           </div>
         )}
-        <VirtualJoystick joystickRef={joystickRef} placement="overlay" />
+        <VirtualJoystick joystickRef={joystickRef} placement="overlay" chatInteractRef={chatInteractRef} />
       </div>
 
       <WorldSectionPanel />

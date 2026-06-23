@@ -6,6 +6,8 @@ export type WorldSfxCue = "dialogue-advance" | "dialogue-open" | "panel-open" | 
 
 type WorldBridgeEventMap = {
   "bard-mute-changed": { muted: boolean }
+  "chat-keyboard-state": { active: boolean }
+  "chat-navigate": { direction: "up" | "down" }
   "bard-started-playing": undefined
   "bard-stopped-playing": undefined
   "choice-navigate": { direction: "up" | "down" }

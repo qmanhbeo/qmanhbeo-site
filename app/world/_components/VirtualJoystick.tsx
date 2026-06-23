@@ -8,6 +8,7 @@ import { gameBridge } from "@/game/GameBridge"
 interface VirtualJoystickProps {
   joystickRef: MutableRefObject<JoystickInputState>
   placement?: "overlay" | "docked"
+  chatInteractRef?: MutableRefObject<(() => void) | null>
 }
 
 const ZERO_INPUT: JoystickInputState = {
@@ -16,7 +17,7 @@ const ZERO_INPUT: JoystickInputState = {
   interact: false,
 }
 
-export default function VirtualJoystick({ joystickRef, placement = "overlay" }: VirtualJoystickProps) {
+export default function VirtualJoystick({ joystickRef, placement = "overlay", chatInteractRef }: VirtualJoystickProps) {
   const { dialogueState } = useWorld()
   const [isCoarsePointer, setIsCoarsePointer] = useState(false)
   const [stickOffset, setStickOffset] = useState({ x: 0, y: 0 })
@@ -24,7 +25,18 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
   const isDraggingRef = useRef(false)
   const choicesVisibleRef = useRef(false)
   const lastChoiceNavRef = useRef<"up" | "down" | null>(null)
+  const lastChatNavRef = useRef<"up" | "down" | null>(null)
+  const chatModeRef = useRef(false)
+  const keyboardActiveRef = useRef(false)
   choicesVisibleRef.current = !!dialogueState.choices && dialogueState.choices.length > 0
+  chatModeRef.current = !!dialogueState.chatMode
+
+  useEffect(() => {
+    const offKeyboard = gameBridge.on("chat-keyboard-state", ({ active }) => {
+      keyboardActiveRef.current = active
+    })
+    return offKeyboard
+  }, [])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(pointer: coarse)")
@@ -62,7 +74,18 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
         y: nextY / maxRadius,
       }
 
-      if (choicesVisibleRef.current) {
+      if (chatModeRef.current && !keyboardActiveRef.current) {
+        const normalizedY = nextY / maxRadius
+        if (normalizedY < -0.5 && lastChatNavRef.current !== "up") {
+          lastChatNavRef.current = "up"
+          gameBridge.emit("chat-navigate", { direction: "up" })
+        } else if (normalizedY > 0.5 && lastChatNavRef.current !== "down") {
+          lastChatNavRef.current = "down"
+          gameBridge.emit("chat-navigate", { direction: "down" })
+        } else if (Math.abs(normalizedY) < 0.3) {
+          lastChatNavRef.current = null
+        }
+      } else if (choicesVisibleRef.current) {
         const normalizedY = nextY / maxRadius
         if (normalizedY < -0.5 && lastChoiceNavRef.current !== "up") {
           lastChoiceNavRef.current = "up"
@@ -79,6 +102,7 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
     const resetPad = () => {
       isDraggingRef.current = false
       lastChoiceNavRef.current = null
+      lastChatNavRef.current = null
       setStickOffset({ x: 0, y: 0 })
       joystickRef.current = {
         ...joystickRef.current,
@@ -119,6 +143,12 @@ export default function VirtualJoystick({ joystickRef, placement = "overlay" }: 
 
   const handleInteract = () => {
     if (dialogueState.isOpen) {
+      if (chatModeRef.current) {
+        if (!keyboardActiveRef.current) {
+          chatInteractRef?.current?.()
+        }
+        return
+      }
       gameBridge.emit("dialogue-interact", undefined)
       return
     }
