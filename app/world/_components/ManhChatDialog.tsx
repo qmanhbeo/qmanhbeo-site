@@ -135,23 +135,16 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
     [sendMessage, onClose],
   )
 
-  const bottomY = bottomBand?.start ?? 200
-  const bottomOffset = isKeyboardOpen
-    ? 16
-    : bottomY + 24
-  const dialogMaxHeight = isKeyboardOpen
-    ? Math.min(viewportHeight - 96, 400)
-    : Math.min(bottomY - Math.max(60, bottomY - 360) - 24, 400)
+  const bottomPad = isKeyboardOpen ? 16 : 24
+  const topPad = 80
 
   return (
     <div
-      className="fixed z-40 flex justify-center px-4"
-      style={{ left: 0, right: 0, bottom: `${bottomOffset}px` }}
+      className="fixed z-40 flex flex-col px-4"
+      style={{ left: 0, right: 0, bottom: `${bottomPad}px`, top: `${topPad}px` }}
     >
-      <div className="flex w-full max-w-3xl flex-col rounded-[1.8rem] border border-amber-400/18 bg-[#120a08]/92 shadow-[0_18px_55px_rgba(0,0,0,0.42)] backdrop-blur-sm"
-        style={{ maxHeight: `${dialogMaxHeight}px` }}
-      >
-        <div className="flex items-center justify-between border-b border-amber-400/12 px-5 py-3">
+      <div className="flex w-full max-w-3xl flex-col self-center overflow-hidden rounded-[1.8rem] border border-amber-400/18 bg-[#120a08]/92 shadow-[0_18px_55px_rgba(0,0,0,0.42)] backdrop-blur-sm">
+        <div className="shrink-0 flex items-center justify-between border-b border-amber-400/12 px-5 py-3">
           <div className="flex items-center gap-2 text-amber-100">
             <MessageCircle className="h-4 w-4" />
             <span className="font-cinzel text-sm uppercase tracking-[0.24em]">Chat with Manh</span>
@@ -164,7 +157,7 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-5 py-3 scrollbar-fade">
+        <div className="flex-1 overflow-y-auto px-5 py-3 scrollbar-fade min-h-0">
           {messages.map((msg, i) => {
             if (msg.role === "emote") {
               return (
@@ -198,7 +191,7 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="flex items-center gap-2 border-t border-amber-400/12 px-5 py-3">
+        <div className="shrink-0 flex items-center gap-2 border-t border-amber-400/12 px-5 py-3">
           <input
             ref={inputRef}
             type="text"
