@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic"
 
-import { getAllEntries, getEntryPreviewText } from "@/content/entries"
+import { getAllEntries, getEntryPreviewText, type ContentEntry } from "@/content/entries"
 
 const LOCATION_INDEX = [
   { id: "manh-guide-workshop", name: "Workshop", description: "where projects and prototypes live" },
@@ -55,6 +55,81 @@ If no action is needed, set actions to an empty array [].
 Keep replies concise — 1 to 3 sentences unless asked for depth. Speak like someone sitting by a fire, not a tour guide reciting a script.`
 }
 
+function findReferencedEntries(userMsg: string): ContentEntry[] {
+  const all = getAllEntries()
+  const words = [...new Set((userMsg.toLowerCase().match(/[a-z]{4,}/g) || []))]
+
+  const wordMatches = new Map<string, ContentEntry[]>()
+  for (const entry of all) {
+    const searchText = `${entry.title} ${entry.subtitle || ""} ${entry.slug.replace(/-/g, " ")}`.toLowerCase()
+    for (const word of words) {
+      if (searchText.includes(word)) {
+        const list = wordMatches.get(word) || []
+        list.push(entry)
+        wordMatches.set(word, list)
+      }
+    }
+  }
+
+  const matched = new Map<string, ContentEntry>()
+  for (const [, entries] of wordMatches) {
+    if (entries.length <= 2) {
+      for (const entry of entries) {
+        matched.set(entry.slug, entry)
+      }
+    }
+  }
+  return [...matched.values()]
+}
+
+function formatEntry(entry: ContentEntry): string {
+  switch (entry.type) {
+    case "publication":
+      return [
+        `=== ${entry.slug} (Publication) ===`,
+        `Title: ${entry.title}`,
+        entry.journal && `Journal: ${entry.journal}`,
+        entry.yearLabel && `Year: ${entry.yearLabel}`,
+        entry.researchQuestion && `\nResearch Question:\n${entry.researchQuestion}`,
+        entry.methodology && `\nMethodology:\n${entry.methodology}`,
+        entry.findings && `\nFindings:\n${entry.findings}`,
+        entry.implications && `\nImplications:\n${entry.implications}`,
+        `\nAbstract:\n${entry.abstract}`,
+      ]
+        .filter(Boolean)
+        .join("\n")
+    case "project":
+      return [
+        `=== ${entry.slug} (Project) ===`,
+        `Title: ${entry.title}`,
+        `\nDescription:\n${entry.description}`,
+        ...entry.detailSections.map((s) => `\n${s.label}:\n${s.content}`),
+      ].join("\n")
+    case "note":
+      return [
+        `=== ${entry.slug} (Note) ===`,
+        `Title: ${entry.title}`,
+        entry.noteLabel && `Label: ${entry.noteLabel}`,
+        `\nBody:\n${entry.body.join("\n\n")}`,
+      ]
+        .filter(Boolean)
+        .join("\n")
+    case "arc":
+      return [
+        `=== ${entry.slug} (Arc) ===`,
+        `Title: ${entry.title}`,
+        entry.location && `Location: ${entry.location}`,
+        entry.yearLabel && `Year: ${entry.yearLabel}`,
+        entry.mood && `Mood: ${entry.mood}`,
+        `\nChapter:\n${entry.chapter}`,
+        `\nWhat I Did:\n${entry.whatIDid.map((s) => `- ${s}`).join("\n")}`,
+        `\nWhom I Met:\n${entry.whomIMet.map((s) => `- ${s}`).join("\n")}`,
+        `\nWhat I Learned:\n${entry.whatILearned.map((s) => `- ${s}`).join("\n")}`,
+        `\nWhat I Achieved:\n${entry.whatIAchieved.map((s) => `- ${s}`).join("\n")}`,
+      ].join("\n")
+  }
+}
+
 function parseCohereReply(data: any): { reply: string; actions: Action[] } {
   const content = data?.message?.content
   const raw = Array.isArray(content)
@@ -95,9 +170,16 @@ export async function POST(request: Request) {
 
     const firstUserIdx = nonSystemMessages.findIndex((m: any) => m.role === "user")
     if (firstUserIdx !== -1) {
+      const userMsg = nonSystemMessages[firstUserIdx].content
+      const referenced = findReferencedEntries(userMsg)
+      let systemContent = systemMsg.content
+      if (referenced.length > 0) {
+        systemContent += "\n\n=== Full content of entries the visitor is asking about ===\n"
+        systemContent += referenced.map(formatEntry).join("\n---\n")
+      }
       nonSystemMessages[firstUserIdx] = {
         role: "user",
-        content: systemMsg.content + "\n\n" + nonSystemMessages[firstUserIdx].content,
+        content: systemContent + "\n\n" + userMsg,
       }
     }
 
