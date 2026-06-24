@@ -9,30 +9,9 @@ const LOCATION_INDEX = [
   { id: "manh-guide-post", name: "Post", description: "where letters reach the real Manh" },
 ] as const
 
-const TOOL_DEFS = [
-  {
-    name: "moveTo",
-    description: "Lead the visitor to a location in the world and give a short description",
-    parameter_definitions: {
-      location: {
-        description: "The location id to go to. One of: " + LOCATION_INDEX.map((l) => l.id).join(", "),
-        type: "str",
-        required: true,
-      },
-    },
-  },
-  {
-    name: "emote",
-    description: "Perform a subtle gesture or action that is shown as flavor text",
-    parameter_definitions: {
-      text: {
-        description: "A short description of the action (e.g. 'Manh gazes into the fire')",
-        type: "str",
-        required: true,
-      },
-    },
-  },
-]
+type Action = { type: string; payload: Record<string, unknown> }
+
+const LOCATION_LIST = LOCATION_INDEX.map((l) => l.id).join(", ")
 
 function buildKnowledgeIndex(): string {
   const entries = getAllEntries()
@@ -55,31 +34,39 @@ ${buildKnowledgeIndex()}
 
 When the visitor asks about your work, your research, your notes, or your travels, you can reference these entries naturally. You don't need to list everything — just speak from what you know.
 
-When it feels right, you can move to a location to show something. Use the moveTo tool for that — the visitor will follow.
+You can also perform actions. Available actions:
+- moveTo: Lead the visitor to a location. Payload: {"location": "<id>"}. Location ids: ${LOCATION_LIST}
+- emote: Perform a subtle gesture or action shown as flavor text. Payload: {"text": "<description>"}
 
-Use the emote tool for subtle flavor (gazing, smiling, gesturing).
+When you perform an action, always also speak naturally about it. For example:
+- moveTo → say "Follow me to the Workshop." and include {"type":"moveTo","payload":{"location":"manh-guide-workshop"}} in actions
+- emote → say the gesture as part of your reply and include {"type":"emote","payload":{"text":"..."}} in actions
+
+Always return a JSON object with exactly these fields:
+{
+  "reply": "your spoken response (always include this, even when doing an action)",
+  "actions": [] or [{"type":"...","payload":{...}}]
+}
+
+If no action is needed, set actions to an empty array [].
 
 Keep replies concise — 1 to 3 sentences unless asked for depth. Speak like someone sitting by a fire, not a tour guide reciting a script.`
 }
 
-function extractCohereContent(data: any): string {
+function parseCohereReply(data: any): { reply: string; actions: Action[] } {
   const content = data?.message?.content
-  if (Array.isArray(content)) {
-    const textPart = content.find((c: any) => c.type === "text")
-    return textPart?.text || ""
+  const raw = Array.isArray(content)
+    ? content.find((c: any) => c.type === "text")?.text || ""
+    : typeof content === "string" ? content : ""
+  try {
+    const parsed = JSON.parse(raw)
+    return {
+      reply: typeof parsed.reply === "string" ? parsed.reply : "",
+      actions: Array.isArray(parsed.actions) ? parsed.actions : [],
+    }
+  } catch {
+    return { reply: raw, actions: [] }
   }
-  return typeof content === "string" ? content : ""
-}
-
-function extractCohereToolCalls(data: any): Array<{ name: string; arguments: Record<string, unknown> }> {
-  const toolCalls = data?.message?.tool_calls
-  if (!Array.isArray(toolCalls)) return []
-  return toolCalls
-    .filter((tc: any) => tc?.function?.name)
-    .map((tc: any) => ({
-      name: tc.function.name,
-      arguments: typeof tc.function.arguments === "object" ? tc.function.arguments : {},
-    }))
 }
 
 export async function POST(request: Request) {
@@ -115,7 +102,7 @@ export async function POST(request: Request) {
     const cohereBody: Record<string, unknown> = {
       model,
       messages: nonSystemMessages,
-      tools: TOOL_DEFS,
+      response_format: { type: "json_object" },
       temperature: 0.8,
       max_tokens: 600,
     }
@@ -145,13 +132,7 @@ export async function POST(request: Request) {
     }
 
     const data = await upstreamRes.json()
-    const reply = extractCohereContent(data)
-    const toolCalls = extractCohereToolCalls(data)
-
-    const actions = toolCalls.map((tc) => ({
-      type: tc.name,
-      payload: tc.arguments,
-    }))
+    const { reply, actions } = parseCohereReply(data)
 
     return Response.json({ reply, actions })
   } catch (err) {
