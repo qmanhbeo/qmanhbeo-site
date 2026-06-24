@@ -16,7 +16,7 @@ const LOCATION_LIST = LOCATION_INDEX.map((l) => l.id).join(", ")
 function buildKnowledgeIndex(): string {
   const entries = getAllEntries()
   const lines = entries.map((e) => {
-    const preview = getEntryPreviewText(e).slice(0, 120)
+    const preview = getEntryPreviewText(e).slice(0, 240)
     return `- [${e.type}] ${e.title} (${e.slug}): ${preview}`
   })
   return lines.join("\n")
