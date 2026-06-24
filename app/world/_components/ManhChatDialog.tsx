@@ -3,11 +3,7 @@
 import { MessageCircle, Send, X } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLayout"
-
-interface ChatMessage {
-  role: "user" | "assistant" | "emote"
-  content: string
-}
+import { useWorld, type ChatMessage } from "@/context/WorldContext"
 
 interface ChatAction {
   type: string
@@ -28,9 +24,16 @@ interface ManhChatDialogProps {
 const MAX_HISTORY = 20
 
 export default function ManhChatDialog({ bottomBand, onClose, onPendingMoveTo }: ManhChatDialogProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: "assistant", content: "Go on, ask me anything. Or just wander — the hearth doesn't mind." },
-  ])
+  const { chatMessages, setChatMessages } = useWorld()
+  const [messages, setMessages] = useState<ChatMessage[]>(() =>
+    chatMessages.length > 0
+      ? chatMessages
+      : [{ role: "assistant", content: "Go on, ask me anything. Or just wander — the hearth doesn't mind." }],
+  )
+
+  useEffect(() => {
+    setChatMessages(messages)
+  }, [messages, setChatMessages])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false)

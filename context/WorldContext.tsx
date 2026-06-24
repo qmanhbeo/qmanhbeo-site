@@ -18,6 +18,11 @@ export interface DialogueChoiceOption {
   nextLines: string[]
 }
 
+export interface ChatMessage {
+  role: "user" | "assistant" | "emote"
+  content: string
+}
+
 export interface WorldDialogueState {
   isOpen: boolean
   npcId: string | null
@@ -38,6 +43,7 @@ interface WorldSessionState {
   activeSectionId: WorldSectionId | null
   dialogueState: WorldDialogueState
   playerPosition: WorldPlayerPosition
+  chatMessages: ChatMessage[]
 }
 
 interface WorldContextValue extends WorldSessionState {
@@ -49,6 +55,7 @@ interface WorldContextValue extends WorldSessionState {
   setActiveSectionId: (sectionId: WorldSectionId | null) => void
   setDialogueState: (state: WorldDialogueState | ((prev: WorldDialogueState) => WorldDialogueState)) => void
   setPlayerPosition: (position: WorldPlayerPosition) => void
+  setChatMessages: (messages: ChatMessage[]) => void
 }
 
 const WORLD_SESSION_STORAGE_KEY = "world:session:v1"
@@ -76,6 +83,7 @@ function loadWorldSession(): WorldSessionState {
       activeSectionId: null,
       dialogueState: DEFAULT_DIALOGUE_STATE,
       playerPosition: DEFAULT_PLAYER_POSITION,
+      chatMessages: [],
     }
   }
 
@@ -86,6 +94,7 @@ function loadWorldSession(): WorldSessionState {
         activeSectionId: null,
         dialogueState: DEFAULT_DIALOGUE_STATE,
         playerPosition: DEFAULT_PLAYER_POSITION,
+        chatMessages: [],
       }
     }
 
@@ -103,12 +112,14 @@ function loadWorldSession(): WorldSessionState {
         x: parsed.playerPosition?.x ?? DEFAULT_PLAYER_POSITION.x,
         y: parsed.playerPosition?.y ?? DEFAULT_PLAYER_POSITION.y,
       },
+      chatMessages: Array.isArray(parsed.chatMessages) ? parsed.chatMessages : [],
     }
   } catch {
     return {
       activeSectionId: null,
       dialogueState: DEFAULT_DIALOGUE_STATE,
       playerPosition: DEFAULT_PLAYER_POSITION,
+      chatMessages: [],
     }
   }
 }
@@ -126,6 +137,7 @@ export function WorldProvider({ children }: { children: React.ReactNode }) {
   const [activeSectionId, setActiveSectionId] = useState<WorldSectionId | null>(() => loadWorldSession().activeSectionId)
   const [dialogueState, setDialogueState] = useState<WorldDialogueState>(() => loadWorldSession().dialogueState)
   const [playerPosition, setPlayerPosition] = useState<WorldPlayerPosition>(() => loadWorldSession().playerPosition)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => loadWorldSession().chatMessages)
 
   const isWorldActive = pathname === "/world"
 
@@ -134,8 +146,9 @@ export function WorldProvider({ children }: { children: React.ReactNode }) {
       activeSectionId,
       dialogueState,
       playerPosition,
+      chatMessages,
     })
-  }, [activeSectionId, dialogueState, playerPosition])
+  }, [activeSectionId, dialogueState, playerPosition, chatMessages])
 
   const openWorld = useCallback(() => {
     startTransition(() => {
@@ -184,8 +197,11 @@ export function WorldProvider({ children }: { children: React.ReactNode }) {
     setDialogueState,
     playerPosition,
     setPlayerPosition,
+    chatMessages,
+    setChatMessages,
   }), [
     activeSectionId,
+    chatMessages,
     clearWorldUi,
     closeActiveWorldUi,
     closeWorld,
