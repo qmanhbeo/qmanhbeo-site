@@ -1,7 +1,7 @@
 "use client"
 
-import { MessageCircle, X } from "lucide-react"
-import { useCallback, useEffect, useRef, useState, type MutableRefObject } from "react"
+import { MessageCircle, Send, X } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { gameBridge } from "@/game/GameBridge"
 import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLayout"
 
@@ -23,18 +23,16 @@ interface ManhChatResponse {
 interface ManhChatDialogProps {
   bottomBand?: OverlayLayoutMetrics["bottomBand"]
   onClose: () => void
-  chatInteractRef: MutableRefObject<(() => void) | null>
 }
 
 const MAX_HISTORY = 20
 
-export default function ManhChatDialog({ bottomBand, onClose, chatInteractRef }: ManhChatDialogProps) {
+export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", content: "Go on, ask me anything. Or just wander — the hearth doesn't mind." },
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [chatFocus, setChatFocus] = useState<"input" | "close">("input")
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -107,93 +105,29 @@ export default function ManhChatDialog({ bottomBand, onClose, chatInteractRef }:
     }
   }, [input, isLoading, messages])
 
-  const handleChatInteract = useCallback(() => {
-    if (isKeyboardOpen) return
-    if (chatFocus === "input") {
-      inputRef.current?.focus()
-    } else {
-      onClose()
-    }
-  }, [chatFocus, isKeyboardOpen, onClose])
-
-  chatInteractRef.current = handleChatInteract
-
-  // Window keyboard listener for chat navigation (W/S, E, Escape)
+  // Escape to close
   useEffect(() => {
-    if (isKeyboardOpen || isLoading) return
-
     const handleKey = (e: KeyboardEvent) => {
-      if (document.activeElement === inputRef.current) return
-
       if (e.key === "Escape") {
         e.preventDefault()
         onClose()
         return
       }
-
-      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") {
+      if (e.key === "Enter" && document.activeElement !== inputRef.current) {
         e.preventDefault()
-        if (chatFocus === "close") {
-          setChatFocus("input")
-        } else {
-          const container = messagesEndRef.current?.parentElement
-          if (container) container.scrollBy({ top: -80, behavior: "smooth" })
-        }
-        return
-      }
-
-      if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") {
-        e.preventDefault()
-        if (chatFocus === "input") {
-          setChatFocus("close")
-        }
-        return
-      }
-
-      if (e.key === "e" || e.key === "E" || e.key === "Enter") {
-        e.preventDefault()
-        handleChatInteract()
+        inputRef.current?.focus()
       }
     }
-
     window.addEventListener("keydown", handleKey)
     return () => window.removeEventListener("keydown", handleKey)
-  }, [chatFocus, isKeyboardOpen, isLoading, onClose, handleChatInteract])
-
-  // GameBridge listener for joystick navigation
-  useEffect(() => {
-    const off = gameBridge.on("chat-navigate", ({ direction }) => {
-      if (isKeyboardOpen || isLoading) return
-      if (direction === "up") {
-        if (chatFocus === "close") {
-          setChatFocus("input")
-        } else {
-          const container = messagesEndRef.current?.parentElement
-          if (container) container.scrollBy({ top: -80, behavior: "smooth" })
-        }
-      } else {
-        if (chatFocus === "input") setChatFocus("close")
-      }
-    })
-    return off
-  }, [chatFocus, isKeyboardOpen, isLoading])
-
-  const handleInputFocus = useCallback(() => {
-    setIsKeyboardOpen(true)
-    gameBridge.emit("chat-keyboard-state", { active: true })
-  }, [])
-
-  const handleInputBlur = useCallback(() => {
-    setIsKeyboardOpen(false)
-    gameBridge.emit("chat-keyboard-state", { active: false })
-  }, [])
+  }, [onClose])
 
   const bottomPad = isKeyboardOpen ? 16 : 24
   const topPad = 80
 
   return (
     <div
-      className="fixed z-40 flex flex-col px-4"
+      className="pointer-events-auto fixed z-40 flex flex-col px-4"
       style={{ left: 0, right: 0, bottom: `${bottomPad}px`, top: `${topPad}px` }}
     >
       <div className="flex w-full max-w-3xl flex-col self-center overflow-hidden rounded-[1.8rem] border border-amber-400/18 bg-[#120a08]/92 shadow-[0_18px_55px_rgba(0,0,0,0.42)] backdrop-blur-sm">
@@ -204,11 +138,7 @@ export default function ManhChatDialog({ bottomBand, onClose, chatInteractRef }:
           </div>
           <button
             onClick={onClose}
-            className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-amber-400/10 ${
-              chatFocus === "close"
-                ? "text-amber-300 ring-1 ring-amber-400/60"
-                : "text-amber-400/60"
-            }`}
+            className="flex h-6 w-6 items-center justify-center rounded-full text-amber-400/60 transition-colors hover:bg-amber-400/10"
           >
             <X className="h-4 w-4" />
           </button>
@@ -248,30 +178,30 @@ export default function ManhChatDialog({ bottomBand, onClose, chatInteractRef }:
           <div ref={messagesEndRef} />
         </div>
 
-        <div
-          className={`shrink-0 flex items-center gap-2 border-t border-amber-400/12 px-5 py-3 transition-shadow rounded-b-[1.8rem] ${
-            chatFocus === "input" ? "ring-1 ring-inset ring-amber-400/60" : ""
-          }`}
-        >
+        <div className="shrink-0 flex items-center gap-2 border-t border-amber-400/12 px-5 py-3 rounded-b-[1.8rem]">
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
             onKeyDown={(e) => {
               e.stopPropagation()
               if (e.key === "Enter") {
                 e.preventDefault()
                 executeSend()
-                e.currentTarget.blur()
               }
             }}
             placeholder="Speak your mind..."
             disabled={isLoading}
             className="min-w-0 flex-1 rounded-lg border border-amber-400/18 bg-amber-950/30 px-4 py-2 font-garamond text-base text-amber-50 placeholder-amber-400/30 outline-none transition-colors focus:border-amber-400/40 disabled:opacity-40"
           />
+          <button
+            onClick={() => executeSend()}
+            disabled={!input.trim() || isLoading}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-700/30 text-amber-200 transition-colors hover:bg-amber-700/50 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Send className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </div>

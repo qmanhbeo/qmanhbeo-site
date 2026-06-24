@@ -60,7 +60,6 @@ export default function WorldScreen() {
   const [promptText, setPromptText] = useState("")
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
   const [gatheringNotification, setGatheringNotification] = useState<string | null>(null)
-  const chatInteractRef = useRef<(() => void) | null>(null)
   const [focusedChoiceIndex, setFocusedChoiceIndex] = useState(0)
   const choicesLengthRef = useRef(0)
   choicesLengthRef.current = dialogueState.choices?.length ?? 0
@@ -462,7 +461,6 @@ export default function WorldScreen() {
           <ManhChatDialog
             bottomBand={overlayLayout?.bottomBand}
             onClose={handleCloseDialogue}
-            chatInteractRef={chatInteractRef}
           />
         ) : (
           <WorldDialogueBox
@@ -478,7 +476,7 @@ export default function WorldScreen() {
             </div>
           </div>
         )}
-        <VirtualJoystick joystickRef={joystickRef} placement="overlay" chatInteractRef={chatInteractRef} />
+        <VirtualJoystick joystickRef={joystickRef} placement="overlay" />
       </div>
 
       <WorldSectionPanel />
