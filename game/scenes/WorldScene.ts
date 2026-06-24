@@ -236,8 +236,7 @@ export class WorldScene extends Phaser.Scene {
     })
 
     const scheduleAmbientBubble = () => {
-      if (!this || !this.scene?.isActive()) return
-      this.time.delayedCall(3000 + Math.random() * 27000, () => {
+      this.time.delayedCall(2000 + Math.random() * 3000, () => {
         if (this.uiLocked || this.isGatheringActive) {
           scheduleAmbientBubble()
           return
