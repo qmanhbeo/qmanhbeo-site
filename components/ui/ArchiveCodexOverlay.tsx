@@ -383,6 +383,7 @@ export default function ArchiveCodexOverlay({
     if (isOpen && !prevIsOpenRef.current && initialFocusSlug) {
       setSelectedEntrySlug(initialFocusSlug)
       setSearchQuery("")
+      setMobileView("detail")
     }
     prevIsOpenRef.current = isOpen
   }, [isOpen, initialFocusSlug])
