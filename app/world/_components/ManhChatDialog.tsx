@@ -19,7 +19,7 @@ interface ManhChatResponse {
 interface ManhChatDialogProps {
   bottomBand?: OverlayLayoutMetrics["bottomBand"]
   onClose: () => void
-  onPendingMoveTo?: (location: string) => void
+  onPendingMoveTo?: (location: string | null) => void
   onShowEntry?: (slug: string) => void
 }
 
@@ -113,14 +113,16 @@ export default function ManhChatDialog({ bottomBand, onClose, onPendingMoveTo, o
         setMessages((prev) => [...prev, newMessage])
       }
 
+      let pendingMoveTo: string | null = null
       if (data.actions && data.actions.length > 0) {
         for (const action of data.actions) {
           if (action.type === "moveTo") {
             const location = action.payload.location as string
-            if (location) onPendingMoveTo?.(location)
+            if (location) pendingMoveTo = location
           }
         }
       }
+      onPendingMoveTo?.(pendingMoveTo)
     } catch {
       setMessages((prev) => [
         ...prev,
