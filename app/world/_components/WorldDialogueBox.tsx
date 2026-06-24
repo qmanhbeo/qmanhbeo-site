@@ -5,12 +5,12 @@ import { useWorld, type DialogueChoiceOption } from "@/context/WorldContext"
 import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLayout"
 
 interface WorldDialogueBoxProps {
-  bottomBand?: OverlayLayoutMetrics["bottomBand"]
+  layout?: OverlayLayoutMetrics | null
   onChoiceSelect?: (option: DialogueChoiceOption) => void
   focusedChoiceIndex?: number
 }
 
-export default function WorldDialogueBox({ bottomBand, onChoiceSelect, focusedChoiceIndex = 0 }: WorldDialogueBoxProps) {
+export default function WorldDialogueBox({ layout, onChoiceSelect, focusedChoiceIndex = 0 }: WorldDialogueBoxProps) {
   const { dialogueState } = useWorld()
 
   if (!dialogueState.isOpen) return null
@@ -18,8 +18,13 @@ export default function WorldDialogueBox({ bottomBand, onChoiceSelect, focusedCh
   const activeLine = dialogueState.lines[dialogueState.lineIndex] ?? ""
   const hasChoices = dialogueState.choices && dialogueState.choices.length > 0
 
-  const bottomY = bottomBand?.start ?? 200
-  const topY = bottomY - (hasChoices ? 360 : 280)
+  const topSafe = layout?.topBand?.start ?? 80
+  const bottomSafe = layout?.bottomBand?.start ?? 200
+  const freeHeight = bottomSafe - topSafe
+
+  const idealHeight = hasChoices ? 360 : 280
+  const dialogueHeight = Math.min(idealHeight, Math.max(freeHeight * 0.75, 80))
+  const topY = Math.max(bottomSafe - dialogueHeight, topSafe)
 
   return (
     <div

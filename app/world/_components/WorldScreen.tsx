@@ -464,7 +464,7 @@ export default function WorldScreen() {
           />
         ) : (
           <WorldDialogueBox
-            bottomBand={overlayLayout?.bottomBand}
+            layout={overlayLayout}
             onChoiceSelect={handleChoiceSelect}
             focusedChoiceIndex={focusedChoiceIndex}
           />
