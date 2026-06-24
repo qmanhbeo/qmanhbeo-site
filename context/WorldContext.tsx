@@ -21,6 +21,7 @@ export interface DialogueChoiceOption {
 export interface ChatMessage {
   role: "user" | "assistant" | "emote"
   content: string
+  showEntry?: { slug: string; label: string }
 }
 
 export interface WorldDialogueState {

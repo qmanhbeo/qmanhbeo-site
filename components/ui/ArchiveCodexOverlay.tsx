@@ -25,6 +25,7 @@ import {
 interface ArchiveCodexOverlayProps {
   isOpen: boolean
   onClose: () => void
+  initialFocusSlug?: string
 }
 
 const pageSurfaceStyle = {
@@ -184,12 +185,13 @@ function CodexEntryPreview({
 export default function ArchiveCodexOverlay({
   isOpen,
   onClose,
+  initialFocusSlug,
 }: ArchiveCodexOverlayProps) {
   const router = useRouter()
   const { playSfx } = useAudioContext()
   const [initialArchiveState] = useState(() => readArchiveCodexState())
   const [selectedEntrySlug, setSelectedEntrySlug] = useState(
-    initialArchiveState?.selectedEntrySlug || allEntries[0]?.slug || "",
+    initialFocusSlug || initialArchiveState?.selectedEntrySlug || allEntries[0]?.slug || "",
   )
   const [searchQuery, setSearchQuery] = useState(initialArchiveState?.searchQuery ?? "")
   const [mobileView, setMobileView] = useState<ArchiveCodexMobileView>(initialArchiveState?.mobileView ?? "list")
@@ -375,6 +377,15 @@ export default function ArchiveCodexOverlay({
       hasRestoredScrollPositionsRef.current = false
     }
   }, [isOpen])
+
+  const prevIsOpenRef = useRef(isOpen)
+  useEffect(() => {
+    if (isOpen && !prevIsOpenRef.current && initialFocusSlug) {
+      setSelectedEntrySlug(initialFocusSlug)
+      setSearchQuery("")
+    }
+    prevIsOpenRef.current = isOpen
+  }, [isOpen, initialFocusSlug])
 
   useEffect(() => {
     if (!isVisible || hasRestoredScrollPositionsRef.current) return

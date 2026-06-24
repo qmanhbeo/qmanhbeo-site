@@ -1,9 +1,10 @@
 "use client"
 
-import { MessageCircle, Send, X } from "lucide-react"
+import { BookOpen, MessageCircle, Send, X } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLayout"
 import { useWorld, type ChatMessage } from "@/context/WorldContext"
+import { getEntryBySlug } from "@/content/entries"
 
 interface ChatAction {
   type: string
@@ -19,11 +20,23 @@ interface ManhChatDialogProps {
   bottomBand?: OverlayLayoutMetrics["bottomBand"]
   onClose: () => void
   onPendingMoveTo?: (location: string) => void
+  onShowEntry?: (slug: string) => void
+}
+
+function getEntryLabel(slug: string): string {
+  const entry = getEntryBySlug(slug)
+  if (!entry) return "See entry"
+  switch (entry.type) {
+    case "publication": return "See scroll"
+    case "project": return "See project"
+    case "note": return "See note"
+    case "arc": return "See scroll"
+  }
 }
 
 const MAX_HISTORY = 20
 
-export default function ManhChatDialog({ bottomBand, onClose, onPendingMoveTo }: ManhChatDialogProps) {
+export default function ManhChatDialog({ bottomBand, onClose, onPendingMoveTo, onShowEntry }: ManhChatDialogProps) {
   const { chatMessages, setChatMessages } = useWorld()
   const [messages, setMessages] = useState<ChatMessage[]>(() =>
     chatMessages.length > 0
@@ -87,7 +100,17 @@ export default function ManhChatDialog({ bottomBand, onClose, onPendingMoveTo }:
       const data: ManhChatResponse = await res.json()
 
       if (data.reply) {
-        setMessages((prev) => [...prev, { role: "assistant", content: data.reply }])
+        const newMessage: ChatMessage = { role: "assistant", content: data.reply }
+        if (data.actions && data.actions.length > 0) {
+          const showEntryAction = data.actions.find((a) => a.type === "showEntry")
+          if (showEntryAction) {
+            const slug = showEntryAction.payload.slug as string
+            if (slug) {
+              newMessage.showEntry = { slug, label: getEntryLabel(slug) }
+            }
+          }
+        }
+        setMessages((prev) => [...prev, newMessage])
       }
 
       if (data.actions && data.actions.length > 0) {
@@ -158,7 +181,7 @@ export default function ManhChatDialog({ bottomBand, onClose, onPendingMoveTo }:
             }
             const isUser = msg.role === "user"
             return (
-              <div key={i} className={`mb-3 flex ${isUser ? "justify-end" : "justify-start"}`}>
+              <div key={i} className={`mb-3 flex flex-col ${isUser ? "items-end" : "items-start"}`}>
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-2 font-garamond text-base leading-7 ${
                     isUser
@@ -168,6 +191,15 @@ export default function ManhChatDialog({ bottomBand, onClose, onPendingMoveTo }:
                 >
                   {msg.content}
                 </div>
+                {msg.showEntry && (
+                  <button
+                    onClick={() => onShowEntry?.(msg.showEntry!.slug)}
+                    className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-950/60 px-3.5 py-1 font-cinzel text-[0.7rem] uppercase tracking-[0.18em] text-amber-300/80 transition-all hover:border-amber-400/40 hover:text-amber-200"
+                  >
+                    <BookOpen className="h-3 w-3" />
+                    {msg.showEntry.label}
+                  </button>
+                )}
               </div>
             )
           })}

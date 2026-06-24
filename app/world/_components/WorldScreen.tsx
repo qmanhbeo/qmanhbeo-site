@@ -61,6 +61,7 @@ export default function WorldScreen() {
   const [promptText, setPromptText] = useState("")
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
   const [gatheringNotification, setGatheringNotification] = useState<string | null>(null)
+  const [showEntrySlug, setShowEntrySlug] = useState<string | null>(null)
   const [focusedChoiceIndex, setFocusedChoiceIndex] = useState(0)
   const choicesLengthRef = useRef(0)
   choicesLengthRef.current = dialogueState.choices?.length ?? 0
@@ -214,6 +215,17 @@ export default function WorldScreen() {
       lineIndex: dialogueState.lineIndex + 1,
     })
   }, [dialogueState, setDialogueState, handleCloseDialogue])
+
+  const handleShowEntry = useCallback((slug: string) => {
+    setShowEntrySlug(slug)
+    setIsArchiveOverlayOpen(true)
+  }, [])
+
+  const handleArchiveClose = useCallback(() => {
+    setIsArchiveOverlayOpen(false)
+    setShowEntrySlug(null)
+    gameBridge.emit("section-closed", undefined)
+  }, [])
 
   const handleCloseSection = useCallback(() => {
     gameBridge.emit("world-sfx", { cue: "ui-close" })
@@ -467,6 +479,7 @@ export default function WorldScreen() {
             bottomBand={overlayLayout?.bottomBand}
             onClose={handleCloseDialogue}
             onPendingMoveTo={(location) => { pendingChatMoveRef.current = location }}
+            onShowEntry={handleShowEntry}
           />
         ) : (
           <WorldDialogueBox
@@ -488,10 +501,8 @@ export default function WorldScreen() {
       <WorldSectionPanel />
       <ArchiveCodexOverlay
         isOpen={isArchiveOverlayOpen}
-        onClose={() => {
-          setIsArchiveOverlayOpen(false)
-          gameBridge.emit("section-closed", undefined)
-        }}
+        initialFocusSlug={showEntrySlug ?? undefined}
+        onClose={handleArchiveClose}
       />
     </main>
   )
