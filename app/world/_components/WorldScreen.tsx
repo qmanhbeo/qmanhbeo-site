@@ -57,6 +57,7 @@ export default function WorldScreen() {
   const joystickRef = useRef<JoystickInputState>(INITIAL_JOYSTICK_STATE)
   const lastSoundCueRef = useRef<string | null>(null)
   const pendingGuideChoiceRef = useRef<string | null>(null)
+  const pendingChatMoveRef = useRef<string | null>(null)
   const [promptText, setPromptText] = useState("")
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
   const [gatheringNotification, setGatheringNotification] = useState<string | null>(null)
@@ -113,6 +114,10 @@ export default function WorldScreen() {
       lines: [],
       lineIndex: 0,
     })
+    if (pendingChatMoveRef.current) {
+      gameBridge.emit("manh-chat-move-to", { locationId: pendingChatMoveRef.current })
+      pendingChatMoveRef.current = null
+    }
     if (pendingGuideChoiceRef.current) {
       gameBridge.emit("manh-start-guide", { choiceId: pendingGuideChoiceRef.current })
       pendingGuideChoiceRef.current = null
@@ -461,6 +466,7 @@ export default function WorldScreen() {
           <ManhChatDialog
             bottomBand={overlayLayout?.bottomBand}
             onClose={handleCloseDialogue}
+            onPendingMoveTo={(location) => { pendingChatMoveRef.current = location }}
           />
         ) : (
           <WorldDialogueBox

@@ -2,7 +2,6 @@
 
 import { MessageCircle, Send, X } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { gameBridge } from "@/game/GameBridge"
 import type { OverlayLayoutMetrics } from "@/app/world/_hooks/useWorldOverlayLayout"
 
 interface ChatMessage {
@@ -23,11 +22,12 @@ interface ManhChatResponse {
 interface ManhChatDialogProps {
   bottomBand?: OverlayLayoutMetrics["bottomBand"]
   onClose: () => void
+  onPendingMoveTo?: (location: string) => void
 }
 
 const MAX_HISTORY = 20
 
-export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogProps) {
+export default function ManhChatDialog({ bottomBand, onClose, onPendingMoveTo }: ManhChatDialogProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", content: "Go on, ask me anything. Or just wander — the hearth doesn't mind." },
   ])
@@ -91,7 +91,7 @@ export default function ManhChatDialog({ bottomBand, onClose }: ManhChatDialogPr
         for (const action of data.actions) {
           if (action.type === "moveTo") {
             const location = action.payload.location as string
-            if (location) gameBridge.emit("manh-chat-move-to", { locationId: location })
+            if (location) onPendingMoveTo?.(location)
           }
         }
       }
