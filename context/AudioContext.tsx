@@ -130,7 +130,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (!howl) return
     howl.volume(0)
     howl.play()
-    howl.fade(0, 0.3, 1500)
+    howl.once("play", () => {
+      howl.fade(0, 0.3, 1500)
+    })
   }, [])
 
   const stopBardMusic = useCallback(() => {
