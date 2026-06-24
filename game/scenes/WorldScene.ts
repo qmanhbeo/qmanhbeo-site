@@ -235,6 +235,27 @@ export class WorldScene extends Phaser.Scene {
       })
     })
 
+    const scheduleAmbientBubble = () => {
+      if (!this || !this.scene?.isActive()) return
+      this.time.delayedCall(3000 + Math.random() * 27000, () => {
+        if (this.uiLocked || this.isGatheringActive) {
+          scheduleAmbientBubble()
+          return
+        }
+        const eligible = this.npcs.filter((n) => !n.bubbleText?.active && !n.isLeading)
+        if (eligible.length > 0) {
+          const npc = eligible[Math.floor(Math.random() * eligible.length)]
+          const entry = npcData.find((d) => d.id === npc.id)
+          const lines = entry?.ambientLines
+          if (lines && lines.length > 0) {
+            npc.showBubble(lines[Math.floor(Math.random() * lines.length)])
+          }
+        }
+        scheduleAmbientBubble()
+      })
+    }
+    scheduleAmbientBubble()
+
     const bard = this.npcs.find((n) => n.id === "bard")
     if (bard) {
       this.setupBardBehavior(bard)

@@ -30,6 +30,8 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
 
   private readonly isFlipCar: boolean
   bobbingTween?: Phaser.Tweens.Tween
+  bubbleText: Phaser.GameObjects.Text | null = null
+  private bubbleTimer?: Phaser.Time.TimerEvent
 
   constructor(scene: Phaser.Scene, data: NpcData) {
     const textureKey = scene.textures.exists(`world-npc-${data.id}`) ? `world-npc-${data.id}` : "world-npc"
@@ -129,6 +131,10 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     super.preUpdate(time, delta)
     this.shadow.setPosition(this.x, this.y + 11)
     this.shadow.setScale(1, 1 + Math.abs(this.y - this.baseY) * 0.03)
+
+    if (this.bubbleText?.active) {
+      this.bubbleText.setPosition(this.x, this.y - 35)
+    }
 
     if (this.leadTarget) {
       this.updateLeading(delta)
@@ -253,6 +259,41 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     return Phaser.Math.Distance.Between(this.x, this.y, this.leadTarget.x, this.leadTarget.y) < ARRIVAL_THRESHOLD
   }
 
+  showBubble(text: string) {
+    this.hideBubble()
+    this.bubbleText = this.scene.add.text(this.x, this.y - 35, text, {
+      fontFamily: "serif",
+      fontSize: "11px",
+      color: "#e8d5b0",
+      backgroundColor: "#1a0d08aa",
+      padding: { x: 6, y: 3 },
+    })
+      .setOrigin(0.5, 1)
+      .setDepth(9)
+
+    this.bubbleTimer = this.scene.time.delayedCall(3500, () => {
+      if (this.bubbleText?.active) {
+        this.scene.tweens.add({
+          targets: this.bubbleText,
+          alpha: 0,
+          duration: 500,
+          onComplete: () => {
+            this.bubbleText?.destroy()
+            this.bubbleText = null
+          },
+        })
+      }
+    })
+  }
+
+  hideBubble() {
+    if (this.bubbleText?.active) {
+      this.bubbleText.destroy()
+      this.bubbleText = null
+    }
+    this.bubbleTimer?.remove()
+  }
+
   private updateLeading(delta: number) {
     if (!this.leadTarget) return
     const dx = this.leadTarget.x - this.x
@@ -346,6 +387,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
   }
 
   destroy(fromScene?: boolean) {
+    this.hideBubble()
     this.shadow.destroy()
     super.destroy(fromScene)
   }
