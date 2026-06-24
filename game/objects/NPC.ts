@@ -263,10 +263,10 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     this.hideBubble()
     this.bubbleText = this.scene.add.text(this.x, this.y - 35, text, {
       fontFamily: "serif",
-      fontSize: "16px",
-      color: "#ffffff",
-      backgroundColor: "#000000aa",
-      padding: { x: 8, y: 4 },
+      fontSize: "11px",
+      color: "#e8d5b0",
+      backgroundColor: "#1a0d08aa",
+      padding: { x: 6, y: 3 },
     })
       .setOrigin(0.5, 1)
       .setDepth(9)
