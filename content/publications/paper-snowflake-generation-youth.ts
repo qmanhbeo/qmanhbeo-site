@@ -3,7 +3,7 @@ import type { PublicationEntry } from "@/content/entries"
 const paperSnowflakeGenerationYouth: PublicationEntry = {
   slug: "paper-snowflake-generation-youth",
   type: "publication",
-  order: 3,
+  order: 4,
   title:
     "Verbal Violence within the Family as a Contributing Factor to the Emerging 'Snowflake Generation': A Case of Ho Chi Minh City's Youth",
   subtitle: "A study of psychological fragility shaped inside the household",

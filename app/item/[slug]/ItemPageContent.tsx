@@ -106,6 +106,8 @@ function ResourceLinks({ links }: { links: EntryLink[] }) {
         <a
           key={link.href}
           href={link.href}
+          target="_blank"
+          rel="noopener noreferrer"
           className="item-manuscript-ink inline-flex w-fit items-center gap-2 font-garamond text-lg underline decoration-amber-700/45 underline-offset-4 transition-colors duration-200 hover:text-orange-800"
         >
           <ExternalLink className="h-4 w-4" />
