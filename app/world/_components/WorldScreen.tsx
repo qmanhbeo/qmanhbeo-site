@@ -12,7 +12,7 @@ import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
 import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
 import XiangqiOverlay from "@/app/world/_components/XiangqiOverlay"
 import { useAudioContext } from "@/context/AudioContext"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useWorld, type DialogueChoiceOption, type WorldDialogueState } from "@/context/WorldContext"
 import { gameBridge, type WorldSfxCue } from "@/game/GameBridge"
 import type { JoystickInputState } from "@/game/types"
@@ -80,6 +80,12 @@ export default function WorldScreen() {
 
   const handleOpenDialogue = useEffectEvent((nextDialogueState: WorldDialogueState) => {
     setDialogueState(nextDialogueState)
+    if (nextDialogueState.preferredChoiceId && nextDialogueState.choices) {
+      const idx = nextDialogueState.choices.findIndex(c => c.id === nextDialogueState.preferredChoiceId)
+      if (idx >= 0) {
+        queueMicrotask(() => setFocusedChoiceIndex(idx))
+      }
+    }
     if (nextDialogueState.soundCue) {
       playSfx(nextDialogueState.soundCue as "click" | "transition" | "open" | "flip")
       lastSoundCueRef.current = nextDialogueState.soundCue
@@ -454,6 +460,17 @@ export default function WorldScreen() {
       delete document.body.dataset.overlayLock
     }
   }, [dialogueState.isOpen, isArchiveOverlayOpen, promptState.isVisible, activeSectionId])
+
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (!searchParams?.has("chat-manh")) return
+    router.replace("/world", { scroll: false })
+    const timer = setTimeout(() => {
+      gameBridge.emit("auto-chat-manh", undefined)
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [searchParams])
 
   useEffect(() => {
     const renderGameToText = () => JSON.stringify({

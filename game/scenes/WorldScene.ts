@@ -272,6 +272,13 @@ export class WorldScene extends Phaser.Scene {
       callback: () => this.checkGatheringTime(),
     })
 
+    const offTeleport = gameBridge.on("teleport-player", ({ x, y }) => {
+      if (!this.player) return
+      this.player.setPosition(x, y)
+      this.cameras.main.centerOn(x, y)
+    })
+    this.cleanupFns.push(offTeleport)
+
     this.buildingHalo = this.add.ellipse(0, 0, 94, 70, 0xffc56f, 0)
       .setDepth(5)
       .setStrokeStyle(2, 0xffd27b, 0.42)
@@ -1307,6 +1314,25 @@ export class WorldScene extends Phaser.Scene {
       manhNpc.leadTo(dest.x, dest.y)
     })
 
-    this.cleanupFns.push(offGuide, offChatMove)
+    const offAutoChat = gameBridge.on("auto-chat-manh", () => {
+      if (!this.manhNpc || !this.player) return
+      this.player.setPosition(this.manhNpc.x, this.manhNpc.y - 32)
+      this.cameras.main.centerOn(this.manhNpc.x, this.manhNpc.y - 32)
+      gameBridge.emit("open-dialogue", {
+        isOpen: true,
+        npcId: "manh",
+        speaker: "Manh",
+        lines: ["Welcome to the Hearth! Wander as you like."],
+        lineIndex: 0,
+        choices: [
+          { id: "manh-show-around", label: "Show me around!", nextLines: ["Curious about my work? There's plenty to see..."] },
+          { id: "manh-chat-freely", label: "Chat freely", nextLines: [] },
+          { id: "manh-goodbye", label: "Just wandering", nextLines: [] },
+        ],
+        preferredChoiceId: "manh-chat-freely",
+      })
+    })
+
+    this.cleanupFns.push(offGuide, offChatMove, offAutoChat)
   }
 }
