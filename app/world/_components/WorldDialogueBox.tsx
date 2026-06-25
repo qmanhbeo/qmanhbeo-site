@@ -43,7 +43,7 @@ export default function WorldDialogueBox({ layout, onChoiceSelect, focusedChoice
           </div>
         </div>
 
-        <p className="font-garamond text-lg leading-8 text-amber-50/92">{activeLine}</p>
+        <p className="font-garamond text-lg leading-8 text-amber-50/92 whitespace-pre-line">{activeLine}</p>
 
         {hasChoices && (
           <div className="mt-4 flex flex-col gap-2">

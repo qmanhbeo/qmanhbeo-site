@@ -77,7 +77,7 @@ export const buildingData: BuildingData[] = [
   {
     id: "xiangqi-board",
     label: "Xiangqi",
-    prompt: "Press E to play Xiangqi",
+    prompt: "Press E to play Gia Lai Xiangqi",
     sectionId: "xiangqi",
     x: 920,
     y: 1020,

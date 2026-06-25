@@ -196,6 +196,12 @@ export default function WorldScreen() {
       return
     }
 
+    if (option.id === "xiangqi-play") {
+      handleCloseDialogue()
+      setIsXiangqiOpen(true)
+      return
+    }
+
     if (option.nextLines.length === 0) {
       handleCloseDialogue()
       return
@@ -344,7 +350,19 @@ export default function WorldScreen() {
         return
       }
       if (sectionId === "xiangqi") {
-        setIsXiangqiOpen(true)
+        gameBridge.emit("open-dialogue", {
+          isOpen: true,
+          npcId: null,
+          speaker: "Gia Lai Xiangqi",
+          lines: [
+            "You lean over the board, expecting a grand game of strategy. Instead, you find Gia Lai Xiangqi — a game that is, quite literally, just the jungle.\n\nAt exactly 05:50 AM on June 25th, 2026, the cosmos tore open and revealed this supreme absurdity in a dream. It isn't a battlefield; it's just two massive herds of elephants staring at each other across a river, entirely unable to attack, just absolutely vibing in their respective halves of the board.\n\nThere are no tactics. No opening gambits. No functional pieces. It is literally just 'Gia Lai' with the word 'Chess' slapped onto it for maximum psychological irony. And yet, here it sits in the Hearth. The universe knows. Leave the elephants be. They are exactly where the dream commanded them to sit.",
+          ],
+          lineIndex: 0,
+          choices: [
+            { id: "xiangqi-play", label: "Play Gia Lai Xiangqi", nextLines: [] },
+            { id: "xiangqi-leave", label: "Walk away", nextLines: [] },
+          ],
+        })
         return
       }
       setActiveSectionId(sectionId)
