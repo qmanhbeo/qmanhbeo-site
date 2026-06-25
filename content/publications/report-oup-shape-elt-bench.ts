@@ -28,8 +28,13 @@ const reportOupShapeEltBench: PublicationEntry = {
       kind: "reference",
     },
     {
-      label: "Method paper",
+      label: "Method paper (OUP)",
       href: "https://benchmarks.elt.edu.oup.com/",
+      kind: "reference",
+    },
+    {
+      label: "Method paper (PDF)",
+      href: "/papers/oup-elt-bench-method-paper.pdf",
       kind: "reference",
     },
   ],
