@@ -111,7 +111,15 @@ If this life is just one round of a larger game—Then this trip wasn't about "s
 
 It was about remembering how to exist inside the round.`,
 
-  images: [],
+  images: [
+    { src: "/img/map/Iberia1.webp", alt: "Faro — quiet coastal town at dusk" },
+    { src: "/img/map/Iberia2.webp", alt: "Lagos — Ponta da Piedade sunset" },
+    { src: "/img/map/Iberia3.webp", alt: "Lisbon — hills and tiled rooftops" },
+    { src: "/img/map/Iberia4.webp", alt: "Porto — Douro river and colorful houses" },
+    { src: "/img/map/Iberia5.webp", alt: "Madrid — siesta rhythm on the streets" },
+    { src: "/img/map/Iberia6.webp", alt: "Valencia — modern and Mediterranean" },
+    { src: "/img/map/Iberia7.webp", alt: "Barcelona — human scale cityscape" },
+  ],
 
   coordinates: { top: "42%", left: "48%" },
 
