@@ -10,6 +10,7 @@ import WorldPromptOverlay, { useWorldPromptState } from "@/app/world/_components
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
 import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
 import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
+import XiangqiOverlay from "@/app/world/_components/XiangqiOverlay"
 import { useAudioContext } from "@/context/AudioContext"
 import { useRouter } from "next/navigation"
 import { useWorld, type DialogueChoiceOption, type WorldDialogueState } from "@/context/WorldContext"
@@ -62,10 +63,11 @@ export default function WorldScreen() {
   const [isArchiveOverlayOpen, setIsArchiveOverlayOpen] = useState(false)
   const [gatheringNotification, setGatheringNotification] = useState<string | null>(null)
   const [showEntrySlug, setShowEntrySlug] = useState<string | null>(null)
+  const [isXiangqiOpen, setIsXiangqiOpen] = useState(false)
   const [focusedChoiceIndex, setFocusedChoiceIndex] = useState(0)
   const choicesLengthRef = useRef(0)
   choicesLengthRef.current = dialogueState.choices?.length ?? 0
-  const uiLocked = dialogueState.isOpen || activeSectionId !== null
+  const uiLocked = dialogueState.isOpen || activeSectionId !== null || isXiangqiOpen
   const promptState = useWorldPromptState({
     contextualPrompt: promptText,
     uiLocked,
@@ -124,6 +126,11 @@ export default function WorldScreen() {
       pendingGuideChoiceRef.current = null
     }
   }, [setDialogueState])
+
+  const handleXiangqiClose = useCallback(() => {
+    setIsXiangqiOpen(false)
+    gameBridge.emit("section-closed", undefined)
+  }, [])
 
   const handleChoiceSelect = useCallback((option: DialogueChoiceOption) => {
     if (!dialogueState.isOpen) return
@@ -336,6 +343,10 @@ export default function WorldScreen() {
         })
         return
       }
+      if (sectionId === "xiangqi") {
+        setIsXiangqiOpen(true)
+        return
+      }
       setActiveSectionId(sectionId)
     })
     const offSectionClosed = gameBridge.on("section-closed", () => {
@@ -405,7 +416,7 @@ export default function WorldScreen() {
   }, [dialogueState.isOpen, dialogueState.choices, dialogueState.lineIndex])
 
   useEffect(() => {
-    const shouldLock = dialogueState.isOpen || isArchiveOverlayOpen || activeSectionId || promptState.isVisible
+    const shouldLock = dialogueState.isOpen || isArchiveOverlayOpen || activeSectionId || isXiangqiOpen || promptState.isVisible
     if (shouldLock) {
       document.body.dataset.overlayLock = "true"
     } else {
@@ -504,6 +515,7 @@ export default function WorldScreen() {
         initialFocusSlug={showEntrySlug ?? undefined}
         onClose={handleArchiveClose}
       />
+      {isXiangqiOpen && <XiangqiOverlay onClose={handleXiangqiClose} />}
     </main>
   )
 }

@@ -873,6 +873,14 @@ export class WorldScene extends Phaser.Scene {
         return
       }
 
+      if (building.id === "xiangqi-board" && this.textures.exists("xiangqi-board")) {
+        const sprite = this.add.image(building.x, building.y + 10, "xiangqi-board")
+        sprite.setOrigin(0.5, 1)
+        sprite.setScale(0.03)
+        sprite.setDepth(WORLD_DEPTHS.buildings)
+        return
+      }
+
       const left = building.x - building.width / 2
       const top = building.y - building.height / 2
       const right = building.x + building.width / 2

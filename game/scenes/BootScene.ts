@@ -319,6 +319,7 @@ export class BootScene extends Phaser.Scene {
       frameWidth: 16,
       frameHeight: 32,
     })
+    this.load.image("xiangqi-board", "/game/xiangqi/gialai_xiangqi.png")
     this.load.tilemapTiledJSON(WORLD_TILESET.mapKey, WORLD_TILESET.mapPath)
     this.load.on("progress", (progress: number) => {
       gameBridge.emit("load-progress", {

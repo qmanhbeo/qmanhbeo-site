@@ -74,4 +74,15 @@ export const buildingData: BuildingData[] = [
     height: 72,
     color: 0x1a0e0a,
   },
+  {
+    id: "xiangqi-board",
+    label: "Xiangqi",
+    prompt: "Press E to play Xiangqi",
+    sectionId: "xiangqi",
+    x: 920,
+    y: 1020,
+    width: 32,
+    height: 32,
+    color: 0x4a2c17,
+  },
 ]
