@@ -144,7 +144,7 @@ const RESUME_EXPERIENCE_SUMMARIES: Record<string, string[]> = {
     "Represent a small postgraduate cohort in the MSc AI and Sustainable Development programme, bridging student feedback to academic leads.",
   ],
   [resumeExperienceKey({ role: "Research Assistant", organization: "EEPSEA (Economy and Environment Partnership for Southeast Asia)" })]: [
-    "Contract researcher under Dr Truong Dang Thuy on energy poverty and energy transition; presented at ELG2025.",
+    "Contract researcher under [Dr Truong Dang Thuy](https://orcid.org/0000-0002-0480-6541) on energy poverty and energy transition; presented at ELG2025.",
   ],
   [resumeExperienceKey({ role: "Research Intern", organization: "EEPSEA" })]: [
     "In a team, formalized and systematized Vietnam's yearbook data across 2 decades and 63 provinces.",
@@ -157,7 +157,7 @@ const RESUME_EXPERIENCE_SUMMARIES: Record<string, string[]> = {
     "Contributed student perspectives during FIBAA accreditation.",
   ],
   [resumeExperienceKey({ role: "Undergraduate Teaching Assistant", organization: "University of Economics Ho Chi Minh City" })]: [
-    "Graded assignments and provided feedback for a Time Series Econometrics course.",
+    "Graded assignments and provided feedback for a Time Series Econometrics course under [Dr Nguyen Quang](https://orcid.org/0000-0002-5955-2956).",
   ],
 }
 
