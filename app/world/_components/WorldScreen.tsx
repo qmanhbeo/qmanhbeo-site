@@ -219,6 +219,20 @@ export default function WorldScreen() {
     if (!dialogueState.isOpen || (dialogueState.choices && dialogueState.choices.length > 0)) return
     const isLastLine = dialogueState.lineIndex >= dialogueState.lines.length - 1
     if (isLastLine) {
+      if (
+        dialogueState.npcId === null &&
+        dialogueState.speaker === "Gia Lai Xiangqi" &&
+        !dialogueState.choices
+      ) {
+        setDialogueState({
+          ...dialogueState,
+          choices: [
+            { id: "xiangqi-play", label: "Play Gia Lai Xiangqi", nextLines: [] },
+            { id: "xiangqi-leave", label: "Walk away", nextLines: [] },
+          ],
+        })
+        return
+      }
       handleCloseDialogue()
       return
     }
@@ -355,13 +369,12 @@ export default function WorldScreen() {
           npcId: null,
           speaker: "Gia Lai Xiangqi",
           lines: [
-            "You lean over the board, expecting a grand game of strategy. Instead, you find Gia Lai Xiangqi — a game that is, quite literally, just the jungle.\n\nAt exactly 05:50 AM on June 25th, 2026, the cosmos tore open and revealed this supreme absurdity in a dream. It isn't a battlefield; it's just two massive herds of elephants staring at each other across a river, entirely unable to attack, just absolutely vibing in their respective halves of the board.\n\nThere are no tactics. No opening gambits. No functional pieces. It is literally just 'Gia Lai' with the word 'Chess' slapped onto it for maximum psychological irony. And yet, here it sits in the Hearth. The universe knows. Leave the elephants be. They are exactly where the dream commanded them to sit.",
+            "You lean over the board, expecting a grand game of strategy. Instead, you find Gia Lai Xiangqi — a game that is, quite literally, just the jungle.",
+            "At exactly 05:50 AM on June 25th, 2026, the cosmos tore open and revealed this supreme absurdity in a dream. It isn't a battlefield; it's just two massive herds of elephants staring at each other across a river, entirely unable to attack, just absolutely vibing in their respective halves of the board.",
+            "There are no tactics. No opening gambits. No functional pieces. It is literally just 'Gia Lai' with the word 'Chess' slapped onto it for maximum psychological irony. And yet, here it sits in the Hearth. The universe knows. Leave the elephants be. They are exactly where the dream commanded them to sit.",
           ],
           lineIndex: 0,
-          choices: [
-            { id: "xiangqi-play", label: "Play Gia Lai Xiangqi", nextLines: [] },
-            { id: "xiangqi-leave", label: "Walk away", nextLines: [] },
-          ],
+          choices: undefined,
         })
         return
       }
