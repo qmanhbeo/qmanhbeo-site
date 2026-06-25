@@ -168,7 +168,8 @@ interface ResumePageContentProps {
 
 export default function ResumePageContent({ publications, projects }: ResumePageContentProps) {
   const skills = [
-    "vibecoding",
+    "Philosophy",
+    "Vibecoding",
     "LLM & Prompt Engineering",
     "Web Scraping & Data Cleaning",
     "Data Pipeline Engineering",
