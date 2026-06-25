@@ -104,6 +104,37 @@ const EXPERIENCE: { period: string; role: string; organization: string; details:
   },
 ]
 
+const RESUME_PROJECT_SUMMARIES: Record<string, string[]> = {
+  "project-sdg-lens": [
+    "Built a PyTorch multi-label NLP pipeline that classifies policy text into UN SDG categories with attention-based interpretability.",
+  ],
+  "project-paths-untold": [
+    "Engineered a generative narrative engine taming non-deterministic LLM outputs through prompt engineering, regex validation, and state tracking.",
+  ],
+  "project-vn-real-estate-pipeline": [
+    "Developed an end-to-end pipeline aggregating fragmented Vietnamese housing listings into a validated open dataset.",
+    "Published on Kaggle with organic community adoption and independent external citations.",
+  ],
+  "project-gaia": [
+    "Conceived and built an agent-based economic simulation modeling households, labor, consumption, and ecological limits as interconnected agents for RL research.",
+  ],
+  "project-vn-stock-rl-sandbox": [
+    "Architected a modular Alpha Research Lab and RL trading framework with PPO/RecurrentPPO agents under realistic market microstructure constraints.",
+  ],
+  "project-uk-procurement-pipeline": [
+    "Built a procurement data pipeline collecting and structuring years of UK public spending records into analysis-ready form for policy research.",
+  ],
+  "project-arduino-environment-robot": [
+    "Built an embodied AI platform to study how learning systems behave under physical constraints versus idealized simulation.",
+  ],
+  "project-digital-twin": [
+    "A Cohere-powered NPC inside the portfolio's pixel world that executes structured game actions from LLM responses — pathfinding, overlays, guided tours.",
+  ],
+  "project-gsp-replication": [
+    "Rebuilt a published K-Means clustering pipeline and revealed its five-cluster result depends on the undocumented n_init=1 hyperparameter.",
+  ],
+}
+
 function extractAwards(arcs: ArcEntry[]): { year: string; award: string }[] {
   const awards: { year: string; award: string }[] = []
   for (const arc of arcs) {
@@ -312,10 +343,10 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                 {project.subtitle && (
                   <p className="font-sans text-xs italic text-slate-500">{project.subtitle}</p>
                 )}
-                {project.detailSections.length > 0 && (
+                {(RESUME_PROJECT_SUMMARIES[project.slug] ?? project.detailSections.map((s) => s.content)).length > 0 && (
                   <ul className="ml-4 list-disc font-sans text-xs text-slate-700">
-                    {project.detailSections.map((section, j) => (
-                      <li key={j}>{section.content}</li>
+                    {(RESUME_PROJECT_SUMMARIES[project.slug] ?? project.detailSections.map((s) => s.content)).map((content, j) => (
+                      <li key={j}>{content}</li>
                     ))}
                   </ul>
                 )}
