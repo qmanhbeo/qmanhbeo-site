@@ -220,7 +220,7 @@ export default function ResumePageContent({ publications, projects }: ResumePage
               Nguyen Quang Manh
             </h1>
             <p className="mt-1 font-sans text-base text-slate-600">
-              AI & Sustainability Researcher · Reinforcement Learning · Agent-Based Modelling
+              AI & Sustainability Researcher · Vibecoder · Whatever sparks joy
             </p>
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
               <a href="https://www.linkedin.com/in/qmanhbeo/" className="hover:text-slate-700" target="_blank" rel="noopener noreferrer">LinkedIn</a>
