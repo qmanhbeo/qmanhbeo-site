@@ -233,11 +233,7 @@ export default function ResumePageContent({ publications, projects }: ResumePage
           {/* Summary */}
           <section className="mb-6 print:mb-4">
             <p className="font-sans text-sm leading-relaxed text-slate-700">
-              Graduate student and active researcher with a background in economics and AI engineering.
-              Experience in systematic text classification, structured data collection, and evaluation
-              benchmark design using NLP pipelines, LLM systems, and attention-based interpretability.
-              Adept at parsing technical documentation, designing classification schemes, and working
-              with structured and unstructured data across sustainability, policy, and language domains.
+              Economics-trained AI engineer with the goal of a sustainable future where AI helps. Work follows the question, not the tool — data pipelines, NLP, RL, or whatever the problem demands.
             </p>
           </section>
 
