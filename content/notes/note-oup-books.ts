@@ -24,6 +24,7 @@ const noteOupBooks: NoteEntry = {
     "Love because... that's what we all seek don't we. And in today's world it is hard to find. But how do even define it? What even IS love? Not talking about society, it's just something that has been bugging me out. It's something that no matter how much I looked into, I could never have found an answer.",
     "Polygamy because, again, refusal of modern dogmas.",
     "Genius because I hope I could be one.",
+    'See the prize winning report [here](/item/report-oup-shape-elt-bench)!',
   ],
   tags: ["Books", "OUP", "AI", "Anthropology", "Love", "Polygamy", "Genius"],
 }

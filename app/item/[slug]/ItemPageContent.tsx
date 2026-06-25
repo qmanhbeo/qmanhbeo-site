@@ -240,6 +240,42 @@ function NoteBody({ entry }: { entry: Extract<ContentEntry, { type: "note" }> })
         />
       )
     }
+    const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
+    if (linkPattern.test(paragraph)) {
+      linkPattern.lastIndex = 0
+      const parts: (string | { text: string; href: string })[] = []
+      let lastIndex = 0
+      let match: RegExpExecArray | null = null
+      while ((match = linkPattern.exec(paragraph)) !== null) {
+        if (match.index > lastIndex) {
+          parts.push(paragraph.slice(lastIndex, match.index))
+        }
+        parts.push({ text: match[1], href: match[2] })
+        lastIndex = match.index + match[0].length
+      }
+      if (lastIndex < paragraph.length) {
+        parts.push(paragraph.slice(lastIndex))
+      }
+      return (
+        <ManuscriptParagraph key={paragraph}>
+          {parts.map((part, i) =>
+            typeof part === "string" ? (
+              part
+            ) : (
+              <a
+                key={i}
+                href={part.href}
+                target={part.href.startsWith("http") ? "_blank" : undefined}
+                rel={part.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="underline decoration-amber-700/45 underline-offset-4 transition-colors duration-200 hover:text-orange-800"
+              >
+                {part.text}
+              </a>
+            ),
+          )}
+        </ManuscriptParagraph>
+      )
+    }
     return <ManuscriptParagraph key={paragraph}>{paragraph}</ManuscriptParagraph>
   }
 
