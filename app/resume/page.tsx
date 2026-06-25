@@ -11,13 +11,11 @@ export default function ResumePage() {
     ["paper-renewable-delay-vietnam", "paper-urban-rural-energy-burden-vietnam"].includes(p.slug),
   )
   const projects = getEntriesByType("project").filter((p) => !p.excludeFromResume)
-  const arcs = getEntriesByType("arc")
 
   return (
     <ResumePageContent
       publications={publications}
       projects={projects}
-      arcs={arcs}
     />
   )
 }

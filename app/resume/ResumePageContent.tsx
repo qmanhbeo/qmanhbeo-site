@@ -3,7 +3,7 @@
 import { useCallback } from "react"
 import { ArrowLeft, Download } from "lucide-react"
 import Link from "next/link"
-import type { ArcEntry, ProjectEntry, PublicationEntry } from "@/content/entries"
+import type { ProjectEntry, PublicationEntry } from "@/content/entries"
 
 const EDUCATION: { period: string; institution: string; degree: string; details?: string[]; cert?: string; certs?: string[] }[] = [
   {
@@ -147,7 +147,7 @@ const RESUME_EXPERIENCE_SUMMARIES: Record<string, string[]> = {
     "Contract researcher under Dr Truong Dang Thuy on energy poverty and energy transition; presented at ELG2025.",
   ],
   [resumeExperienceKey({ role: "Research Intern", organization: "EEPSEA" })]: [
-    "Supported energy economics research under Dr Truong Dang Thuy.",
+    "In a team, formalized and systematized Vietnam's yearbook data across 2 decades and 63 provinces.",
   ],
   [resumeExperienceKey({ role: "PGT SHAPE AI Challenge Contributor", organization: "Oxford University Press" })]: [
     "Developed and validated an LLM evaluation benchmark for real-world language teaching and text assessment.",
@@ -159,19 +159,6 @@ const RESUME_EXPERIENCE_SUMMARIES: Record<string, string[]> = {
   [resumeExperienceKey({ role: "Undergraduate Teaching Assistant", organization: "University of Economics Ho Chi Minh City" })]: [
     "Graded assignments and provided feedback for a Time Series Econometrics course.",
   ],
-}
-
-function extractAwards(arcs: ArcEntry[]): { year: string; award: string }[] {
-  const awards: { year: string; award: string }[] = []
-  for (const arc of arcs) {
-    for (const achievement of arc.whatIAchieved) {
-      if (achievement.toLowerCase().includes("award") || achievement.toLowerCase().includes("prize")) {
-        const yearMatch = achievement.match(/(\d{4})/)
-        awards.push({ year: yearMatch?.[0] ?? arc.yearLabel, award: achievement })
-      }
-    }
-  }
-  return awards
 }
 
 function extractSkills(projects: ProjectEntry[]): string[] {
@@ -187,12 +174,10 @@ function extractSkills(projects: ProjectEntry[]): string[] {
 interface ResumePageContentProps {
   publications: PublicationEntry[]
   projects: ProjectEntry[]
-  arcs: ArcEntry[]
 }
 
-export default function ResumePageContent({ publications, projects, arcs }: ResumePageContentProps) {
+export default function ResumePageContent({ publications, projects }: ResumePageContentProps) {
   const skills = ["Applied Econometrics", "Time Series Analysis", "Systematic Literature Review", "Research Design", "Stata", "R", "Policy Analysis", "Survey Design", "Data Integrity & Validation", ...extractSkills(projects)]
-  const awards = extractAwards(arcs)
 
   const handlePrint = useCallback(() => {
     window.print()
@@ -477,19 +462,6 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
               ))}
             </div>
           </section>
-
-          {/* Awards */}
-          {awards.length > 0 && (
-            <section className="print:mb-4">
-              <h2 className="mb-3 font-sans text-base font-bold uppercase tracking-wider text-slate-800 print:mb-2">Honors & Awards</h2>
-              {awards.map((award, i) => (
-                <div key={i} className="mb-2 flex items-baseline justify-between print:mb-1">
-                  <span className="font-sans text-sm text-slate-700">{award.award}</span>
-                  <span className="font-sans text-xs text-slate-500">{award.year}</span>
-                </div>
-              ))}
-            </section>
-          )}
         </div>
       </div>
     </div>
