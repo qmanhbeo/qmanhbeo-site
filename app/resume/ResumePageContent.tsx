@@ -135,6 +135,32 @@ const RESUME_PROJECT_SUMMARIES: Record<string, string[]> = {
   ],
 }
 
+function resumeExperienceKey(exp: { role: string; organization: string }) {
+  return `${exp.role}|${exp.organization}`
+}
+
+const RESUME_EXPERIENCE_SUMMARIES: Record<string, string[]> = {
+  [resumeExperienceKey({ role: "Student Representative", organization: "University of Birmingham" })]: [
+    "Represent a small postgraduate cohort in the MSc AI and Sustainable Development programme, bridging student feedback to academic leads.",
+  ],
+  [resumeExperienceKey({ role: "Research Assistant", organization: "EEPSEA (Economy and Environment Partnership for Southeast Asia)" })]: [
+    "Contract researcher under Dr Truong Dang Thuy on energy poverty and energy transition; presented at ELG2025.",
+  ],
+  [resumeExperienceKey({ role: "Research Intern", organization: "EEPSEA" })]: [
+    "Supported energy economics research under Dr Truong Dang Thuy.",
+  ],
+  [resumeExperienceKey({ role: "PGT SHAPE AI Challenge Contributor", organization: "Oxford University Press" })]: [
+    "Developed and validated an LLM evaluation benchmark for real-world language teaching and text assessment.",
+    "Contribution acknowledged in the [method paper](https://benchmarks.elt.edu.oup.com/).",
+  ],
+  [resumeExperienceKey({ role: "Student Representative - Programme Accreditation", organization: "University of Economics Ho Chi Minh City" })]: [
+    "Contributed student perspectives during FIBAA accreditation.",
+  ],
+  [resumeExperienceKey({ role: "Undergraduate Teaching Assistant", organization: "University of Economics Ho Chi Minh City" })]: [
+    "Graded assignments and provided feedback for a Time Series Econometrics course.",
+  ],
+}
+
 function extractAwards(arcs: ArcEntry[]): { year: string; award: string }[] {
   const awards: { year: string; award: string }[] = []
   for (const arc of arcs) {
@@ -304,9 +330,9 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                     <span className="font-sans text-xs text-slate-500">{exp.period}</span>
                 </div>
                 <p className="font-sans text-sm text-slate-600 italic">{exp.organization}</p>
-                {exp.details.length > 0 && (
+                {(RESUME_EXPERIENCE_SUMMARIES[resumeExperienceKey(exp)] ?? exp.details).length > 0 && (
                   <ul className="ml-4 mt-0.5 list-disc font-sans text-xs text-slate-600">
-                    {exp.details.map((d, j) => {
+                    {(RESUME_EXPERIENCE_SUMMARIES[resumeExperienceKey(exp)] ?? exp.details).map((d, j) => {
                       const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
                       const match = linkPattern.exec(d)
                       if (match) {
@@ -360,7 +386,7 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                         rel="noopener noreferrer"
                         className="font-sans text-xs text-blue-700 hover:underline"
                       >
-                        {link.kind === "repository" ? "GitHub" : link.kind === "demo" ? "Demo" : link.kind === "kaggle" ? "Kaggle Dataset" : link.kind === "citation" ? "External Sample Work" : "Paper"}
+                        {link.kind === "repository" ? "GitHub" : link.kind === "demo" ? "Live" : link.kind === "kaggle" ? "Kaggle Dataset" : link.kind === "citation" ? "External Sample Work" : "Paper"}
                       </a>
                     ))}
                   </div>
