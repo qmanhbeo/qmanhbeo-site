@@ -21,11 +21,13 @@ const paperAi4gcSdgLens: PublicationEntry = {
     "BERT outperforms TF-IDF (0.717 vs 0.700 micro-F1). Attention highlights align with human judgement but are proxy evidence, not causal explanation.",
   implications:
     "Attention visualisation is a viable trust-building mechanism for non-technical stakeholders — interpretability is an ethical mandate for policy AI.",
-  link: {
-    label: "Read full report",
-    href: "/papers/ai4gc-2-sdg-lens.pdf",
-    kind: "reference",
-  },
+  links: [
+    {
+      label: "Read full report",
+      href: "/papers/ai4gc-2-sdg-lens.pdf",
+      kind: "reference",
+    },
+  ],
   relatedEntries: [
     {
       slug: "project-sdg-lens",

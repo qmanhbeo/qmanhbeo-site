@@ -21,11 +21,13 @@ const paperAi4gcGsp: PublicationEntry = {
     "The five-cluster result only holds at n_init=1 — at n_init=5 it becomes 6, at n_init=10 it becomes 4. Sample reporting and validation tables are inconsistent.",
   implications:
     "Published clustering results may be less stable than they appear when hyperparameters stay undocumented.",
-  link: {
-    label: "Read full report",
-    href: "/papers/ai4gc-1-gsp.pdf",
-    kind: "reference",
-  },
+  links: [
+    {
+      label: "Read full report",
+      href: "/papers/ai4gc-1-gsp.pdf",
+      kind: "reference",
+    },
+  ],
   relatedEntries: [
     {
       slug: "project-gsp-replication",

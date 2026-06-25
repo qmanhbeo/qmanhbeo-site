@@ -21,11 +21,13 @@ const paperAinsdHealthcareAi: PublicationEntry = {
     "Negative sentiment concentrates where AI displaces clinical authority, lacks meaningful consent, or denies care without appeal — especially where prior discrimination exists.",
   implications:
     "Treat sentiment as a governance signal. Responses need disclosure, contestability, and institutional accountability, not just explainability.",
-  link: {
-    label: "Read full report",
-    href: "/papers/ainsd-2-healthcare-ai.pdf",
-    kind: "reference",
-  },
+  links: [
+    {
+      label: "Read full report",
+      href: "/papers/ainsd-2-healthcare-ai.pdf",
+      kind: "reference",
+    },
+  ],
   tags: ["Healthcare AI", "Legitimacy", "AI Governance", "Health Policy", "Systematic Review", "Trust", "UoBrum"],
 }
 

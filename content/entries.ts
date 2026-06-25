@@ -76,7 +76,7 @@ export interface PublicationEntry extends BaseEntry {
   findings: string
   implications: string
   fullPaper?: string
-  link?: EntryLink
+  links?: EntryLink[]
 }
 
 export interface NoteEntry extends BaseEntry {

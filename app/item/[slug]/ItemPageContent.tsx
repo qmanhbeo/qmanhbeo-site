@@ -247,9 +247,9 @@ function PublicationBody({ entry }: { entry: Extract<ContentEntry, { type: "publ
         </ManuscriptSection>
       ) : null}
 
-      {entry.link ? (
+      {entry.links && entry.links.length > 0 ? (
         <ManuscriptSection title="Resources">
-          <ResourceLinks links={[entry.link]} />
+          <ResourceLinks links={entry.links} />
         </ManuscriptSection>
       ) : null}
 

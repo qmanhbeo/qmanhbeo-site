@@ -21,11 +21,13 @@ const paperAinsdFoodRouting: PublicationEntry = {
     "RL reduces unmet demand in high-hunger provinces at the cost of longer routes, but provincial-level abstraction masks within-province inequality.",
   implications:
     "AI-based allocation in public food systems must pair optimisation with ethical safeguards and human oversight.",
-  link: {
-    label: "Read full report",
-    href: "/papers/ainsd-1-food-routing.pdf",
-    kind: "reference",
-  },
+  links: [
+    {
+      label: "Read full report",
+      href: "/papers/ainsd-1-food-routing.pdf",
+      kind: "reference",
+    },
+  ],
   tags: ["Reinforcement Learning", "Food Security", "Humanitarian Logistics", "Vietnam", "AI for Development", "UoBrum"],
 }
 

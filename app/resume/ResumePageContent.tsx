@@ -317,9 +317,9 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                 </div>
                 <p className="font-sans text-sm text-slate-600 italic">{pub.status ? `${pub.status} — ` : ""}{pub.journal}</p>
                 <p className="font-sans text-xs text-slate-600">{pub.abstract}</p>
-                {pub.link && (
-                  <a href={pub.link.href} target="_blank" rel="noopener noreferrer" className="font-sans text-xs text-blue-700 hover:underline">
-                    {pub.link.label}
+                {pub.links && pub.links[0] && (
+                  <a href={pub.links[0].href} target="_blank" rel="noopener noreferrer" className="font-sans text-xs text-blue-700 hover:underline">
+                    {pub.links[0].label}
                   </a>
                 )}
               </div>

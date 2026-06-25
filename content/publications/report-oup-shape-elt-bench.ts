@@ -21,11 +21,18 @@ const reportOupShapeEltBench: PublicationEntry = {
     "Three flaw categories: overly broad competencies, culturally loaded framing, and inconsistent scoring criteria — the benchmark's validity is weakened in all three areas.",
   implications:
     "Refine benchmarks by decomposing competencies, adding strength-based feedback, requiring explicit rubrics, and aligning prompts with criteria.",
-  link: {
-    label: "Read full report",
-    href: "/papers/report-oup-shape-elt-bench.pdf",
-    kind: "reference",
-  },
+  links: [
+    {
+      label: "Read full report",
+      href: "/papers/report-oup-shape-elt-bench.pdf",
+      kind: "reference",
+    },
+    {
+      label: "Method paper",
+      href: "https://benchmarks.elt.edu.oup.com/",
+      kind: "reference",
+    },
+  ],
   tags: ["OUP", "SHAPE AI Challenge", "ELT-Bench", "AI in Education", "Language Teaching", "Benchmark Evaluation"],
 }
 
