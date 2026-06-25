@@ -3,54 +3,52 @@ import type { ProjectEntry } from "@/content/entries"
 const projectDigitalTwin: ProjectEntry = {
   slug: "project-digital-twin",
   type: "project",
-  title: "Digital Twin — Manh NPC",
-  subtitle: "An AI-powered 2D pixel-world guide that lives in the Phaser RPG map",
-  dateLabel: "Jun 2025 - Present",
-  status: "In Progress",
-  excludeFromResume: true,
+  title: "Personal Digital Twin — Manh NPC",
+  subtitle: "A Cohere-driven NPC you can actually talk to, inside a 2D pixel RPG world",
+  dateLabel: "June 2026",
+  status: "Prototype",
   summary:
-    "A Cohere LLM-powered digital twin embedded as a wanderable NPC in the Phaser 3 world mode. The Manh NPC can guide visitors on 4 curated tours, engage in free-text conversation with structured JSON actions, participate in campfire gatherings, respond to entry references, and offer ambient personality snippets.",
+    "A chat NPC in the portfolio's pixel world that understands free-text conversation. Instead of picking dialogue options, you type what you want and Manh responds naturally — and can physically walk you to places, show you projects, or just chat about the site.",
   description:
-    "The Manh NPC is a digital-twin integration that turns the portfolio's Phaser world into an inhabited space. Powered by Cohere's command-r-plus model, the NPC responds to free-text chat with structured JSON actions (moveTo, emote, showEntry) and maintains conversation history across sessions.",
+    "An NPC powered by Cohere's LLM that lives in the Phaser 3 pixel world. Visitors can have actual conversations with it, ask about projects and publications, get guided to specific locations in the world, or browse archive entries — all through normal chat. The LLM returns structured instructions that the game executes as real actions: pathfinding, sprite animation, overlay navigation.",
   detailSections: [
     {
-      label: "Guided Tours",
+      label: "What it does",
       content:
-        "Manh offers 4 walking tours (Workshop, Library, Yard, Post Office) using the leadTo navigation system. Each destination has a custom arrival description and a 30-second wandering timeout.",
+        "A chat NPC you can actually have a real conversation with. Instead of picking from pre-written dialogue options, you type whatever you want and Manh responds naturally — and sometimes physically walks you to places in the world when it's relevant.",
     },
     {
-      label: "Free-Text Chat",
+      label: "How the LLM connects to the game",
       content:
-        "A Cohere LLM proxy generates natural replies with structured JSON output. Actions include moveTo (walk to a location), emote (flavor text), and showEntry (offer an archive scroll). A compact knowledge index of all 32 archive entries is injected into the system prompt.",
+        "Every chat response comes back as structured instructions — what Manh says, plus things like 'walk to the workshop' or 'show this project entry.' The game reads those and makes it happen: pathfinding, sprite animation, opening overlays. This means the LLM feels like it's actually in the world, not just a text box floating on top.",
     },
     {
-      label: "Campfire Gatherings",
+      label: "What Manh knows about",
       content:
-        "From 19:00–19:30 local time, all NPCs walk to the campfire in a circle formation. Manh joins after completing any active guide. Ambient music, gathering-specific dialogue lines, and a Bard mute/unmute toggle accompany the event.",
+        "Manh has a compact summary of every project, publication, and note on the site baked into the prompt. If you mention something specific by name, the system automatically pulls in the full text so it can talk about details. No databases, no vector search — just simple word matching with a sanity gate to avoid false matches.",
     },
     {
-      label: "Ambient Life",
+      label: "Scripted + freeform, same NPC",
       content:
-        "NPCs display random text bubbles with personality-matching lines at 2–30 second intervals, creating a living atmosphere without requiring player interaction.",
+        "The same character can either follow a pre-written tour script (reliable, always works) or chat freely with the LLM (open-ended, unpredictable). Both paths share the same sprite, movement, and animations. The system makes sure they don't step on each other — the LLM doesn't walk while you're still typing, and the guide doesn't interrupt mid-conversation.",
     },
   ],
   links: [
     {
-      label: "Visit the Hearth",
-      href: "/world?chat-manh",
+      label: "Chat with my digital twin",
+      href: "/world",
       kind: "demo",
       showOnCard: true,
     },
   ],
   tags: [
     "Digital Twin",
-    "LLM Integration",
-    "Cohere",
+    "LLM Agent",
+    "NPC Chat",
+    "Game Integration",
     "Phaser 3",
-    "NPC AI",
     "World Mode",
-    "Interactive Fiction",
-    "Prompt Engineering",
+    "Cohere",
   ],
 }
 

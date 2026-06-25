@@ -3,8 +3,6 @@ import Link from "next/link";
 import { SITE_URL } from "@/lib/seo";
 import WorldScreen from "@/app/world/_components/WorldScreen";
 
-export const dynamic = "force-dynamic"
-
 export const metadata: Metadata = {
   title: "By the Hearth | Manh's Interactive World",
   description:

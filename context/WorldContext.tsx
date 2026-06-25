@@ -33,7 +33,6 @@ export interface WorldDialogueState {
   soundCue?: string
   choices?: DialogueChoiceOption[]
   chatMode?: boolean
-  preferredChoiceId?: string
 }
 
 export interface WorldPlayerPosition {

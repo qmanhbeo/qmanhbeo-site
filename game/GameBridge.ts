@@ -5,7 +5,6 @@ import type { PlayerPosition } from "@/game/types"
 export type WorldSfxCue = "dialogue-advance" | "dialogue-open" | "panel-open" | "ui-close"
 
 type WorldBridgeEventMap = {
-  "auto-chat-manh": undefined
   "bard-mute-changed": { muted: boolean }
   "bard-started-playing": undefined
   "bard-stopped-playing": undefined
@@ -20,7 +19,6 @@ type WorldBridgeEventMap = {
   "player-position": PlayerPosition
   "prompt-changed": { prompt: string }
   "section-closed": undefined
-  "teleport-player": { x: number; y: number }
   "world-notification": { text: string }
   "world-sfx": { cue: WorldSfxCue }
 }
