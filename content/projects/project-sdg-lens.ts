@@ -36,6 +36,12 @@ const projectSdgLens: ProjectEntry = {
       showOnCard: true,
     },
   ],
+  relatedEntries: [
+    {
+      slug: "paper-ai4gc-sdg-lens",
+      label: "Read the accompanying publication",
+    },
+  ],
   tags: ["PyTorch", "NLP", "Text Classification", "Attention Mechanism", "Explainable AI", "Sustainable Development Goals"],
 }
 

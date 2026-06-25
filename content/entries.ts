@@ -17,6 +17,11 @@ export interface EntryLink {
   showOnCard?: boolean
 }
 
+export interface RelatedEntryRef {
+  slug: string
+  label: string
+}
+
 interface BaseEntry {
   slug: string
   type: EntryType
@@ -31,6 +36,7 @@ interface BaseEntry {
   mood?: string
   order?: number
   excludeFromResume?: boolean
+  relatedEntries?: RelatedEntryRef[]
 }
 
 export interface ArcEntry extends BaseEntry {

@@ -7,7 +7,7 @@ const reportOupShapeEltBench: PublicationEntry = {
   title: "SHAPE 8I: Bridging Benchmarks and Classrooms Through a Human-Centric Review of ELT-Bench",
   subtitle: "A critical evaluation of AI benchmarks for English language teaching",
   journal: "OUP SHAPE AI Challenge",
-  yearLabel: "2026",
+  yearLabel: "2025",
   status: "Challenge Report",
   summary:
     "A human-centric evaluation of ELT-Bench — identifying competency flaws, framing biases, and criteria inconsistencies that limit how well AI benchmarks reflect real classroom language teaching.",

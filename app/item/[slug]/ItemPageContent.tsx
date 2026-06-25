@@ -1,10 +1,12 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { type UIEvent, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ExternalLink, X } from "lucide-react"
 import {
+  getEntryBySlug,
   getEntryCollectionLabel,
   getEntryKindLabel,
   getEntryPeriodLabel,
@@ -164,6 +166,34 @@ function ArcBody({ entry }: { entry: Extract<ContentEntry, { type: "arc" }> }) {
   )
 }
 
+function RelatedEntries({ entry }: { entry: ContentEntry }) {
+  const refs = entry.relatedEntries
+  if (!refs || refs.length === 0) return null
+
+  const resolved = refs
+    .map((ref) => ({ ref, related: getEntryBySlug(ref.slug) }))
+    .filter((r): r is { ref: typeof refs[number]; related: ContentEntry } => r.related !== undefined)
+
+  if (resolved.length === 0) return null
+
+  return (
+    <ManuscriptSection title="See Also">
+      <div className="flex flex-col gap-3">
+        {resolved.map(({ ref, related }) => (
+          <Link
+            key={ref.slug}
+            href={`/item/${ref.slug}`}
+            className="item-manuscript-ink inline-flex w-fit items-center gap-2 font-garamond text-lg underline decoration-amber-700/45 underline-offset-4 transition-colors duration-200 hover:text-orange-800"
+          >
+            {ref.label}
+            <span className="text-sm text-amber-700/60">({getEntryCollectionLabel(related)})</span>
+          </Link>
+        ))}
+      </div>
+    </ManuscriptSection>
+  )
+}
+
 function ProjectBody({ entry }: { entry: Extract<ContentEntry, { type: "project" }> }) {
   return (
     <div className="space-y-8">
@@ -182,6 +212,8 @@ function ProjectBody({ entry }: { entry: Extract<ContentEntry, { type: "project"
           <ResourceLinks links={entry.links} />
         </ManuscriptSection>
       ) : null}
+
+      <RelatedEntries entry={entry} />
     </div>
   )
 }
@@ -220,6 +252,8 @@ function PublicationBody({ entry }: { entry: Extract<ContentEntry, { type: "publ
           <ResourceLinks links={[entry.link]} />
         </ManuscriptSection>
       ) : null}
+
+      <RelatedEntries entry={entry} />
     </div>
   )
 }

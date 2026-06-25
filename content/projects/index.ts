@@ -9,6 +9,7 @@ import projectArduinoEnvironmentRobot from "./project-arduino-environment-robot"
 import projectQmanhbeoSite from "./project-qmanhbeo-site"
 import projectDigitalTwin from "./project-digital-twin"
 import projectGiaLaiXiangqi from "./project-gia-lai-xiangqi"
+import projectGspReplication from "./project-gsp-replication"
 
 const PROJECT_ORDER: Record<string, number> = {
   "project-sdg-lens": 1,
@@ -21,6 +22,7 @@ const PROJECT_ORDER: Record<string, number> = {
   "project-qmanhbeo-site": 8,
   "project-digital-twin": 9,
   "project-gia-lai-xiangqi": 10,
+  "project-gsp-replication": 11,
 }
 
 const allProjects = [
@@ -34,6 +36,7 @@ const allProjects = [
   projectQmanhbeoSite,
   projectDigitalTwin,
   projectGiaLaiXiangqi,
+  projectGspReplication,
 ]
 
 export const projectEntries = [...allProjects].sort((a, b) => {
