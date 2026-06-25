@@ -12,15 +12,15 @@ const paperAinsdHealthcareAi: PublicationEntry = {
   summary:
     "A systematic review arguing that public sentiment toward healthcare AI is better understood as a judgment of institutional legitimacy rather than as trust or acceptance of the technology itself.",
   abstract:
-    "This review frames sentiment toward healthcare AI not as trust or acceptance, but as a judgment of legitimacy: about how AI involvement is authorised and governed. Evidence across health policy and AI governance shows that negative sentiment arises when AI overrides clinical judgment, is used without clear notice or choice, or affects decisions that deny care without a clear route for appeal. Institutional history matters: where patients have faced discrimination or unaccountable bureaucracy, AI is often seen as a continuation of those harms. The review concludes by proposing a research agenda that treats legitimacy as measurable through complaint data, appeals, and discourse, and examines it at scale using computational methods.",
+    "Argues that unease toward healthcare AI is about institutional legitimacy — who decides, who is accountable — not about trust in the technology.",
   researchQuestion:
-    "Why does public unease toward healthcare AI persist even when systems appear accurate, transparent, and legally compliant, and how can this be better understood through a legitimacy rather than trust/acceptance framework?",
+    "Why does unease persist even when AI systems are accurate and transparent, and how can a legitimacy framework better explain it?",
   methodology:
-    "Concept-focused systematic mapping review of peer-reviewed health policy, medical ethics, and AI governance literature. Iterative keyword searching supplemented by backward and forward snowballing from high-relevance systematic reviews. Evidence synthesised analytically around three identified governance frictions: authority conflicts, weak notice and consent, and AI-linked denial of care.",
+    "Systematic mapping review of health policy, medical ethics, and AI governance literature, synthesised around three governance frictions.",
   findings:
-    "Negative sentiment concentrates where governance arrangements are experienced as misaligned: when AI displaces clinical authority, enters decisions without meaningful notice, or becomes entangled with care denial without clear challenge routes. AI inherits institutional reputation — in settings with prior discrimination, transparency alone cannot repair legitimacy deficits. Existing attitude scales foreground optimism and perceived usefulness but lack purchase on moral unease, consent, or accountability.",
+    "Negative sentiment concentrates where AI displaces clinical authority, lacks meaningful consent, or denies care without appeal — especially where prior discrimination exists.",
   implications:
-    "Policymakers should treat sentiment as a governance signal rather than a communication problem. Effective responses include clear role allocation, mandatory disclosure, contestability mechanisms, and institutional responsiveness. The paper proposes five computationally actionable research directions using NLP and interrupted time-series methods to measure legitimacy at scale.",
+    "Treat sentiment as a governance signal. Responses need disclosure, contestability, and institutional accountability, not just explainability.",
   link: {
     label: "Read full report",
     href: "/papers/ainsd-2-healthcare-ai.pdf",
