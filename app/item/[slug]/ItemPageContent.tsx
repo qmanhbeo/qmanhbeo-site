@@ -87,14 +87,56 @@ function ManuscriptParagraph({ children, lead = false }: { children: React.React
   )
 }
 
+function renderInlineLinks(text: string) {
+  const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
+  const parts: (string | { text: string; href: string })[] = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null = null
+  while ((match = linkPattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index))
+    }
+    parts.push({ text: match[1], href: match[2] })
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex))
+  }
+  return parts
+}
+
+function renderInlineLinksToJSX(text: string, index: number, className?: string) {
+  const parts = renderInlineLinks(text)
+  if (parts.length === 1 && typeof parts[0] === "string") {
+    return <li key={index}>{text}</li>
+  }
+  return (
+    <li key={index}>
+      {parts.map((part, i) =>
+        typeof part === "string" ? (
+          part
+        ) : (
+          <a
+            key={i}
+            href={part.href}
+            target={part.href.startsWith("http") ? "_blank" : undefined}
+            rel={part.href.startsWith("http") ? "noopener noreferrer" : undefined}
+            className={className ?? "underline decoration-amber-700/45 underline-offset-4 transition-colors duration-200 hover:text-orange-800"}
+          >
+            {part.text}
+          </a>
+        ),
+      )}
+    </li>
+  )
+}
+
 function ManuscriptList({ items }: { items: string[] }) {
   return (
     <ul className="ml-5 list-disc space-y-2 marker:text-[#5a3117]">
-      {items.map((item) => (
-        <li key={item} className="item-manuscript-ink font-garamond text-lg leading-relaxed md:text-[1.2rem]">
-          {item}
-        </li>
-      ))}
+      {items.map((item, i) =>
+        renderInlineLinksToJSX(item, i, "underline decoration-amber-700/45 underline-offset-4 transition-colors duration-200 hover:text-orange-800"),
+      )}
     </ul>
   )
 }

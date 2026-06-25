@@ -10,7 +10,7 @@ const EDUCATION: { period: string; institution: string; degree: string; details?
     period: "Sep 2025 - Sep 2026",
     institution: "University of Birmingham",
     degree: "MSc AI and Sustainable Development",
-    details: ["Birmingham Award with Distinction.", "Working on measuring AI-for-Sustainability Research and Policy semantic gap in the embedding space for the MSc dissertation under the supervision of Dr Christian Arnold."],
+    details: ["[Birmingham Award with Distinction.](/papers/award-birmingham.pdf)", "Working on measuring AI-for-Sustainability Research and Policy semantic gap in the embedding space for the MSc dissertation under the supervision of Dr Christian Arnold."],
   },
   {
     period: "May 2025",
@@ -85,7 +85,7 @@ const EXPERIENCE: { period: string; role: string; organization: string; details:
       "Contributed to the development and validation of an LLM evaluation benchmark for real-world language teaching and text assessment.",
       "Collaborated in a small international team on systematic content annotation and benchmark validity testing.",
       "Analysed language-teaching data and evaluation outputs to improve classification rubric design and assessment consistency.",
-      "Contribution acknowledged in the method paper (in preparation).",
+      "Contribution acknowledged in the [method paper](https://benchmarks.elt.edu.oup.com/).",
     ],
     cert: "PGTShapeAI.png",
   },
@@ -227,9 +227,25 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                 <p className="font-sans text-sm text-slate-700">{edu.degree}</p>
                 {edu.details && (
                   <ul className="ml-4 mt-0.5 list-disc font-sans text-xs text-slate-600">
-                    {edu.details.map((d, j) => (
-                      <li key={j}>{d}</li>
-                    ))}
+                    {edu.details.map((d, j) => {
+                      const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
+                      const match = linkPattern.exec(d)
+                      if (match) {
+                        linkPattern.lastIndex = 0
+                        const before = d.slice(0, match.index)
+                        const after = d.slice(match.index + match[0].length)
+                        return (
+                          <li key={j}>
+                            {before}
+                            <a href={match[2]} target={match[2].startsWith("http") ? "_blank" : undefined} rel={match[2].startsWith("http") ? "noopener noreferrer" : undefined} className="underline hover:text-slate-900">
+                              {match[1]}
+                            </a>
+                            {after}
+                          </li>
+                        )
+                      }
+                      return <li key={j}>{d}</li>
+                    })}
                   </ul>
                 )}
               </div>
@@ -259,9 +275,25 @@ export default function ResumePageContent({ publications, projects, arcs }: Resu
                 <p className="font-sans text-sm text-slate-600 italic">{exp.organization}</p>
                 {exp.details.length > 0 && (
                   <ul className="ml-4 mt-0.5 list-disc font-sans text-xs text-slate-600">
-                    {exp.details.map((d, j) => (
-                      <li key={j}>{d}</li>
-                    ))}
+                    {exp.details.map((d, j) => {
+                      const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
+                      const match = linkPattern.exec(d)
+                      if (match) {
+                        linkPattern.lastIndex = 0
+                        const before = d.slice(0, match.index)
+                        const after = d.slice(match.index + match[0].length)
+                        return (
+                          <li key={j}>
+                            {before}
+                            <a href={match[2]} target={match[2].startsWith("http") ? "_blank" : undefined} rel={match[2].startsWith("http") ? "noopener noreferrer" : undefined} className="underline hover:text-slate-900">
+                              {match[1]}
+                            </a>
+                            {after}
+                          </li>
+                        )
+                      }
+                      return <li key={j}>{d}</li>
+                    })}
                   </ul>
                 )}
               </div>

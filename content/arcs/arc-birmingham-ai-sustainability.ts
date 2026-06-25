@@ -44,6 +44,7 @@ const arcBirminghamAiSustainability: ArcEntry = {
     "Sustainability is a systems problem - metrics alone cannot solve it",
   ],
   whatIAchieved: [
+    "[The Birmingham Award with Distinction — Postgraduate](/papers/award-birmingham.pdf)",
     "GAIA: agent-based economic simulation for RL research (ongoing)",
     "Vietnam RL market sandbox with full market microstructure (ongoing)",
     "Multiple research tools and pipelines made public",

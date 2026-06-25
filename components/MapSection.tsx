@@ -15,6 +15,24 @@ interface MapSectionProps {
   revealClassName?: string
 }
 
+function renderInlineLinkParts(text: string) {
+  const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
+  const parts: (string | { text: string; href: string })[] = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null = null
+  while ((match = linkPattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index))
+    }
+    parts.push({ text: match[1], href: match[2] })
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex))
+  }
+  return parts
+}
+
 function ArcDetailCard({ label, items }: { label: string; items: string[] }) {
   return (
     <div className="rounded-md border border-amber-300 bg-amber-50/90 p-2.5 md:p-4">
@@ -22,12 +40,32 @@ function ArcDetailCard({ label, items }: { label: string; items: string[] }) {
         {label}
       </h5>
       <ul className="space-y-1">
-        {items.slice(0, 3).map((item, i) => (
-          <li key={i} className="flex items-start gap-1.5 font-garamond text-[0.92rem] leading-snug text-amber-950 md:text-sm">
-            <span className="mt-0.5 flex-shrink-0 text-amber-500">·</span>
-            {item}
-          </li>
-        ))}
+        {items.slice(0, 3).map((item, i) => {
+          const parts = renderInlineLinkParts(item)
+          const hasLink = parts.some((p) => typeof p !== "string")
+          return (
+            <li key={i} className="flex items-start gap-1.5 font-garamond text-[0.92rem] leading-snug text-amber-950 md:text-sm">
+              <span className="mt-0.5 flex-shrink-0 text-amber-500">·</span>
+              {hasLink
+                ? parts.map((part, j) =>
+                    typeof part === "string"
+                      ? part
+                      : (
+                        <a
+                          key={j}
+                          href={part.href}
+                          target={part.href.startsWith("http") ? "_blank" : undefined}
+                          rel={part.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                          className="underline decoration-amber-600/60 underline-offset-2 transition-colors duration-200 hover:text-amber-700"
+                        >
+                          {part.text}
+                        </a>
+                      ),
+                  )
+                : item}
+            </li>
+          )
+        })}
       </ul>
     </div>
   )
