@@ -161,23 +161,32 @@ const RESUME_EXPERIENCE_SUMMARIES: Record<string, string[]> = {
   ],
 }
 
-function extractSkills(projects: ProjectEntry[]): string[] {
-  const skillSet = new Set<string>()
-  for (const project of projects) {
-    for (const tag of project.tags) {
-      skillSet.add(tag)
-    }
-  }
-  return Array.from(skillSet).sort()
-}
-
 interface ResumePageContentProps {
   publications: PublicationEntry[]
   projects: ProjectEntry[]
 }
 
 export default function ResumePageContent({ publications, projects }: ResumePageContentProps) {
-  const skills = ["Applied Econometrics", "Time Series Analysis", "Systematic Literature Review", "Research Design", "Stata", "R", "Policy Analysis", "Survey Design", "Data Integrity & Validation", ...extractSkills(projects)]
+  const skills = [
+    "vibecoding",
+    "LLM & Prompt Engineering",
+    "Web Scraping & Data Cleaning",
+    "Data Pipeline Engineering",
+    "Applied Econometrics",
+    "Time Series Analysis",
+    "Reinforcement Learning",
+    "NLP & Text Classification",
+    "PyTorch",
+    "Agent-Based Modelling",
+    "Simulation & RL Environments",
+    "Financial Technology (FinTech)",
+    "Stata, R",
+    "Policy Analysis",
+    "Research Design",
+    "Systematic Literature Review",
+    "Survey Design",
+    "Solo Travelling & Farland Navigation",
+  ]
 
   const handlePrint = useCallback(() => {
     window.print()
