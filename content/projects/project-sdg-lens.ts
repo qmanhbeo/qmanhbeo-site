@@ -5,7 +5,7 @@ const projectSdgLens: ProjectEntry = {
   type: "project",
   title: "SDG Lens: Explainable NLP for Sustainability Text Classification",
   subtitle: "Multi-label classification with attention-based interpretability for policy documents",
-  dateLabel: "Sep 2025 - Dec 2025",
+  dateLabel: "May 2026",
   status: "Completed",
   summary:
     "A PyTorch-based explainable NLP pipeline that classifies policy and sustainability texts into UN Sustainable Development Goal categories and surfaces which textual features drive each prediction through attention-weight analysis.",
