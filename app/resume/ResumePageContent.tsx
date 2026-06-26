@@ -187,6 +187,9 @@ export default function ResumePageContent({ publications, projects }: ResumePage
     "Systematic Literature Review",
     "Survey Design",
     "Solo Travelling & Farland Navigation",
+    "Cooking",
+    "Driving (Motorbike, Car, Boat)",
+    "Weightlifting",
   ]
 
   const handlePrint = useCallback(() => {
