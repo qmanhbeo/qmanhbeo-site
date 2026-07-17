@@ -2,6 +2,7 @@ import Phaser from "phaser"
 import { gameBridge } from "@/game/GameBridge"
 import { EnvironmentManager } from "@/game/EnvironmentManager"
 import { buildingData } from "@/game/config/buildingData"
+import { houseData } from "@/game/config/houseData"
 import { npcData } from "@/game/config/npcData"
 import {
   WORLD_DECORATION_FRAMES,
@@ -73,6 +74,15 @@ type ActiveTarget =
       prompt: string
       speaker: string
     }
+  | {
+      kind: "house"
+      houseId: string
+      npcId: string
+      prompt: string
+      flavorLine: string
+      label: string
+      isNight: boolean
+    }
 
 function logWorldVisualDebug(message: string, payload?: Record<string, unknown>) {
   if (!WORLD_VISUAL_DEBUG) return
@@ -121,6 +131,7 @@ export class WorldScene extends Phaser.Scene {
   private readonly cleanupFns: Array<() => void> = []
   private buildingHalo?: Phaser.GameObjects.Ellipse
   private buildings: BuildingZone[] = []
+  private houses: BuildingZone[] = []
   private environment?: EnvironmentManager
   private getJoystickInput: GetJoystickInput = () => ({ x: 0, y: 0, interact: false })
   private lastPersistAt = 0
@@ -137,6 +148,13 @@ export class WorldScene extends Phaser.Scene {
   private guideDestination: { x: number; y: number; description: string; label: string } | null = null
   private guideArrivalTime = 0
   private manhNpc: NPC | null = null
+  private nightHomeActive = false
+  private npcDaytimePositions = new Map<string, { x: number; y: number }>()
+
+  private isSleepTime(): boolean {
+    const h = new Date().getHours()
+    return h >= 20 || h < 7
+  }
   private readonly GUIDE_DESTINATIONS: Record<string, { x: number; y: number; description: string; label: string }> = {
     "manh-guide-workshop": {
       x: 1340, y: 860,
@@ -223,6 +241,20 @@ export class WorldScene extends Phaser.Scene {
     this.scale.on("resize", handleResize)
 
     this.buildings = buildingData.map((building) => new BuildingZone(this, building))
+    this.houses = houseData.map((house) => {
+      const zone = this.add.zone(house.x, house.y, house.width, house.height)
+      this.physics.add.existing(zone, true)
+      return Object.assign(zone, {
+        houseId: house.id,
+        npcId: house.npcId,
+        label: house.label,
+        nightFlavorLine: house.nightFlavorLine,
+        x: house.x,
+        y: house.y,
+        width: house.width,
+        height: house.height,
+      }) as unknown as BuildingZone & { houseId: string; npcId: string; label: string; nightFlavorLine: string }
+    })
     this.npcs = npcData.map((npc) => new NPC(this, npc))
 
     this.time.delayedCall(2000, () => {
@@ -270,6 +302,13 @@ export class WorldScene extends Phaser.Scene {
       delay: 15000,
       loop: true,
       callback: () => this.checkGatheringTime(),
+    })
+
+    this.checkNightHomes()
+    this.time.addEvent({
+      delay: 15000,
+      loop: true,
+      callback: () => this.checkNightHomes(),
     })
 
     this.buildingHalo = this.add.ellipse(0, 0, 94, 70, 0xffc56f, 0)
@@ -385,6 +424,25 @@ export class WorldScene extends Phaser.Scene {
       if (activeTarget.kind === "building") {
         gameBridge.emit("world-sfx", { cue: "panel-open" })
         gameBridge.emit("open-section", { sectionId: activeTarget.sectionId })
+      } else if (activeTarget.kind === "house") {
+        gameBridge.emit("world-sfx", { cue: "dialogue-open" })
+        if (activeTarget.isNight) {
+          gameBridge.emit("open-dialogue", {
+            isOpen: true,
+            npcId: activeTarget.npcId,
+            speaker: "",
+            lines: [activeTarget.flavorLine],
+            lineIndex: 0,
+            choices: [
+              { id: "npc-knock", label: "Knock on the door", nextLines: [] },
+              { id: "house-leave", label: "Leave them be", nextLines: [] },
+            ],
+          })
+        } else {
+          this.unlockWorldUi()
+          gameBridge.emit("world-notification", { text: `${activeTarget.label} — just a house.` })
+          gameBridge.emit("dialogue-closed", undefined)
+        }
       } else {
         gameBridge.emit("world-sfx", { cue: "dialogue-open" })
 
@@ -539,6 +597,7 @@ export class WorldScene extends Phaser.Scene {
     const decorationStats = this.drawGroundDecorations()
 
     this.drawVillageBuildings()
+    this.drawVillageHouses()
     this.drawCampfire()
     this.drawForest()
 
@@ -925,6 +984,43 @@ export class WorldScene extends Phaser.Scene {
     })
   }
 
+  private drawVillageHouses() {
+    const gfx = this.add.graphics().setDepth(WORLD_DEPTHS.buildings)
+    for (const house of houseData) {
+      const left = house.x - house.width / 2
+      const top = house.y - house.height / 2
+      const right = house.x + house.width / 2
+      const baseTop = top + 10
+
+      gfx.fillStyle(0x080403, 0.25)
+      gfx.fillRoundedRect(left - 3, baseTop + 4, house.width + 6, house.height - 6, 10)
+      gfx.fillStyle(0x2a150d, 1)
+      gfx.fillTriangle(left - 6, baseTop + 6, house.x, top - 14, right + 6, baseTop + 6)
+      gfx.fillStyle(house.color, 1)
+      gfx.fillRoundedRect(left, baseTop, house.width, house.height - 10, 10)
+      gfx.fillStyle(0x120907, 0.3)
+      gfx.fillRoundedRect(left + 6, baseTop + 6, house.width - 12, 8, 4)
+      gfx.lineStyle(2, 0x28140c, 0.85)
+      gfx.strokeRoundedRect(left, baseTop, house.width, house.height - 10, 10)
+      gfx.fillStyle(0xf4c46d, 0.85)
+      gfx.fillRoundedRect(house.x - 6, baseTop + 14, 12, 14, 3)
+      gfx.fillStyle(0x21110b, 1)
+      gfx.fillRoundedRect(house.x - 7, baseTop + 26, 14, 20, 4)
+      gfx.fillStyle(0xffc56f, 0.65)
+      gfx.fillCircle(house.x + 4, baseTop + 38, 1.5)
+      gfx.fillStyle(0xffbd65, 0.15)
+      gfx.fillCircle(house.x, baseTop + 38, 18)
+
+      const chimneyX = house.x + house.width * 0.3
+      gfx.fillStyle(0x2a150d, 1)
+      gfx.fillRect(chimneyX - 4, top - 18, 8, 12)
+      gfx.fillStyle(0xffffff, 0.06)
+      gfx.fillCircle(chimneyX, top - 22, 5)
+      gfx.fillStyle(0xffffff, 0.03)
+      gfx.fillCircle(chimneyX + 3, top - 26, 4)
+    }
+  }
+
   private drawCampfire() {
     const campfireX = 1200
     const campfireY = 900
@@ -1018,6 +1114,23 @@ export class WorldScene extends Phaser.Scene {
       }
     }
 
+    const isNight = this.isSleepTime()
+
+    for (const house of this.houses) {
+      const houseZone = house as unknown as Phaser.GameObjects.Zone & { houseId: string; npcId: string; label: string; nightFlavorLine: string }
+      if (this.physics.overlap(this.player, houseZone)) {
+        return {
+          kind: "house",
+          houseId: houseZone.houseId,
+          npcId: houseZone.npcId,
+          prompt: isNight ? `Press E to approach ${houseZone.label}` : `${houseZone.label} — just a house`,
+          flavorLine: houseZone.nightFlavorLine,
+          label: houseZone.label,
+          isNight,
+        }
+      }
+    }
+
     let nearestNpc: NPC | null = null
     let nearestDistance = Number.POSITIVE_INFINITY
 
@@ -1083,6 +1196,16 @@ export class WorldScene extends Phaser.Scene {
       this.buildingHalo
         .setPosition(building.x, building.y + building.height * 0.36)
         .setSize(building.width + 18, building.height * 0.75)
+        .setVisible(true)
+      return
+    }
+
+    if (activeTarget.kind === "house") {
+      const house = this.houses.find((candidate) => (candidate as unknown as { houseId: string }).houseId === activeTarget.houseId)
+      if (!house || !this.buildingHalo) return
+      this.buildingHalo
+        .setPosition(house.x, house.y + house.height * 0.36)
+        .setSize(house.width + 18, house.height * 0.75)
         .setVisible(true)
       return
     }
@@ -1228,7 +1351,117 @@ export class WorldScene extends Phaser.Scene {
     }
   }
 
+  private checkNightHomes() {
+    if (this.isGatheringActive) return
+    const isNight = this.isSleepTime()
+    const BARD_X_OFF = -2
+    const BARD_Y_OFF = 16
+
+    if (isNight && !this.nightHomeActive) {
+      this.nightHomeActive = true
+      for (const npc of this.npcs) {
+        if (npc.id === "manh" && this.guideState !== "idle") continue
+        const home = npcData.find((d) => d.id === npc.id)?.homePosition
+        if (!home) continue
+        this.npcDaytimePositions.set(npc.id, { x: npc.x, y: npc.y })
+
+        if (npc.id === "bard" && this.bardSprite && this.bardBobbingTween) {
+          this.bardBobbingTween.stop()
+          this.bardBobbingTween = undefined
+          this.bardNightTween = this.tweens.add({
+            targets: this.bardSprite,
+            x: home.x + BARD_X_OFF,
+            y: home.y + BARD_Y_OFF,
+            duration: 2500,
+            ease: "Sine.easeInOut",
+            onStart: () => {
+              if (this.bardSprite) {
+                this.bardSprite.play("bard-playing")
+              }
+            },
+            onComplete: () => {
+              this.bardNightTween = undefined
+            },
+          })
+          npc.setPosition(home.x, home.y)
+          const body = npc.body as Phaser.Physics.Arcade.Body | null
+          if (body) body.enable = false
+        } else if (npc.bobbingTween) {
+          npc.bobbingTween.stop()
+          npc.bobbingTween = undefined
+          npc.setPosition(home.x, home.y)
+          npc.setVisible(false)
+          const body = npc.body as Phaser.Physics.Arcade.Body | null
+          if (body) body.enable = false
+        } else if (npc.hasSprite) {
+          npc.pauseWandering()
+          npc.leadTo(home.x, home.y)
+        }
+      }
+    }
+
+    if (!isNight && this.nightHomeActive) {
+      this.nightHomeActive = false
+      for (const npc of this.npcs) {
+        const dayPos = this.npcDaytimePositions.get(npc.id)
+        if (!dayPos) continue
+
+        if (npc.id === "bard" && this.bardSprite) {
+          if (this.bardNightTween) {
+            this.bardNightTween.stop()
+            this.bardNightTween = undefined
+          }
+          this.bardNightTween = this.tweens.add({
+            targets: this.bardSprite,
+            x: dayPos.x + BARD_X_OFF,
+            y: dayPos.y + BARD_Y_OFF,
+            duration: 2500,
+            ease: "Sine.easeInOut",
+            onComplete: () => {
+              this.bardNightTween = undefined
+              if (this.bardSprite) {
+                this.bardSprite.anims.stop()
+                this.bardSprite.setFrame("frame_000")
+              }
+              this.bardBobbingTween = this.tweens.add({
+                targets: this.bardSprite,
+                y: dayPos.y + BARD_Y_OFF - 2,
+                duration: 1300 + (dayPos.x % 4) * 120,
+                ease: "Sine.inOut",
+                yoyo: true,
+                repeat: -1,
+              })
+            },
+          })
+          const body = npc.body as Phaser.Physics.Arcade.Body | null
+          if (body) body.enable = true
+          npc.setPosition(dayPos.x, dayPos.y)
+        } else if (!npc.hasSprite) {
+          npc.setVisible(true)
+          const body = npc.body as Phaser.Physics.Arcade.Body | null
+          if (body) body.enable = true
+          npc.setPosition(dayPos.x, dayPos.y)
+          npc.bobbingTween = this.tweens.add({
+            targets: npc,
+            y: dayPos.y - 2,
+            duration: 1300 + (dayPos.x % 4) * 120,
+            ease: "Sine.inOut",
+            yoyo: true,
+            repeat: -1,
+          })
+        } else {
+          npc.stopLeading()
+          npc.setPosition(dayPos.x, dayPos.y)
+          npc.resumeWandering()
+        }
+      }
+      this.npcDaytimePositions.clear()
+    }
+  }
+
   private bardSprite?: Phaser.GameObjects.Sprite
+  private bardBobbingTween?: Phaser.Tweens.Tween
+  private bardNightTween?: Phaser.Tweens.Tween
 
   private setupBardBehavior(bard: NPC) {
     const BARDSCALE = 0.14
@@ -1240,7 +1473,7 @@ export class WorldScene extends Phaser.Scene {
     this.bardSprite.setFrame("frame_000")
     this.bardSprite.setDepth(8)
 
-    this.tweens.add({
+    this.bardBobbingTween = this.tweens.add({
       targets: this.bardSprite,
       y: this.bardSprite.y - 2,
       duration: 1300 + (bard.x % 4) * 120,
@@ -1307,6 +1540,18 @@ export class WorldScene extends Phaser.Scene {
       manhNpc.leadTo(dest.x, dest.y)
     })
 
-    this.cleanupFns.push(offGuide, offChatMove)
+    const offNpcWake = gameBridge.on("npc-wake", ({ npcId }) => {
+      const npc = this.npcs.find((n) => n.id === npcId)
+      const house = houseData.find((h) => h.npcId === npcId)
+      if (!npc || !house) return
+      npc.resumeWandering()
+      npc.leadTo(house.x, house.y - 40)
+      this.time.delayedCall(800, () => {
+        npc.stopLeading()
+        npc.resumeWandering()
+      })
+    })
+
+    this.cleanupFns.push(offGuide, offChatMove, offNpcWake)
   }
 }

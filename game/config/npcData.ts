@@ -16,6 +16,7 @@ export interface NpcData {
   gatheringDialogueLines?: string[]
   ambientLines?: string[]
   spriteConfig?: SpriteConfig
+  homePosition?: { x: number; y: number }
 }
 
 const CENTER_X = 1200
@@ -40,6 +41,7 @@ export const npcData: NpcData[] = [
     ],
     gatheringDialogueLines: ["Best part of the evening. Just let the fire do its work."],
     ambientLines: ["The stars are clear tonight.", "Long day of trading.", "Anyone seen my good hat?"],
+    homePosition: { x: 1320, y: 688 },
   },
   {
     id: "adam",
@@ -53,6 +55,7 @@ export const npcData: NpcData[] = [
     ],
     gatheringDialogueLines: ["The fire brings out the good stories. Or just good silence."],
     ambientLines: ["These vegetables are thriving.", "The soil's rich this season.", "Worm in vegs?"],
+    homePosition: { x: 1440, y: 688 },
   },
   {
     id: "avery",
@@ -66,6 +69,7 @@ export const npcData: NpcData[] = [
     ],
     gatheringDialogueLines: ["Some conversations don't need words. This is one of them."],
     ambientLines: ["The caravan leaves at dawn.", "I've got maps to check.", "Heard strange noises from the cave."],
+    homePosition: { x: 960, y: 688 },
   },
   {
     id: "tungtung",
@@ -83,6 +87,7 @@ export const npcData: NpcData[] = [
       rows: 4,
       targetSize: 48,
     },
+    homePosition: { x: 1200, y: 688 },
   },
   {
     id: "manh",
@@ -103,6 +108,7 @@ export const npcData: NpcData[] = [
       rows: 4,
       targetSize: 32,
     },
+    homePosition: { x: 1080, y: 688 },
   },
   {
     id: "hachimi",
@@ -120,6 +126,7 @@ export const npcData: NpcData[] = [
       rows: 1,
       targetSize: 24,
     },
+    homePosition: { x: 1560, y: 684 },
   },
   {
     id: "bard",
@@ -133,5 +140,6 @@ export const npcData: NpcData[] = [
     ],
     gatheringDialogueLines: ["The fire and I are one song tonight. Find your own rhythm by the warmth."],
     ambientLines: ["♪ ...and the wind carried the note... ♪", "Need to tune the lute.", "Hm hm hmm...", "Quiet audience tonight."],
+    homePosition: { x: 840, y: 688 },
   },
 ]

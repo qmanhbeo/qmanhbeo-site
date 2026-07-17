@@ -192,7 +192,21 @@ export default function WorldScreen() {
 
     if (option.id === "cave-enter") {
       window.open("/paths-untold", "_blank")
-      handleCloseDialogue()
+      setDialogueState((prev) => ({ ...prev, isOpen: false }))
+      return
+    }
+
+    if (option.id === "npc-knock") {
+      const npcId = dialogueState.npcId
+      if (npcId) {
+        gameBridge.emit("npc-wake", { npcId })
+      }
+      setDialogueState((prev) => ({
+        ...prev,
+        lines: ["You knock. A moment of silence... then the door creaks open."],
+        lineIndex: 0,
+        choices: [{ id: "house-knocked-thanks", label: "...", nextLines: [] }],
+      }))
       return
     }
 

@@ -6,6 +6,7 @@ export type WorldSfxCue = "dialogue-advance" | "dialogue-open" | "panel-open" | 
 
 type WorldBridgeEventMap = {
   "bard-mute-changed": { muted: boolean }
+  "npc-wake": { npcId: string }
   "bard-started-playing": undefined
   "bard-stopped-playing": undefined
   "choice-navigate": { direction: "up" | "down" }
