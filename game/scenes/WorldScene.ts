@@ -10,6 +10,7 @@ import {
   WORLD_DEPTHS,
   WORLD_GROUND_TEXTURES,
   WORLD_GROUND_TILE_SIZE,
+  WORLD_HOUSES_ENABLED,
   WORLD_VISUAL_DEBUG,
 } from "@/game/config/worldVisualAssets"
 import { getBuildingLabelStyle } from "@/game/labelUtils"
@@ -241,20 +242,22 @@ export class WorldScene extends Phaser.Scene {
     this.scale.on("resize", handleResize)
 
     this.buildings = buildingData.map((building) => new BuildingZone(this, building))
-    this.houses = houseData.map((house) => {
-      const zone = this.add.zone(house.x, house.y, house.width, house.height)
-      this.physics.add.existing(zone, true)
-      return Object.assign(zone, {
-        houseId: house.id,
-        npcId: house.npcId,
-        label: house.label,
-        nightFlavorLine: house.nightFlavorLine,
-        x: house.x,
-        y: house.y,
-        width: house.width,
-        height: house.height,
-      }) as unknown as BuildingZone & { houseId: string; npcId: string; label: string; nightFlavorLine: string }
-    })
+    if (WORLD_HOUSES_ENABLED) {
+      this.houses = houseData.map((house) => {
+        const zone = this.add.zone(house.x, house.y, house.width, house.height)
+        this.physics.add.existing(zone, true)
+        return Object.assign(zone, {
+          houseId: house.id,
+          npcId: house.npcId,
+          label: house.label,
+          nightFlavorLine: house.nightFlavorLine,
+          x: house.x,
+          y: house.y,
+          width: house.width,
+          height: house.height,
+        }) as unknown as BuildingZone & { houseId: string; npcId: string; label: string; nightFlavorLine: string }
+      })
+    }
     this.npcs = npcData.map((npc) => new NPC(this, npc))
 
     this.time.delayedCall(2000, () => {
@@ -304,12 +307,14 @@ export class WorldScene extends Phaser.Scene {
       callback: () => this.checkGatheringTime(),
     })
 
-    this.checkNightHomes()
-    this.time.addEvent({
-      delay: 15000,
-      loop: true,
-      callback: () => this.checkNightHomes(),
-    })
+    if (WORLD_HOUSES_ENABLED) {
+      this.checkNightHomes()
+      this.time.addEvent({
+        delay: 15000,
+        loop: true,
+        callback: () => this.checkNightHomes(),
+      })
+    }
 
     this.buildingHalo = this.add.ellipse(0, 0, 94, 70, 0xffc56f, 0)
       .setDepth(5)
@@ -597,7 +602,9 @@ export class WorldScene extends Phaser.Scene {
     const decorationStats = this.drawGroundDecorations()
 
     this.drawVillageBuildings()
-    this.drawVillageHouses()
+    if (WORLD_HOUSES_ENABLED) {
+      this.drawVillageHouses()
+    }
     this.drawCampfire()
     this.drawForest()
 
@@ -1114,19 +1121,21 @@ export class WorldScene extends Phaser.Scene {
       }
     }
 
-    const isNight = this.isSleepTime()
+    if (WORLD_HOUSES_ENABLED) {
+      const isNight = this.isSleepTime()
 
-    for (const house of this.houses) {
-      const houseZone = house as unknown as Phaser.GameObjects.Zone & { houseId: string; npcId: string; label: string; nightFlavorLine: string }
-      if (this.physics.overlap(this.player, houseZone)) {
-        return {
-          kind: "house",
-          houseId: houseZone.houseId,
-          npcId: houseZone.npcId,
-          prompt: isNight ? `Press E to approach ${houseZone.label}` : `${houseZone.label} — just a house`,
-          flavorLine: houseZone.nightFlavorLine,
-          label: houseZone.label,
-          isNight,
+      for (const house of this.houses) {
+        const houseZone = house as unknown as Phaser.GameObjects.Zone & { houseId: string; npcId: string; label: string; nightFlavorLine: string }
+        if (this.physics.overlap(this.player, houseZone)) {
+          return {
+            kind: "house",
+            houseId: houseZone.houseId,
+            npcId: houseZone.npcId,
+            prompt: isNight ? `Press E to approach ${houseZone.label}` : `${houseZone.label} — just a house`,
+            flavorLine: houseZone.nightFlavorLine,
+            label: houseZone.label,
+            isNight,
+          }
         }
       }
     }
@@ -1200,7 +1209,7 @@ export class WorldScene extends Phaser.Scene {
       return
     }
 
-    if (activeTarget.kind === "house") {
+    if (WORLD_HOUSES_ENABLED && activeTarget.kind === "house") {
       const house = this.houses.find((candidate) => (candidate as unknown as { houseId: string }).houseId === activeTarget.houseId)
       if (!house || !this.buildingHalo) return
       this.buildingHalo
@@ -1540,18 +1549,22 @@ export class WorldScene extends Phaser.Scene {
       manhNpc.leadTo(dest.x, dest.y)
     })
 
-    const offNpcWake = gameBridge.on("npc-wake", ({ npcId }) => {
-      const npc = this.npcs.find((n) => n.id === npcId)
-      const house = houseData.find((h) => h.npcId === npcId)
-      if (!npc || !house) return
-      npc.resumeWandering()
-      npc.leadTo(house.x, house.y - 40)
-      this.time.delayedCall(800, () => {
-        npc.stopLeading()
+    if (WORLD_HOUSES_ENABLED) {
+      const offNpcWake = gameBridge.on("npc-wake", ({ npcId }) => {
+        const npc = this.npcs.find((n) => n.id === npcId)
+        const house = houseData.find((h) => h.npcId === npcId)
+        if (!npc || !house) return
         npc.resumeWandering()
+        npc.leadTo(house.x, house.y - 40)
+        this.time.delayedCall(800, () => {
+          npc.stopLeading()
+          npc.resumeWandering()
+        })
       })
-    })
 
-    this.cleanupFns.push(offGuide, offChatMove, offNpcWake)
+      this.cleanupFns.push(offGuide, offChatMove, offNpcWake)
+    } else {
+      this.cleanupFns.push(offGuide, offChatMove)
+    }
   }
 }

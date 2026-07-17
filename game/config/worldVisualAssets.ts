@@ -1,5 +1,10 @@
 export const WORLD_VISUAL_DEBUG = false
 
+// Toggles the village houses and their associated logic (house rendering,
+// night-homes NPC repositioning, knock-on-door dialogue). Set to true to
+// re-enable. Off by default while the feature is paused.
+export const WORLD_HOUSES_ENABLED = false
+
 export const WORLD_DEPTHS = {
   ground: 0,
   decorations: 1,

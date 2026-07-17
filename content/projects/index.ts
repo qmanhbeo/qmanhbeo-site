@@ -10,19 +10,21 @@ import projectQmanhbeoSite from "./project-qmanhbeo-site"
 import projectDigitalTwin from "./project-digital-twin"
 import projectGiaLaiXiangqi from "./project-gia-lai-xiangqi"
 import projectGspReplication from "./project-gsp-replication"
+import projectOpenEcons from "./project-open-econs"
 
 const PROJECT_ORDER: Record<string, number> = {
   "project-sdg-lens": 1,
   "project-paths-untold": 2,
   "project-vn-real-estate-pipeline": 3,
   "project-gaia": 4,
-  "project-vn-stock-rl-sandbox": 5,
-  "project-uk-procurement-pipeline": 6,
-  "project-arduino-environment-robot": 7,
-  "project-qmanhbeo-site": 8,
-  "project-digital-twin": 9,
-  "project-gia-lai-xiangqi": 10,
-  "project-gsp-replication": 11,
+  "project-open-econs": 5,
+  "project-vn-stock-rl-sandbox": 6,
+  "project-uk-procurement-pipeline": 7,
+  "project-arduino-environment-robot": 8,
+  "project-qmanhbeo-site": 9,
+  "project-digital-twin": 10,
+  "project-gia-lai-xiangqi": 11,
+  "project-gsp-replication": 12,
 }
 
 const allProjects = [
@@ -30,6 +32,7 @@ const allProjects = [
   projectPathsUntold,
   projectVnRealEstatePipeline,
   projectGaia,
+  projectOpenEcons,
   projectVnStockRlSandbox,
   projectUkProcurementPipeline,
   projectArduinoEnvironmentRobot,

@@ -9,6 +9,7 @@ import ManhChatDialog from "@/app/world/_components/ManhChatDialog"
 import WorldPromptOverlay, { useWorldPromptState } from "@/app/world/_components/WorldPromptOverlay"
 import WorldSectionPanel from "@/app/world/_components/WorldSectionPanel"
 import { useWorldOverlayLayout } from "@/app/world/_hooks/useWorldOverlayLayout"
+import { WORLD_HOUSES_ENABLED } from "@/game/config/worldVisualAssets"
 import ArchiveCodexOverlay from "@/components/ui/ArchiveCodexOverlay"
 import XiangqiOverlay from "@/app/world/_components/XiangqiOverlay"
 import { useAudioContext } from "@/context/AudioContext"
@@ -196,7 +197,7 @@ export default function WorldScreen() {
       return
     }
 
-    if (option.id === "npc-knock") {
+    if (option.id === "npc-knock" && WORLD_HOUSES_ENABLED) {
       const npcId = dialogueState.npcId
       if (npcId) {
         gameBridge.emit("npc-wake", { npcId })

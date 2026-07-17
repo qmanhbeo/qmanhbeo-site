@@ -133,6 +133,10 @@ const RESUME_PROJECT_SUMMARIES: Record<string, string[]> = {
   "project-gsp-replication": [
     "Rebuilt a published K-Means clustering pipeline and revealed its five-cluster result depends on the undocumented n_init=1 hyperparameter.",
   ],
+  "project-open-econs": [
+    "Authored open-econs, a Python econometrics library (PyPI: open-econs) that reproduces Stata and R results to verified numerical tolerance across 550+ parity tests.",
+    "Covers 40+ estimators — OLS, fixed effects, IV/2SLS, GMM/Arellano-Bond, the full DiD family, RDD, PSM, synthetic control, and a time-series module — in one consistent API.",
+  ],
 }
 
 function resumeExperienceKey(exp: { role: string; organization: string }) {
